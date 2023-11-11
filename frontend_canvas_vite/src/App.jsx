@@ -12544,6 +12544,12 @@ class App extends Component {
 
         this.setDeflection(targetPlayerRef, "attacked", false);
       }
+
+      if (ownerType === "player") {
+        this.players[owner.number - 1] = owner;
+      }
+      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+      return;
     };
     const handleTargetDodging = () => {
       console.log(
@@ -12605,6 +12611,12 @@ class App extends Component {
           });
         }
       }
+
+      if (ownerType === "player") {
+        this.players[owner.number - 1] = owner;
+      }
+      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+      return;
     };
     const handleTargetDefending = () => {
       // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
@@ -12879,6 +12891,12 @@ class App extends Component {
           }
         }
       }
+
+      if (ownerType === "player") {
+        this.players[owner.number - 1] = owner;
+      }
+      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+      return;
     };
 
     const handleTargetAttacking = () => {
@@ -12900,27 +12918,40 @@ class App extends Component {
         }
 
         // PUSHBACK ATTACKER/PLAYER
-        if (this.rnJesus(0, 2) === 0) {
+        let set = false;
+        let pushWho = this.rnJesus(0, 2);
+        if (pushWho === 0 && set !== true) {
           if (ownerType === "obstacle") {
+            console.log("1", ownerType, targetPlayerRef);
             this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+            set = true;
           }
           if (ownerType === "player") {
+            console.log("2", ownerType, targetPlayerRef);
             this.pushBack(owner, this.getOppositeDirection(owner.direction));
+            set = true;
           }
         }
         // PUSHBACK DEFENDER/TARGET
-        if (this.rnJesus(0, 2) === 1) {
+        if (pushWho === 1 && set !== true) {
+          console.log("3", ownerType, targetPlayerRef);
           this.pushBack(targetPlayerRef, this.getOppositeDirection(targetPlayerRef.direction));
+          set = true;
         }
         // PUSHBACK BOTH PLAYERS
-        if (this.rnJesus(0, 2) === 2) {
+        if (pushWho === 2 && set !== true) {
           if (ownerType === "obstacle") {
+            console.log("4", ownerType, targetPlayerRef);
             this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+            set = true;
           }
           if (ownerType === "player") {
+            console.log("5"), ownerType, targetPlayerRef;
             this.pushBack(owner, this.getOppositeDirection(owner.direction));
+            set = true;
           }
           this.pushBack(targetPlayerRef, this.getOppositeDirection(targetPlayerRef.direction));
+          set = true;
         }
       }
 
@@ -12979,6 +13010,12 @@ class App extends Component {
           limit: targetPlayerRef.success.attackSuccess.limit,
         };
       }
+
+      if (ownerType === "player") {
+        this.players[owner.number - 1] = owner;
+      }
+      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+      return;
     };
 
     // PROJECTILE, ITEM, RUBBLE, OBSTACLE, BARRIER TARGETS
@@ -13215,9 +13252,9 @@ class App extends Component {
       // this.players[targetPlayerRef.number - 1] = targetPlayerRef;
     }
 
-    if (ownerType === "player") {
-      this.players[owner.number - 1] = owner;
-    }
+    // if (ownerType === "player") {
+    //   this.players[owner.number - 1] = owner;
+    // }
   };
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
     console.log("projectileAttackParse");
