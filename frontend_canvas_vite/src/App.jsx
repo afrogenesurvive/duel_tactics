@@ -12884,7 +12884,17 @@ class App extends Component {
     }
   };
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
-    // console.log("projectileAttackParse");
+    console.log("projectileAttackParse");
+
+    this.cellsUnderAttack.push({
+      number: {
+        x: target.currentPosition.cell.number.x,
+        y: target.currentPosition.cell.number.y,
+      },
+      count: 1,
+      limit: 8,
+    });
+    let x;
 
     if (targetType === "player") {
       let deflected = false;
@@ -12946,6 +12956,11 @@ class App extends Component {
           this.handleProjectileDamage(bolt, ownerType, "player", target);
           this.setDeflection(target, "attacked", false);
           deflected = true;
+          // FINISH
+          x = this.projectiles.find((x) => x.id === bolt.id);
+          x = bolt;
+          this.players[target.number - 1] = target;
+          return;
         }
 
         // SIDE ATTACK
@@ -12983,6 +12998,12 @@ class App extends Component {
                 count: 1,
                 limit: target.success.attackSuccess.limit,
               };
+
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
             }
 
             // OR BE INJURED
@@ -12998,6 +13019,11 @@ class App extends Component {
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
               deflected = true;
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
             }
           }
 
@@ -13014,6 +13040,11 @@ class App extends Component {
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
             deflected = true;
+            // FINISH
+            x = this.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            this.players[target.number - 1] = target;
+            return;
           }
 
           // PLAYER DEFENDING
@@ -13031,6 +13062,11 @@ class App extends Component {
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
               deflected = true;
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
             }
             // ARMED DEFENSE
             else {
@@ -13067,6 +13103,11 @@ class App extends Component {
                     img: "",
                   });
                 }
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
               }
               // OFF PEAK DEFEND
               // if (target.defendDecay.state === true && target.defendPeak !== true) {
@@ -13106,6 +13147,11 @@ class App extends Component {
                   if (this.rnJesus(1, target.crits.pushBack) === 1) {
                     this.pushBack(target, this.getOppositeDirection(target.direction));
                   }
+                  // FINISH
+                  x = this.projectiles.find((x) => x.id === bolt.id);
+                  x = bolt;
+                  this.players[target.number - 1] = target;
+                  return;
                 }
 
                 // CHANCE TO BE DAMAGED, DEFLECT || DEFLECT + PUSHBACK
@@ -13118,7 +13164,7 @@ class App extends Component {
                     bolt.owner,
                     "but they off-peak defended unsuccessfully. Damage, Deflect, Pushback?"
                   );
-                  // this.handleProjectileDamage(bolt, ownerType, "player", target);
+                  this.handleProjectileDamage(bolt, ownerType, "player", target);
 
                   if (this.rnJesus(1, target.crits.pushBack) === 1) {
                     this.setDeflection(target, "attacked", true);
@@ -13126,6 +13172,11 @@ class App extends Component {
                     this.setDeflection(target, "attacked", false);
                   }
                   deflected = true;
+                  // FINISH
+                  x = this.projectiles.find((x) => x.id === bolt.id);
+                  x = bolt;
+                  this.players[target.number - 1] = target;
+                  return;
                 }
               }
             }
@@ -13141,15 +13192,20 @@ class App extends Component {
               bolt.owner,
               "but theyre not defending or attacking or dodging. Damage, Deflect?"
             );
+
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
             deflected = true;
+            // FINISH
+            x = this.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            this.players[target.number - 1] = target;
+            return;
           }
         }
 
         // FRONTAL ATTACK
         if (bolt.direction === this.getOppositeDirection(target.direction) && deflected !== true) {
-          console.log("here", target.direction);
           // PLAYER ARMED AND ATTACKING
           if (target.attackPeak === true && weapon !== "unarmed") {
             console.log(
@@ -13179,6 +13235,11 @@ class App extends Component {
               count: 1,
               limit: target.success.attackSuccess.limit,
             };
+            // FINISH
+            x = this.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            this.players[target.number - 1] = target;
+            return;
           }
 
           // PLAYER DEFENDING
@@ -13217,6 +13278,11 @@ class App extends Component {
                     img: "",
                   });
                 }
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
               }
 
               // UNARMED OFF PEAK DEFEND, CHANCE TO DEFEND OR DAMAGE/DEFLECTED
@@ -13233,6 +13299,11 @@ class App extends Component {
                 this.handleProjectileDamage(bolt, ownerType, "player", target);
                 this.setDeflection(target, "attacked", false);
                 deflected = true;
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
               }
             }
 
@@ -13270,6 +13341,11 @@ class App extends Component {
                     img: "",
                   });
                 }
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
               }
 
               // if (target.defendDecay.state === true && target.defendPeak !== true) {
@@ -13307,6 +13383,11 @@ class App extends Component {
                 if (this.rnJesus(1, target.crits.pushBack) === 1) {
                   this.pushBack(target, this.getOppositeDirection(target.direction));
                 }
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
               }
             }
           }
@@ -13324,6 +13405,11 @@ class App extends Component {
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
             deflected = true;
+            // FINISH
+            x = this.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            this.players[target.number - 1] = target;
+            return;
           }
 
           // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
@@ -13339,11 +13425,14 @@ class App extends Component {
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
             deflected = true;
+            // FINISH
+            x = this.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            this.players[target.number - 1] = target;
+            return;
           }
         }
       }
-
-      this.players[target.number - 1] = target;
     } else {
       let cell = this.gridInfo.find((x) => x[targetType].id === target.id);
       console.log(
@@ -13365,17 +13454,10 @@ class App extends Component {
         undefined,
         bolt
       );
+
+      let x = this.projectiles.find((x) => x.id === bolt.id);
+      x = bolt;
     }
-    this.cellsUnderAttack.push({
-      number: {
-        x: target.currentPosition.cell.number.x,
-        y: target.currentPosition.cell.number.y,
-      },
-      count: 1,
-      limit: 8,
-    });
-    let x = this.projectiles.find((x) => x.id === bolt.id);
-    x = bolt;
   };
   setDeflection = (player, type, pushBack) => {
     // this.deflectedLengthRef = {
