@@ -11661,7 +11661,7 @@ class App extends Component {
           if (trap.acting.count >= trap.acting.limit) {
             trap.acting.count = 0;
             trap.acting.state = false;
-            console.log("trap action complete", trap);
+            console.log("trap action complete");
           }
         } else {
           // apply non attack action here
@@ -12997,8 +12997,23 @@ class App extends Component {
             }
           }
 
-          // UNARMED DEFENSE = DAMAGE. OFF-PEAK HAS CHANCE TO PUSHBACK OR DAMAGE + PB
+          // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
+          if (target.attackPeak === true && weapon === "unarmed") {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the side. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked successfully but unarmed. Damage, Deflect?"
+            );
+            this.handleProjectileDamage(bolt, ownerType, "player", target);
+            this.setDeflection(target, "attacked", false);
+          }
+
+          // PLAYER DEFENDING
           if (playerDefending === true) {
+            // UNARMED DEFENSE = DAMAGE. OFF-PEAK HAS CHANCE TO PUSHBACK OR DAMAGE + PB
             if (weapon === "unarmed" || defendType === "unarmed") {
               console.log(
                 "bolt hit plyr",
@@ -13006,11 +13021,14 @@ class App extends Component {
                 "from the side. by",
                 bolt.ownerType,
                 bolt.owner,
-                "Damage & Deflect"
+                "but they defended unarmed. Damage & Deflect"
               );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
-            } else {
+              playerDefending = false;
+            }
+            // ARMED DEFENSE
+            else {
               // PEAK DEFEND
               if (target.defendPeak === true) {
                 console.log(
@@ -13086,7 +13104,7 @@ class App extends Component {
                 }
 
                 // CHANCE TO BE DAMAGED, DEFLECT || DEFLECT + PUSHBACK
-                if (this.rnJesus(0, target.crits.guardBreak) === 1) {
+                else {
                   console.log(
                     "bolt hit plyr",
                     target.number,
@@ -13102,6 +13120,7 @@ class App extends Component {
                   } else {
                     this.setDeflection(target, "attacked", false);
                   }
+                  playerDefending = false;
                 }
               }
             }
@@ -13115,21 +13134,7 @@ class App extends Component {
               "from the side. by",
               bolt.ownerType,
               bolt.owner,
-              "but defending or attacking or dodging. Damage, Deflect?"
-            );
-            this.handleProjectileDamage(bolt, ownerType, "player", target);
-            this.setDeflection(target, "attacked", false);
-          }
-
-          // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-          if (target.attackPeak === true && weapon === "unarmed") {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the side. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they attacked successfully but unarmed. Damage, Deflect?"
+              "but theyre not defending or attacking or dodging. Damage, Deflect?"
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
@@ -13138,6 +13143,7 @@ class App extends Component {
 
         // FRONTAL ATTACK
         if (bolt.direction === this.getOppositeDirection(target.direction)) {
+          console.log("here", target.direction);
           // PLAYER ARMED AND ATTACKING
           if (target.attackPeak === true && weapon !== "unarmed") {
             console.log(
@@ -13220,6 +13226,7 @@ class App extends Component {
                 );
                 this.handleProjectileDamage(bolt, ownerType, "player", target);
                 this.setDeflection(target, "attacked", false);
+                playerDefending = false;
               }
             }
 
@@ -35224,7 +35231,7 @@ class App extends Component {
                       bolt
                     );
                   } else {
-                    console.log("this barrier is the same as the bolt owner. do nothing");
+                    // console.log("this barrier is the same as the bolt owner. do nothing");
                   }
                 }
               }
