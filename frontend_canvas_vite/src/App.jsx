@@ -12544,12 +12544,6 @@ class App extends Component {
 
         this.setDeflection(targetPlayerRef, "attacked", false);
       }
-
-      if (ownerType === "player") {
-        this.players[owner.number - 1] = owner;
-      }
-      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
-      return;
     };
     const handleTargetDodging = () => {
       console.log(
@@ -12611,12 +12605,6 @@ class App extends Component {
           });
         }
       }
-
-      if (ownerType === "player") {
-        this.players[owner.number - 1] = owner;
-      }
-      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
-      return;
     };
     const handleTargetDefending = () => {
       // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
@@ -12891,12 +12879,6 @@ class App extends Component {
           }
         }
       }
-
-      if (ownerType === "player") {
-        this.players[owner.number - 1] = owner;
-      }
-      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
-      return;
     };
 
     const handleTargetAttacking = () => {
@@ -13010,12 +12992,6 @@ class App extends Component {
           limit: targetPlayerRef.success.attackSuccess.limit,
         };
       }
-
-      if (ownerType === "player") {
-        this.players[owner.number - 1] = owner;
-      }
-      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
-      return;
     };
 
     // PROJECTILE, ITEM, RUBBLE, OBSTACLE, BARRIER TARGETS
@@ -13187,11 +13163,23 @@ class App extends Component {
         // TARGET DODGING BACK ATTACK
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
 
         //TARGET NOT DODGING. VULNERABLE TO BACK ATTACK
         else {
           executeAttack();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
       }
 
@@ -13205,16 +13193,34 @@ class App extends Component {
         // TARGET PLAYER IS DODGING
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
 
         // TARGET PLAYER DEFENDING
         if (targetDefending === true) {
           handleTargetDefending();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
 
         // TARGET PLAYER NOT DODGING OR DEFENDING
         else {
           executeAttack();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
       }
 
@@ -13225,17 +13231,35 @@ class App extends Component {
         // TARGET DODGING
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
 
         // TARGET ALSO ATTACKING
         // if (targetPlayerRef.attackPeak === true) {
         if (targetPlayerRef.attacking.state === true) {
           handleTargetAttacking();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
 
         // TARGET DEFENDING
         if (targetDefending === true) {
           handleTargetDefending();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
 
         // TARGET NOT DEFENDING, DODGING OR ATTACKING, DAMAGE
@@ -13246,6 +13270,12 @@ class App extends Component {
           targetDefending !== true
         ) {
           executeAttack();
+
+          if (ownerType === "player") {
+            this.players[owner.number - 1] = owner;
+          }
+          this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+          return;
         }
       }
 
