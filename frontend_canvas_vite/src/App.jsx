@@ -1727,7 +1727,7 @@ class App extends Component {
             peak: 0,
             limit: 0,
           },
-          itemNameRef: "spear1",
+          itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
         },
@@ -12324,6 +12324,8 @@ class App extends Component {
     let faceToFace;
     let sideAttack;
     let backAttack;
+    let logCellNo;
+    let attackPosition;
 
     // ATTACK STAM UNARMED CHECK & AND POPUPS SET
     let playerAttackStamType;
@@ -12474,6 +12476,21 @@ class App extends Component {
       // PLAYER BLUNT ATK SUCCESS, TARGET DEFLECTED
       if (ownerType === "player") {
         if (owner.bluntAttack === true) {
+          console.log(
+            "executing melee attack: ",
+            ownerType,
+            owner.number,
+            owner.id,
+            "blunt attacked a player",
+            targetPlayerRef.number,
+            "from the",
+            attackPosition,
+            " w/ ",
+            ownerWeaponType,
+            "@",
+            logCellNo,
+            "successfully. deflect target/defender"
+          );
           this.setDeflection(targetPlayerRef, "bluntAttacked", false);
           owner.success.attackSuccess = {
             state: true,
@@ -12483,6 +12500,21 @@ class App extends Component {
         }
         // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
         else {
+          console.log(
+            "executing melee attack: ",
+            ownerType,
+            owner.number,
+            owner.id,
+            "attacked a player",
+            targetPlayerRef.number,
+            "from the",
+            attackPosition,
+            " w/ ",
+            ownerWeaponType,
+            "@",
+            logCellNo,
+            "successfully. damage,deflect target/defender"
+          );
           this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
 
           this.setDeflection(targetPlayerRef, "attacked", false);
@@ -12493,6 +12525,21 @@ class App extends Component {
           };
         }
       } else {
+        console.log(
+          "executing melee attack: ",
+          ownerType,
+          owner.number,
+          owner.id,
+          "attacked a player",
+          targetPlayerRef.number,
+          "from the",
+          attackPosition,
+          " w/ ",
+          ownerWeaponType,
+          "@",
+          logCellNo,
+          "successfully. damage,deflect target/defender"
+        );
         this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
 
         this.setDeflection(targetPlayerRef, "attacked", false);
@@ -12500,11 +12547,19 @@ class App extends Component {
     };
     const handleTargetDodging = () => {
       console.log(
-        "player ",
-        player.number,
-        " just dodged player ",
+        "target dodging: ",
+        ownerType,
+        owner.number,
+        owner.id,
+        "attacked a player",
         targetPlayerRef.number,
-        " back attack"
+        "from the",
+        attackPosition,
+        " w/ ",
+        ownerWeaponType,
+        "@",
+        logCellNo,
+        "but they dodged successfully"
       );
 
       if (ownerType === "player") {
@@ -12553,15 +12608,28 @@ class App extends Component {
     };
     const handleTargetDefending = () => {
       // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
-      if (ownerType === "player") {
-        if (owner.bluntAttack === true) {
-          this.setDeflection(targetPlayerRef, "bluntAttacked", false);
-          owner.success.attackSuccess = {
-            state: true,
-            count: 1,
-            limit: owner.success.attackSuccess.limit,
-          };
-        }
+      if (ownerType === "player" && owner.bluntAttack === true) {
+        console.log(
+          "target defending:",
+          ownerType,
+          owner.number,
+          owner.id,
+          "blunt attacked a player",
+          targetPlayerRef.number,
+          "from the",
+          attackPosition,
+          " w/ ",
+          ownerWeaponType,
+          " @",
+          logCellNo,
+          ". they defended but blunt attack is an auto defense break. Deflect target"
+        );
+        this.setDeflection(targetPlayerRef, "bluntAttacked", false);
+        owner.success.attackSuccess = {
+          state: true,
+          count: 1,
+          limit: owner.success.attackSuccess.limit,
+        };
       }
 
       // ATTACKER NON-BLUNT ATTACK
@@ -12569,54 +12637,62 @@ class App extends Component {
         // DEFENDER ADVANTAGE/evenly matched
         if (advantage === 2 || advantage === 0) {
           console.log(
-            "evenly matched. peak",
-            targetPlayerRef.defendPeak,
-            "defending",
-            targetPlayerRef.defending,
-            "decay",
-            targetPlayerRef.defendDecay
+            "target defending: attacker",
+            ownerType,
+            owner.number,
+            owner.id,
+            " & defender player",
+            targetPlayerRef.number,
+            "are evenly matched in combat advantage"
           );
 
-          // SIDE ATTACK
+          // SIDE ATTACK OR FACE TO FACE
           // PEAK DEFEND/PARRY
-          if (sideAttack === true) {
+          if (sideAttack === true || faceToFace === true) {
             if (targetPlayerRef.defendPeak === true) {
-              if (ownerType === "player") {
-                this.setDeflection(owner, "defended", true);
-              }
+              console.log(
+                "target defending:",
+                ownerType,
+                owner.number,
+                owner.id,
+                "attacked a player",
+                targetPlayerRef.number,
+                "from the",
+                attackPosition,
+                " w/ ",
+                ownerWeaponType,
+                " @",
+                logCellNo,
+                ". they parried successfully. Deflect/pushback (high chance) attacker?"
+              );
 
-              targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
-              targetPlayerRef.success.defendSuccess = {
-                state: true,
-                count: 1,
-                limit: targetPlayerRef.success.defendSuccess.limit,
-              };
-              targetPlayerRef.statusDisplay = {
-                state: true,
-                status: "Parry!",
-                count: 1,
-                limit: targetPlayerRef.statusDisplay.limit,
-              };
-              if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
-                targetPlayerRef.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 30,
-                  type: "",
-                  position: "",
-                  msg: "attackParried",
-                  img: "",
-                });
-              }
-            }
-          }
-
-          // FACE TO FACE
-          // PEAK DEFEND/PARRY
-          if (backAttack === true) {
-            if (targetPlayerRef.defendPeak === true) {
+              // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
               if (ownerType === "player") {
-                this.setDeflection(owner, "parried", true);
+                if (faceToFace === true) {
+                  this.setDeflection(owner, "parried", true);
+                }
+                if (sideAttack === true) {
+                  if (this.rnJesus(1, 0) === 1) {
+                    this.setDeflection(owner, "parried", true);
+                  }
+                  // JUST DEFLECT
+                  else {
+                    this.setDeflection(owner, "parried", false);
+                  }
+                }
+              }
+              // PUSHBACK OBSTACLE
+              else {
+                if (ownerType === "obstacle") {
+                  if (faceToFace === true) {
+                    this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+                  }
+                  if (sideAttack === true) {
+                    if (this.rnJesus(1, (owner.height + owner.weight) * this.rnJesus(1, 3))) {
+                      this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+                    }
+                  }
+                }
               }
 
               targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
@@ -12648,25 +12724,112 @@ class App extends Component {
           // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
           // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
           if (targetPlayerRef.defendPeak !== true) {
-            // DEFEND SUCCESS
-            if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) === 1) {
-              // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
-              if (ownerType === "player") {
-                if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                  this.setDeflection(owner, "defended", true);
+            if (sideAttack === true) {
+              if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) === 1) {
+                console.log(
+                  "target defending:",
+                  ownerType,
+                  owner.number,
+                  owner.id,
+                  "attacked a player",
+                  targetPlayerRef.number,
+                  "from the",
+                  attackPosition,
+                  " w/ ",
+                  ownerWeaponType,
+                  " @",
+                  logCellNo,
+                  ". they off peak defended successfully. Deflect attacker?"
+                );
+                // DEFLECT ATTACKER?
+                if (ownerType === "player") {
+                  if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                    this.setDeflection(owner, "defended", false);
+                  }
                 }
-                // JUST DEFLECT
-                else {
-                  this.setDeflection(owner, "defended", false);
-                }
-              }
-              // PUSHBACK OBSTACLE
-              else {
-                if (ownerType === "obstacle") {
-                  this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+
+                targetPlayerRef.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: targetPlayerRef.success.defendSuccess.limit,
+                };
+                targetPlayerRef.statusDisplay = {
+                  state: true,
+                  status: "Defend",
+                  count: 1,
+                  limit: targetPlayerRef.statusDisplay.limit,
+                };
+                if (!targetPlayerRef.popups.find((x) => x.msg === "defendSuccess")) {
+                  targetPlayerRef.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: "",
+                    position: "",
+                    msg: "defendSuccess",
+                    img: "",
+                  });
                 }
               }
 
+              // DEFEND FAILURE
+              else {
+                console.log(
+                  "target defending:",
+                  ownerType,
+                  owner.number,
+                  owner.id,
+                  "attacked a player",
+                  targetPlayerRef.number,
+                  "from the",
+                  attackPosition,
+                  " w/ ",
+                  ownerWeaponType,
+                  " @",
+                  logCellNo,
+                  ". they off peak defended unsuccessfully. Damage, deflect target/defender?"
+                );
+                this.setDeflection(targetPlayerRef, "attacked", false);
+                this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+              }
+            }
+            //FACE TO FACE OFF PEAK DEFEND IS GUARANTEED SUCCESS
+            if (faceToFace === true) {
+              console.log(
+                "target defending:",
+                ownerType,
+                owner.number,
+                owner.id,
+                "attacked a player",
+                targetPlayerRef.number,
+                "from the",
+                attackPosition,
+                " w/ ",
+                ownerWeaponType,
+                " @",
+                logCellNo,
+                ". they off peak defended successfully. Deflect/pushback attacker?"
+              );
+              if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) === 1) {
+                // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
+                if (ownerType === "player") {
+                  if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                    this.setDeflection(owner, "defended", true);
+                  }
+                  // JUST DEFLECT
+                  else {
+                    this.setDeflection(owner, "defended", false);
+                  }
+                }
+                // PUSHBACK OBSTACLE
+                else {
+                  if (ownerType === "obstacle") {
+                    if (this.rnJesus(1, (owner.height + owner.weight) * this.rnJesus(1, 3))) {
+                      this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+                    }
+                  }
+                }
+              }
               targetPlayerRef.success.defendSuccess = {
                 state: true,
                 count: 1,
@@ -12690,17 +12853,20 @@ class App extends Component {
                 });
               }
             }
-
-            // DEFEND FAILURE
-            else {
-              this.setDeflection(targetPlayerRef, "attacked", false);
-              this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
-            }
           }
         }
 
         // ATTACKER/PLAYER ADVANTAGE
         else if (advantage === 1) {
+          console.log(
+            "target defending: attacker",
+            ownerType,
+            owner.number,
+            owner.id,
+            " & defender player",
+            targetPlayerRef.number,
+            ". the attacker outmatches defender in comabt advantage (defender is likely unarmed). Damage deflect target/defender"
+          );
           this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
           this.setDeflection(targetPlayerRef, "attacked", false);
 
@@ -12718,6 +12884,15 @@ class App extends Component {
     const handleTargetAttacking = () => {
       // EVENLY MATCHED. CLASHING
       if (advantage === 0) {
+        console.log(
+          "target attacking: attacker",
+          ownerType,
+          owner.number,
+          owner.id,
+          " & defender player",
+          targetPlayerRef.number,
+          "are evenly matched in combat advantage. clashing!! pushback one or both players w/o damage"
+        );
         targetPlayerRef.clashing.state = true;
 
         if (ownerType === "player") {
@@ -12749,6 +12924,15 @@ class App extends Component {
 
       // PLAYER ADVANTAGE
       if (advantage === 1) {
+        console.log(
+          "target attacking: attacker",
+          ownerType,
+          owner.number,
+          owner.id,
+          " & defender player",
+          targetPlayerRef.number,
+          "are unevenly matched in combat advantage. attacker advantage (defender is likely unarmed) damage, deflect target/defender"
+        );
         if (ownerType === "player") {
           owner.success.attackSuccess = {
             state: true,
@@ -12763,6 +12947,15 @@ class App extends Component {
 
       // TARGET ADVANTAGE
       if (advantage === 2) {
+        console.log(
+          "target attacking: attacker",
+          ownerType,
+          owner.number,
+          owner.id,
+          " & defender player",
+          targetPlayerRef.number,
+          "are unevenly matched in combat advantage. target/defender advantage (attacker is likely unarmed) damage, deflect attacker"
+        );
         if (ownerType === "player") {
           this.handleMeleeDamage("player", targetPlayerRef, owner);
           this.setDeflection(owner, "attacked", false);
@@ -12787,8 +12980,19 @@ class App extends Component {
     };
 
     if (cellNo === 1) {
+      logCellNo = targetCell1.number;
       //TARGET IS PROJECTILE!!
       if (this.isBoltInCell(targetCell1.number) === true) {
+        console.log(
+          ownerType,
+          owner.mumber,
+          owner.id,
+          "attacked and destroyed a bolt projectile @",
+          targetCell1.number,
+          "w/ ",
+          ownerWeaponType,
+          ". pushback?"
+        );
         this.projectiles.find(
           (x) =>
             x.currentPosition.number.x === targetCell1.number.x &&
@@ -12811,8 +13015,6 @@ class App extends Component {
             this.pushBack(owner, this.getOppositeDirection(owner.direction));
           }
         }
-
-        console.log("bolt attacked and killed: v1");
       }
 
       // TARGET IS BARRIER/OBSTACLE/ITEM/RUBBLE
@@ -12822,6 +13024,16 @@ class App extends Component {
         targetCell1.obstacle.state === true ||
         targetCell1.barrier.state === true
       ) {
+        console.log(
+          ownerType,
+          owner.mumber,
+          owner.id,
+          "attacked an obstacle, barrier, item or rubble @",
+          targetCell1.number,
+          "w/ ",
+          ownerWeaponType,
+          ". attackCellContents"
+        );
         this.attackCellContents(
           "melee",
           ownerType,
@@ -12834,8 +13046,19 @@ class App extends Component {
       }
     }
     if (cellNo === 2) {
+      logCellNo = targetCell2.number;
       //TARGET IS PROJECTILE!!
       if (this.isBoltInCell(targetCell2.number) === true) {
+        console.log(
+          ownerType,
+          owner.mumber,
+          owner.id,
+          "attacked and destroyed a bolt projectile @",
+          targetCell2.number,
+          "w/ ",
+          ownerWeaponType,
+          ". pushback?"
+        );
         this.projectiles.find(
           (x) =>
             x.currentPosition.number.x === targetCell2.number.x &&
@@ -12869,6 +13092,16 @@ class App extends Component {
         targetCell2.obstacle.state === true ||
         targetCell2.barrier.state === true
       ) {
+        console.log(
+          ownerType,
+          owner.mumber,
+          owner.id,
+          "attacked an obstacle, barrier, item or rubble @",
+          targetCell2.number,
+          "w/ ",
+          ownerWeaponType,
+          ". attackCellContents"
+        );
         this.attackCellContents(
           "melee",
           ownerType,
@@ -12908,6 +13141,7 @@ class App extends Component {
       // BACK ATTACK
       if (ownerDirection === targetPlayerRef.direction) {
         backAttack = true;
+        attackPosition = "back";
         // TARGET DODGING BACK ATTACK
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
@@ -12925,6 +13159,7 @@ class App extends Component {
         targetPlayerRef.direction !== this.getOppositeDirection(ownerDirection)
       ) {
         sideAttack = true;
+        attackPosition = "side";
         // TARGET PLAYER IS DODGING
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
@@ -12944,6 +13179,7 @@ class App extends Component {
       // TARGET & PLAYER ARE FACE TO FACE
       if (ownerDirection === this.getOppositeDirection(targetPlayerRef.direction)) {
         faceToFace = true;
+        attackPosition = "front";
         // TARGET DODGING
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
@@ -12969,7 +13205,7 @@ class App extends Component {
         }
       }
 
-      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
+      // this.players[targetPlayerRef.number - 1] = targetPlayerRef;
     }
 
     if (ownerType === "player") {
@@ -12979,6 +13215,9 @@ class App extends Component {
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
     console.log("projectileAttackParse");
 
+    let deflected = false;
+    let x;
+
     this.cellsUnderAttack.push({
       number: {
         x: target.currentPosition.cell.number.x,
@@ -12987,10 +13226,8 @@ class App extends Component {
       count: 1,
       limit: 8,
     });
-    let x;
 
     if (targetType === "player") {
-      let deflected = false;
       let weapon = target.currentWeapon.type;
 
       // ATTACK STAM UNARMED CHECK & AND POPUPS SET
@@ -13032,6 +13269,11 @@ class App extends Component {
           bolt.owner
         );
         target.stamina.current += this.staminaCostRef.dodge.pre;
+        // FINISH
+        x = this.projectiles.find((x) => x.id === bolt.id);
+        x = bolt;
+        this.players[target.number - 1] = target;
+        return;
       } else {
         // BOLT NOT DODGED MUST HIT PLAYER
         bolt.kill = true;
@@ -13142,7 +13384,7 @@ class App extends Component {
 
           // PLAYER DEFENDING
           if (playerDefending === true) {
-            // UNARMED DEFENSE = DAMAGE. OFF-PEAK HAS CHANCE TO PUSHBACK OR DAMAGE + PB
+            // UNARMED DEFENSE = DAMAGE.
             if (weapon === "unarmed" || defendType === "unarmed") {
               console.log(
                 "bolt hit plyr",
@@ -13378,7 +13620,7 @@ class App extends Component {
                 return;
               }
 
-              // UNARMED OFF PEAK DEFEND, CHANCE TO DEFEND OR DAMAGE/DEFLECTED
+              // UNARMED OFF PEAK DEFEND, Take DAMAGE
               // if (target.defendDecay.state === true && target.defendPeak !== true) {
               if (target.defendPeak !== true) {
                 console.log(
