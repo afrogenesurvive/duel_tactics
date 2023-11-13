@@ -547,7 +547,7 @@ class App extends Component {
         "**_*_2.9_a_0a*",
       ],
       row3: [
-        "**_c_3.0_a_0a*",
+        "**_*_3.0_a_0a*",
         "**_*_3.1_a_0a*",
         "**_*_3.2_a_0a*",
         "**_*_3.3_a_0a*",
@@ -564,7 +564,7 @@ class App extends Component {
         "**_*_4.2_f_0a*",
         "**_*_4.3_f_0a*",
         "**_*_4.4_a_0a*",
-        "**_*_4.5_a_0a*",
+        "**_h_4.5_a_0a*",
         "**_*_4.6_g_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
@@ -601,7 +601,7 @@ class App extends Component {
         "**_*_7.3_a_0a*",
         "**_*_7.4_a_0a*",
         "**_*_7.5_a_0a*",
-        "**_h_7.6_a_0a*",
+        "**_*_7.6_a_0a*",
         "cw*_*_7.7_a_0a*",
         "**_*_7.8_a_0a*",
         "cw_*_7.9_d_0a*",
@@ -1399,8 +1399,8 @@ class App extends Component {
       h: {
         id: 0,
         trap: {
-          state: false,
-          persistent: false,
+          state: true,
+          persistent: true,
           remaining: 5,
           direction: "",
           target: {},
@@ -1408,10 +1408,10 @@ class App extends Component {
             enabled: true,
             state: false,
             count: 0,
-            limit: 15,
+            limit: 25,
           },
           trigger: {
-            type: "player",
+            type: "any",
           },
           action: "attack",
           acting: {
@@ -1420,13 +1420,7 @@ class App extends Component {
             peak: 0,
             limit: 0,
           },
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-          },
-          itemNameRef: "crossbow1",
+          itemNameRef: "spear1",
           item: {},
           ammo: 0,
         },
@@ -1706,8 +1700,8 @@ class App extends Component {
       c: {
         id: 0,
         trap: {
-          state: true,
-          persistent: false,
+          state: false,
+          persistent: true,
           remaining: 5,
           direction: "",
           target: {},
@@ -10850,11 +10844,31 @@ class App extends Component {
               .reverse()
               .find((x) => x.x === targetCell.number.x || x.y === targetCell.number.y);
           } else {
-            if (argetCell.obstacle.trap.item.subType === "spear") {
-              argetCell.obstacle.trap.target = availibleCells[1];
+            if (targetCell.obstacle.trap.item.subType === "spear") {
+              // targetCell.obstacle.trap.target = availibleCells[1];
+              targetCell.obstacle.trap.target = availibleCells
+                .slice()
+                .find(
+                  (x) =>
+                    (x.x === targetCella.number.x &&
+                      (x.y === targetCell.number.y + 2 || x.y === targetCell.number.y - 2)) ||
+                    (x.y === targetCell.number.y &&
+                      (x.x === targetCell.number.x + 2 || x.x === targetCell.number.x - 2))
+                );
             }
-            if (argetCell.obstacle.trap.item.subType === "sword") {
-              argetCell.obstacle.trap.target = availibleCells[0];
+            if (targetCell.obstacle.trap.item.subType === "sword") {
+              // targetCell.obstacle.trap.target = availibleCells[0];
+              targetCell.obstacle.trap.target = availibleCells
+                // .slice()
+                // .find((x) => x.x === targetCell.number.x || x.y === targetCell.number.y);
+                .slice()
+                .find(
+                  (x) =>
+                    (x.x === targetCella.number.x &&
+                      (x.y === targetCell.number.y + 1 || x.y === targetCell.number.y - 1)) ||
+                    (x.y === targetCell.number.y &&
+                      (x.x === targetCell.number.x + 1 || x.x === targetCell.number.x - 1))
+                );
             }
           }
           console.log("trap target reset after moving trap");
@@ -11796,6 +11810,7 @@ class App extends Component {
     return locationCell;
   };
   obstacleBarrierTrapInitSet = (superType, type, data) => {
+    // console.log("  obstacleBarrierTrapInitSet");
     let trap = data[type].trap;
 
     let item = this.itemList.find((x) => x.name === trap.itemNameRef);
@@ -11822,7 +11837,7 @@ class App extends Component {
 
     if (trap.state === true) {
       if (!trap.target.x || trap.target.x === undefined) {
-        if (type === "obsatcle") {
+        if (type === "obstacle") {
           if (trap.direction === "") {
             availibleCells = this.getSurroundingCells(data.number, 20, "walkable", false, false);
             if (availibleCells.length > 0) {
@@ -11833,14 +11848,36 @@ class App extends Component {
                   .find((x) => x.x === data.number.x || x.y === data.number.y);
               } else {
                 if (trap.item.subType === "spear") {
-                  trap.target = availibleCells[1];
+                  // trap.target = availibleCells[1];
+                  trap.target = availibleCells
+                    // .slice()
+                    // .find((x) => x.x === data.number.x || x.y === data.number.y);
+                    .slice()
+                    .find(
+                      (x) =>
+                        (x.x === data.number.x &&
+                          (x.y === data.number.y + 2 || x.y === data.number.y - 2)) ||
+                        (x.y === data.number.y &&
+                          (x.x === data.number.x + 2 || x.x === data.number.x - 2))
+                    );
                 }
                 if (trap.item.subType === "sword") {
-                  trap.target = availibleCells[0];
+                  // trap.target = availibleCells[0];
+                  trap.target = availibleCells
+                    // .slice()
+                    // .find((x) => x.x === data.number.x || x.y === data.number.y);
+                    .slice()
+                    .find(
+                      (x) =>
+                        (x.x === data.number.x &&
+                          (x.y === data.number.y + 1 || x.y === data.number.y - 1)) ||
+                        (x.y === data.number.y &&
+                          (x.x === data.number.x + 1 || x.x === data.number.x - 1))
+                    );
                 }
               }
               // console.log("availibleCells", data.number, availibleCells, trap.target);
-              // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
+              console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
               trap.state = false;
               // console.log(
@@ -12904,31 +12941,26 @@ class App extends Component {
         let pushWho = this.rnJesus(0, 2);
         if (pushWho === 0 && set !== true) {
           if (ownerType === "obstacle") {
-            console.log("1", ownerType, targetPlayerRef);
             this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
             set = true;
           }
           if (ownerType === "player") {
-            console.log("2", ownerType, targetPlayerRef);
             this.pushBack(owner, this.getOppositeDirection(owner.direction));
             set = true;
           }
         }
         // PUSHBACK DEFENDER/TARGET
         if (pushWho === 1 && set !== true) {
-          console.log("3", ownerType, targetPlayerRef);
           this.pushBack(targetPlayerRef, this.getOppositeDirection(targetPlayerRef.direction));
           set = true;
         }
         // PUSHBACK BOTH PLAYERS
         if (pushWho === 2 && set !== true) {
           if (ownerType === "obstacle") {
-            console.log("4", ownerType, targetPlayerRef);
             this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
             set = true;
           }
           if (ownerType === "player") {
-            console.log("5"), ownerType, targetPlayerRef;
             this.pushBack(owner, this.getOppositeDirection(owner.direction));
             set = true;
           }
@@ -13240,8 +13272,7 @@ class App extends Component {
         }
 
         // TARGET ALSO ATTACKING
-        // if (targetPlayerRef.attackPeak === true) {
-        if (targetPlayerRef.attacking.state === true) {
+        if (targetPlayerRef.attackPeak === true) {
           handleTargetAttacking();
 
           if (ownerType === "player") {
@@ -13265,8 +13296,7 @@ class App extends Component {
         // TARGET NOT DEFENDING, DODGING OR ATTACKING, DAMAGE
         if (
           targetPlayerRef.dodging.state !== true &&
-          // targetPlayerRef.attackPeak !== true &&
-          targetPlayerRef.attacking.state !== true &&
+          targetPlayerRef.attackPeak !== true &&
           targetDefending !== true
         ) {
           executeAttack();
@@ -31419,7 +31449,13 @@ class App extends Component {
             player.defending.count++;
             player.action = "defending";
             player.defendPeak = false;
-            // console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
+            console.log(
+              "defend winding up",
+              player.defending.count,
+              "player",
+              player.number,
+              defendPeak
+            );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
                 state: false,
@@ -31435,7 +31471,7 @@ class App extends Component {
 
           // PEAK, START DECAY
           else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
-            // console.log('peak defend player',player.number);
+            console.log("peak defend player", player.number);
 
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
               player.action = "defending";
@@ -31506,6 +31542,7 @@ class App extends Component {
               player.defendDecay.count++;
               if (player.defendDecay.count === 5) {
                 player.defendPeak = false;
+                console.log("peak defend over player", player.number);
               }
 
               if (!player.popups.find((x) => x.msg === "defending")) {
@@ -31519,7 +31556,12 @@ class App extends Component {
                   img: "",
                 });
               }
-              // console.log('defend decay count',player.defendDecay.count,player.defending.state,player.action);
+              console.log(
+                "defend decay count",
+                player.defendDecay.count,
+                player.defending.state,
+                player.action
+              );
             }
 
             if (player.defendDecay.count >= player.defendDecay.limit) {
@@ -31529,7 +31571,7 @@ class App extends Component {
                 limit: player.defending.limit,
               };
               player.action = "idle";
-              // console.log('defend decay limit. drop defense',player.defending.state);
+              console.log("defend decay limit. drop defense", player.defending.state);
               player.defendDecay = {
                 state: false,
                 count: 0,
