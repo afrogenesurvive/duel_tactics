@@ -16690,6 +16690,18 @@ class App extends Component {
           if (weaponCheck === true) {
             // DAMAGE, DON'T DESTROY FWD OBSTACLE
             if (targetCell.obstacle.hp - calcedDamage > 0) {
+              console.log(
+                ownerType,
+                owner.number,
+                owner.id,
+                "hit an obstacle ",
+                targetCell.obstacle.id,
+                "w/ a",
+                ownerWeaponType,
+                "@ ",
+                targetCell.number,
+                "and damaged it."
+              );
               let hp = targetCell.obstacle.hp - calcedDamage;
 
               targetCell.obstacle = {
@@ -16727,6 +16739,18 @@ class App extends Component {
 
             // DESTROY OBSTACLE W/ OR W/O RUBBLE
             else if (targetCell.obstacle.hp - calcedDamage <= 0) {
+              console.log(
+                ownerType,
+                owner.number,
+                owner.id,
+                "hit an obstacle ",
+                targetCell.obstacle.id,
+                "w/ a",
+                ownerWeaponType,
+                "@ ",
+                targetCell.number,
+                "and destroyed it. Drop items, leave rubble?"
+              );
               let itemsToDrop = [];
               if (
                 targetCell.obstacle.destructible.leaveRubble === true &&
@@ -16840,11 +16864,11 @@ class App extends Component {
 
           // WEAPON NO GOOD. PUSH OBSTACLE?
           else {
-            console.log(
-              "your current weapon cannot destroy this, you need ",
-              targetCell.obstacle.destructible.weapons,
-              ". Deflect player?"
-            );
+            // console.log(
+            //   "your current weapon cannot destroy this, you need ",
+            //   targetCell.obstacle.destructible.weapons,
+            //   ". Deflect player?"
+            // );
             if (
               !this.cellPopups.find(
                 (x) =>
@@ -16867,7 +16891,20 @@ class App extends Component {
                 ),
               });
             }
-
+            console.log(
+              ownerType,
+              owner.number,
+              owner.id,
+              "hit an obstacle ",
+              targetCell.obstacle.id,
+              "w/ a",
+              ownerWeaponType,
+              "@ ",
+              targetCell.number,
+              " but their current weapon cannot destroy this, they need",
+              targetCell.obstacle.destructible.weapons,
+              ". pushback obstacle. Deflect attacker?"
+            );
             // PUSH OBSTACLE
             if (type === "bolt" || type === "flyOverBolt") {
               this.canPushObstacle(ownerType, owner, targetCell, `hitPushBolt_${bolt.direction}`);
@@ -16903,6 +16940,18 @@ class App extends Component {
         // INDESTRUCTIBLE OBSTACLE. PUSH OBSTACLE?
         else {
           // console.log('attacking invurnerable obstacle w/ bolt');
+          console.log(
+            ownerType,
+            owner.number,
+            owner.id,
+            "hit an obstacle ",
+            targetCell.obstacle.id,
+            "w/ a",
+            ownerWeaponType,
+            "@ ",
+            targetCell.number,
+            " but it is indestructible. pushback obstacle. Deflect attacker?"
+          );
           if (
             !this.cellPopups.find(
               (x) =>
@@ -16976,6 +17025,18 @@ class App extends Component {
           if (weaponCheck === true) {
             // DAMAGE, DON'T DESTROY FWD OBSTACLE
             if (targetCell2.obstacle.hp - calcedDamage > 0) {
+              console.log(
+                ownerType,
+                owner.number,
+                owner.id,
+                "hit an obstacle ",
+                targetCell2.obstacle.id,
+                "w/ a",
+                ownerWeaponType,
+                "@ ",
+                targetCell2.number,
+                "and damaged it."
+              );
               let hp = targetCell2.obstacle.hp - calcedDamage;
 
               targetCell2.obstacle = {
@@ -17018,6 +17079,18 @@ class App extends Component {
 
             // DESTROY OBSTACLE W/ OR W/O RUBBLE
             else if (targetCell2.obstacle.hp - calcedDamage <= 0) {
+              console.log(
+                ownerType,
+                owner.number,
+                owner.id,
+                "hit an obstacle ",
+                targetCell2.obstacle.id,
+                "w/ a",
+                ownerWeaponType,
+                "@ ",
+                targetCell2.number,
+                "and destroyed it. Drop items, leave rubble?"
+              );
               let itemsToDrop = [];
               if (
                 targetCell2.obstacle.destructible.leaveRubble === true &&
@@ -17131,10 +17204,24 @@ class App extends Component {
 
           // WEAPON NO GOOD. PUSH OBSTACLE?
           else {
+            // console.log(
+            //   "your current weapon cannot destroy this, you need ",
+            //   targetCell2.obstacle.destructible.weapons,
+            //   ". Deflect player?"
+            // );
             console.log(
-              "your current weapon cannot destroy this, you need ",
+              ownerType,
+              owner.number,
+              owner.id,
+              "hit an obstacle ",
+              targetCell2.obstacle.id,
+              "w/ a",
+              ownerWeaponType,
+              "@ ",
+              targetCell2.number,
+              " but their current weapon cannot destroy this, they need",
               targetCell2.obstacle.destructible.weapons,
-              ". Deflect player?"
+              ". pushback obstacle. Deflect attacker?"
             );
             if (
               !this.cellPopups.find(
@@ -17187,6 +17274,72 @@ class App extends Component {
               } else {
                 this.pushBack(owner, this.getOppositeDirection(owner.direction));
               }
+            }
+          }
+        }
+        // INDESTRUCTIBLE OBSTACLE. PUSH OBSTACLE?
+        else {
+          // console.log('attacking invurnerable obstacle w/ bolt');
+          console.log(
+            ownerType,
+            owner.number,
+            owner.id,
+            "hit an obstacle ",
+            targetCell2.obstacle.id,
+            "w/ a",
+            ownerWeaponType,
+            "@ ",
+            targetCell2.number,
+            " but it is indestructible. pushback obstacle. Deflect attacker?"
+          );
+          if (
+            !this.cellPopups.find(
+              (x) =>
+                x.msg === "unbreakable" &&
+                x.cell.number.x === targetCell2.number.x &&
+                x.cell.number.y === targetCell2.number.y
+            )
+          ) {
+            this.cellPopups.push({
+              state: false,
+              count: 0,
+              limit: 35,
+              type: "",
+              position: "",
+              msg: "unbreakable",
+              color: "",
+              img: "",
+              cell: this.gridInfo.find(
+                (x) => x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y
+              ),
+            });
+          }
+          if (type === "bolt" || type === "flyOverBolt") {
+            this.canPushObstacle(ownerType, owner, targetCell2, `hitPushBolt_${bolt.direction}`);
+          }
+          if (type === "melee") {
+            this.canPushObstacle(ownerType, owner, targetCell2, `hitPush`);
+          }
+
+          if (type === "melee" && ownerType === "player") {
+            let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
+
+            if (shouldDeflect === 1) {
+              if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                this.setDeflection(owner, "defended", true);
+              } else {
+                this.setDeflection(owner, "defended", false);
+              }
+
+              if (owner.currentWeapon.name === "") {
+                console.log("this obstacle is stronger than your fist. Take damage?");
+                let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
+                if (takeDamage === 1) {
+                  this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
+                }
+              }
+            } else {
+              this.pushBack(owner, this.getOppositeDirection(owner.direction));
             }
           }
         }
