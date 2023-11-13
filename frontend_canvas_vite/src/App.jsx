@@ -550,7 +550,7 @@ class App extends Component {
         "**_*_3.0_a_0a*",
         "**_*_3.1_a_0a*",
         "**_*_3.2_a_0a*",
-        "**_*_3.3_a_0a*",
+        "**_c_3.3_a_0a*",
         "**_*_3.4_a_0a*",
         "**_*_3.5_a_0a*",
         "**_*_3.6_a_0a*",
@@ -560,14 +560,14 @@ class App extends Component {
       ],
       row4: [
         "**_*_4.0_a_0a*",
-        "**_*_4.1_a_0a*",
+        "**_h_4.1_a_0a*",
         "**_*_4.2_f_0a*",
         "**_*_4.3_f_0a*",
         "**_*_4.4_a_0a*",
-        "**_h_4.5_a_0a*",
+        "**_*_4.5_a_0a*",
         "**_*_4.6_g_0a*",
         "**_*_4.7_a_0a*",
-        "**_*_4.8_a_0a*",
+        "**_c_4.8_a_0a*",
         "**_*_4.9_a_0a*",
       ],
       row5: [
@@ -981,7 +981,7 @@ class App extends Component {
         type: "barrel",
         hp: 2,
         destructible: {
-          state: true,
+          state: false,
           weapons: ["sword1", "bolt", "spear1"],
           leaveRubble: true,
         },
@@ -2039,8 +2039,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 0,
-              y: 5,
+              x: 3,
+              y: 7,
             },
             center: {
               x: 0,
@@ -31456,13 +31456,13 @@ class App extends Component {
             player.defending.count++;
             player.action = "defending";
             player.defendPeak = false;
-            console.log(
-              "defend winding up",
-              player.defending.count,
-              "player",
-              player.number,
-              defendPeak
-            );
+            // console.log(
+            //   "defend winding up",
+            //   player.defending.count,
+            //   "player",
+            //   player.number,
+            //   defendPeak
+            // );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
                 state: false,
@@ -31478,7 +31478,7 @@ class App extends Component {
 
           // PEAK, START DECAY
           else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
-            console.log("peak defend player", player.number);
+            // console.log("peak defend player", player.number);
 
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
               player.action = "defending";
@@ -31549,7 +31549,7 @@ class App extends Component {
               player.defendDecay.count++;
               if (player.defendDecay.count === 5) {
                 player.defendPeak = false;
-                console.log("peak defend over player", player.number);
+                // console.log("peak defend over player", player.number);
               }
 
               if (!player.popups.find((x) => x.msg === "defending")) {
@@ -31563,12 +31563,12 @@ class App extends Component {
                   img: "",
                 });
               }
-              console.log(
-                "defend decay count",
-                player.defendDecay.count,
-                player.defending.state,
-                player.action
-              );
+              // console.log(
+              //   "defend decay count",
+              //   player.defendDecay.count,
+              //   player.defending.state,
+              //   player.action
+              // );
             }
 
             if (player.defendDecay.count >= player.defendDecay.limit) {
