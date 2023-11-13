@@ -1408,7 +1408,7 @@ class App extends Component {
             enabled: true,
             state: false,
             count: 0,
-            limit: 25,
+            limit: 45,
           },
           trigger: {
             type: "any",
@@ -10850,7 +10850,7 @@ class App extends Component {
                 .slice()
                 .find(
                   (x) =>
-                    (x.x === targetCella.number.x &&
+                    (x.x === targetCell.number.x &&
                       (x.y === targetCell.number.y + 2 || x.y === targetCell.number.y - 2)) ||
                     (x.y === targetCell.number.y &&
                       (x.x === targetCell.number.x + 2 || x.x === targetCell.number.x - 2))
@@ -10864,7 +10864,7 @@ class App extends Component {
                 .slice()
                 .find(
                   (x) =>
-                    (x.x === targetCella.number.x &&
+                    (x.x === targetCell1.number.x &&
                       (x.y === targetCell.number.y + 1 || x.y === targetCell.number.y - 1)) ||
                     (x.y === targetCell.number.y &&
                       (x.x === targetCell.number.x + 1 || x.x === targetCell.number.x - 1))
@@ -11713,9 +11713,8 @@ class App extends Component {
             if (trap.timer.count < trap.timer.limit) {
               trap.timer.count++;
               higlightCell();
-
+              console.log("persistent trap timer count up", trap.timer.count);
               if (trap.timer.count === 1) {
-                console.log("persistent trap timer count up", trap.timer.count);
                 console.log("trap has been triggered at ", trap.target, "by", triggerType);
               }
             }
@@ -11877,7 +11876,7 @@ class App extends Component {
                 }
               }
               // console.log("availibleCells", data.number, availibleCells, trap.target);
-              console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
+              // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
               trap.state = false;
               // console.log(
@@ -11988,7 +11987,9 @@ class App extends Component {
       cell2Item = owner.target.cell2.occupant.type === "item";
       cell2Rubble = owner.target.cell2.occupant.type === "rubble";
     } else {
-      myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
+      myCell = this.gridInfo.find(
+        (x) => x[ownerType].state === true && x[ownerType].id === owner.id
+      );
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       let cell1 = this.getCellFromDirection(1, myCell.number, ownerDirection);
       let cell2 = this.getCellFromDirection(2, myCell.number, ownerDirection);
@@ -12344,7 +12345,7 @@ class App extends Component {
     }
   };
   meleeAttackParse = (ownerType, owner, cellNo) => {
-    console.log("meleeAttackParse");
+    // console.log("meleeAttackParse");
 
     let targetPlayerRef = undefined;
 
@@ -12390,7 +12391,9 @@ class App extends Component {
       cell2Item = owner.target.cell2.occupant.type === "item";
       cell2Rubble = owner.target.cell2.occupant.type === "rubble";
     } else {
-      myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
+      myCell = this.gridInfo.find(
+        (x) => x[ownerType].state === true && x[ownerType].id === owner.id
+      );
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       let cell1 = this.getCellFromDirection(1, myCell.number, ownerDirection);
       let cell2 = this.getCellFromDirection(2, myCell.number, ownerDirection);
@@ -13972,7 +13975,9 @@ class App extends Component {
       doubleHitChance = player.crits.doubleHit;
       singleHitChance = player.crits.singleHit;
     } else {
-      let myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
+      let myCell = this.gridInfo.find(
+        (x) => x[ownerType].state === true && x[ownerType].id === owner.id
+      );
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       ownerWeaponType = owner.trap.item.subType;
       ownerWeaponType = owner.trap.item.name;
@@ -19216,7 +19221,9 @@ class App extends Component {
       if (ownerType === "player") {
         impactDirection = owner.direction;
       } else {
-        let myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
+        let myCell = this.gridInfo.find(
+          (x) => x[ownerType].state === true && x[ownerType].id === owner.id
+        );
         impactDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       }
     }

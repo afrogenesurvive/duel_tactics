@@ -200,7 +200,7 @@ const CellInfo = (props) => {
                     <strong className="popoverHead">{props.clicked.cell.barrier.name} :</strong>
                     <ul className="popoverList">
                       <li>
-                        <p>Id: {props.clicked.cell.obstacle.id}</p>
+                        <p>Id: {props.clicked.cell.barrier.id}</p>
                       </li>
                       <li>
                         <p>Type: {props.clicked.cell.barrier.type}</p>
