@@ -542,8 +542,8 @@ class App extends Component {
         "**_*_2.4_a_0a*",
         "**_*_2.5_a_0a*",
         "**_*_2.6_a_0a*",
-        "cs_*_2.7_a_0a*",
-        "cs_*_2.8_a_0a*",
+        "**_*_2.7_a_0a*",
+        "**_h_2.8_a_0a*",
         "**_*_2.9_a_0a*",
       ],
       row3: [
@@ -551,7 +551,7 @@ class App extends Component {
         "**_*_3.1_a_0a*",
         "**_*_3.2_a_0a*",
         "**_*_3.3_a_0a*",
-        "**_c_3.4_a_0a*",
+        "**_*_3.4_a_0a*",
         "**_*_3.5_a_0a*",
         "**_*_3.6_a_0a*",
         "**_*_3.7_a_0a*",
@@ -560,7 +560,7 @@ class App extends Component {
       ],
       row4: [
         "**_*_4.0_a_0a*",
-        "**_h_4.1_a_0a*",
+        "**_*_4.1_a_0a*",
         "**_*_4.2_f_0a*",
         "cn_*_4.3_f_0a*",
         "**_*_4.4_a_0a*",
@@ -981,7 +981,7 @@ class App extends Component {
         type: "barrel",
         hp: 2,
         destructible: {
-          state: true,
+          state: false,
           weapons: ["sword1", "bolt", "spear1"],
           leaveRubble: true,
         },
@@ -1402,7 +1402,7 @@ class App extends Component {
           state: true,
           persistent: true,
           remaining: 5,
-          direction: "south",
+          direction: "north",
           target: {},
           timer: {
             enabled: true,
@@ -1420,7 +1420,7 @@ class App extends Component {
             peak: 0,
             limit: 0,
           },
-          itemNameRef: "spear1",
+          itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
         },
@@ -1700,7 +1700,7 @@ class App extends Component {
       c: {
         id: 0,
         trap: {
-          state: true,
+          state: false,
           persistent: true,
           remaining: 5,
           direction: "",
@@ -1721,7 +1721,7 @@ class App extends Component {
             peak: 0,
             limit: 0,
           },
-          itemNameRef: "spear1",
+          itemNameRef: "sword1",
           item: {},
           ammo: 0,
         },
@@ -3440,14 +3440,14 @@ class App extends Component {
     };
     this.obstacleBarrierTrapAttackAnimRef = {
       limit: {
-        sword: 40,
+        sword: 25,
         spear: 30,
-        crossbow: 40,
+        crossbow: 30,
       },
       peak: {
-        sword: 30,
+        sword: 15,
         spear: 20,
-        crossbow: 30,
+        crossbow: 20,
       },
     };
     this.defendAnimRef = {
@@ -10839,7 +10839,7 @@ class App extends Component {
       // }
       let availibleCells = [];
       if (targetCell.obstacle.trap.direction === "") {
-        availibleCells = this.getSurroundingCells(targetCell.number, 20, "walkable", false, false);
+        availibleCells = this.getSurroundingCells(targetCell.number, 30, "walkable", false, false);
         if (availibleCells.length > 0) {
           if (targetCell.obstacle.trap.item.subType === "crossbow") {
             targetCell.obstacle.trap.target = availibleCells
@@ -11841,7 +11841,7 @@ class App extends Component {
       if (!trap.target.x || trap.target.x === undefined) {
         if (type === "obstacle") {
           if (trap.direction === "") {
-            availibleCells = this.getSurroundingCells(data.number, 20, "walkable", false, false);
+            availibleCells = this.getSurroundingCells(data.number, 30, "walkable", false, false);
             if (availibleCells.length > 0) {
               if (trap.item.subType === "crossbow") {
                 trap.target = availibleCells
@@ -11878,8 +11878,8 @@ class App extends Component {
                     );
                 }
               }
-              // console.log("availibleCells", data.number, availibleCells, trap.target);
-              // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
+              console.log("availibleCells", data.number, availibleCells, trap.target);
+              console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
               trap.state = false;
               // console.log(
@@ -12049,24 +12049,50 @@ class App extends Component {
             limit: 8,
           }
         );
-
         // TARGET CELL 1 IS NOT FREE, ITEM, BOLT, RUBBLE, ATTACK CELL1
+
+        if (targetCell1.barrier.state === true) {
+          if (
+            // targetCell1.barrier.position === ownerDirection ||
+            targetCell1.barrier.position === this.getOppositeDirection(ownerDirection)
+          ) {
+            // console.log(
+            //   "melee attack peak:",
+            //   ownerType,
+            //   owner.number,
+            //   owner.id,
+            //   "hit barrier w/ ",
+            //   ownerWeaponType,
+            //   " @ ",
+            //   targetCell1.number
+            // );
+            this.attackCellContents(
+              "melee",
+              ownerType,
+              owner,
+              targetCell1,
+              targetCell2,
+              myCell,
+              undefined
+            );
+          }
+        }
         if (
           cell1Free !== true ||
           cell1Item === true ||
           cell1Rubble === true ||
           boltTarget1 === true
         ) {
-          console.log(
-            "melee attack peak:",
-            ownerType,
-            owner.number,
-            owner.id,
-            "hit player, obstacle, barrier, bolt, item or rubble w/ ",
-            ownerWeaponType,
-            " @ ",
-            targetCell1.number
-          );
+          // console.log(
+          //   "melee attack peak:",
+          //   ownerType,
+          //   owner.number,
+          //   owner.id,
+          //   "hit player, obstacle, bolt, item or rubble w/ ",
+          //   ownerWeaponType,
+          //   " @ ",
+          //   targetCell1.number
+          // );
           this.meleeAttackParse(ownerType, owner, 1);
         }
 
@@ -12077,6 +12103,56 @@ class App extends Component {
           cell1Rubble !== true &&
           boltTarget1 !== true
         ) {
+          if (
+            targetCell1.barrier.state === true &&
+            targetCell1.barrier.position === ownerDirection
+          ) {
+            // console.log(
+            //   "melee attack peak:",
+            //   ownerType,
+            //   owner.number,
+            //   owner.id,
+            //   "hit barrier w/ ",
+            //   ownerWeaponType,
+            //   " @ ",
+            //   targetCell1.number
+            // );
+            this.attackCellContents(
+              "melee",
+              ownerType,
+              owner,
+              targetCell1,
+              targetCell2,
+              myCell,
+              undefined
+            );
+          }
+
+          if (
+            targetCell2.barrier.state === true &&
+            targetCell2.barrier.position === this.getOppositeDirection(ownerDirection)
+          ) {
+            // console.log(
+            //   "melee attack peak:",
+            //   ownerType,
+            //   owner.number,
+            //   owner.id,
+            //   "hit barrier w/ ",
+            //   ownerWeaponType,
+            //   " @ ",
+            //   targetCell2.number
+            // );
+            this.attackCellContents(
+              "melee",
+              ownerType,
+              owner,
+              targetCell1,
+              targetCell2,
+              myCell,
+              undefined
+            );
+          }
+
           // TARGET CELL 2 IS NOT FREE HAS ITEM, BOLT, RUBBLE ATTACK
           if (
             cell2Free !== true ||
@@ -12084,16 +12160,16 @@ class App extends Component {
             cell2Rubble === true ||
             boltTarget2 === true
           ) {
-            console.log(
-              "melee attack peak:",
-              ownerType,
-              owner.number,
-              owner.id,
-              "hit player, obstacle, barrier, bolt, item or rubble w/ ",
-              ownerWeaponType,
-              " @ ",
-              targetCell2.number
-            );
+            // console.log(
+            //   "melee attack peak:",
+            //   ownerType,
+            //   owner.number,
+            //   owner.id,
+            //   "hit player, obstacle, bolt, item or rubble w/ ",
+            //   ownerWeaponType,
+            //   " @ ",
+            //   targetCell2.number
+            // );
             this.meleeAttackParse(ownerType, owner, 2);
           }
 
@@ -12141,7 +12217,31 @@ class App extends Component {
           count: 1,
           limit: 8,
         });
-
+        // if (
+        //   targetCell1.barrier.state === true &&
+        //   (targetCell1.barrier.position === ownerDirection ||
+        //     targetCell1.barrier.position === this.getOppositeDirection(ownerDirection))
+        // ) {
+        //   console.log(
+        //     "melee attack peak:",
+        //     ownerType,
+        //     owner.number,
+        //     owner.id,
+        //     "hit barrier w/ ",
+        //     ownerWeaponType,
+        //     " @ ",
+        //     targetCell1.number
+        //   );
+        //   this.attackCellContents(
+        //     "melee",
+        //     ownerType,
+        //     owner,
+        //     targetCell1,
+        //     targetCell2,
+        //     myCell,
+        //     undefined
+        //   );
+        // }
         // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
         if (
           cell1Free === true &&
@@ -12273,6 +12373,32 @@ class App extends Component {
               limit: 8,
             });
 
+            // if (
+            //   targetCell1.barrier.state === true &&
+            //   (targetCell1.barrier.position === ownerDirection ||
+            //     targetCell1.barrier.position === this.getOppositeDirection(ownerDirection))
+            // ) {
+            //   console.log(
+            //     "melee attack peak:",
+            //     ownerType,
+            //     owner.number,
+            //     owner.id,
+            //     "blunt attacked barrier w/ ",
+            //     ownerWeaponType,
+            //     " @ ",
+            //     targetCell21.number
+            //   );
+            //   this.attackCellContents(
+            //     "melee",
+            //     ownerType,
+            //     owner,
+            //     targetCell1,
+            //     targetCell2,
+            //     myCell,
+            //     undefined
+            //   );
+            // }
+
             // TARGET CELL 1 FREE NO ITEM OR BOLT
             if (cell1Free === true && cell1Item === true && boltTarget1 !== true) {
               if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
@@ -12337,7 +12463,7 @@ class App extends Component {
         "melee",
         ownerType,
         owner,
-        targetCell,
+        targetCell1,
         targetCell2,
         myCell,
         undefined
@@ -18528,7 +18654,6 @@ class App extends Component {
             let myCellBarrier = false;
             if (myCell.barrier.state === true) {
               if (myCell.barrier.position === ownerDirection) {
-                console.log("1");
                 myCellBarrier = true;
                 handleBarrierDamage("myCellBarrier", damage, 0);
               }
@@ -18541,7 +18666,6 @@ class App extends Component {
             }
 
             if (myCellBarrier !== true && fwdBarrier === true) {
-              console.log("2");
               handleBarrierDamage("fwdBarrier", damage, 1);
             }
 
@@ -18563,7 +18687,7 @@ class App extends Component {
                 ) {
                   let rearBarrier = false;
                   if (targetCell.barrier.state === true) {
-                    if (owner.direction === targetCell.barrier.position) {
+                    if (ownerDirection === targetCell.barrier.position) {
                       rearBarrier = true;
                     }
                   }
@@ -18675,6 +18799,14 @@ class App extends Component {
         damage = 1;
       }
 
+      let myCellBarrier = false;
+      if (myCell.barrier.state === true) {
+        if (myCell.barrier.position === bolt.direction) {
+          myCellBarrier = true;
+          handleBarrierDamage("myCellBarrier", damage, 0);
+        }
+      }
+
       // FWD BARRIER CHECK
       let fwdBarrier = false;
       if (targetCell.barrier.state === true) {
@@ -18690,13 +18822,13 @@ class App extends Component {
       }
 
       // FWD BARRIER
-      if (fwdBarrier === true && targetCell.barrier.height >= 1) {
+      if (myCellBarrier !== true && fwdBarrier === true && targetCell.barrier.height >= 1) {
         // console.log('owner ',owner.number,'hit fwd barrier ',targetCell.barrier.name,'@ ',targetCell.number,type);
         handleBarrierDamage("fwdBarrier", damage, 1);
       }
 
       // NO FWD BARRIER. OBSTACLE?
-      else {
+      if (myCellBarrier !== true && fwdBarrier !== true) {
         if (targetCell.obstacle.state === true && targetCell.obstacle.height >= 1) {
           console.log(
             "player ",
@@ -18781,18 +18913,26 @@ class App extends Component {
       let barrierHeightCheck =
         targetCell.barrier.height + targetCell.elevation.number >= bolt.elevation + 1;
 
+      let myCellBarrier = false;
+      if (myCell.barrier.state === true) {
+        if (myCell.barrier.position === bolt.direction) {
+          myCellBarrier = true;
+          handleBarrierDamage("myCellBarrier", damage, 0);
+        }
+      }
+
       // FWD BARRIER?
       let fwdBarrier = false;
       if (targetCell.barrier.state === true) {
         fwdBarrier = this.checkForwardBarrier(bolt.direction, targetCell);
       }
 
-      if (fwdBarrier === true && barrierHeightCheck === true) {
-        handleBarrierDamage("fwdBarrier", damage);
+      if (myCellBarrier !== true && fwdBarrier === true && barrierHeightCheck === true) {
+        handleBarrierDamage("fwdBarrier", damage, 1);
       }
 
       // NO FWD BARRIER. OBSTACLE?
-      else {
+      if (myCellBarrier !== true && fwdBarrier !== true) {
         if (targetCell.obstacle.state === true && obstacleHeightCheck === true) {
           // console.log('targetCell.obstacle.hp',targetCell.obstacle.hp);
           handleObstacleDamage(damage, 1);
@@ -36105,6 +36245,9 @@ class App extends Component {
                 }
               }
 
+              if (infoCell.barrier.position === bolt.direction) {
+                fwdBarrier = true;
+              }
               let dodged = false;
 
               // CHECK FOR PLAYERS
@@ -36174,17 +36317,22 @@ class App extends Component {
                 // HANDLE FWD BARRIER BOLT COLLISION
                 if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                   if (`barrier_${infoCell.barrier.id}` !== `${bolt.ownerType}_${boltOwner.id}`) {
+                    console.log("1", bolt);
+                    let myCell = this.gridInfo.find(
+                      (x) =>
+                        x.number.x === bolt.origin.number.x && x.number.y === bolt.origin.number.y
+                    );
                     this.attackCellContents(
                       "bolt",
                       bolt.ownerType,
                       boltOwner,
                       infoCell,
                       undefined,
-                      undefined,
+                      myCell,
                       bolt
                     );
                   } else {
-                    // console.log("this barrier is the same as the bolt owner. do nothing");
+                    console.log("this barrier is the same as the bolt owner. do nothing");
                   }
                 }
               }
