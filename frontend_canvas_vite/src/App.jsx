@@ -151,6 +151,7 @@ import boltKilledIndicate from "./assets/indicators/boltKilled.png";
 import attackParriedIndicate from "./assets/indicators/attackParried.png";
 import inventoryFullIndicate from "./assets/indicators/inventoryFull.png";
 import outOfAmmoIndicate from "./assets/indicators/outOfAmmo.png";
+import timerIndicate from "./assets/indicators/timer.png";
 
 import mail1 from "./assets/items/mail1.png";
 import mail2 from "./assets/items/mail2.png";
@@ -1408,7 +1409,7 @@ class App extends Component {
             enabled: true,
             state: false,
             count: 0,
-            limit: 45,
+            limit: 65,
           },
           trigger: {
             type: "any",
@@ -2039,8 +2040,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 3,
-              y: 7,
+              x: 1,
+              y: 6,
             },
             center: {
               x: 0,
@@ -11674,11 +11675,46 @@ class App extends Component {
             if (trap.acting.count > trap.acting.peak) {
               console.log("trap is acting: cooldown", trap.acting.count);
             }
+
+            if (
+              !this.cellPopups.find(
+                (x) =>
+                  x.msg === "attacking" &&
+                  x.cell.number.x === locationCell.number.x &&
+                  x.cell.number.y === locationCell.number.y
+              )
+            ) {
+              this.cellPopups.push({
+                state: false,
+                count: 0,
+                limit: trap.acting.limit,
+                type: "",
+                position: "",
+                msg: "attacking",
+                color: "",
+                img: "",
+                cell: this.gridInfo.find(
+                  (x) =>
+                    x.number.x === locationCell.number.x && x.number.y === locationCell.number.y
+                ),
+              });
+            }
           }
           if (trap.acting.count >= trap.acting.limit) {
             trap.acting.count = 0;
             trap.acting.state = false;
             console.log("trap action complete");
+            this.cellPopups.splice(
+              this.cellPopups.indexOf(
+                this.cellPopups.find(
+                  (x) =>
+                    x.msg === "attacking" &&
+                    x.cell.number.x === locationCell.number.x &&
+                    x.cell.number.y === locationCell.number.y
+                )
+              ),
+              1
+            );
           }
         } else {
           // apply non attack action here
@@ -11720,12 +11756,55 @@ class App extends Component {
               if (trap.timer.count === 1) {
                 console.log("trap has been triggered at ", trap.target, "by", triggerType);
               }
+              if (
+                !this.cellPopups.find(
+                  (x) =>
+                    x.msg === "timer" &&
+                    x.cell.number.x === locationCell.number.x &&
+                    x.cell.number.y === locationCell.number.y
+                )
+              ) {
+                this.cellPopups.push({
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: "",
+                  position: "",
+                  msg: "timer",
+                  color: "",
+                  img: "",
+                  cell: this.gridInfo.find(
+                    (x) =>
+                      x.number.x === locationCell.number.x && x.number.y === locationCell.number.y
+                  ),
+                });
+              }
             }
             if (trap.timer.count >= trap.timer.limit) {
               trap.timer.count = 0;
               trap.timer.state = false;
               console.log("persistent trap timer count finish", trap.timer.count);
               executeTrapAction();
+              if (
+                this.cellPopups.find(
+                  (x) =>
+                    x.msg === "timer" &&
+                    x.cell.number.x === locationCell.number.x &&
+                    x.cell.number.y === locationCell.number.y
+                )
+              ) {
+                this.cellPopups.splice(
+                  this.cellPopups.indexOf(
+                    this.cellPopups.find(
+                      (x) =>
+                        x.msg === "timer" &&
+                        x.cell.number.x === locationCell.number.x &&
+                        x.cell.number.y === locationCell.number.y
+                    )
+                  ),
+                  1
+                );
+              }
             }
           }
         }
@@ -11755,12 +11834,55 @@ class App extends Component {
                 if (trap.timer.count === 1) {
                   console.log("trap has been triggered at ", trap.target, "by", triggerType);
                 }
+                if (
+                  !this.cellPopups.find(
+                    (x) =>
+                      x.msg === "timer" &&
+                      x.cell.number.x === locationCell.number.x &&
+                      x.cell.number.y === locationCell.number.y
+                  )
+                ) {
+                  this.cellPopups.push({
+                    state: false,
+                    count: 0,
+                    limit: 10,
+                    type: "",
+                    position: "",
+                    msg: "timer",
+                    color: "",
+                    img: "",
+                    cell: this.gridInfo.find(
+                      (x) =>
+                        x.number.x === locationCell.number.x && x.number.y === locationCell.number.y
+                    ),
+                  });
+                }
               }
               if (trap.timer.count >= trap.timer.limit) {
                 trap.timer.count = 0;
                 trap.timer.state = false;
                 executeTrapAction();
                 trap.remaining--;
+                if (
+                  this.cellPopups.find(
+                    (x) =>
+                      x.msg === "timer" &&
+                      x.cell.number.x === locationCell.number.x &&
+                      x.cell.number.y === locationCell.number.y
+                  )
+                ) {
+                  this.cellPopups.splice(
+                    this.cellPopups.indexOf(
+                      this.cellPopups.find(
+                        (x) =>
+                          x.msg === "timer" &&
+                          x.cell.number.x === locationCell.number.x &&
+                          x.cell.number.y === locationCell.number.y
+                      )
+                    ),
+                    1
+                  );
+                }
               }
             }
           }
@@ -11805,6 +11927,26 @@ class App extends Component {
           console.log("trap trigger disengaged at", trap.target, " reset timer");
           trap.timer.count = 0;
           trap.timer.state = false;
+          if (
+            this.cellPopups.find(
+              (x) =>
+                x.msg === "timer" &&
+                x.cell.number.x === locationCell.number.x &&
+                x.cell.number.y === locationCell.number.y
+            )
+          ) {
+            this.cellPopups.splice(
+              this.cellPopups.indexOf(
+                this.cellPopups.find(
+                  (x) =>
+                    x.msg === "timer" &&
+                    x.cell.number.x === locationCell.number.x &&
+                    x.cell.number.y === locationCell.number.y
+                )
+              ),
+              1
+            );
+          }
         }
       }
     }
@@ -40820,6 +40962,7 @@ class App extends Component {
       noFlanking: this.refs.noFlankIndicate,
       cellVoiding: this.refs.cellVoidingIndicate,
       cellVoiding2: this.refs.cellVoidingIndicate2,
+      timer: this.refs.timerIndicate,
     };
     this.indicatorImgs = {
       preAttack: this.refs.preAttackIndicate,
@@ -40840,6 +40983,7 @@ class App extends Component {
       attackBreak: this.refs.attackBreakIndicate,
       defendBreak: this.refs.defendBreakIndicate,
       dodge: this.refs.dodgeIndicate,
+      timer: this.refs.timerIndicate,
     };
     this.playerImgs = [
       {
@@ -42761,6 +42905,13 @@ class App extends Component {
             className="hidden playerImgs"
             ref="cellVoidingIndicate2"
             id="cellVoidingIndicate2"
+            alt="..."
+          />
+          <img
+            src={timerIndicate}
+            className="hidden playerImgs"
+            ref="timerIndicate"
+            id="timerIndicate"
             alt="..."
           />
 
