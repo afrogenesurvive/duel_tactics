@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import Easystar from "easystarjs";
 import Pathfinding from "pathfinding";
 // import { AStarFinder } from "astar-typescript";
@@ -3751,6 +3751,8 @@ class App extends Component {
 
     this.testDraw = [];
     this.testData = "";
+
+    this.testRef = React.createRef();
   }
 
   componentDidMount() {
@@ -13337,7 +13339,7 @@ class App extends Component {
       if (this.isBoltInCell(targetCell1.number) === true) {
         console.log(
           ownerType,
-          owner.mumber,
+          owner.number,
           owner.id,
           "attacked and destroyed a bolt projectile @",
           targetCell1.number,
@@ -13379,7 +13381,7 @@ class App extends Component {
         ) {
           console.log(
             ownerType,
-            owner.mumber,
+            owner.number,
             owner.id,
             "attacked an obstacle, barrier, item or rubble @",
             targetCell1.number,
@@ -13405,7 +13407,7 @@ class App extends Component {
       if (this.isBoltInCell(targetCell2.number) === true) {
         console.log(
           ownerType,
-          owner.mumber,
+          owner.number,
           owner.id,
           "attacked and destroyed a bolt projectile @",
           targetCell2.number,
@@ -13447,7 +13449,7 @@ class App extends Component {
         ) {
           console.log(
             ownerType,
-            owner.mumber,
+            owner.number,
             owner.id,
             "attacked an obstacle, barrier, item or rubble @",
             targetCell2.number,
@@ -40963,6 +40965,7 @@ class App extends Component {
       cellVoiding: this.refs.cellVoidingIndicate,
       cellVoiding2: this.refs.cellVoidingIndicate2,
       timer: this.refs.timerIndicate,
+      // timer: this.testRef.current,
     };
     this.indicatorImgs = {
       preAttack: this.refs.preAttackIndicate,
@@ -40983,7 +40986,6 @@ class App extends Component {
       attackBreak: this.refs.attackBreakIndicate,
       defendBreak: this.refs.defendBreakIndicate,
       dodge: this.refs.dodgeIndicate,
-      timer: this.refs.timerIndicate,
     };
     this.playerImgs = [
       {
