@@ -3699,6 +3699,7 @@ class App extends Component {
       ranged: 0.1,
     };
     this.settingAutoCamera = false;
+    this.settingAutoCameraFollowBolt = false;
     this.highlightZoomPanFocusCell = true;
     this.zoomThresh = -0.05;
     this.autoCamPanWaitingForPath = false;
@@ -6940,15 +6941,17 @@ class App extends Component {
     // console.log("setting auto camera instructions: ", args);
 
     let weaponType = "";
-    if (
-      player.currentWeapon.type === "spear" ||
-      player.currentWeapon.type === "sword" ||
-      player.currentWeapon.type === ""
-    ) {
-      weaponType = "melee";
-    }
-    if (player.currentWeapon.type === "crossbow" || player.currentWeapon.type === "bow") {
-      weaponType = "ranged";
+    if (player !== "") {
+      if (
+        player.currentWeapon.type === "spear" ||
+        player.currentWeapon.type === "sword" ||
+        player.currentWeapon.type === ""
+      ) {
+        weaponType = "melee";
+      }
+      if (player.currentWeapon.type === "crossbow" || player.currentWeapon.type === "bow") {
+        weaponType = "ranged";
+      }
     }
 
     let parsedPreInstructions = [];
@@ -7092,6 +7095,14 @@ class App extends Component {
       // console.log('zoomSteps2',zoomSteps2);
     };
 
+    let boltId;
+    if (args.split("_")[0]) {
+      if (args.split("_")[0] === "followBolt") {
+        boltId = args.split("_")[1];
+        args = "followBolt";
+      }
+    }
+
     switch (args) {
       case "test":
         this.camera.preInstructions.push(
@@ -7222,6 +7233,9 @@ class App extends Component {
         if (zoom - 1 > this.zoomThresh) {
           this.camera.preInstructions.push("zoom_outToInit");
         }
+        if (this.settingAutoCameraFollowBolt === true) {
+          this.settingAutoCameraFollowBolt = false;
+        }
 
         break;
       case "playerSpawnFocus":
@@ -7321,7 +7335,40 @@ class App extends Component {
         // pan to pushback target
         break;
       case "followBolt":
-        // pan to somewhere along bolt path, then pan back to bolt owner position
+        this.settingAutoCameraFollowBolt = true;
+        if (prePanZoom === true) {
+          this.camera.preInstructions.push("zoom_in_" + prePanZoomAmount + "");
+        }
+        let bolt = this.projectiles.find((x) => x.id === boltId);
+        this.camera.preInstructions.push(
+          "moveTo_" + bolt.origin.number.x + "_" + bolt.origin.number.y + "_fast"
+        );
+        let endCell = {
+          x: 0,
+          y: 0,
+        };
+        switch (bolt.direction) {
+          case "north":
+            endCell.x = bolt.origin.number.x;
+            endCell.y = 0;
+            break;
+          case "south":
+            endCell.x = bolt.origin.number.x;
+            endCell.y = this.gridWidth;
+            break;
+          case "west":
+            endCell.x = 0;
+            endCell.y = bolt.origin.number.y;
+            break;
+          case "west":
+            endCell.x = this.gridWidth;
+            endCell.y = bolt.origin.number.y;
+            break;
+          default:
+            break;
+        }
+        this.camera.preInstructions.push("moveTo_" + endCell.x + "_" + endCell.y + "_fast");
+
         break;
       default:
     }
@@ -9909,10 +9956,10 @@ class App extends Component {
     );
     this.projectiles.push(result.projectile);
     this.getBoltTarget(result.projectile);
+    this.setAutoCamera(`followBolt_${result.projectile.id}`, "");
   };
   projectileCreator = (ownerType, owner, projectileType) => {
     // console.log("projectileCreator", owner.id);
-    // add something special as bolt onwerType (either 'god' or an obstacle or barrier that it comes from), owner for non player is obstacle/barrier id
     // other projectile type is "arc"
     let projectile;
     if (ownerType === "custom") {
@@ -36397,6 +36444,7 @@ class App extends Component {
             this.camera.instructions = [];
             this.camera.currentInstruction = 0;
             this.settingAutoCamera = false;
+            // console.log("finished auto camera instructions");
           }
         }
       }
@@ -36421,11 +36469,21 @@ class App extends Component {
       if (bolt.kill === true) {
         let index = this.projectiles.findIndex((blt) => blt.id === bolt.id);
         this.projectiles.splice(index, 1);
-        // console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
+        // console.log(
+        //   "kill bolt",
+        //   bolt.currentPosition.number,
+        //   // this.players[bolt.owner - 1].currentPosition.cell.number,
+        //   this.projectiles,
+        //   this.settingAutoCamera,
+        //   this.settingAutoCameraFollowBolt
+        // );
+        if (this.settingAutoCameraFollowBolt === true) {
+          this.setAutoCamera("zoomReset", "");
+        }
       }
 
       if (bolt.type === "bolt" && bolt.moving.state === true && bolt.kill !== true) {
-        // console.log("traking projectile");
+        // console.log("traking projectile", bolt.id);
 
         let index = this.projectiles.findIndex((blt) => blt.id === bolt.id);
         bolt.currentPosition.center = bolt.nextPosition;
