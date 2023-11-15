@@ -9956,7 +9956,25 @@ class App extends Component {
     );
     this.projectiles.push(result.projectile);
     this.getBoltTarget(result.projectile);
-    this.setAutoCamera(`followBolt_${result.projectile.id}`, "");
+
+    if (
+      this.camera.customView.state !== true &&
+      this.settingAutoCamera === false &&
+      player.ai.state !== true &&
+      this.camera.preInstructions.length === 0 &&
+      this.camera.instructions.length === 0
+    ) {
+      // if (this.players[0].dead.state !== true) {
+      //   if (player.number === 1) {
+      //     this.setAutoCamera("attackFocus", player);
+      //   }
+      // } else if (player.number === 2) {
+      //   this.setAutoCamera("attackFocus", player);
+      // }
+      this.setAutoCamera(`followBolt_${result.projectile.id}`, "");
+    } else {
+      console.log("no setting auto cam: followBolt");
+    }
   };
   projectileCreator = (ownerType, owner, projectileType) => {
     // console.log("projectileCreator", owner.id);
@@ -31018,18 +31036,7 @@ class App extends Component {
       // this.setAutoCamera('pushbackPan',player);
       // this.setAutoCamera('followBolt',player);
       // console.log('xxx');
-      // for (let x of this.gridInfo) {
-      //   console.log("beeep", x.barrier);
-      // }
-      // console.log(
-      //   "testing",
-      //   this.getSurroundingCells({ x: 0, y: 4 }, 18, "walkable", false, false)
-      // );
-      // console.log(
-      //   "combat advantage: ",
-      //   this.checkCombatAdvantage(this.players[0], this.players[1])
-      // );
-      this.projectileTester(this.gridInfo.find((x) => x.number.x === 3 && x.number.y === 0));
+      // this.projectileTester(this.gridInfo.find((x) => x.number.x === 3 && x.number.y === 0));
     }
 
     // DYING
