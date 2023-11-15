@@ -10200,6 +10200,237 @@ class App extends Component {
       projectile: projectile,
     };
   };
+  projectileTracker = () => {
+    for (const bolt of this.projectiles) {
+      if (bolt.kill === true) {
+        let index = this.projectiles.findIndex((blt) => blt.id === bolt.id);
+        this.projectiles.splice(index, 1);
+        // console.log(
+        //   "kill bolt",
+        //   bolt.currentPosition.number,
+        //   // this.players[bolt.owner - 1].currentPosition.cell.number,
+        //   this.projectiles,
+        //   this.settingAutoCamera,
+        //   this.settingAutoCameraFollowBolt
+        // );
+        if (this.settingAutoCameraFollowBolt === true) {
+          this.setAutoCamera("zoomReset", "");
+        }
+      }
+
+      if (bolt.type === "bolt" && bolt.moving.state === true && bolt.kill !== true) {
+        // console.log("traking projectile", bolt.id);
+
+        let index = this.projectiles.findIndex((blt) => blt.id === bolt.id);
+        bolt.currentPosition.center = bolt.nextPosition;
+
+        let boltNextPosition = this.boltCrementer(bolt);
+        bolt.nextPosition = boltNextPosition;
+        // console.log('moving bolt nxt pos',bolt.nextPosition);
+
+        // CHECK WHICH CELL BOLT IS AT
+        for (const cell of bolt.target.path) {
+          let point = [bolt.currentPosition.center.x, bolt.currentPosition.center.y];
+          let polygon = [];
+          for (const vertex of cell.vertices) {
+            let vertexPoint = [vertex.x - 10, vertex.y - 5];
+            // let vertexPoint = [vertex.x,vertex.y];
+            polygon.push(vertexPoint);
+          }
+          let pip = pointInPolygon(point, polygon);
+          if (pip === true) {
+            // console.log("bolt passing through cell", cell.number);
+            bolt.currentPosition.number = cell.number;
+
+            let infoCell = this.gridInfo.find(
+              (x) => x.number.x === cell.number.x && x.number.y === cell.number.y
+            );
+
+            let boltOwner;
+            if (bolt.ownerType === "player") {
+              boltOwner = this.players[bolt.owner - 1];
+            }
+            if (bolt.ownerType === "obstacle" || bolt.ownerType === "barrier") {
+              boltOwner = this.gridInfo.find(
+                (x) => x[bolt.ownerType].state === true && x[bolt.ownerType].id === bolt.owner
+              )[bolt.ownerType];
+            }
+            if (bolt.ownerType === "custom") {
+              boltOwner = bolt.owner;
+            }
+
+            // PATH HIGHLIGHT
+            if (cell.number.x === bolt.origin.number.x && cell.number.y === bolt.origin.number.y) {
+            } else {
+              this.cellsUnderAttack.push({
+                number: {
+                  x: cell.number.x,
+                  y: cell.number.y,
+                },
+                count: 1,
+                limit: 5,
+              });
+            }
+
+            if (infoCell.elevation.number === bolt.elevation) {
+              let fwdBarrier = false;
+
+              if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+                // if (infoCell.barrier.position === bolt.direction) {
+                //   fwdBarrier = true;
+                // }
+                fwdBarrier = this.checkForwardBarrier(bolt.direction, infoCell);
+              }
+
+              if (bolt.target.path.length === 1) {
+                if (
+                  infoCell.barrier.state === true &&
+                  infoCell.barrier.position === bolt.direction
+                ) {
+                  this.attackCellContents(
+                    "bolt",
+                    bolt.ownerType,
+                    boltOwner,
+                    infoCell,
+                    undefined,
+                    undefined,
+                    bolt
+                  );
+                }
+              }
+
+              if (infoCell.barrier.position === bolt.direction) {
+                fwdBarrier = true;
+              }
+              let dodged = false;
+
+              // CHECK FOR PLAYERS
+              if (fwdBarrier !== true) {
+                if (bolt.ownerType === "player") {
+                  for (const plyr of this.players) {
+                    if (
+                      plyr.currentPosition.cell.number.x === cell.number.x &&
+                      plyr.currentPosition.cell.number.y === cell.number.y &&
+                      plyr.number !== bolt.owner
+                    ) {
+                      this.projectileAttackParse(bolt, "player", "player", plyr);
+                    }
+                  }
+                }
+                if (
+                  bolt.ownerType === "obstacle" ||
+                  bolt.ownerType === "barrier" ||
+                  bolt.ownerType === "custom"
+                ) {
+                  for (const plyr of this.players) {
+                    if (
+                      plyr.currentPosition.cell.number.x === cell.number.x &&
+                      plyr.currentPosition.cell.number.y === cell.number.y
+                    ) {
+                      this.projectileAttackParse(bolt, bolt.ownerType, "player", plyr);
+                    }
+                  }
+                }
+
+                // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
+
+                if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
+                  if (
+                    bolt.ownerType !== "player" &&
+                    `obstacle_${infoCell.obstacle.id}` !== `${bolt.ownerType}_${boltOwner.id}`
+                  ) {
+                    this.attackCellContents(
+                      "bolt",
+                      bolt.ownerType,
+                      boltOwner,
+                      infoCell,
+                      undefined,
+                      undefined,
+                      bolt
+                    );
+                  }
+                  if (bolt.ownerType === "player") {
+                    this.attackCellContents(
+                      "bolt",
+                      bolt.ownerType,
+                      boltOwner,
+                      infoCell,
+                      undefined,
+                      undefined,
+                      bolt
+                    );
+                  }
+                } else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+                  this.attackCellContents(
+                    "bolt",
+                    bolt.ownerType,
+                    boltOwner,
+                    infoCell,
+                    undefined,
+                    undefined,
+                    bolt
+                  );
+                }
+              } else {
+                // HANDLE FWD BARRIER BOLT COLLISION
+                if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+                  if (`barrier_${infoCell.barrier.id}` !== `${bolt.ownerType}_${boltOwner.id}`) {
+                    let myCell = this.gridInfo.find(
+                      (x) =>
+                        x.number.x === bolt.origin.number.x && x.number.y === bolt.origin.number.y
+                    );
+                    this.attackCellContents(
+                      "bolt",
+                      bolt.ownerType,
+                      boltOwner,
+                      infoCell,
+                      undefined,
+                      myCell,
+                      bolt
+                    );
+                  } else {
+                    console.log("this barrier is the same as the bolt owner. do nothing");
+                  }
+                }
+              }
+            } else {
+              if (infoCell.elevation.number < bolt.elevation) {
+                console.log("bolt moving over lower cell. ");
+
+                this.attackCellContents(
+                  "flyOverBolt",
+                  bolt.ownerType,
+                  boltOwner,
+                  infoCell,
+                  undefined,
+                  undefined,
+                  bolt
+                );
+              }
+              if (infoCell.elevation.number > bolt.elevation) {
+                console.log("bolt hit cell of higher elevation.");
+                bolt.kill = true;
+              }
+            }
+          }
+        }
+
+        // BOLT WENT OUT OF CANVAS BOUNDS
+        if (
+          bolt.currentPosition.center.x < 0 ||
+          bolt.currentPosition.center.y < 0 ||
+          bolt.currentPosition.center.x > this.canvasWidth ||
+          bolt.currentPosition.center.y > this.canvasHeight
+        ) {
+          console.log("bolt went out of canvas bounds");
+          bolt.kill = true;
+        }
+      }
+
+      if (bolt.type === "arc" && bolt.moving.state === true && bolt.kill !== true) {
+      }
+    }
+  };
   aiBoltPathCheck = (aiPlayer) => {
     // console.log('aiPlayer.ai.targetPlayer',aiPlayer.ai.targetPlayer);
     let rangeElemCells2 = [];
@@ -36465,236 +36696,7 @@ class App extends Component {
     }
 
     // // CHECK PROJECTILES!!
-    for (const bolt of this.projectiles) {
-      if (bolt.kill === true) {
-        let index = this.projectiles.findIndex((blt) => blt.id === bolt.id);
-        this.projectiles.splice(index, 1);
-        // console.log(
-        //   "kill bolt",
-        //   bolt.currentPosition.number,
-        //   // this.players[bolt.owner - 1].currentPosition.cell.number,
-        //   this.projectiles,
-        //   this.settingAutoCamera,
-        //   this.settingAutoCameraFollowBolt
-        // );
-        if (this.settingAutoCameraFollowBolt === true) {
-          this.setAutoCamera("zoomReset", "");
-        }
-      }
-
-      if (bolt.type === "bolt" && bolt.moving.state === true && bolt.kill !== true) {
-        // console.log("traking projectile", bolt.id);
-
-        let index = this.projectiles.findIndex((blt) => blt.id === bolt.id);
-        bolt.currentPosition.center = bolt.nextPosition;
-
-        let boltNextPosition = this.boltCrementer(bolt);
-        bolt.nextPosition = boltNextPosition;
-        // console.log('moving bolt nxt pos',bolt.nextPosition);
-
-        // CHECK WHICH CELL BOLT IS AT
-        for (const cell of bolt.target.path) {
-          let point = [bolt.currentPosition.center.x, bolt.currentPosition.center.y];
-          let polygon = [];
-          for (const vertex of cell.vertices) {
-            let vertexPoint = [vertex.x - 10, vertex.y - 5];
-            // let vertexPoint = [vertex.x,vertex.y];
-            polygon.push(vertexPoint);
-          }
-          let pip = pointInPolygon(point, polygon);
-          if (pip === true) {
-            // console.log("bolt passing through cell", cell.number);
-            bolt.currentPosition.number = cell.number;
-
-            let infoCell = this.gridInfo.find(
-              (x) => x.number.x === cell.number.x && x.number.y === cell.number.y
-            );
-
-            let boltOwner;
-            if (bolt.ownerType === "player") {
-              boltOwner = this.players[bolt.owner - 1];
-            }
-            if (bolt.ownerType === "obstacle" || bolt.ownerType === "barrier") {
-              boltOwner = this.gridInfo.find(
-                (x) => x[bolt.ownerType].state === true && x[bolt.ownerType].id === bolt.owner
-              )[bolt.ownerType];
-            }
-            if (bolt.ownerType === "custom") {
-              boltOwner = bolt.owner;
-            }
-
-            // PATH HIGHLIGHT
-            if (cell.number.x === bolt.origin.number.x && cell.number.y === bolt.origin.number.y) {
-            } else {
-              this.cellsUnderAttack.push({
-                number: {
-                  x: cell.number.x,
-                  y: cell.number.y,
-                },
-                count: 1,
-                limit: 5,
-              });
-            }
-
-            if (infoCell.elevation.number === bolt.elevation) {
-              let fwdBarrier = false;
-
-              if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                // if (infoCell.barrier.position === bolt.direction) {
-                //   fwdBarrier = true;
-                // }
-                fwdBarrier = this.checkForwardBarrier(bolt.direction, infoCell);
-              }
-
-              if (bolt.target.path.length === 1) {
-                if (
-                  infoCell.barrier.state === true &&
-                  infoCell.barrier.position === bolt.direction
-                ) {
-                  this.attackCellContents(
-                    "bolt",
-                    bolt.ownerType,
-                    boltOwner,
-                    infoCell,
-                    undefined,
-                    undefined,
-                    bolt
-                  );
-                }
-              }
-
-              if (infoCell.barrier.position === bolt.direction) {
-                fwdBarrier = true;
-              }
-              let dodged = false;
-
-              // CHECK FOR PLAYERS
-              if (fwdBarrier !== true) {
-                if (bolt.ownerType === "player") {
-                  for (const plyr of this.players) {
-                    if (
-                      plyr.currentPosition.cell.number.x === cell.number.x &&
-                      plyr.currentPosition.cell.number.y === cell.number.y &&
-                      plyr.number !== bolt.owner
-                    ) {
-                      this.projectileAttackParse(bolt, "player", "player", plyr);
-                    }
-                  }
-                }
-                if (
-                  bolt.ownerType === "obstacle" ||
-                  bolt.ownerType === "barrier" ||
-                  bolt.ownerType === "custom"
-                ) {
-                  for (const plyr of this.players) {
-                    if (
-                      plyr.currentPosition.cell.number.x === cell.number.x &&
-                      plyr.currentPosition.cell.number.y === cell.number.y
-                    ) {
-                      this.projectileAttackParse(bolt, bolt.ownerType, "player", plyr);
-                    }
-                  }
-                }
-
-                // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
-
-                if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
-                  if (
-                    bolt.ownerType !== "player" &&
-                    `obstacle_${infoCell.obstacle.id}` !== `${bolt.ownerType}_${boltOwner.id}`
-                  ) {
-                    this.attackCellContents(
-                      "bolt",
-                      bolt.ownerType,
-                      boltOwner,
-                      infoCell,
-                      undefined,
-                      undefined,
-                      bolt
-                    );
-                  }
-                  if (bolt.ownerType === "player") {
-                    this.attackCellContents(
-                      "bolt",
-                      bolt.ownerType,
-                      boltOwner,
-                      infoCell,
-                      undefined,
-                      undefined,
-                      bolt
-                    );
-                  }
-                } else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                  this.attackCellContents(
-                    "bolt",
-                    bolt.ownerType,
-                    boltOwner,
-                    infoCell,
-                    undefined,
-                    undefined,
-                    bolt
-                  );
-                }
-              } else {
-                // HANDLE FWD BARRIER BOLT COLLISION
-                if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                  if (`barrier_${infoCell.barrier.id}` !== `${bolt.ownerType}_${boltOwner.id}`) {
-                    console.log("1", bolt);
-                    let myCell = this.gridInfo.find(
-                      (x) =>
-                        x.number.x === bolt.origin.number.x && x.number.y === bolt.origin.number.y
-                    );
-                    this.attackCellContents(
-                      "bolt",
-                      bolt.ownerType,
-                      boltOwner,
-                      infoCell,
-                      undefined,
-                      myCell,
-                      bolt
-                    );
-                  } else {
-                    console.log("this barrier is the same as the bolt owner. do nothing");
-                  }
-                }
-              }
-            } else {
-              if (infoCell.elevation.number < bolt.elevation) {
-                console.log("bolt moving over lower cell. ");
-
-                this.attackCellContents(
-                  "flyOverBolt",
-                  bolt.ownerType,
-                  boltOwner,
-                  infoCell,
-                  undefined,
-                  undefined,
-                  bolt
-                );
-              }
-              if (infoCell.elevation.number > bolt.elevation) {
-                console.log("bolt hit cell of higher elevation.");
-                bolt.kill = true;
-              }
-            }
-          }
-        }
-
-        // BOLT WENT OUT OF CANVAS BOUNDS
-        if (
-          bolt.currentPosition.center.x < 0 ||
-          bolt.currentPosition.center.y < 0 ||
-          bolt.currentPosition.center.x > this.canvasWidth ||
-          bolt.currentPosition.center.y > this.canvasHeight
-        ) {
-          console.log("bolt went out of canvas bounds");
-          bolt.kill = true;
-        }
-      }
-
-      if (bolt.type === "arc" && bolt.moving.state === true && bolt.kill !== true) {
-      }
-    }
+    this.projectileTracker();
 
     // ADD COM PLAYER!
     if (this.addAiPlayerKeyPress === true) {
