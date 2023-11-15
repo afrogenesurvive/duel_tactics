@@ -554,7 +554,7 @@ class App extends Component {
         "**_*_3.3_a_0a*",
         "**_*_3.4_a_0a*",
         "**_*_3.5_a_0a*",
-        "**_*_3.6_a_0a*",
+        "**_c_3.6_a_0a*",
         "**_*_3.7_a_0a*",
         "**_*_3.8_a_0a*",
         "**_*_3.9_a_0a*",
@@ -9898,192 +9898,253 @@ class App extends Component {
     }
     return oppositeDirection;
   };
+  projectileTester = (cell) => {
+    let result = this.projectileCreator(
+      "custom",
+      {
+        direction: "south",
+        originCell: cell,
+      },
+      "bolt"
+    );
+    this.projectiles.push(result.projectile);
+    this.getBoltTarget(result.projectile);
+  };
   projectileCreator = (ownerType, owner, projectileType) => {
     // console.log("projectileCreator", owner.id);
     // add something special as bolt onwerType (either 'god' or an obstacle or barrier that it comes from), owner for non player is obstacle/barrier id
     // other projectile type is "arc"
-
     let projectile;
+    if (ownerType === "custom") {
+      let origin = {
+        number: owner.originCell.number,
+        center: owner.originCell.center,
+      };
+      let nextPosition = origin.center;
+      projectile = {
+        id: "000" + this.projectiles.length + "",
+        type: projectileType,
+        owner: "",
+        ownerType: "custom",
+        origin: origin,
+        direction: owner.direction,
+        moving: {
+          state: false,
+          step: 0,
+          course: "",
+          origin: {
+            number: origin.number,
+            center: origin.center,
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          },
+        },
+        currentPosition: {
+          number: origin.number,
+          center: origin.center,
+        },
+        nextPosition: {
+          x: nextPosition.x,
+          y: nextPosition.y,
+        },
+        target: {
+          path: [],
+          free: true,
+          occupant: {
+            type: "",
+            player: "",
+          },
+          void: false,
+        },
+        speed: this.projectileSpeed,
+        elevation: owner.originCell.elevation.number,
+        kill: false,
+      };
+    } else {
+      if (projectileType === "bolt") {
+        if (ownerType === "player") {
+          let origin = owner.currentPosition.cell;
+          let currentPosition = owner.currentPosition.cell;
+          let nextPosition = owner.currentPosition.cell.center;
+          let elevation = this.gridInfo.find(
+            (elem) =>
+              elem.number.x === owner.currentPosition.cell.number.x &&
+              elem.number.y === owner.currentPosition.cell.number.y
+          ).elevation.number;
 
-    if (projectileType === "bolt") {
-      if (ownerType === "player") {
-        let origin = owner.currentPosition.cell;
-        let currentPosition = owner.currentPosition.cell;
-        let nextPosition = owner.currentPosition.cell.center;
-        let elevation = this.gridInfo.find(
-          (elem) =>
-            elem.number.x === owner.currentPosition.cell.number.x &&
-            elem.number.y === owner.currentPosition.cell.number.y
-        ).elevation.number;
-
-        projectile = {
-          id: "000" + this.projectiles.length + "",
-          type: projectileType,
-          owner: owner.number,
-          ownerType: "player",
-          origin: origin,
-          direction: owner.direction,
-          moving: {
-            state: false,
-            step: 0,
-            course: "",
-            origin: {
+          projectile = {
+            id: "000" + this.projectiles.length + "",
+            type: projectileType,
+            owner: owner.number,
+            ownerType: "player",
+            origin: origin,
+            direction: owner.direction,
+            moving: {
+              state: false,
+              step: 0,
+              course: "",
+              origin: {
+                number: currentPosition.number,
+                center: currentPosition.center,
+              },
+              destination: {
+                x: 0,
+                y: 0,
+              },
+            },
+            currentPosition: {
               number: currentPosition.number,
               center: currentPosition.center,
             },
-            destination: {
-              x: 0,
-              y: 0,
+            nextPosition: {
+              x: nextPosition.x,
+              y: nextPosition.y,
             },
-          },
-          currentPosition: {
-            number: currentPosition.number,
-            center: currentPosition.center,
-          },
-          nextPosition: {
-            x: nextPosition.x,
-            y: nextPosition.y,
-          },
-          target: {
-            path: [],
-            free: true,
-            occupant: {
+            target: {
+              path: [],
+              free: true,
+              occupant: {
+                type: "",
+                player: "",
+              },
+              void: false,
+            },
+            speed: this.projectileSpeed,
+            elevation: elevation,
+            kill: false,
+          };
+
+          owner.items.ammo--;
+          owner.currentWeapon.effect = "ammo+0";
+
+          if (!owner.popups.find((x) => x.msg === "attacking")) {
+            owner.popups.push({
+              state: false,
+              count: 0,
+              limit:
+                this.attackAnimRef.limit[owner.currentWeapon.type] -
+                this.attackAnimRef.peak[owner.currentWeapon.type],
               type: "",
-              player: "",
-            },
-            void: false,
-          },
-          speed: this.projectileSpeed,
-          elevation: elevation,
-          kill: false,
-        };
-
-        owner.items.ammo--;
-        owner.currentWeapon.effect = "ammo+0";
-
-        if (!owner.popups.find((x) => x.msg === "attacking")) {
-          owner.popups.push({
-            state: false,
-            count: 0,
-            limit:
-              this.attackAnimRef.limit[owner.currentWeapon.type] -
-              this.attackAnimRef.peak[owner.currentWeapon.type],
-            type: "",
-            position: "",
-            msg: "attacking",
-            img: "",
-          });
+              position: "",
+              msg: "attacking",
+              img: "",
+            });
+          }
         }
-      }
 
-      let refCell;
-      let direction = "";
-      if (ownerType === "obstacle") {
-        refCell = this.gridInfo.find(
-          (x) => x.obstacle.state === true && x.obstacle.id === owner.id
-        );
-        let origin = {
-          number: refCell.number,
-          center: refCell.center,
-        };
-        let nextPosition = refCell.center;
-        direction = this.getDirectionFromCells(origin.number, owner.trap.target);
-        projectile = {
-          id: "000" + this.projectiles.length + "",
-          type: projectileType,
-          owner: owner.id,
-          ownerType: "obstacle",
-          origin: origin,
-          direction: direction,
-          moving: {
-            state: false,
-            step: 0,
-            course: "",
-            origin: {
+        let refCell;
+        let direction = "";
+        if (ownerType === "obstacle") {
+          refCell = this.gridInfo.find(
+            (x) => x.obstacle.state === true && x.obstacle.id === owner.id
+          );
+          let origin = {
+            number: refCell.number,
+            center: refCell.center,
+          };
+          let nextPosition = refCell.center;
+          direction = this.getDirectionFromCells(origin.number, owner.trap.target);
+          projectile = {
+            id: "000" + this.projectiles.length + "",
+            type: projectileType,
+            owner: owner.id,
+            ownerType: "obstacle",
+            origin: origin,
+            direction: direction,
+            moving: {
+              state: false,
+              step: 0,
+              course: "",
+              origin: {
+                number: origin.number,
+                center: origin.center,
+              },
+              destination: {
+                x: 0,
+                y: 0,
+              },
+            },
+            currentPosition: {
               number: origin.number,
               center: origin.center,
             },
-            destination: {
-              x: 0,
-              y: 0,
+            nextPosition: {
+              x: nextPosition.x,
+              y: nextPosition.y,
             },
-          },
-          currentPosition: {
-            number: origin.number,
-            center: origin.center,
-          },
-          nextPosition: {
-            x: nextPosition.x,
-            y: nextPosition.y,
-          },
-          target: {
-            path: [],
-            free: true,
-            occupant: {
-              type: "",
-              player: "",
+            target: {
+              path: [],
+              free: true,
+              occupant: {
+                type: "",
+                player: "",
+              },
+              void: false,
             },
-            void: false,
-          },
-          speed: this.projectileSpeed,
-          elevation: refCell.elevation.number,
-          kill: false,
-        };
-      }
+            speed: this.projectileSpeed,
+            elevation: refCell.elevation.number,
+            kill: false,
+          };
+        }
 
-      if (ownerType === "barrier") {
-        refCell = this.gridInfo.find((x) => x.barrier.state === true && x.barrier.id === owner.id);
-        let origin = {
-          number: refCell.number,
-          center: refCell.center,
-        };
-        let nextPosition = refCell.center;
-        direction = this.getDirectionFromCells(origin.number, owner.trap.target);
-        projectile = {
-          id: "000" + this.projectiles.length + "",
-          type: projectileType,
-          owner: owner.id,
-          ownerType: "barrier",
-          origin: origin,
-          direction: direction,
-          moving: {
-            state: false,
-            step: 0,
-            course: "",
-            origin: {
+        if (ownerType === "barrier") {
+          refCell = this.gridInfo.find(
+            (x) => x.barrier.state === true && x.barrier.id === owner.id
+          );
+          let origin = {
+            number: refCell.number,
+            center: refCell.center,
+          };
+          let nextPosition = refCell.center;
+          direction = this.getDirectionFromCells(origin.number, owner.trap.target);
+          projectile = {
+            id: "000" + this.projectiles.length + "",
+            type: projectileType,
+            owner: owner.id,
+            ownerType: "barrier",
+            origin: origin,
+            direction: direction,
+            moving: {
+              state: false,
+              step: 0,
+              course: "",
+              origin: {
+                number: origin.number,
+                center: origin.center,
+              },
+              destination: {
+                x: 0,
+                y: 0,
+              },
+            },
+            currentPosition: {
               number: origin.number,
               center: origin.center,
             },
-            destination: {
-              x: 0,
-              y: 0,
+            nextPosition: {
+              x: nextPosition.x,
+              y: nextPosition.y,
             },
-          },
-          currentPosition: {
-            number: origin.number,
-            center: origin.center,
-          },
-          nextPosition: {
-            x: nextPosition.x,
-            y: nextPosition.y,
-          },
-          target: {
-            path: [],
-            free: true,
-            occupant: {
-              type: "",
-              player: "",
+            target: {
+              path: [],
+              free: true,
+              occupant: {
+                type: "",
+                player: "",
+              },
+              void: false,
             },
-            void: false,
-          },
-          speed: this.projectileSpeed,
-          elevation: refCell.elevation.number,
-          kill: false,
-        };
+            speed: this.projectileSpeed,
+            elevation: refCell.elevation.number,
+            kill: false,
+          };
 
-        // owner.items.ammo--;
-        // owner.currentWeapon.effect = "ammo+0";
-        // remove trap ammo and set weapon effect
+          // owner.items.ammo--;
+          // owner.currentWeapon.effect = "ammo+0";
+          // remove trap ammo and set weapon effect
+        }
       }
     }
 
@@ -14614,7 +14675,6 @@ class App extends Component {
       }
     } else {
       if (targetType === "player") {
-        // START HERE!!!
         damage = 0;
         doubleHitChance = 2;
         singleHitChance = 1;
@@ -18988,10 +19048,12 @@ class App extends Component {
       }
 
       let myCellBarrier = false;
-      if (myCell.barrier.state === true) {
-        if (myCell.barrier.position === bolt.direction) {
-          myCellBarrier = true;
-          handleBarrierDamage("myCellBarrier", damage, 0);
+      if (myCell) {
+        if (myCell.barrier.state === true) {
+          if (myCell.barrier.position === bolt.direction) {
+            myCellBarrier = true;
+            handleBarrierDamage("myCellBarrier", damage, 0);
+          }
         }
       }
 
@@ -30689,6 +30751,7 @@ class App extends Component {
       //   "combat advantage: ",
       //   this.checkCombatAdvantage(this.players[0], this.players[1])
       // );
+      this.projectileTester(this.gridInfo.find((x) => x.number.x === 3 && x.number.y === 0));
     }
 
     // DYING
@@ -36392,10 +36455,14 @@ class App extends Component {
             let boltOwner;
             if (bolt.ownerType === "player") {
               boltOwner = this.players[bolt.owner - 1];
-            } else {
+            }
+            if (bolt.ownerType === "obstacle" || bolt.ownerType === "barrier") {
               boltOwner = this.gridInfo.find(
                 (x) => x[bolt.ownerType].state === true && x[bolt.ownerType].id === bolt.owner
               )[bolt.ownerType];
+            }
+            if (bolt.ownerType === "custom") {
+              boltOwner = bolt.owner;
             }
 
             // PATH HIGHLIGHT
@@ -36456,7 +36523,11 @@ class App extends Component {
                     }
                   }
                 }
-                if (bolt.ownerType === "obstacle" || bolt.ownerType === "barrier") {
+                if (
+                  bolt.ownerType === "obstacle" ||
+                  bolt.ownerType === "barrier" ||
+                  bolt.ownerType === "custom"
+                ) {
                   for (const plyr of this.players) {
                     if (
                       plyr.currentPosition.cell.number.x === cell.number.x &&
