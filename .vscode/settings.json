@@ -1,7 +1,7 @@
-{
-  "editor.foldingStrategy": "indentation",
-  "editor.folding": true,
-  "editor.showFoldingControls": "always",
-  "notebook.showFoldingControls": "always",
-  "editor.formatOnSave": true
-}
+// {
+//   "editor.foldingStrategy": "indentation",
+//   "editor.folding": true,
+//   "editor.showFoldingControls": "always",
+//   "notebook.showFoldingControls": "always",
+//   "editor.formatOnSave": true
+// }

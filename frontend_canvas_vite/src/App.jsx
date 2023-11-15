@@ -544,7 +544,7 @@ class App extends Component {
         "**_*_2.5_a_0a*",
         "**_*_2.6_a_0a*",
         "**_*_2.7_a_0a*",
-        "**_h_2.8_a_0a*",
+        "**_*_2.8_a_0a*",
         "**_*_2.9_a_0a*",
       ],
       row3: [
@@ -563,10 +563,10 @@ class App extends Component {
         "**_*_4.0_a_0a*",
         "**_*_4.1_a_0a*",
         "**_*_4.2_f_0a*",
-        "cn_*_4.3_f_0a*",
+        "**_*_4.3_f_0a*",
         "**_*_4.4_a_0a*",
         "**_*_4.5_a_0a*",
-        "cn_*_4.6_g_0a*",
+        "**_*_4.6_g_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
         "**_*_4.9_a_0a*",
@@ -2040,7 +2040,7 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
+              x: 0,
               y: 6,
             },
             center: {
@@ -2100,7 +2100,7 @@ class App extends Component {
           },
           myCellBlock: false,
         },
-        direction: "south",
+        direction: "east",
         turning: {
           state: false,
           toDirection: "",
@@ -2531,8 +2531,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 9,
-              y: 0,
+              x: 2,
+              y: 6,
             },
             center: {
               x: 0,
@@ -3541,6 +3541,7 @@ class App extends Component {
       parried: 25,
       knockedOut: 65,
     };
+    this.simultaneousAttackAllowance = 2;
     this.projectiles = [];
     this.projectileSpeed = 0.1;
     this.cellsUnderAttack = [];
@@ -3969,7 +3970,7 @@ class App extends Component {
     for (let g = 0; g < connectedGamepads.length; g++) {
       const gp = connectedGamepads[g];
 
-      if (!!gp) {
+      if (gp) {
         // console.log('gp',gp);
         let gamepadConfigRef = this.gamepadConfig.find((x) => x.gamepadIndex === gp.index);
 
@@ -10165,7 +10166,6 @@ class App extends Component {
       return true;
     } else {
       return false;
-      console.log("aiBoltPathCheck obstructions", obstructions);
     }
 
     // return clearToShoot
@@ -12091,7 +12091,7 @@ class App extends Component {
   };
 
   meleeAttackPeak = (ownerType, owner) => {
-    console.log("meleeAttackPeak");
+    // console.log("meleeAttackPeak");
 
     let myCellBlock;
     let ownerWeaponName;
@@ -12155,8 +12155,12 @@ class App extends Component {
     }
 
     if (myCellBlock !== true) {
-      let boltTarget1 = this.isBoltInCell(targetCell1.number);
-      let boltTarget2 = this.isBoltInCell(targetCell2.number);
+      let boltTarget1 = false;
+      let boltTarget2 = false;
+      boltTarget1 = this.isBoltInCell(targetCell1.number);
+      if (targetCell2.number) {
+        boltTarget2 = this.isBoltInCell(targetCell2.number);
+      }
 
       // SET STAM TYPE
       if (ownerType === "player") {
@@ -12695,7 +12699,8 @@ class App extends Component {
         if (owner.bluntAttack === true) {
           playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
         }
-        weapon = "unarmed";
+        defendType = "unarmed";
+        ownerWeaponType = "unarmed";
 
         if (owner.bluntAttack === true) {
           if (!owner.popups.find((x) => x.msg === "attackingBlunt")) {
@@ -12775,7 +12780,7 @@ class App extends Component {
     const setAdvantage = () => {
       let adv;
       if (ownerType === "player") {
-        adv = this.checkCombatAdvantage(player, targetPlayerRef);
+        adv = this.checkCombatAdvantage(owner, targetPlayerRef);
       } else {
         if (targetPlayerRef.currentWeapon.name === "") {
           adv = 1;
@@ -12949,15 +12954,15 @@ class App extends Component {
       else {
         // DEFENDER ADVANTAGE/evenly matched
         if (advantage === 2 || advantage === 0) {
-          console.log(
-            "target defending: attacker",
-            ownerType,
-            owner.number,
-            owner.id,
-            " & defender player",
-            targetPlayerRef.number,
-            "are evenly matched in combat advantage"
-          );
+          // console.log(
+          //   "target defending: attacker",
+          //   ownerType,
+          //   owner.number,
+          //   owner.id,
+          //   " & defender player",
+          //   targetPlayerRef.number,
+          //   "are evenly matched in combat advantage"
+          // );
 
           // SIDE ATTACK OR FACE TO FACE
           // PEAK DEFEND/PARRY
@@ -13055,7 +13060,7 @@ class App extends Component {
           // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
           if (targetPlayerRef.defendPeak !== true) {
             if (sideAttack === true) {
-              if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) === 1) {
+              if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) !== 1) {
                 console.log(
                   "target defending:",
                   ownerType,
@@ -13147,7 +13152,7 @@ class App extends Component {
                 logCellNo,
                 ". they off peak defended successfully. Deflect/pushback attacker?"
               );
-              if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) === 1) {
+              if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) !== 1) {
                 // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
                 if (ownerType === "player") {
                   if (this.rnJesus(1, owner.crits.pushBack) === 1) {
@@ -13201,15 +13206,15 @@ class App extends Component {
 
         // ATTACKER/PLAYER ADVANTAGE
         else if (advantage === 1) {
-          console.log(
-            "target defending: attacker",
-            ownerType,
-            owner.number,
-            owner.id,
-            " & defender player",
-            targetPlayerRef.number,
-            ". the attacker outmatches defender in comabt advantage (defender is likely unarmed). Damage deflect target/defender"
-          );
+          // console.log(
+          //   "target defending: attacker",
+          //   ownerType,
+          //   owner.number,
+          //   owner.id,
+          //   " & defender player",
+          //   targetPlayerRef.number,
+          //   ". the attacker outmatches defender in comabt advantage (defender is likely unarmed). Damage deflect target/defender"
+          // );
           this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
           this.setDeflection(targetPlayerRef, "attacked", false);
 
@@ -13236,9 +13241,9 @@ class App extends Component {
           targetPlayerRef.number,
           "are evenly matched in combat advantage. clashing!! pushback one or both players w/o damage"
         );
-        targetPlayerRef.clashing.state = true;
 
         if (ownerType === "player") {
+          targetPlayerRef.clashing.state = true;
           owner.clashing.state = true;
         }
 
@@ -13577,8 +13582,27 @@ class App extends Component {
           return;
         }
 
+        let defenderWeaponType = targetPlayerRef.currentWeapon.type;
+        if (targetPlayerRef.currentWeapon.name === "") {
+          defenderWeaponType = "unarmed";
+        }
+        let simultaneousAttack = false;
+        console.log(
+          "here",
+          owner.attacking.count,
+          targetPlayerRef.attacking.count,
+          this.attackAnimRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance
+        );
+        if (
+          targetPlayerRef.attackPeak === true ||
+          (targetPlayerRef.attacking.count >=
+            this.attackAnimRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance &&
+            targetPlayerRef.attacking.count <= this.attackAnimRef.peak[defenderWeaponType])
+        ) {
+          simultaneousAttack = true;
+        }
         // TARGET ALSO ATTACKING
-        if (targetPlayerRef.attackPeak === true) {
+        if (simultaneousAttack === true) {
           handleTargetAttacking();
 
           if (ownerType === "player") {
@@ -13602,7 +13626,8 @@ class App extends Component {
         // TARGET NOT DEFENDING, DODGING OR ATTACKING, DAMAGE
         if (
           targetPlayerRef.dodging.state !== true &&
-          targetPlayerRef.attackPeak !== true &&
+          // targetPlayerRef.attackPeak !== true &&
+          simultaneousAttack !== true &&
           targetDefending !== true
         ) {
           executeAttack();
@@ -13623,7 +13648,7 @@ class App extends Component {
     // }
   };
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
-    console.log("projectileAttackParse");
+    // console.log("projectileAttackParse");
 
     let deflected = false;
     let x;
@@ -13862,7 +13887,7 @@ class App extends Component {
               // if (target.defendDecay.state === true && target.defendPeak !== true) {
               if (target.defendPeak !== true) {
                 // CHANCE FOR DEFEND SUCCESS
-                if (this.rnJesus(0, target.crits.guardBreak) === 0) {
+                if (this.rnJesus(1, target.crits.guardBreak) !== 1) {
                   console.log(
                     "bolt hit plyr",
                     target.number,
@@ -13903,7 +13928,7 @@ class App extends Component {
                   return;
                 }
 
-                // CHANCE TO BE DAMAGED, DEFLECT || DEFLECT + PUSHBACK
+                // DEFEND FAILURE DAMAGE, DEFLECT || DEFLECT + PUSHBACK
                 else {
                   console.log(
                     "bolt hit plyr",
@@ -13958,7 +13983,7 @@ class App extends Component {
               "from the front. by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked successfully."
+              "but they attacked successfully. pushback target?"
             );
             if (!target.popups.find((x) => x.msg === "boltKilled")) {
               target.popups.push({
@@ -13979,6 +14004,25 @@ class App extends Component {
               count: 1,
               limit: target.success.attackSuccess.limit,
             };
+            // FINISH
+            x = this.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            this.players[target.number - 1] = target;
+            return;
+          }
+          // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
+          if (target.attackPeak === true && weapon === "unarmed") {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the side. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked successfully but unarmed. Damage, Deflect?"
+            );
+            this.handleProjectileDamage(bolt, ownerType, "player", target);
+            this.setDeflection(target, "attacked", false);
+            deflected = true;
             // FINISH
             x = this.projectiles.find((x) => x.id === bolt.id);
             x = bolt;
@@ -14277,8 +14321,8 @@ class App extends Component {
       ownerDirection = owner.direction;
       ownerWeaponType = owner.currentWeapon.type;
       ownerWeaponName = owner.currentWeapon.name;
-      doubleHitChance = player.crits.doubleHit;
-      singleHitChance = player.crits.singleHit;
+      doubleHitChance = owner.crits.doubleHit;
+      singleHitChance = owner.crits.singleHit;
     } else {
       let myCell = this.gridInfo.find(
         (x) => x[ownerType].state === true && x[ownerType].id === owner.id
@@ -31967,7 +32011,13 @@ class App extends Component {
                 this.camera.preInstructions.length === 0 &&
                 this.camera.instructions.length === 0
               ) {
-                this.setAutoCamera("attackFocus", player);
+                if (this.players[0].dead.state !== true) {
+                  if (player.number === 1) {
+                    this.setAutoCamera("attackFocus", player);
+                  }
+                } else if (player.number === 2) {
+                  this.setAutoCamera("attackFocus", player);
+                }
               } else {
                 console.log("no setting auto cam: attackFocus");
               }
@@ -32001,8 +32051,6 @@ class App extends Component {
           // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
             this.setElasticCounter("attacking", "", false, player);
-
-            // console.log('attack peak',player.attacking.count,'plyr',player.number);
 
             // WEAPON STAMINA COST!!
             if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
@@ -32087,6 +32135,7 @@ class App extends Component {
             player.attackPeak = false;
             player.bluntAttack = false;
           }
+
           if (player.attacking.count >= this.attackAnimRef.limit[stamAtkType]) {
             // console.log('attack end',player.attacking.count);
 
