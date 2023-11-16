@@ -1,7 +1,7 @@
 
 
   [build]
-  command = "CI= npm run-script build"
+  command = "CI= npm run build"
   publish="/build"
   base = "/frontend_canvas_vite"
 
