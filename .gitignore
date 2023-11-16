@@ -12,6 +12,7 @@ ecosystem.config.js
 
 # production
 /build
+/frontend_canvas_vite/build
 
 # misc
 .DS_Store
