@@ -1,8 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import reactRefresh from '@vitejs/plugin-react-refresh';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+// import reactRefresh from '@vitejs/plugin-react-refresh';
 import svgr from "vite-plugin-svgr";
-
 
 const sourceJSPattern = /\/src\/.*\.js$/;
 // const rollupPlugin = (matchers) => ({
@@ -21,22 +20,22 @@ export default defineConfig({
     react(),
     svgr({
       svgrOptions: {
-          ref: true,
+        ref: true,
       },
     }),
   ],
-  optimizeDeps: { 
-    include: ['react', 'react-dom'],
+  optimizeDeps: {
+    include: ["react", "react-dom"],
     esbuildOptions: {
       loader: {
         ".js": "jsx",
       },
-    }, 
+    },
   },
   build: {
-    outDir: './build',
+    outDir: "./build",
     minify: false,
-    target: 'es2018', // Optional: Set the target to the desired ECMAScript version
+    target: "es2018", // Optional: Set the target to the desired ECMAScript version
     rollupOptions: {
       output: {
         minifyInternalExports: false, // Optional: Disable minification of internal exports
@@ -56,17 +55,14 @@ export default defineConfig({
   // },
   server: {
     port: 3001,
-    host: true
+    host: true,
   },
-})
-
-
+});
 
 // export default {
 //   base: '/vite-react-app/',
 //   plugins: [reactRefresh(), react()],
 // };
-
 
 // vite.config.js
 // import fs from "node:fs";
