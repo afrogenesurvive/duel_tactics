@@ -12327,7 +12327,7 @@ class App extends Component {
     };
     if (trap.item.effect.split("+")[0] === "ammo") {
       trap.ammo = parseInt(trap.item.effect.split("+")[1]);
-      trap.ammo = 100;
+      // trap.ammo = 100;
       // trap.item.effect = "ammo+0";
     }
     if (trap.action === "attack" && trap.acting.limit === 0) {
