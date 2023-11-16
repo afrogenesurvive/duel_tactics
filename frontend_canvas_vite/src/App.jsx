@@ -8012,7 +8012,6 @@ class App extends Component {
     let moveSpeed = obstacleCell.obstacle.moving.moveSpeed;
 
     let step = +(Math.round(obstacleCell.obstacle.moving.step + moveSpeed + "e+" + 3) + "e-" + 3);
-    // console.log('obstacle moving crementer',step);
 
     // player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
@@ -8034,6 +8033,7 @@ class App extends Component {
       newPosition = { x: Math.round(X), y: Math.round(Y) };
     }
     getLineXYatPercent(startPt, endPt, percent);
+    // console.log("obstacle moving crementer", moveSpeed, step, newPosition);
 
     return { pos: newPosition, step: step };
   };
@@ -9945,6 +9945,7 @@ class App extends Component {
     }
     return oppositeDirection;
   };
+
   projectileTester = (cell) => {
     let result = this.projectileCreator(
       "custom",
@@ -10629,6 +10630,7 @@ class App extends Component {
 
     return bolt;
   };
+
   checkDestination = (player, pickupOnly) => {
     // console.log('checking for item or enviro effect');
 
@@ -16505,7 +16507,7 @@ class App extends Component {
       if (preMoveSpeed > 2 && preMoveSpeed < 4) {
         moveSpeed = 0.125;
       }
-      if (preMoveSpeed > 4) {
+      if (preMoveSpeed >= 4) {
         moveSpeed = 0.2;
       }
       if (this.terrainMoveSpeedRef[targetCellRef.terrain.type]) {
@@ -16659,7 +16661,7 @@ class App extends Component {
       if (preMoveSpeed > 2 && preMoveSpeed < 4) {
         moveSpeed = 0.125;
       }
-      if (preMoveSpeed > 4) {
+      if (preMoveSpeed >= 4) {
         moveSpeed = 0.2;
       }
       if (this.terrainMoveSpeedRef[targetCellRef.terrain.type]) {
@@ -20246,7 +20248,7 @@ class App extends Component {
     this.players[player.number - 1].pushing = player.pushing;
   };
   canPushObstacle = (ownerType, owner, obstacleCell, type) => {
-    console.log("canPushObstacle");
+    // console.log("canPushObstacle");
     // let pusherCellRef = this.gridInfo.find(x=> x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
     let resetPush = false;
     let thresholdMultiplier = this.rnJesus(1, 3);
@@ -20276,7 +20278,7 @@ class App extends Component {
       if (preMoveSpeed > 2 && preMoveSpeed < 4) {
         moveSpeed = 0.125;
       }
-      if (preMoveSpeed > 4) {
+      if (preMoveSpeed >= 4) {
         moveSpeed = 0.2;
       }
 
@@ -20447,15 +20449,15 @@ class App extends Component {
         canPushStrength = true;
         extraPush = pushStrengthPlayer - pushStrengthThreshold;
         if (ownerType === "player") {
-          console.log(
-            "you are strongh enough to push this obstacle",
-            pushStrengthPlayer,
-            pushStrengthThreshold,
-            owner.crits.guardBreak - 2,
-            owner.crits.pushBack - 2,
-            "extra",
-            extraPush
-          );
+          // console.log(
+          //   "you are strongh enough to push this obstacle",
+          //   pushStrengthPlayer,
+          //   pushStrengthThreshold,
+          //   owner.crits.guardBreak - 2,
+          //   owner.crits.pushBack - 2,
+          //   "extra",
+          //   extraPush
+          // );
         }
       } else {
         if (ownerType === "player") {
@@ -20471,7 +20473,7 @@ class App extends Component {
         resetPush = true;
       }
       if (extraPush > 5) {
-        console.log("extra push force. Push obstacle w/o plyr move");
+        // console.log("extra push force. Push obstacle w/o plyr move");
         movePlayer = false;
       }
 
@@ -20977,7 +20979,7 @@ class App extends Component {
       if (preMoveSpeed > 2 && preMoveSpeed < 4) {
         moveSpeed = 0.125;
       }
-      if (preMoveSpeed > 4) {
+      if (preMoveSpeed >= 4) {
         moveSpeed = 0.2;
       }
 
@@ -21062,15 +21064,15 @@ class App extends Component {
       if (pushStrengthPlayer >= pushStrengthThreshold) {
         canPushStrength = true;
         extraPush = pushStrengthPlayer - pushStrengthThreshold;
-        console.log(
-          "you are strongh enough to push this player",
-          pushStrengthPlayer,
-          pushStrengthThreshold,
-          pusher.crits.guardBreak - 2,
-          pusher.crits.pushBack - 2,
-          "extra",
-          extraPush
-        );
+        // console.log(
+        //   "you are strongh enough to push this player",
+        //   pushStrengthPlayer,
+        //   pushStrengthThreshold,
+        //   pusher.crits.guardBreak - 2,
+        //   pusher.crits.pushBack - 2,
+        //   "extra",
+        //   extraPush
+        // );
       } else {
         console.log(
           "you are NOT strong enough to push this player",
@@ -21439,7 +21441,7 @@ class App extends Component {
           // if (player.prePull.count >= 25) {
           // if (player.prePull.count >= limit) {
 
-          console.log("pre pull limit. check can pull");
+          // console.log("pre pull limit. check can pull");
           this.players[player.number - 1].prePull = player.prePull;
           this.players[player.number - 1].pulling = player.pulling;
           if (player.popups.find((x) => x.msg === "prePull")) {
@@ -21593,7 +21595,7 @@ class App extends Component {
       if (preMoveSpeed > 2 && preMoveSpeed < 4) {
         moveSpeed = 0.125;
       }
-      if (preMoveSpeed > 4) {
+      if (preMoveSpeed >= 4) {
         moveSpeed = 0.2;
       }
       // pullStrengthThreshold = 100
@@ -21763,13 +21765,13 @@ class App extends Component {
         obstacleCell.obstacle.moving.pushable === true
       ) {
         canPullStrength = true;
-        console.log(
-          "you are strongh enough to pull this obstacle",
-          pullStrengthPlayer,
-          pullStrengthThreshold,
-          player.crits.guardBreak - 2,
-          player.crits.pushBack - 2
-        );
+        // console.log(
+        //   "you are strongh enough to pull this obstacle",
+        //   pullStrengthPlayer,
+        //   pullStrengthThreshold,
+        //   player.crits.guardBreak - 2,
+        //   player.crits.pushBack - 2
+        // );
       } else {
         console.log(
           "you are NOT strong enough to pull this obstacle",
@@ -22179,7 +22181,7 @@ class App extends Component {
       if (preMoveSpeed > 2 && preMoveSpeed < 4) {
         moveSpeed = 0.125;
       }
-      if (preMoveSpeed > 4) {
+      if (preMoveSpeed >= 4) {
         moveSpeed = 0.2;
       }
 
@@ -22235,13 +22237,13 @@ class App extends Component {
 
       if (pullStrengthPlayer >= pullStrengthThreshold) {
         canPullStrength = true;
-        console.log(
-          "you are strongh enough to pull this player",
-          pullStrengthPlayer,
-          pullStrengthThreshold,
-          puller.crits.guardBreak - 2,
-          puller.crits.pushBack - 2
-        );
+        // console.log(
+        //   "you are strongh enough to pull this player",
+        //   pullStrengthPlayer,
+        //   pullStrengthThreshold,
+        //   puller.crits.guardBreak - 2,
+        //   puller.crits.pushBack - 2
+        // );
       } else {
         console.log(
           "you are NOT strong enough to pull this player",
@@ -32057,7 +32059,7 @@ class App extends Component {
 
         // PRE PULL FEINT
         if (this.keyPressed[player.number - 1].pull === false && player.prePull.state === true) {
-          console.log("player was pre pulling. reset");
+          // console.log("player was pre pulling. reset");
           player.prePull = {
             state: false,
             count: 0,
@@ -34697,15 +34699,12 @@ class App extends Component {
     // MOVING & FALLING
     // CHECK OBSTACLE/BARRIER TRAPS AND UPDATE CELL BARRIER/OBSTACLE
     for (let cell of this.gridInfo) {
-      // if (cell.obstacle.trap === undefined || cell.obstacle.id === undefined) {
-      //   console.log("boom", cell);
-      // }
       if (
         cell.obstacle.state === true &&
         cell.obstacle.moving.state === true &&
         cell.obstacle.moving.falling.state !== true
       ) {
-        // console.log('tracking moving obstacle',cell.obstacle.moving.origin);
+        // console.log("tracking moving obstacle", cell.obstacle.moving.origin);
 
         let destCellRef = this.gridInfo.find(
           (x) =>
