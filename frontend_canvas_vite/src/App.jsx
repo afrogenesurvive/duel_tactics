@@ -1743,6 +1743,34 @@ class App extends Component {
         height: 1,
       },
     };
+    this.customTrapSetNewCustomTestData = [
+      {
+        persistent: false,
+        remaining: 5,
+        timerEnabled: true,
+        timerLimit: 40,
+        triggerType: "any",
+        itemNameRef: "spear1",
+        type: "obstacle",
+        location: {
+          x: 0,
+          y: 3,
+        },
+      },
+      {
+        persistent: false,
+        remaining: 5,
+        timerEnabled: false,
+        timerLimit: 0,
+        triggerType: "any",
+        itemNameRef: "crossbow1",
+        type: "barrier",
+        location: {
+          x: 0,
+          y: 3,
+        },
+      },
+    ];
     this.elevationTypeLevelDataRef = {
       a: "floor",
       b: "step",
@@ -12447,6 +12475,284 @@ class App extends Component {
       }
     }
     return trap;
+  };
+  customObstacleBarrierTrapSet = (instructionType, data) => {
+    // when externalized, call and update gridinfo function
+    console.log("customObstacleBarrierTrapSet", instructionType);
+    let type;
+    let trapsToSet = [];
+    const trapRandomizer = (trap) => {
+      trap.persistent = this.rnJesus(1, 0) === 1;
+      if (trap.persistent === true) {
+        switch (this.rnJesus(0, 3)) {
+          case 0:
+            trap.remaining = 5;
+            break;
+          case 1:
+            trap.remaining = 10;
+            break;
+          case 2:
+            trap.remaining = 15;
+            break;
+          case 3:
+            trap.remaining = 25;
+            break;
+          default:
+            break;
+        }
+      } else {
+        trap.remaining = 0;
+      }
+
+      trap.direction = "";
+      trap.action = "attack";
+      trap.timer.enabled = this.rnJesus(1, 0) === 1;
+      switch (this.rnJesus(0, 2)) {
+        case 0:
+          if (this.rnJesus(0, 1) === 1) {
+            this.timer.limit = 30;
+          } else {
+            this.timer.limit = 40;
+          }
+          break;
+        case 1:
+          if (this.rnJesus(0, 1) === 1) {
+            this.timer.limit = 40;
+          } else {
+            this.timer.limit = 60;
+          }
+          break;
+        case 2:
+          if (this.rnJesus(0, 1) === 1) {
+            this.timer.limit = 60;
+          } else {
+            this.timer.limit = 80;
+          }
+          break;
+        default:
+          break;
+      }
+      if (this.rnJesus(0, 1) === 1) {
+        trap.trigger.type = "player";
+      } else {
+        trap.trigger.type = "any";
+      }
+      let weapons = this.itemList.filter((x) => x.type === "weapon");
+      let indx = this.rnJesus(0, weapons.length - 1);
+      trap.itemNameRef = weapons[indx];
+      return trap;
+    };
+    if (instructionType === "activateInactive") {
+      for (let elem of this.gridInfo) {
+        if (elem.obstacle.state === true || elem.barrier.state === true) {
+          if (elem.obstacle.state === true) {
+            type = "obstacle";
+          }
+          if (elem.barrier.state === true) {
+            type = "barrier";
+          }
+          if (
+            elem[type].trap.state &&
+            elem[type].trap.state !== true &&
+            elem[type].trap.persistent !== undefined &&
+            elem[type].trap.action !== "" &&
+            elem[type].trap.timer.enabled !== undefined
+          ) {
+            elem[type].trap.state = true;
+            elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            trapsToSet.push({
+              type: type,
+              location: elem.number,
+              trap: elem[type].trap,
+            });
+          }
+        }
+      }
+    }
+    if (instructionType === "shuffleActive") {
+      for (let elem of this.gridInfo) {
+        if (elem.obstacle.state === true) {
+          if (elem.obstacle.trap.state === true) {
+            elem.obstacle.trap = trapRandomizer(elem.obstacle.trap, "obstacle");
+            elem.obstacle.trap = this.obstacleBarrierTrapInitSet("", "obstacle", elem);
+            trapsToSet.push({
+              type: "obstacle",
+              location: elem.number,
+              trap: elem.obstacle.trap,
+            });
+          }
+        }
+        if (elem.barrier.state === true) {
+          if (elem.barrier.trap.state === true) {
+            elem.barrier.trap = trapRandomizer(elem.barrier.trap, "barrier");
+            elem.barrier.trap = this.obstacleBarrierTrapInitSet("", "barrier", elem);
+            trapsToSet.push({
+              type: "barrier",
+              location: elem.number,
+              trap: elem.barrier.trap,
+            });
+          }
+        }
+      }
+    }
+    if (instructionType === "refreshActive") {
+      for (let elem of this.gridInfo) {
+        if (elem.obstacle.state === true || elem.barrier.state === true) {
+          if (elem.obstacle.state === true) {
+            type = "obstacle";
+          }
+          if (elem.barrier.state === true) {
+            type = "barrier";
+          }
+          if (elem[type].trap.state === true) {
+            if (elem[type].trap.persistent !== true) {
+              switch (this.rnJesus(0, 3)) {
+                case 0:
+                  elem[type].trap.remaining = 5;
+                  break;
+                case 1:
+                  elem[type].trap.remaining = 10;
+                  break;
+                case 2:
+                  elem[type].trap.remaining = 15;
+                  break;
+                case 3:
+                  elem[type].trap.remaining = 25;
+                  break;
+                default:
+                  break;
+              }
+            } else {
+              elem[type].trap.remaining = 0;
+            }
+            elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            trapsToSet.push({
+              type: type,
+              location: elem.number,
+              trap: elem.trap,
+            });
+          }
+          if (
+            elem[type].trap.state !== true &&
+            elem[type].trap.persistent !== true &&
+            elem[type].trap.remaining === 0
+          ) {
+            elem[type].trap.state = true;
+            switch (this.rnJesus(0, 3)) {
+              case 0:
+                elem[type].trap.remaining = 5;
+                break;
+              case 1:
+                elem[type].trap.remaining = 10;
+                break;
+              case 2:
+                elem[type].trap.remaining = 15;
+                break;
+              case 3:
+                elem[type].trap.remaining = 25;
+                break;
+              default:
+                break;
+            }
+            elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            trapsToSet.push({
+              type: type,
+              location: elem.number,
+              trap: elem[type].trap,
+            });
+          }
+        }
+      }
+    }
+    if (instructionType === "setNewRandom") {
+      let obsBarList = this.gridInfo.filter(
+        (x) => x.obstacle.state === true || x.barrier.state === true
+      );
+      let toSetCount = 0;
+      let usedIndices = [];
+      switch (this.rnJesus(0, 3)) {
+        case 0:
+          toSetCount = Math.floor(obsBarList.length * 0.25);
+          break;
+        case 1:
+          toSetCount = Math.floor(obsBarList.length * 0.5);
+          break;
+        case 2:
+          toSetCount = Math.floor(obsBarList.length * 0.75);
+          break;
+        case 3:
+          toSetCount = obsBarList.length;
+          break;
+        default:
+          break;
+      }
+      for (let index = 0; index < toSetCount; index++) {
+        let indx2 = this.rnJesus(0, toSetCount);
+        let indx2Unset = true;
+        while (indx2Unset === true) {
+          indx2 = this.rnJesus(0, toSetCount);
+          indx2Unset = usedIndices.includes(indx2);
+        }
+        if (indx2Unset !== true) {
+          usedIndices.push(indx2);
+        }
+        let elem = obsBarList[indx2];
+        if (elem.obstacle.state === true) {
+          type = "obstacle";
+        }
+        if (elem.barrier.state === true) {
+          type = "barrier";
+        }
+        elem[type].trap = trapRandomizer(elem[type].trap, "barrier");
+        elem[type].trap = this.obstacleBarrierTrapInitSet("", "barrier", elem);
+        trapsToSet.push({
+          type: type,
+          location: elem.number,
+          trap: elem[type].trap,
+        });
+      }
+    }
+    if (instructionType === "setNewCustom") {
+      for (const elem of data) {
+        let cellRef = this.gridInfo.find(
+          (x) => x.number.x === elem.location.x && x.number.y === elem.location.y
+        );
+        let trap = {
+          state: true,
+          persistent: elem.persistent,
+          remaining: elem.remaining,
+          direction: "",
+          target: {},
+          timer: {
+            enabled: elem.timerEnabled,
+            state: false,
+            count: 0,
+            limit: elem.timerLimit,
+          },
+          trigger: {
+            type: elem.triggerType,
+          },
+          action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
+          itemNameRef: elem.itemNameRef,
+          item: {},
+          ammo: 0,
+        };
+        trap = this.obstacleBarrierTrapInitSet("", elem.type, refCell);
+        trapsToSet.push({
+          type: elem.type,
+          location: elem.location,
+          trap: trap,
+        });
+      }
+    }
+    console.log("trapsToSet", trapsToSet);
+    return trapsToSet;
   };
 
   meleeAttackPeak = (ownerType, owner) => {
@@ -31039,6 +31345,14 @@ class App extends Component {
       // this.setAutoCamera('followBolt',player);
       // console.log('xxx');
       // this.projectileTester(this.gridInfo.find((x) => x.number.x === 3 && x.number.y === 0));
+      let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
+      // let testTraps = this.customObstacleBarrierTrapSet("shuffleActive","")
+      // let testTraps = this.customObstacleBarrierTrapSet("refreshActive","")
+      // let testTraps = this.customObstacleBarrierTrapSet("setNewRandom","")
+      // let testTraps = this.customObstacleBarrierTrapSet("setNewCustom",this.customTrapSetNewCustomTestData)
+      // for (const trap of testTraps) {
+      //   this.gridInfo.find((x) => x.number.x === trap.location.x && x.number.y === trap.location.y)[trap.type].trap = trap.trap;
+      // }
     }
 
     // DYING
