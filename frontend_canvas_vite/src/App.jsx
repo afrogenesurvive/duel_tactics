@@ -526,13 +526,13 @@ class App extends Component {
       row1: [
         "**_*_1.0_a_0a*",
         "cn_*_1.1_a_0a*",
-        "**_*_1.2_a_0a*",
+        "**_c_1.2_a_0a*",
         "**_*_1.3_a_0a*",
         "**_*_1.4_a_0a*",
         "**_*_1.5_a_0a*",
         "**_*_1.6_a_0a*",
         "**_*_1.7_a_0a*",
-        "**_*_1.8_a_0a*",
+        "**_h_1.8_a_0a*",
         "**_*_1.9_a_0a*",
       ],
       row2: [
@@ -550,18 +550,18 @@ class App extends Component {
       row3: [
         "**_*_3.0_a_0a*",
         "**_*_3.1_a_0a*",
-        "**_*_3.2_a_0a*",
+        "**_h_3.2_a_0a*",
         "**_*_3.3_a_0a*",
         "**_*_3.4_a_0a*",
         "**_*_3.5_a_0a*",
         "**_c_3.6_a_0a*",
         "**_*_3.7_a_0a*",
         "**_*_3.8_a_0a*",
-        "**_*_3.9_a_0a*",
+        "**_c_3.9_a_0a*",
       ],
       row4: [
         "**_*_4.0_a_0a*",
-        "**_*_4.1_a_0a*",
+        "dn_*_4.1_a_0a*",
         "**_*_4.2_f_0a*",
         "**_*_4.3_f_0a*",
         "**_*_4.4_a_0a*",
@@ -574,10 +574,10 @@ class App extends Component {
       row5: [
         "**_*_5.0_a_0a*",
         "**_*_5.1_a_0a*",
-        "ce_*_5.2_a_0a*",
+        "de_*_5.2_a_0a*",
         "**_*_5.3_a_0a*",
         "**_*_5.4_a_0a*",
-        "**_*_5.5_a_0a*",
+        "**_h_5.5_a_0a*",
         "**_*_5.6_a_0a*",
         "**_*_5.7_a_0a*",
         "**_*_5.8_a_0a*",
@@ -586,14 +586,14 @@ class App extends Component {
       row6: [
         "**_*_6.0_b_0a*",
         "**_*_6.1_j_0a*",
-        "cw_*_6.2_j_0a*",
+        "**_*_6.2_j_0a*",
         "**_*_6.3_j_0a*",
         "**_*_6.4_j_0a*",
         "**_*_6.5_j_0a*",
         "**_*_6.6_j_0a*",
         "**_*_6.7_j_0a*",
-        "ce_*_6.8_j_0a*",
-        "ce_*_6.9_j_0a*",
+        "de_*_6.8_j_0a*",
+        "**_*_6.9_j_0a*",
       ],
       row7: [
         "**_*_7.0_j_0a*",
@@ -605,7 +605,7 @@ class App extends Component {
         "**_*_7.6_a_0a*",
         "cw*_*_7.7_a_0a*",
         "**_*_7.8_a_0a*",
-        "cw_*_7.9_d_0a*",
+        "dw_*_7.9_d_0a*",
       ],
       row8: [
         "**_*_8.0_a_0a*",
@@ -621,7 +621,7 @@ class App extends Component {
       ],
       row9: [
         "**_*_9.0_a_0a*",
-        "**_a_9.1_a_0a*",
+        "**_*_9.1_a_0a*",
         "**_*_9.2_a_0a*",
         "**_*_9.3_a_0a*",
         "**_*_9.4_a_0a*",
@@ -954,7 +954,7 @@ class App extends Component {
         trap: {
           state: false,
           persistent: false,
-          remaining: 0,
+          remaining: 5,
           direction: "",
           target: {},
           timer: {
@@ -1401,12 +1401,12 @@ class App extends Component {
         id: 0,
         trap: {
           state: true,
-          persistent: true,
+          persistent: false,
           remaining: 5,
-          direction: "north",
+          direction: "",
           target: {},
           timer: {
-            enabled: true,
+            enabled: false,
             state: false,
             count: 0,
             limit: 65,
@@ -1701,7 +1701,7 @@ class App extends Component {
       c: {
         id: 0,
         trap: {
-          state: false,
+          state: true,
           persistent: true,
           remaining: 5,
           direction: "",
@@ -1728,6 +1728,50 @@ class App extends Component {
         },
         state: true,
         name: "balcony1",
+        type: "balcony",
+        hp: 2,
+        destructible: {
+          state: true,
+          weapons: ["sword1", "spear1", "bolt"],
+          leaveRubble: true,
+        },
+        locked: {
+          state: false,
+          key: "",
+        },
+        position: "",
+        height: 1,
+      },
+      d: {
+        id: 0,
+        trap: {
+          state: false,
+          persistent: true,
+          remaining: 5,
+          direction: "",
+          target: {},
+          timer: {
+            enabled: true,
+            state: false,
+            count: 0,
+            limit: 65,
+          },
+          trigger: {
+            type: "any",
+          },
+          action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
+          itemNameRef: "sword1",
+          item: {},
+          ammo: 0,
+        },
+        state: true,
+        name: "balconyX",
         type: "balcony",
         hp: 2,
         destructible: {
@@ -1874,7 +1918,7 @@ class App extends Component {
         total: 2,
         type: "weapon",
         subType: "crossbow",
-        effect: "ammo+0",
+        effect: "ammo+7",
       },
       {
         name: "helmet1",
@@ -7130,7 +7174,9 @@ class App extends Component {
         args = "followBolt";
       }
     }
-
+    let livingHumanPlayerCount = this.players.filter(
+      (x) => x.ai.state !== true && x.dead.state !== true
+    ).length;
     switch (args) {
       case "test":
         this.camera.preInstructions.push(
@@ -7167,7 +7213,7 @@ class App extends Component {
           this.camera.preInstructions.push("zoom_in_" + prePanZoomAmount + "");
         }
 
-        if (this.playerNumber === 1) {
+        if (livingHumanPlayerCount === 1) {
           this.camera.preInstructions.push(
             "moveTo_" +
               player.currentPosition.cell.number.x +
@@ -7186,7 +7232,7 @@ class App extends Component {
           }
         }
 
-        if (this.playerNumber === 2) {
+        if (livingHumanPlayerCount === 2) {
           // twoPlayerCalc();
           getPath()
             .then((pathSet) => {
@@ -7271,7 +7317,7 @@ class App extends Component {
           this.camera.preInstructions.push("zoom_in_" + prePanZoomAmount + "");
         }
 
-        if (this.playerNumber === 1) {
+        if (livingHumanPlayerCount === 1) {
           this.camera.preInstructions.push(
             "moveTo_" +
               player.currentPosition.cell.number.x +
@@ -7288,7 +7334,7 @@ class App extends Component {
           this.camera.preInstructions.push("zoom_outToInit");
         }
 
-        if (this.playerNumber === 2) {
+        if (livingHumanPlayerCount === 2) {
           getPath()
             .then((pathSet) => {
               // console.log('Path set:', pathSet);
@@ -10358,6 +10404,7 @@ class App extends Component {
                     if (
                       plyr.currentPosition.cell.number.x === cell.number.x &&
                       plyr.currentPosition.cell.number.y === cell.number.y &&
+                      plyr.dead.state !== true &&
                       plyr.number !== bolt.owner
                     ) {
                       this.projectileAttackParse(bolt, "player", "player", plyr);
@@ -10372,7 +10419,8 @@ class App extends Component {
                   for (const plyr of this.players) {
                     if (
                       plyr.currentPosition.cell.number.x === cell.number.x &&
-                      plyr.currentPosition.cell.number.y === cell.number.y
+                      plyr.currentPosition.cell.number.y === cell.number.y &&
+                      plyr.dead.state !== true
                     ) {
                       this.projectileAttackParse(bolt, bolt.ownerType, "player", plyr);
                     }
@@ -11294,10 +11342,10 @@ class App extends Component {
         }
         if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
           targetCell.obstacle.trap.state = false;
-          // console.log(
-          //   `obstacletrap disabled because there is no appropriate target cell`,
-          //   data.number
-          // );
+          console.log(
+            `obstacletrap disabled because there is no appropriate target cell`,
+            data.number
+          );
         } else {
           targetCell.obstacle.trap.target = cell;
           // console.log("trap target set", data.number, targetCell.obstacle.trap.target, targetCell.obstacle.trap.ammo);
@@ -12038,7 +12086,7 @@ class App extends Component {
         // console.log("trap is acting");
         if (trap.action === "attack") {
           if (trap.acting.count === trap.acting.peak) {
-            console.log("trap is acting: attack peak");
+            // console.log("trap is acting: attack peak");
 
             if (trap.item.subType === "crossbow") {
               if (trap.ammo > 0) {
@@ -12058,11 +12106,11 @@ class App extends Component {
           if (trap.acting.count < trap.acting.limit) {
             trap.acting.count++;
             if (trap.acting.count < trap.acting.peak) {
-              console.log("trap is acting: windup", trap.acting.count);
+              // console.log("trap is acting: windup", trap.acting.count);
               higlightCell();
             }
             if (trap.acting.count > trap.acting.peak) {
-              console.log("trap is acting: cooldown", trap.acting.count);
+              // console.log("trap is acting: cooldown", trap.acting.count);
             }
 
             if (
@@ -12112,7 +12160,7 @@ class App extends Component {
         }
       } else {
         trap.acting.state = true;
-        console.log("trap was triggered but hasnt started its action. start");
+        // console.log("trap was triggered but hasnt started its action. start");
       }
     };
     const higlightCell = () => {
@@ -12141,9 +12189,9 @@ class App extends Component {
             if (trap.timer.count < trap.timer.limit) {
               trap.timer.count++;
               higlightCell();
-              console.log("persistent trap timer count up", trap.timer.count);
+              // console.log("persistent trap timer count up", trap.timer.count);
               if (trap.timer.count === 1) {
-                console.log("trap has been triggered at ", trap.target, "by", triggerType);
+                // console.log("trap has been triggered at ", trap.target, "by", triggerType);
               }
               if (
                 !this.cellPopups.find(
@@ -12172,7 +12220,7 @@ class App extends Component {
             if (trap.timer.count >= trap.timer.limit) {
               trap.timer.count = 0;
               trap.timer.state = false;
-              console.log("persistent trap timer count finish", trap.timer.count);
+              // console.log("persistent trap timer count finish", trap.timer.count);
               executeTrapAction();
               if (
                 this.cellPopups.find(
@@ -12200,7 +12248,7 @@ class App extends Component {
         if (!trap.timer.enabled) {
           executeTrapAction();
           higlightCell();
-          console.log("trap has been triggered at ", trap.target, "by", triggerType);
+          // console.log("trap has been triggered at ", trap.target, "by", triggerType);
         }
       }
       if (trap.persistent === false) {
@@ -12219,9 +12267,9 @@ class App extends Component {
               if (trap.timer.count < trap.timer.limit) {
                 trap.timer.count++;
                 higlightCell();
-                console.log("limited trap timer count up", trap.timer.count);
+                // console.log("limited trap timer count up", trap.timer.count);
                 if (trap.timer.count === 1) {
-                  console.log("trap has been triggered at ", trap.target, "by", triggerType);
+                  // console.log("trap has been triggered at ", trap.target, "by", triggerType);
                 }
                 if (
                   !this.cellPopups.find(
@@ -12409,14 +12457,14 @@ class App extends Component {
                     );
                 }
               }
-              console.log("availibleCells", data.number, availibleCells, trap.target);
-              console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
+              // console.log("availibleCells", data.number, availibleCells, trap.target);
+              // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
               trap.state = false;
-              // console.log(
-              //   `${type} trap disabled because there is no appropriate target cell`,
-              //   data.number
-              // );
+              console.log(
+                `${type} trap disabled because there is no appropriate target cell`,
+                data.number
+              );
             }
           } else {
             let cell;
@@ -12431,10 +12479,10 @@ class App extends Component {
             }
             if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
               trap.state = false;
-              // console.log(
-              //   `${type} trap disabled because there is no appropriate target cell`,
-              //   data.number
-              // );
+              console.log(
+                `${type} trap disabled because there is no appropriate target cell`,
+                data.number
+              );
             } else {
               trap.target = cell;
               // console.log("onstacle trap target set", data.number, trap.target, trap.ammo);
@@ -12460,9 +12508,10 @@ class App extends Component {
           }
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             trap.state = false;
-            // console.log(
-            //   `${type} trap disabled because there is no appropriate target cellx`,
-            //   data.number);
+            console.log(
+              `${type} trap disabled because there is no appropriate target cellx`,
+              data.number
+            );
           } else {
             trap.target = cell;
             // console.log("barrier trap target set", data.number, trap.target, trap.ammo);
@@ -12478,12 +12527,13 @@ class App extends Component {
   };
   customObstacleBarrierTrapSet = (instructionType, data) => {
     // when externalized, call and update gridinfo function
+    let localGridInfo = [];
     console.log("customObstacleBarrierTrapSet", instructionType);
     let type;
     let trapsToSet = [];
     const trapRandomizer = (trap) => {
-      trap.persistent = this.rnJesus(1, 0) === 1;
-      if (trap.persistent === true) {
+      trap.persistent = this.rnJesus(0, 3) === 1;
+      if (trap.persistent !== true) {
         switch (this.rnJesus(0, 3)) {
           case 0:
             trap.remaining = 5;
@@ -12510,49 +12560,62 @@ class App extends Component {
       switch (this.rnJesus(0, 2)) {
         case 0:
           if (this.rnJesus(0, 1) === 1) {
-            this.timer.limit = 30;
+            trap.timer.limit = 30;
           } else {
-            this.timer.limit = 40;
+            trap.timer.limit = 40;
           }
           break;
         case 1:
           if (this.rnJesus(0, 1) === 1) {
-            this.timer.limit = 40;
+            trap.timer.limit = 40;
           } else {
-            this.timer.limit = 60;
+            trap.timer.limit = 60;
           }
           break;
         case 2:
           if (this.rnJesus(0, 1) === 1) {
-            this.timer.limit = 60;
+            trap.timer.limit = 60;
           } else {
-            this.timer.limit = 80;
+            trap.timer.limit = 80;
           }
           break;
         default:
           break;
       }
-      if (this.rnJesus(0, 1) === 1) {
+      if (this.rnJesus(0, 2) === 1) {
         trap.trigger.type = "player";
       } else {
         trap.trigger.type = "any";
       }
       let weapons = this.itemList.filter((x) => x.type === "weapon");
       let indx = this.rnJesus(0, weapons.length - 1);
-      trap.itemNameRef = weapons[indx];
+      trap.itemNameRef = weapons[indx].name;
+      console.log("here", weapons, indx);
       return trap;
     };
     if (instructionType === "activateInactive") {
       for (let elem of this.gridInfo) {
-        if (elem.obstacle.state === true || elem.barrier.state === true) {
-          if (elem.obstacle.state === true) {
-            type = "obstacle";
-          }
-          if (elem.barrier.state === true) {
-            type = "barrier";
-          }
+        if (elem.obstacle.state === true) {
+          type = "obstacle";
           if (
-            elem[type].trap.state &&
+            elem[type].trap?.state !== true &&
+            elem[type].trap?.persistent !== undefined &&
+            elem[type].trap?.action !== "" &&
+            elem[type].trap?.timer.enabled !== undefined
+          ) {
+            elem[type].trap.state = true;
+            elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            // console.log("1", elem.number, elem[type].trap);
+            trapsToSet.push({
+              type: type,
+              location: elem.number,
+              trap: elem[type].trap,
+            });
+          }
+        }
+        if (elem.barrier.state === true) {
+          type = "barrier";
+          if (
             elem[type].trap.state !== true &&
             elem[type].trap.persistent !== undefined &&
             elem[type].trap.action !== "" &&
@@ -12560,6 +12623,7 @@ class App extends Component {
           ) {
             elem[type].trap.state = true;
             elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            // console.log("2", elem.number, elem[type].trap);
             trapsToSet.push({
               type: type,
               location: elem.number,
@@ -12597,13 +12661,68 @@ class App extends Component {
     }
     if (instructionType === "refreshActive") {
       for (let elem of this.gridInfo) {
-        if (elem.obstacle.state === true || elem.barrier.state === true) {
-          if (elem.obstacle.state === true) {
-            type = "obstacle";
+        if (elem.obstacle.state === true) {
+          type = "obstacle";
+          if (elem[type].trap.state === true) {
+            if (elem[type].trap.persistent !== true) {
+              switch (this.rnJesus(0, 3)) {
+                case 0:
+                  elem[type].trap.remaining = 5;
+                  break;
+                case 1:
+                  elem[type].trap.remaining = 10;
+                  break;
+                case 2:
+                  elem[type].trap.remaining = 15;
+                  break;
+                case 3:
+                  elem[type].trap.remaining = 25;
+                  break;
+                default:
+                  break;
+              }
+            } else {
+              elem[type].trap.remaining = 0;
+            }
+            elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            trapsToSet.push({
+              type: type,
+              location: elem.number,
+              trap: elem.trap,
+            });
           }
-          if (elem.barrier.state === true) {
-            type = "barrier";
+          if (
+            elem[type].trap.state !== true &&
+            elem[type].trap.persistent !== true &&
+            elem[type].trap.remaining === 0
+          ) {
+            elem[type].trap.state = true;
+            switch (this.rnJesus(0, 3)) {
+              case 0:
+                elem[type].trap.remaining = 5;
+                break;
+              case 1:
+                elem[type].trap.remaining = 10;
+                break;
+              case 2:
+                elem[type].trap.remaining = 15;
+                break;
+              case 3:
+                elem[type].trap.remaining = 25;
+                break;
+              default:
+                break;
+            }
+            elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            trapsToSet.push({
+              type: type,
+              location: elem.number,
+              trap: elem[type].trap,
+            });
           }
+        }
+        if (elem.barrier.state === true) {
+          type = "barrier";
           if (elem[type].trap.state === true) {
             if (elem[type].trap.persistent !== true) {
               switch (this.rnJesus(0, 3)) {
@@ -12699,17 +12818,24 @@ class App extends Component {
         let elem = obsBarList[indx2];
         if (elem.obstacle.state === true) {
           type = "obstacle";
+          elem[type].trap = trapRandomizer(elem[type].trap, type);
+          elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+          trapsToSet.push({
+            type: type,
+            location: elem.number,
+            trap: elem[type].trap,
+          });
         }
         if (elem.barrier.state === true) {
           type = "barrier";
+          elem[type].trap = trapRandomizer(elem[type].trap, type);
+          elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+          trapsToSet.push({
+            type: type,
+            location: elem.number,
+            trap: elem[type].trap,
+          });
         }
-        elem[type].trap = trapRandomizer(elem[type].trap, "barrier");
-        elem[type].trap = this.obstacleBarrierTrapInitSet("", "barrier", elem);
-        trapsToSet.push({
-          type: type,
-          location: elem.number,
-          trap: elem[type].trap,
-        });
       }
     }
     if (instructionType === "setNewCustom") {
@@ -12752,7 +12878,7 @@ class App extends Component {
       }
     }
     console.log("trapsToSet", trapsToSet);
-    return trapsToSet;
+    // return trapsToSet;
   };
 
   meleeAttackPeak = (ownerType, owner) => {
@@ -14049,16 +14175,16 @@ class App extends Component {
           targetCell1.obstacle.state === true ||
           targetCell1.barrier.state === true
         ) {
-          console.log(
-            ownerType,
-            owner.number,
-            owner.id,
-            "attacked an obstacle, barrier, item or rubble @",
-            targetCell1.number,
-            "w/ ",
-            ownerWeaponType,
-            ". attackCellContents"
-          );
+          // console.log(
+          //   ownerType,
+          //   owner.number,
+          //   owner.id,
+          //   "attacked an obstacle, barrier, item or rubble @",
+          //   targetCell1.number,
+          //   "w/ ",
+          //   ownerWeaponType,
+          //   ". attackCellContents"
+          // );
           this.attackCellContents(
             "melee",
             ownerType,
@@ -14117,16 +14243,16 @@ class App extends Component {
           targetCell2.obstacle.state === true ||
           targetCell2.barrier.state === true
         ) {
-          console.log(
-            ownerType,
-            owner.number,
-            owner.id,
-            "attacked an obstacle, barrier, item or rubble @",
-            targetCell2.number,
-            "w/ ",
-            ownerWeaponType,
-            ". attackCellContents"
-          );
+          // console.log(
+          //   ownerType,
+          //   owner.number,
+          //   owner.id,
+          //   "attacked an obstacle, barrier, item or rubble @",
+          //   targetCell2.number,
+          //   "w/ ",
+          //   ownerWeaponType,
+          //   ". attackCellContents"
+          // );
           this.attackCellContents(
             "melee",
             ownerType,
@@ -14252,12 +14378,12 @@ class App extends Component {
           defenderWeaponType = "unarmed";
         }
         let simultaneousAttack = false;
-        console.log(
-          "here",
-          owner.attacking.count,
-          targetPlayerRef.attacking.count,
-          this.attackAnimRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance
-        );
+        // console.log(
+        //   "here",
+        //   owner.attacking.count,
+        //   targetPlayerRef.attacking.count,
+        //   this.attackAnimRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance
+        // );
         if (
           targetPlayerRef.attackPeak === true ||
           (targetPlayerRef.attacking.count >=
@@ -31335,7 +31461,7 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 100 && player.number === 1) {
+    if (this.time === 200 && player.number === 1) {
       // this.setAutoCamera("test", player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
@@ -31343,9 +31469,12 @@ class App extends Component {
       // this.setAutoCamera('aiSpawnFocus',player);
       // this.setAutoCamera('pushbackPan',player);
       // this.setAutoCamera('followBolt',player);
-      // console.log('xxx');
+      // console.log(
+      //   "xxx",
+      //   this.gridInfo.filter((x) => x.obstacle.state === true || x.barrier.state === true && x.).length
+      // );
       // this.projectileTester(this.gridInfo.find((x) => x.number.x === 3 && x.number.y === 0));
-      let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
+      // let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
       // let testTraps = this.customObstacleBarrierTrapSet("shuffleActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("setNewRandom","")
@@ -31353,6 +31482,9 @@ class App extends Component {
       // for (const trap of testTraps) {
       //   this.gridInfo.find((x) => x.number.x === trap.location.x && x.number.y === trap.location.y)[trap.type].trap = trap.trap;
       // }
+    }
+    if (this.time === 400 && player.number === 1) {
+      // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
 
     // DYING
@@ -32222,7 +32354,8 @@ class App extends Component {
             player.currentPosition.cell.number.x === plyr4.currentPosition.cell.number.x &&
             player.currentPosition.cell.number.y === plyr4.currentPosition.cell.number.y &&
             player.pushBack.state !== true &&
-            plyr4.pushBack.state !== true
+            plyr4.pushBack.state !== true &&
+            plyr4.dead.state !== true
           ) {
             let nopushpull = true;
             if (
@@ -32275,28 +32408,6 @@ class App extends Component {
               }
               let canPush = this.pushBack(plyr4, playerAPushDir2);
               let canPush2 = this.pushBack(player, playerBPushDir2);
-            }
-          }
-        }
-
-        // CHECK CELL UNDER ATTACK & PRE ATTACK!!
-        for (const cell of this.cellsUnderAttack) {
-          if (cell.limit > 0) {
-            if (cell.count < cell.limit) {
-              cell.count++;
-            } else if (cell.count >= cell.limit) {
-              let index = this.cellsUnderAttack.indexOf(cell);
-              this.cellsUnderAttack.splice(index, 1);
-            }
-          }
-        }
-        for (const cell2 of this.cellsUnderPreAttack) {
-          if (cell2.limit > 0) {
-            if (cell2.count < cell2.limit) {
-              cell2.count++;
-            } else if (cell2.count >= cell2.limit) {
-              let index = this.cellsUnderPreAttack.indexOf(cell2);
-              this.cellsUnderPreAttack.splice(index, 1);
             }
           }
         }
@@ -35005,6 +35116,28 @@ class App extends Component {
             // reset deflected here?
             // console.log('pause is not end. turn off elastic count',player.success.deflected.state,player.success.deflected.count,'/',player.success.deflected.limit);
           }
+        }
+      }
+    }
+
+    // CHECK CELL UNDER ATTACK & PRE ATTACK!!
+    for (const cell of this.cellsUnderAttack) {
+      if (cell.limit > 0) {
+        if (cell.count < cell.limit) {
+          cell.count++;
+        } else if (cell.count >= cell.limit) {
+          let index = this.cellsUnderAttack.indexOf(cell);
+          this.cellsUnderAttack.splice(index, 1);
+        }
+      }
+    }
+    for (const cell2 of this.cellsUnderPreAttack) {
+      if (cell2.limit > 0) {
+        if (cell2.count < cell2.limit) {
+          cell2.count++;
+        } else if (cell2.count >= cell2.limit) {
+          let index = this.cellsUnderPreAttack.indexOf(cell2);
+          this.cellsUnderPreAttack.splice(index, 1);
         }
       }
     }
@@ -39871,6 +40004,24 @@ class App extends Component {
                   this.camera.customView.state !== true &&
                   this.settingAutoCamera === false &&
                   player.ai.state !== true &&
+                  this.camera.preInstructions.length === 0 &&
+                  this.camera.instructions.length === 0
+                ) {
+                  if (this.players[0].dead.state !== true) {
+                    if (player.number === 1) {
+                      this.setAutoCamera("attackFocus", player);
+                    }
+                  } else if (player.number === 2) {
+                    this.setAutoCamera("attackFocus", player);
+                  }
+                } else {
+                  console.log("no setting auto cam: attackFocus");
+                }
+
+                if (
+                  this.camera.customView.state !== true &&
+                  this.settingAutoCamera === false &&
+                  plyr.ai.state !== true &&
                   this.camera.preInstructions.length === 0 &&
                   this.camera.instructions.length === 0
                 ) {
