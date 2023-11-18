@@ -1792,26 +1792,26 @@ class App extends Component {
         persistent: false,
         remaining: 5,
         timerEnabled: true,
-        timerLimit: 40,
+        timerLimit: 70,
         triggerType: "any",
-        itemNameRef: "spear1",
+        itemNameRef: "spear2",
         type: "obstacle",
         location: {
-          x: 0,
+          x: 2,
           y: 3,
         },
       },
       {
         persistent: false,
-        remaining: 5,
+        remaining: 15,
         timerEnabled: false,
         timerLimit: 0,
         triggerType: "any",
         itemNameRef: "crossbow1",
-        type: "barrier",
+        type: "obstacle",
         location: {
-          x: 0,
-          y: 3,
+          x: 3,
+          y: 6,
         },
       },
     ];
@@ -1882,6 +1882,14 @@ class App extends Component {
       },
       {
         name: "spear1",
+        amount: 3,
+        total: 3,
+        type: "weapon",
+        subType: "spear",
+        effect: "",
+      },
+      {
+        name: "spear2",
         amount: 3,
         total: 3,
         type: "weapon",
@@ -12391,7 +12399,7 @@ class App extends Component {
     return locationCell;
   };
   obstacleBarrierTrapInitSet = (superType, type, data) => {
-    // console.log("  obstacleBarrierTrapInitSet");
+    console.log("  obstacleBarrierTrapInitSet", data[type].trap.state);
     let trap = data[type].trap;
 
     let item = this.itemList.find((x) => x.name === trap.itemNameRef);
@@ -12522,6 +12530,7 @@ class App extends Component {
           // console.log("this traps target is already set", trap.target, data.number, type);
         }
       }
+      console.log("there", trap);
     }
     return trap;
   };
@@ -12590,7 +12599,6 @@ class App extends Component {
       let weapons = this.itemList.filter((x) => x.type === "weapon");
       let indx = this.rnJesus(0, weapons.length - 1);
       trap.itemNameRef = weapons[indx].name;
-      console.log("here", weapons, indx);
       return trap;
     };
     if (instructionType === "activateInactive") {
@@ -12814,27 +12822,28 @@ class App extends Component {
         }
         if (indx2Unset !== true) {
           usedIndices.push(indx2);
-        }
-        let elem = obsBarList[indx2];
-        if (elem.obstacle.state === true) {
-          type = "obstacle";
-          elem[type].trap = trapRandomizer(elem[type].trap, type);
-          elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
-          trapsToSet.push({
-            type: type,
-            location: elem.number,
-            trap: elem[type].trap,
-          });
-        }
-        if (elem.barrier.state === true) {
-          type = "barrier";
-          elem[type].trap = trapRandomizer(elem[type].trap, type);
-          elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
-          trapsToSet.push({
-            type: type,
-            location: elem.number,
-            trap: elem[type].trap,
-          });
+          // console.log("here", indx2, usedIndices);
+          let elem = obsBarList[indx2];
+          if (elem.obstacle.state === true) {
+            type = "obstacle";
+            elem[type].trap = trapRandomizer(elem[type].trap, type);
+            elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            trapsToSet.push({
+              type: type,
+              location: elem.number,
+              trap: elem[type].trap,
+            });
+          }
+          if (elem.barrier.state === true) {
+            type = "barrier";
+            elem[type].trap = trapRandomizer(elem[type].trap, type);
+            elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
+            trapsToSet.push({
+              type: type,
+              location: elem.number,
+              trap: elem[type].trap,
+            });
+          }
         }
       }
     }
@@ -12843,38 +12852,101 @@ class App extends Component {
         let cellRef = this.gridInfo.find(
           (x) => x.number.x === elem.location.x && x.number.y === elem.location.y
         );
-        let trap = {
-          state: true,
-          persistent: elem.persistent,
-          remaining: elem.remaining,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: elem.timerEnabled,
-            state: false,
-            count: 0,
-            limit: elem.timerLimit,
-          },
-          trigger: {
-            type: elem.triggerType,
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-          },
-          itemNameRef: elem.itemNameRef,
-          item: {},
-          ammo: 0,
-        };
-        trap = this.obstacleBarrierTrapInitSet("", elem.type, refCell);
-        trapsToSet.push({
-          type: elem.type,
-          location: elem.location,
-          trap: trap,
-        });
+        if (cellRef.obstacle.state === true) {
+          if (elem.type === "obstacle") {
+            cellRef[elem.type].trap = {
+              state: true,
+              persistent: elem.persistent,
+              remaining: elem.remaining,
+              direction: "",
+              target: {},
+              timer: {
+                enabled: elem.timerEnabled,
+                state: false,
+                count: 0,
+                limit: elem.timerLimit,
+              },
+              trigger: {
+                type: elem.triggerType,
+              },
+              action: "attack",
+              acting: {
+                state: false,
+                count: 0,
+                peak: 0,
+                limit: 0,
+              },
+              itemNameRef: elem.itemNameRef,
+              item: {},
+              ammo: 0,
+            };
+            cellRef[elem.type].trap = this.obstacleBarrierTrapInitSet("", elem.type, cellRef);
+            trapsToSet.push({
+              type: elem.type,
+              location: elem.location,
+              trap: cellRef[elem.type].trap,
+            });
+          } else {
+            console.log(
+              "custom trap type is ",
+              elem.type,
+              " but no ",
+              elem.type,
+              " is in this location",
+              elem.location,
+              ". Invalid selection. Ignoring..."
+            );
+          }
+        }
+        if (cellRef.barrier.state === true) {
+          if (elem.type === "barrier") {
+            cellRef[elem.type].trap = {
+              state: true,
+              persistent: elem.persistent,
+              remaining: elem.remaining,
+              direction: "",
+              target: {},
+              timer: {
+                enabled: elem.timerEnabled,
+                state: false,
+                count: 0,
+                limit: elem.timerLimit,
+              },
+              trigger: {
+                type: elem.triggerType,
+              },
+              action: "attack",
+              acting: {
+                state: false,
+                count: 0,
+                peak: 0,
+                limit: 0,
+              },
+              itemNameRef: elem.itemNameRef,
+              item: {},
+              ammo: 0,
+            };
+            cellRef[elem.type].trap = this.obstacleBarrierTrapInitSet("", elem.type, cellRef);
+            trapsToSet.push({
+              type: elem.type,
+              location: elem.location,
+              trap: cellRef[elem.type].trap,
+            });
+          } else {
+            console.log(
+              "custom trap type is ",
+              elem.type,
+              " but no ",
+              elem.type,
+              " is in this location",
+              elem.location,
+              ". Invalid selection. Ignoring..."
+            );
+          }
+        }
+        if (cellRef.obstacle.state !== true && cellRef.barrier.state !== true) {
+          console.log("custom obs/bar trap location invalid. Ignoring...");
+        }
       }
     }
     console.log("trapsToSet", trapsToSet);
@@ -31477,8 +31549,11 @@ class App extends Component {
       // let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
       // let testTraps = this.customObstacleBarrierTrapSet("shuffleActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive","")
-      // let testTraps = this.customObstacleBarrierTrapSet("setNewRandom","")
-      // let testTraps = this.customObstacleBarrierTrapSet("setNewCustom",this.customTrapSetNewCustomTestData)
+      // let testTraps = this.customObstacleBarrierTrapSet("setNewRandom", "");
+      let testTraps = this.customObstacleBarrierTrapSet(
+        "setNewCustom",
+        this.customTrapSetNewCustomTestData
+      );
       // for (const trap of testTraps) {
       //   this.gridInfo.find((x) => x.number.x === trap.location.x && x.number.y === trap.location.y)[trap.type].trap = trap.trap;
       // }
@@ -39999,24 +40074,6 @@ class App extends Component {
                   this.playerDrawWidth,
                   this.playerDrawHeight
                 );
-
-                if (
-                  this.camera.customView.state !== true &&
-                  this.settingAutoCamera === false &&
-                  player.ai.state !== true &&
-                  this.camera.preInstructions.length === 0 &&
-                  this.camera.instructions.length === 0
-                ) {
-                  if (this.players[0].dead.state !== true) {
-                    if (player.number === 1) {
-                      this.setAutoCamera("attackFocus", player);
-                    }
-                  } else if (player.number === 2) {
-                    this.setAutoCamera("attackFocus", player);
-                  }
-                } else {
-                  console.log("no setting auto cam: attackFocus");
-                }
 
                 if (
                   this.camera.customView.state !== true &&
