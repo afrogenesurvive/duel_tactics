@@ -1400,7 +1400,7 @@ class App extends Component {
       h: {
         id: 0,
         trap: {
-          state: true,
+          state: false,
           persistent: false,
           remaining: 5,
           direction: "",
@@ -1701,7 +1701,7 @@ class App extends Component {
       c: {
         id: 0,
         trap: {
-          state: true,
+          state: false,
           persistent: true,
           remaining: 5,
           direction: "",
@@ -12399,7 +12399,7 @@ class App extends Component {
     return locationCell;
   };
   obstacleBarrierTrapInitSet = (superType, type, data) => {
-    console.log("  obstacleBarrierTrapInitSet", data[type].trap.state);
+    // console.log("  obstacleBarrierTrapInitSet", data[type].trap.state);
     let trap = data[type].trap;
 
     let item = this.itemList.find((x) => x.name === trap.itemNameRef);
@@ -12530,7 +12530,6 @@ class App extends Component {
           // console.log("this traps target is already set", trap.target, data.number, type);
         }
       }
-      console.log("there", trap);
     }
     return trap;
   };
@@ -31550,10 +31549,10 @@ class App extends Component {
       // let testTraps = this.customObstacleBarrierTrapSet("shuffleActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("setNewRandom", "");
-      let testTraps = this.customObstacleBarrierTrapSet(
-        "setNewCustom",
-        this.customTrapSetNewCustomTestData
-      );
+      // let testTraps = this.customObstacleBarrierTrapSet(
+      //   "setNewCustom",
+      //   this.customTrapSetNewCustomTestData
+      // );
       // for (const trap of testTraps) {
       //   this.gridInfo.find((x) => x.number.x === trap.location.x && x.number.y === trap.location.y)[trap.type].trap = trap.trap;
       // }
@@ -33950,20 +33949,28 @@ class App extends Component {
           }
 
           if (player.flanking.step === 2) {
-            console.log(
-              "flanking step 2 plyr dir: ",
-              player.direction,
-              " pre-flank dir: ",
-              player.flanking.preFlankDirection,
-              " flank dir: ",
-              player.flanking.direction,
-              "current position: ",
-              player.currentPosition.cell.number,
-              " strafing: ",
-              player.strafing.state,
-              " move step: ",
-              player.moving.step
-            );
+            // console.log(
+            //   "flanking step 2 plyr dir: ",
+            //   player.direction,
+            //   " pre-flank dir: ",
+            //   player.flanking.preFlankDirection,
+            //   " flank dir: ",
+            //   player.flanking.direction,
+            //   "current position: ",
+            //   player.currentPosition.cell.number,
+            //   " strafing: ",
+            //   player.strafing.state,
+            //   " move step: ",
+            //   player.moving.step
+            // );
+            // console.log(
+            //   "flanking step 2: ",
+            //   player.moving.state,
+            //   player.moving.step,
+            //   "-",
+            //   player.turning.state
+            // );
+            // console.log("3", player.currentPosition.cell.number);
 
             player.direction = this.getOppositeDirection(player.flanking.direction);
             player.turning.toDirection = this.getOppositeDirection(player.flanking.direction);
@@ -33978,82 +33985,47 @@ class App extends Component {
               target2: { x: 0, y: 0 },
             };
 
-            // if (player.popups.find(x=>x.msg === 'flanking2')) {
-            //   player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking2'),1)
-            // }
+            if (player.popups.find((x) => x.msg === "flanking2")) {
+              player.popups.splice(
+                player.popups.findIndex((y) => y.msg === "flanking2"),
+                1
+              );
+            }
           }
           if (player.flanking.step === 1) {
-            console.log(
-              "flanking step 1 plyr dir: ",
-              player.direction,
-              " pre-flank dir: ",
-              player.flanking.preFlankDirection,
-              " flank dir: ",
-              player.flanking.direction,
-              "current position: ",
-              player.currentPosition.cell.number,
-              " strafing: ",
-              player.strafing.state,
-              " move step: ",
-              player.moving.step
-            );
-            let target = this.getTarget(player);
+            // console.log(
+            //   "flanking step 1 plyr dir: ",
+            //   player.direction,
+            //   " pre-flank dir: ",
+            //   player.flanking.preFlankDirection,
+            //   " flank dir: ",
+            //   player.flanking.direction,
+            //   "current position: ",
+            //   player.currentPosition.cell.number,
+            //   " strafing: ",
+            //   player.strafing.state,
+            //   " move step: ",
+            //   player.moving.step
+            // );
+            // console.log(
+            //   "flanking step 1: ",
+            //   player.moving.state,
+            //   player.moving.step,
+            //   "-",
+            //   player.turning.state
+            // );
+            // console.log("2", player.currentPosition.cell.number);
 
-            let myCell = this.gridInfo.find(
-              (elem2) =>
-                elem2.number.x === player.currentPosition.cell.number.x &&
-                elem2.number.y === player.currentPosition.cell.number.y
-            );
-            let myCellBlock = this.checkMyCellBarrier(player.direction, myCell);
+            if (
+              this.keyPressed[player.number - 1].north === true ||
+              this.keyPressed[player.number - 1].south === true ||
+              this.keyPressed[player.number - 1].east === true ||
+              this.keyPressed[player.number - 1].west === true
+            ) {
+              console.log("flanking cancelled by move input!");
+              player.action = "idle";
+              player.turning.toDirection = player.direction;
 
-            if (target.cell1.free === true && myCellBlock !== true) {
-              player.flanking.step = 2;
-              player.flanking.target2 = target.cell1.number;
-              // player.action = 'moving';
-              player.action = "flanking";
-              player.moving = {
-                state: true,
-                step: 0,
-                course: "",
-                origin: {
-                  number: {
-                    x: player.currentPosition.cell.number.x,
-                    y: player.currentPosition.cell.number.y,
-                  },
-                  center: {
-                    x: player.currentPosition.cell.center.x,
-                    y: player.currentPosition.cell.center.y,
-                  },
-                },
-                destination: target.cell1.center,
-              };
-              nextPosition = this.lineCrementer(player);
-              player.nextPosition = nextPosition;
-
-              if (player.ai.state === true) {
-                this.keyPressed[player.number - 1].dodge = false;
-              }
-
-              if (!player.popups.find((x) => x.msg === "flanking2")) {
-                player.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 20,
-                  type: "",
-                  position: "",
-                  msg: "flanking2",
-                  img: "",
-                });
-              }
-
-              if (this.players[player.number - 1].popups.find((x) => x.msg === "dodging")) {
-                this.players[player.number - 1].popups.splice(
-                  this.players[player.number - 1].popups.findIndex((x) => x.msg === "dodging"),
-                  1
-                );
-              }
-            } else {
-              // console.log('cancel flanking 2');
               this.players[player.number - 1].statusDisplay = {
                 state: true,
                 status: "flanking cancelled!",
@@ -34063,6 +34035,7 @@ class App extends Component {
               player.flanking = {
                 checking: false,
                 direction: "",
+                preFlankDirection: "",
                 state: false,
                 step: 0,
                 target1: { x: 0, y: 0 },
@@ -34085,6 +34058,106 @@ class App extends Component {
                   msg: "noFlanking",
                   img: "",
                 });
+              }
+            } else {
+              let target = this.getTarget(player);
+
+              let myCell = this.gridInfo.find(
+                (elem2) =>
+                  elem2.number.x === player.currentPosition.cell.number.x &&
+                  elem2.number.y === player.currentPosition.cell.number.y
+              );
+              let myCellBlock = this.checkMyCellBarrier(player.direction, myCell);
+
+              if (target.cell1.free === true && myCellBlock !== true) {
+                player.flanking.step = 2;
+                player.flanking.target2 = target.cell1.number;
+                // player.action = 'moving';
+                player.action = "flanking";
+                player.moving = {
+                  state: true,
+                  step: 0,
+                  course: "",
+                  origin: {
+                    number: {
+                      x: player.currentPosition.cell.number.x,
+                      y: player.currentPosition.cell.number.y,
+                    },
+                    center: {
+                      x: player.currentPosition.cell.center.x,
+                      y: player.currentPosition.cell.center.y,
+                    },
+                  },
+                  destination: target.cell1.center,
+                };
+                nextPosition = this.lineCrementer(player);
+                player.nextPosition = nextPosition;
+
+                if (player.ai.state === true) {
+                  this.keyPressed[player.number - 1].dodge = false;
+                }
+
+                if (!player.popups.find((x) => x.msg === "flanking2")) {
+                  player.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 20,
+                    type: "",
+                    position: "",
+                    msg: "flanking2",
+                    img: "",
+                  });
+                }
+
+                if (this.players[player.number - 1].popups.find((x) => x.msg === "dodging")) {
+                  this.players[player.number - 1].popups.splice(
+                    this.players[player.number - 1].popups.findIndex((x) => x.msg === "dodging"),
+                    1
+                  );
+                }
+              } else {
+                // console.log(
+                //   "cancel flanking 2",
+                //   player.flanking.direction,
+                //   player.flanking.preFlankDirection,
+                //   player.direction
+                // );
+                player.action = "idle";
+                player.turning.toDirection = player.direction;
+
+                this.players[player.number - 1].statusDisplay = {
+                  state: true,
+                  status: "flanking cancelled!",
+                  count: 1,
+                  limit: this.players[player.number - 1].statusDisplay.limit,
+                };
+                player.flanking = {
+                  checking: false,
+                  direction: "",
+                  preFlankDirection: "",
+                  state: false,
+                  step: 0,
+                  target1: { x: 0, y: 0 },
+                  target2: { x: 0, y: 0 },
+                };
+
+                if (player.popups.find((x) => x.msg === "flanking2")) {
+                  player.popups.splice(
+                    player.popups.findIndex((y) => y.msg === "flanking2"),
+                    1
+                  );
+                }
+                if (!player.popups.find((x) => x.msg === "noFlanking")) {
+                  player.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "noFlanking",
+                    img: "",
+                  });
+                }
               }
             }
           }
@@ -34205,7 +34278,7 @@ class App extends Component {
                     };
                     nextPosition = this.lineCrementer(player);
                     player.nextPosition = nextPosition;
-
+                    // console.log("1", player.currentPosition.cell.number);
                     if (
                       this.mouseOverCell.state === true &&
                       this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
@@ -34214,7 +34287,13 @@ class App extends Component {
                       this.clicked.player = undefined;
                     }
                   } else {
-                    // console.log('cancel flanking 1',player.flanking.direction,player.flanking.preFlankDirection,player.direction,player.action);
+                    // console.log(
+                    //   "cancel flanking 1",
+                    //   player.flanking.direction,
+                    //   player.flanking.preFlankDirection,
+                    //   player.direction,
+                    //   player.action
+                    // );
                     player.action = "idle";
                     player.turning.toDirection = player.direction;
 
@@ -34233,6 +34312,12 @@ class App extends Component {
                         msg: "noFlanking",
                         img: "",
                       });
+                    }
+                    if (player.popups.find((x) => x.msg === "flanking2")) {
+                      player.popups.splice(
+                        player.popups.findIndex((y) => y.msg === "flanking2"),
+                        1
+                      );
                     }
                   }
                 } else {
