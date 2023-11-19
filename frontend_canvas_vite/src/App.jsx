@@ -7942,7 +7942,7 @@ class App extends Component {
   };
 
   lineCrementer = (player) => {
-    // console.log('line crementer',player.number,player.target);
+    // console.log("line crementer", player.number, player.moving.step);
 
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
@@ -31982,9 +31982,107 @@ class App extends Component {
         }
       }
 
+      // MOVE CANCEL/RETURN
+      // if (player.moving.state === true) {
+      //   // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
+
+      //   if (
+      //     this.keyPressed[player.number - 1].north === true ||
+      //     this.keyPressed[player.number - 1].south === true ||
+      //     this.keyPressed[player.number - 1].east === true ||
+      //     this.keyPressed[player.number - 1].west === true
+      //   ) {
+      //     console.log("boom", player.direction, player.strafing.state, player.strafing.direction);
+      //     let newDirection;
+      //     if (this.keyPressed[player.number - 1].north === true) {
+      //       newDirection = "north";
+      //     }
+      //     if (this.keyPressed[player.number - 1].south === true) {
+      //       newDirection = "south";
+      //     }
+      //     if (this.keyPressed[player.number - 1].east === true) {
+      //       newDirection = "east";
+      //     }
+      //     if (this.keyPressed[player.number - 1].west === true) {
+      //       newDirection = "west";
+      //     }
+      //     console.log("new input direction", newDirection);
+
+      //     add move cancel to player props
+      //       state, oldDIrection, newDirection
+
+      //     if not
+      //       player.pushBack.state
+      //       player.falling.state
+      //       drowning
+      //       pulling, pushing, pulled pushed
+      //         if direction or strafe direction is oppostie of new input
+      //         if player moveCancel is false
+
+      //         if jumping is true
+      //           if move step is < .3 or .4
+      //         if jumping is not true
+      //           if move step is < .5 or .6
+
+      //         if stam check
+      //           reset flanking or jumping if true
+      //           set strafing based on
+      //             if strafing false, turn on for return and strafe dir is new dir
+      //             if strafing faBackwardStep, turn off for return
+      //             if strafing not backwards, turn on for return and strafe dir is new dir
+
+      //             get target
+      //             start move
+
+      //         if not enough stam, oout of stam
+
+      //         if player movecancel is true do nothing
+      //         for all dest checks normal move check code block
+      //           set moveCancel false if it is true
+
+      //     if (player.stamina.current - this.staminaCostRef.move >= 0) {
+      //       player.stamina.current -= this.staminaCostRef.move;
+
+      //       this.moveSpeed = player.speed.move;
+
+      //       player.moving = {
+      //         state: true,
+      //         step: 0,
+      //         course: "",
+      //         origin: {
+      //           number: player.currentPosition.cell.number,
+      //           center: player.currentPosition.cell.center,
+      //         },
+      //         destination: target.cell1.center,
+      //       };
+
+      //       nextPosition = this.lineCrementer(player);
+      //       player.nextPosition = nextPosition;
+
+      //       if (
+      //         this.mouseOverCell.state === true &&
+      //         this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+      //         this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+      //       ) {
+      //         this.clicked.player = undefined;
+      //       }
+      //     } else {
+      //       player.stamina.current = 0;
+      //       player.statusDisplay = {
+      //         state: true,
+      //         status: "Out of Stamina",
+      //         count: 0,
+      //         limit: player.statusDisplay.limit,
+      //       };
+      //     }
+
+      //   }
+      // }
+
       // DON'T READ INPUTS. JUST MOVE!!
+      // for all dest checks set moveCancel false if it is true
       if (player.moving.state === true) {
-        // console.log('player ',player.number,' ',player.action,' : ',player.moving);
+        // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
 
         nextPosition = this.lineCrementer(player);
         player.nextPosition = nextPosition;
@@ -32253,7 +32351,11 @@ class App extends Component {
         }
 
         if (player.jumping.state === true) {
-          // console.log('mid jump');
+          console.log(
+            "mid jump",
+            player.moving.step
+            // player.currentPosition.cell.number,
+          );
 
           if (
             nextPosition.x >= player.target.cell1.center.x - 1 &&
@@ -32308,7 +32410,7 @@ class App extends Component {
                 // console.log('barrier bloackage ',blockType);
               }
 
-              // console.log('@ mid jump cell 1',player.target.cell1);
+              console.log("@ mid jump cell 1", player.target.cell1.number);
               break;
             }
           }
@@ -32342,7 +32444,7 @@ class App extends Component {
 
           for (const el of atDestRanges2) {
             if (el === true) {
-              // console.log('at jump destination',player.target.cell2.number);
+              console.log("at jump destination", player.target.cell2.number);
               // console.log('next position is destination a',player.number);
               player.newMoveDelay.state = true;
 
@@ -32699,6 +32801,7 @@ class App extends Component {
           player.strafing.state = false;
           player.strafeReleaseHook = false;
           this.getTarget(player);
+          player.strafing.direction = "";
           // console.log('strafe release hook');
         }
 
@@ -32741,7 +32844,7 @@ class App extends Component {
             player.attackPeak = false;
             player.action = "attacking";
             player.attacking.count++;
-
+            // console.log("attack count", player.attacking.count);
             // APPLY BLUNT ATTACK
             if (
               player.dodging.countState === true ||
@@ -32899,6 +33002,7 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
+            // console.log("attack peak count", player.attacking.count);
             this.setElasticCounter("attacking", "", false, player);
 
             // WEAPON STAMINA COST!!
@@ -33065,7 +33169,12 @@ class App extends Component {
 
           // PEAK, START DECAY
           else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
-            // console.log("peak defend player", player.number);
+            // console.log(
+            //   "peak defend player",
+            //   player.number,
+            //   player.defending.count,
+            //   player.defending.limit - defendPeak
+            // );
 
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
               player.action = "defending";
@@ -33165,7 +33274,12 @@ class App extends Component {
                 limit: player.defending.limit,
               };
               player.action = "idle";
-              console.log("defend decay limit. drop defense", player.defending.state);
+              console.log(
+                "defend decay limit. drop defense",
+                player.defending.state,
+                player.defending.count,
+                player.defendDecay.limit
+              );
               player.defendDecay = {
                 state: false,
                 count: 0,
@@ -33357,6 +33471,7 @@ class App extends Component {
           }
           // PEAK START
           if (player.dodging.count === player.dodging.peak.start - startMod) {
+            // console.log("dodge count", player.dodging.count);
             // player.popups.push(
             //   {
             //     state: false,
@@ -33378,7 +33493,7 @@ class App extends Component {
           ) {
             player.dodging.state = true;
 
-            // console.log('dodge peak',player.dodging.count);
+            // console.log("dodge peak", player.dodging.count);
           }
 
           // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
@@ -38065,247 +38180,239 @@ class App extends Component {
           // FOR TESTING BY CALLING ONLY @ 1 CELL
           if (
             plyr.currentPosition.cell.number.x === x &&
-            plyr.currentPosition.cell.number.y === y
+            plyr.currentPosition.cell.number.y === y &&
+            plyr.number === 1
           ) {
-            switch (plyr.action) {
-              case "moving":
-                let moveSpeed = plyr.speed.move;
-                if (plyr.terrainMoveSpeed.state === true) {
-                  moveSpeed = plyr.terrainMoveSpeed.speed;
-                }
-                if (plyr.pushing.state === true) {
-                  moveSpeed = plyr.pushing.moveSpeed;
-                }
-                if (plyr.pulling.state === true) {
-                  moveSpeed = plyr.pulling.moveSpeed;
-                }
-                if (plyr.pushed.state === true) {
-                  moveSpeed = plyr.pushed.moveSpeed;
-                }
-                if (plyr.pulled.state === true) {
-                  moveSpeed = plyr.pulled.moveSpeed;
-                }
-                let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
-                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
-                finalAnimIndex = moveAnimIndex;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                if (plyr.target.cell1.void == true) {
-                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                }
-                break;
-              case "jumping":
-                let rangeIndex4 = plyr.speed.range.indexOf(0.1);
-                let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step);
-                finalAnimIndex = moveAnimIndex4;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                break;
-              case "strafe moving":
-                if (plyr.pushBack.state === true) {
-                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
-                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step);
-                  finalAnimIndex = moveAnimIndex3;
-                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                } else {
-                  let moveSpeed = plyr.speed.move;
-                  // if (plyr.pushing.state === true) {
-                  //   moveSpeed = plyr.pushing.moveSpeed;
-                  // }
-                  if (plyr.pulling.state === true) {
-                    moveSpeed = plyr.pulling.moveSpeed;
-                  }
-                  if (plyr.pushed.state === true) {
-                    moveSpeed = plyr.pushed.moveSpeed;
-                  }
-                  if (plyr.pulled.state === true) {
-                    moveSpeed = plyr.pulled.moveSpeed;
-                  }
-                  let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
-                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step);
-                  finalAnimIndex = moveAnimIndex2;
-                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                }
-                break;
-              case "flanking":
-                let rangeIndex6 = plyr.speed.range.indexOf(0.2);
-                let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step);
-                finalAnimIndex = moveAnimIndex6;
-                // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                break;
-              case "attacking":
-                // let animIndex = plyr.attacking.count -1;
-                let animIndex;
-
-                if (
-                  plyr.elasticCounter.state === true &&
-                  plyr.elasticCounter.type === "attacking"
-                ) {
-                  if (plyr.elasticCounter.countUp.state === true) {
-                    animIndex = plyr.elasticCounter.countUp.count - 1;
-                  }
-                  if (plyr.elasticCounter.pause.state === true) {
-                    if (plyr.elasticCounter.pause.count < 11) {
-                      animIndex = plyr.elasticCounter.pause.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.pause.count % 10 === 0) {
-                        animIndex = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                        animIndex = plyr.elasticCounter.pause.count - mod - 1;
-                      }
-                    }
-                  }
-                  if (plyr.elasticCounter.countDown.state === true) {
-                    animIndex = plyr.elasticCounter.countDown.count - 1;
-                  }
-                } else {
-                  animIndex = plyr.attacking.count - 1;
-                }
-
-                finalAnimIndex = animIndex;
-                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-                break;
-              case "defending":
-                let animIndex2 = plyr.defending.count - 1;
-
-                if (plyr.defendDecay.state !== true) {
-                  if (plyr.defending.count > 0) {
-                    finalAnimIndex = animIndex2;
-                    // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-                  }
-                  if (plyr.defending.count === 0) {
-                    let animIndex2a = 5;
-                    finalAnimIndex = animIndex2a;
-                    // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-                  }
-                }
-                if (plyr.defendDecay.state === true) {
-                  if (plyr.defendDecay.count < 11) {
-                    animIndex2 = plyr.defendDecay.count - 1;
-                  } else {
-                    if (plyr.defendDecay.count % 10 === 0) {
-                      animIndex2 = 9;
-                    } else {
-                      let mod = Math.floor(plyr.defendDecay.count / 10) * 10;
-                      animIndex2 = plyr.defendDecay.count - mod - 1;
-                    }
-                  }
-                  finalAnimIndex = animIndex2;
-                }
-
-                break;
-              case "idle":
-                if (plyr.number === 1) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                if (plyr.number === 2) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                let animIndex3 = plyr.idleAnim.count + 1;
-                finalAnimIndex = animIndex3;
-                break;
-              case "falling":
-                let animIndex4 = plyr.falling.count - 1;
-                finalAnimIndex = animIndex4;
-                // console.log("anim testing fall", plyr.falling.count, "plyr", plyr.number);
-                break;
-              case "deflected":
-                let animIndex5 = plyr.success.deflected.count - 1;
-
-                if (
-                  plyr.elasticCounter.state === true &&
-                  plyr.elasticCounter.type === "deflected"
-                ) {
-                  if (plyr.elasticCounter.countUp.state === true) {
-                    animIndex5 = plyr.elasticCounter.countUp.count - 1;
-                  }
-                  if (plyr.elasticCounter.pause.state === true) {
-                    if (plyr.elasticCounter.pause.count < 11) {
-                      animIndex5 = plyr.elasticCounter.pause.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.pause.count % 10 === 0) {
-                        animIndex5 = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                        animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
-                      }
-                    }
-                  }
-                  if (plyr.elasticCounter.countDown.state === true) {
-                    animIndex5 = plyr.elasticCounter.countDown.count - 1;
-                  }
-                }
-                if (plyr.halfPushBack.state === true) {
-                  if (plyr.halfPushBack.countUp.state === true) {
-                    animIndex5 = plyr.halfPushBack.countUp.count - 1;
-                  }
-                  if (plyr.halfPushBack.countDown.state === true) {
-                    animIndex5 = plyr.halfPushBack.countDown.count - 1;
-                  }
-                }
-                finalAnimIndex = animIndex5;
-                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-                break;
-              case "dodging":
-                let animIndex7 = plyr.dodging.count - 1;
-
-                if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "dodging") {
-                  if (plyr.elasticCounter.countUp.state === true) {
-                    // animIndex7 = plyr.elasticCounter.countUp.count-1;
-
-                    if (plyr.elasticCounter.countUp.count < 11) {
-                      animIndex7 = plyr.elasticCounter.countUp.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.countUp.count % 10 === 0) {
-                        animIndex7 = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
-                        animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
-                      }
-                    }
-                  }
-                  if (plyr.elasticCounter.pause.state === true) {
-                    if (plyr.elasticCounter.pause.count < 11) {
-                      animIndex7 = plyr.elasticCounter.pause.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.pause.count % 10 === 0) {
-                        animIndex7 = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                        animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
-                      }
-                    }
-                  }
-                  if (plyr.elasticCounter.countDown.state === true) {
-                    // animIndex7 = plyr.elasticCounter.countDown.count-1;
-
-                    if (plyr.elasticCounter.countDown.count < 11) {
-                      animIndex7 = plyr.elasticCounter.countDown.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.countDown.count % 10 === 0) {
-                        animIndex7 = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
-                        animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
-                      }
-                    }
-                  }
-                }
-
-                finalAnimIndex = animIndex7;
-                // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-                break;
-            }
+            // switch (plyr.action) {
+            //   case "moving":
+            //     let moveSpeed = plyr.speed.move;
+            //     if (plyr.terrainMoveSpeed.state === true) {
+            //       moveSpeed = plyr.terrainMoveSpeed.speed;
+            //     }
+            //     if (plyr.pushing.state === true) {
+            //       moveSpeed = plyr.pushing.moveSpeed;
+            //     }
+            //     if (plyr.pulling.state === true) {
+            //       moveSpeed = plyr.pulling.moveSpeed;
+            //     }
+            //     if (plyr.pushed.state === true) {
+            //       moveSpeed = plyr.pushed.moveSpeed;
+            //     }
+            //     if (plyr.pulled.state === true) {
+            //       moveSpeed = plyr.pulled.moveSpeed;
+            //     }
+            //     let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
+            //     let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
+            //     finalAnimIndex = moveAnimIndex;
+            //     // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            //     if (plyr.target.cell1.void == true) {
+            //       // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            //     }
+            //     break;
+            //   case "jumping":
+            //     let rangeIndex4 = plyr.speed.range.indexOf(0.1);
+            //     let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step);
+            //     finalAnimIndex = moveAnimIndex4;
+            //     // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            //     break;
+            //   case "strafe moving":
+            //     if (plyr.pushBack.state === true) {
+            //       let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
+            //       let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step);
+            //       finalAnimIndex = moveAnimIndex3;
+            //       // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+            //     } else {
+            //       let moveSpeed = plyr.speed.move;
+            //       // if (plyr.pushing.state === true) {
+            //       //   moveSpeed = plyr.pushing.moveSpeed;
+            //       // }
+            //       if (plyr.pulling.state === true) {
+            //         moveSpeed = plyr.pulling.moveSpeed;
+            //       }
+            //       if (plyr.pushed.state === true) {
+            //         moveSpeed = plyr.pushed.moveSpeed;
+            //       }
+            //       if (plyr.pulled.state === true) {
+            //         moveSpeed = plyr.pulled.moveSpeed;
+            //       }
+            //       let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
+            //       let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step);
+            //       finalAnimIndex = moveAnimIndex2;
+            //       // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+            //     }
+            //     break;
+            //   case "flanking":
+            //     let rangeIndex6 = plyr.speed.range.indexOf(0.2);
+            //     let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step);
+            //     finalAnimIndex = moveAnimIndex6;
+            //     // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+            //     // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            //     break;
+            //   case "attacking":
+            //     // let animIndex = plyr.attacking.count -1;
+            //     let animIndex;
+            //     if (
+            //       plyr.elasticCounter.state === true &&
+            //       plyr.elasticCounter.type === "attacking"
+            //     ) {
+            //       if (plyr.elasticCounter.countUp.state === true) {
+            //         animIndex = plyr.elasticCounter.countUp.count - 1;
+            //       }
+            //       if (plyr.elasticCounter.pause.state === true) {
+            //         if (plyr.elasticCounter.pause.count < 11) {
+            //           animIndex = plyr.elasticCounter.pause.count - 1;
+            //         } else {
+            //           if (plyr.elasticCounter.pause.count % 10 === 0) {
+            //             animIndex = 9;
+            //             // animIndex5 = 10;
+            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+            //           } else {
+            //             let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+            //             animIndex = plyr.elasticCounter.pause.count - mod - 1;
+            //           }
+            //         }
+            //       }
+            //       if (plyr.elasticCounter.countDown.state === true) {
+            //         animIndex = plyr.elasticCounter.countDown.count - 1;
+            //       }
+            //     } else {
+            //       animIndex = plyr.attacking.count - 1;
+            //     }
+            //     finalAnimIndex = animIndex;
+            //     // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+            //     break;
+            //   case "defending":
+            //     let animIndex2 = plyr.defending.count - 1;
+            //     if (plyr.defendDecay.state !== true) {
+            //       if (plyr.defending.count > 0) {
+            //         finalAnimIndex = animIndex2;
+            //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+            //       }
+            //       if (plyr.defending.count === 0) {
+            //         let animIndex2a = 5;
+            //         finalAnimIndex = animIndex2a;
+            //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+            //       }
+            //     }
+            //     if (plyr.defendDecay.state === true) {
+            //       if (plyr.defendDecay.count < 11) {
+            //         animIndex2 = plyr.defendDecay.count - 1;
+            //       } else {
+            //         if (plyr.defendDecay.count % 10 === 0) {
+            //           animIndex2 = 9;
+            //         } else {
+            //           let mod = Math.floor(plyr.defendDecay.count / 10) * 10;
+            //           animIndex2 = plyr.defendDecay.count - mod - 1;
+            //         }
+            //       }
+            //       finalAnimIndex = animIndex2;
+            //     }
+            //     break;
+            //   case "idle":
+            //     if (plyr.number === 1) {
+            //       // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+            //     }
+            //     if (plyr.number === 2) {
+            //       // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+            //     }
+            //     let animIndex3 = plyr.idleAnim.count + 1;
+            //     finalAnimIndex = animIndex3;
+            //     break;
+            //   case "falling":
+            //     let animIndex4 = plyr.falling.count - 1;
+            //     finalAnimIndex = animIndex4;
+            //     // console.log("anim testing fall", plyr.falling.count, "plyr", plyr.number);
+            //     break;
+            //   case "deflected":
+            //     let animIndex5 = plyr.success.deflected.count - 1;
+            //     if (
+            //       plyr.elasticCounter.state === true &&
+            //       plyr.elasticCounter.type === "deflected"
+            //     ) {
+            //       if (plyr.elasticCounter.countUp.state === true) {
+            //         animIndex5 = plyr.elasticCounter.countUp.count - 1;
+            //       }
+            //       if (plyr.elasticCounter.pause.state === true) {
+            //         if (plyr.elasticCounter.pause.count < 11) {
+            //           animIndex5 = plyr.elasticCounter.pause.count - 1;
+            //         } else {
+            //           if (plyr.elasticCounter.pause.count % 10 === 0) {
+            //             animIndex5 = 9;
+            //             // animIndex5 = 10;
+            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+            //           } else {
+            //             let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+            //             animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
+            //           }
+            //         }
+            //       }
+            //       if (plyr.elasticCounter.countDown.state === true) {
+            //         animIndex5 = plyr.elasticCounter.countDown.count - 1;
+            //       }
+            //     }
+            //     if (plyr.halfPushBack.state === true) {
+            //       if (plyr.halfPushBack.countUp.state === true) {
+            //         animIndex5 = plyr.halfPushBack.countUp.count - 1;
+            //       }
+            //       if (plyr.halfPushBack.countDown.state === true) {
+            //         animIndex5 = plyr.halfPushBack.countDown.count - 1;
+            //       }
+            //     }
+            //     finalAnimIndex = animIndex5;
+            //     // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+            //     break;
+            //   case "dodging":
+            //     let animIndex7 = plyr.dodging.count - 1;
+            //     if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "dodging") {
+            //       if (plyr.elasticCounter.countUp.state === true) {
+            //         // animIndex7 = plyr.elasticCounter.countUp.count-1;
+            //         if (plyr.elasticCounter.countUp.count < 11) {
+            //           animIndex7 = plyr.elasticCounter.countUp.count - 1;
+            //         } else {
+            //           if (plyr.elasticCounter.countUp.count % 10 === 0) {
+            //             animIndex7 = 9;
+            //             // animIndex5 = 10;
+            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+            //           } else {
+            //             let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
+            //             animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
+            //           }
+            //         }
+            //       }
+            //       if (plyr.elasticCounter.pause.state === true) {
+            //         if (plyr.elasticCounter.pause.count < 11) {
+            //           animIndex7 = plyr.elasticCounter.pause.count - 1;
+            //         } else {
+            //           if (plyr.elasticCounter.pause.count % 10 === 0) {
+            //             animIndex7 = 9;
+            //             // animIndex5 = 10;
+            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+            //           } else {
+            //             let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+            //             animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
+            //           }
+            //         }
+            //       }
+            //       if (plyr.elasticCounter.countDown.state === true) {
+            //         // animIndex7 = plyr.elasticCounter.countDown.count-1;
+            //         if (plyr.elasticCounter.countDown.count < 11) {
+            //           animIndex7 = plyr.elasticCounter.countDown.count - 1;
+            //         } else {
+            //           if (plyr.elasticCounter.countDown.count % 10 === 0) {
+            //             animIndex7 = 9;
+            //             // animIndex5 = 10;
+            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+            //           } else {
+            //             let mod = Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
+            //             animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
+            //           }
+            //         }
+            //       }
+            //     }
+            //     finalAnimIndex = animIndex7;
+            //     // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+            //     break;
+            // }
           }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
@@ -38743,6 +38850,7 @@ class App extends Component {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
 
             let direction = plyr.direction;
+
             if (plyr.strafing.direction !== "") {
               direction = plyr.strafing.direction;
             }
