@@ -32223,7 +32223,7 @@ class App extends Component {
           //   "move cancel/ returning...",
           //   player.moving.step,
           //   nextPosition,
-          //   player.target.cell1.center
+          //   player.currentPosition.cell.numbers
           // );
         }
 
