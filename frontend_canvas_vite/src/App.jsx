@@ -2218,6 +2218,13 @@ class App extends Component {
           direction: "",
         },
         strafeReleaseHook: false,
+        moveCancel: {
+          state: false,
+          oldDirection: "",
+          newDirection: "",
+          returningTo: {},
+          returningFrom: {},
+        },
         flanking: {
           checking: false,
           preFlankDirection: "",
@@ -2709,6 +2716,13 @@ class App extends Component {
           direction: "",
         },
         strafeReleaseHook: false,
+        moveCancel: {
+          state: false,
+          oldDirection: "",
+          newDirection: "",
+          returningTo: {},
+          returningFrom: {},
+        },
         flanking: {
           checking: false,
           preFlankDirection: "",
@@ -7942,11 +7956,20 @@ class App extends Component {
   };
 
   lineCrementer = (player) => {
-    // console.log("line crementer", player.number, player.moving.step);
+    // console.log(
+    //   "line crementer",
+    //   player.number,
+    //   player.moving.step,
+    //   player.moveCancel.state,
+    //   player.nextPosition
+    // );
 
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let moveSpeed = player.speed.move;
+    if (player.moveCancel.state === true) {
+      currentPosition = player.moving.origin.center;
+    }
     if (player.terrainMoveSpeed.state === true) {
       // console.log('terrain speed mod',player.terrainMoveSpeed.speed);
       moveSpeed = player.terrainMoveSpeed.speed;
@@ -9379,6 +9402,10 @@ class App extends Component {
     let midGridVoid2 = false;
     let edgeVoid1 = false;
     let edgeVoid2 = false;
+
+    if (player.moveCancel.state === true) {
+      currentPosition = player.target.cell1.number;
+    }
 
     // DIRECTION MOD: STRAFING
     if (player.strafing.state === true && player.strafing.direction !== "") {
@@ -23289,6 +23316,13 @@ class App extends Component {
         limit: 15,
       };
       player.strafeReleaseHook = false;
+      player.moveCancel = {
+        state: false,
+        oldDirection: "",
+        newDirection: "",
+        returningTo: {},
+        returningFrom: {},
+      };
       player.attacking = {
         state: false,
         count: 0,
@@ -23575,6 +23609,13 @@ class App extends Component {
       direction: "",
     };
     player.strafeReleaseHook = false;
+    player.moveCancel = {
+      state: false,
+      oldDirection: "",
+      newDirection: "",
+      returningTo: {},
+      returningFrom: {},
+    };
     player.flanking = {
       checking: false,
       preFlankDirection: "",
@@ -24226,6 +24267,13 @@ class App extends Component {
           direction: "",
         };
         player.strafeReleaseHook = false;
+        player.moveCancel = {
+          state: false,
+          oldDirection: "",
+          newDirection: "",
+          returningTo: {},
+          returningFrom: {},
+        };
         player.flanking = {
           checking: false,
           preFlankDirection: "",
@@ -24930,6 +24978,13 @@ class App extends Component {
             direction: "",
           },
           strafeReleaseHook: false,
+          moveCancel: {
+            state: false,
+            oldDirection: "",
+            newDirection: "",
+            returningTo: {},
+            returningFrom: {},
+          },
           flanking: {
             checking: false,
             preFlankDirection: "",
@@ -31983,109 +32038,194 @@ class App extends Component {
       }
 
       // MOVE CANCEL/RETURN
-      // if (player.moving.state === true) {
-      //   // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
+      if (player.moving.state === true) {
+        // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
+        let canCancelMove = false;
 
-      //   if (
-      //     this.keyPressed[player.number - 1].north === true ||
-      //     this.keyPressed[player.number - 1].south === true ||
-      //     this.keyPressed[player.number - 1].east === true ||
-      //     this.keyPressed[player.number - 1].west === true
-      //   ) {
-      //     console.log("boom", player.direction, player.strafing.state, player.strafing.direction);
-      //     let newDirection;
-      //     if (this.keyPressed[player.number - 1].north === true) {
-      //       newDirection = "north";
-      //     }
-      //     if (this.keyPressed[player.number - 1].south === true) {
-      //       newDirection = "south";
-      //     }
-      //     if (this.keyPressed[player.number - 1].east === true) {
-      //       newDirection = "east";
-      //     }
-      //     if (this.keyPressed[player.number - 1].west === true) {
-      //       newDirection = "west";
-      //     }
-      //     console.log("new input direction", newDirection);
+        if (
+          this.keyPressed[player.number - 1].north === true ||
+          this.keyPressed[player.number - 1].south === true ||
+          this.keyPressed[player.number - 1].east === true ||
+          this.keyPressed[player.number - 1].west === true
+        ) {
+          let oldDirection;
+          let newDirection;
+          if (this.keyPressed[player.number - 1].north === true) {
+            newDirection = "north";
+          }
+          if (this.keyPressed[player.number - 1].south === true) {
+            newDirection = "south";
+          }
+          if (this.keyPressed[player.number - 1].east === true) {
+            newDirection = "east";
+          }
+          if (this.keyPressed[player.number - 1].west === true) {
+            newDirection = "west";
+          }
+          if (player.strafing.state === true) {
+            if (newDirection === this.getOppositeDirection(player.strafing.direction)) {
+              canCancelMove = true;
+            }
+            oldDirection = player.strafing.direction;
+          } else {
+            if (newDirection === this.getOppositeDirection(player.direction)) {
+              canCancelMove = true;
+            }
+            oldDirection = player.direction;
+          }
 
-      //     add move cancel to player props
-      //       state, oldDIrection, newDirection
+          if (
+            player.drowning === true ||
+            player.pushBack.state === true ||
+            player.falling.state === true ||
+            player.pushing.state === true ||
+            player.pulling.state === true ||
+            player.pushed.state === true ||
+            player.pulled.state === true
+          ) {
+            canCancelMove = false;
+            console.log(
+              "cannot cancel move when being pushed back, falling, drowning, pulling, pushing, and being pushed or pulled"
+            );
+          }
 
-      //     if not
-      //       player.pushBack.state
-      //       player.falling.state
-      //       drowning
-      //       pulling, pushing, pulled pushed
-      //         if direction or strafe direction is oppostie of new input
-      //         if player moveCancel is false
+          if (player.moveCancel.state !== true && canCancelMove === true) {
+            // console.log("new input direction", newDirection, player.moving.step);
+            // player.speed.move = 0.2;
+            let inTime = false;
+            let inTimeThresh;
+            let threshIndx;
+            if (player.jumping.state === true) {
+              inTimeThresh = 0.4;
+            } else {
+              let indx3 = player.speed.range.indexOf(player.speed.move);
+              threshIndx = Math.ceil(this.moveStepRef[indx3].length / 2);
+              inTimeThresh = this.moveStepRef[indx3][threshIndx];
+            }
+            if (player.moving.step < inTimeThresh) {
+              inTime = true;
+            }
 
-      //         if jumping is true
-      //           if move step is < .3 or .4
-      //         if jumping is not true
-      //           if move step is < .5 or .6
+            if (inTime === true) {
+              if (player.stamina.current - this.staminaCostRef.move >= 0) {
+                player.stamina.current -= this.staminaCostRef.move;
 
-      //         if stam check
-      //           reset flanking or jumping if true
-      //           set strafing based on
-      //             if strafing false, turn on for return and strafe dir is new dir
-      //             if strafing faBackwardStep, turn off for return
-      //             if strafing not backwards, turn on for return and strafe dir is new dir
+                this.moveSpeed = player.speed.move;
+                if (player.jumping.state === true) {
+                  player.jumping = {
+                    checking: false,
+                    state: false,
+                  };
+                }
+                if (player.flanking.state === true) {
+                  player.flanking = {
+                    checking: false,
+                    preFlankDirection: "",
+                    direction: "",
+                    state: false,
+                    step: 0,
+                    target1: { x: 0, y: 0 },
+                    target2: { x: 0, y: 0 },
+                  };
+                }
+                let originalDest = player.target.cell1;
 
-      //             get target
-      //             start move
+                player.moveCancel = {
+                  state: true,
+                  oldDirection: oldDirection,
+                  newDirection: newDirection,
+                  returningTo: {},
+                  returningFrom: {},
+                };
 
-      //         if not enough stam, oout of stam
+                if (player.strafing.state !== true) {
+                  player.strafing.state = true;
+                  player.strafing.direction = newDirection;
+                } else {
+                  if (player.strafing.direction === this.getOppositeDirection(player.direction)) {
+                    player.strafing.state = false;
+                    player.strafing.direction = "";
+                  } else {
+                    player.strafing.direction = newDirection;
+                  }
+                }
 
-      //         if player movecancel is true do nothing
-      //         for all dest checks normal move check code block
-      //           set moveCancel false if it is true
+                let newTarget = this.getTarget(player);
 
-      //     if (player.stamina.current - this.staminaCostRef.move >= 0) {
-      //       player.stamina.current -= this.staminaCostRef.move;
+                let indx3 = player.speed.range.indexOf(player.speed.move);
+                let indx4 = this.moveStepRef[indx3].indexOf(player.moving.step);
+                let newIndx = this.moveStepRef[indx3].length - (indx4 + 1);
+                let newStep = this.moveStepRef[indx3][newIndx - 1];
 
-      //       this.moveSpeed = player.speed.move;
+                // // move speeds
+                // [0.05, 0.1, 0.125, 0.2],
+                // // Move speed step indices
+                // [
+                //   0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8,
+                //   0.85, 0.9, 0.95, 1,
+                // ],
+                // [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+                // [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
+                // [0.2, 0.4, 0.6, 0.8, 1],
 
-      //       player.moving = {
-      //         state: true,
-      //         step: 0,
-      //         course: "",
-      //         origin: {
-      //           number: player.currentPosition.cell.number,
-      //           center: player.currentPosition.cell.center,
-      //         },
-      //         destination: target.cell1.center,
-      //       };
+                player.action = "moving";
+                player.moving = {
+                  state: true,
+                  step: newStep,
+                  course: "",
+                  origin: {
+                    number: originalDest.number,
+                    center: originalDest.center,
+                  },
+                  destination: newTarget.cell1.center,
+                };
 
-      //       nextPosition = this.lineCrementer(player);
-      //       player.nextPosition = nextPosition;
+                nextPosition = this.lineCrementer(player);
+                player.nextPosition = nextPosition;
+                // console.log(
+                //   "can move cancel/ return: starting"
+                //   // originalDest.number,
+                //   // newTarget.cell1.number,
+                // );
 
-      //       if (
-      //         this.mouseOverCell.state === true &&
-      //         this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
-      //         this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
-      //       ) {
-      //         this.clicked.player = undefined;
-      //       }
-      //     } else {
-      //       player.stamina.current = 0;
-      //       player.statusDisplay = {
-      //         state: true,
-      //         status: "Out of Stamina",
-      //         count: 0,
-      //         limit: player.statusDisplay.limit,
-      //       };
-      //     }
-
-      //   }
-      // }
-
+                if (
+                  this.mouseOverCell.state === true &&
+                  this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                  this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                ) {
+                  this.clicked.player = player;
+                }
+              } else {
+                player.stamina.current = 0;
+                player.statusDisplay = {
+                  state: true,
+                  status: "Out of Stamina",
+                  count: 0,
+                  limit: player.statusDisplay.limit,
+                };
+              }
+            } else {
+              console.log("too late to move cancel. move step is", player.moving.step);
+            }
+          } else if (player.moveCancel.state === true) {
+            console.log("already move cancelling");
+          }
+        }
+      }
       // DON'T READ INPUTS. JUST MOVE!!
-      // for all dest checks set moveCancel false if it is true
       if (player.moving.state === true) {
         // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
 
         nextPosition = this.lineCrementer(player);
         player.nextPosition = nextPosition;
+        if (player.moveCancel.state === true) {
+          // console.log(
+          //   "move cancel/ returning...",
+          //   player.moving.step,
+          //   nextPosition,
+          //   player.target.cell1.center
+          // );
+        }
 
         let atDestRanges1 = [false, false, false, false];
         let atDestRanges2 = [false, false, false, false];
@@ -32251,7 +32391,7 @@ class App extends Component {
                 };
                 deflectPullPushedPlayer = true;
               }
-
+              // PUSHED & PULLED PLAYERS DEFLECT?
               if (
                 deflectPullPushedPlayer === true &&
                 this.gridInfo.find(
@@ -32296,6 +32436,10 @@ class App extends Component {
                   direction: "",
                 };
                 player.speed.move = player.pushBack.prePushMoveSpeed;
+              }
+              if (player.moveCancel.state === true) {
+                console.log("arrived! reset move cancel");
+                player.moveCancel.state = false;
               }
 
               if (!refCell1) {
