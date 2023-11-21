@@ -3521,16 +3521,88 @@ class App extends Component {
     ];
     this.attackAnimRef = {
       limit: {
-        unarmed: 20,
-        sword: 25,
-        spear: 30,
-        crossbow: 30,
+        unarmed: {
+          thrust: {
+            normal: 30,
+            charged: 40,
+          },
+          slash: {
+            normal: 35,
+            charged: 45,
+          },
+        },
+        sword: {
+          thrust: {
+            normal: 40,
+            charged: 50,
+          },
+          slash: {
+            normal: 45,
+            charged: 55,
+          },
+        },
+        spear: {
+          thrust: {
+            normal: 50,
+            charged: 60,
+          },
+          slash: {
+            normal: 55,
+            charged: 65,
+          },
+        },
+        crossbow: {
+          thrust: {
+            normal: 50,
+            charged: 60,
+          },
+          slash: {
+            normal: 50,
+            charged: 60,
+          },
+        },
       },
       peak: {
-        unarmed: 10,
-        sword: 15,
-        spear: 20,
-        crossbow: 20,
+        unarmed: {
+          thrust: {
+            normal: 15,
+            charged: 25,
+          },
+          slash: {
+            normal: 20,
+            charged: 30,
+          },
+        },
+        sword: {
+          thrust: {
+            normal: 25,
+            charged: 35,
+          },
+          slash: {
+            normal: 30,
+            charged: 40,
+          },
+        },
+        spear: {
+          thrust: {
+            normal: 35,
+            charged: 45,
+          },
+          slash: {
+            normal: 40,
+            charged: 50,
+          },
+        },
+        crossbow: {
+          thrust: {
+            normal: 35,
+            charged: 45,
+          },
+          slash: {
+            normal: 35,
+            charged: 45,
+          },
+        },
       },
     };
     this.obstacleBarrierTrapAttackAnimRef = {
@@ -3547,16 +3619,43 @@ class App extends Component {
     };
     this.defendAnimRef = {
       limit: {
-        unarmed: 25,
-        sword: 30,
-        spear: 35,
-        crossbow: 30,
+        unarmed: {
+          thrust: 20,
+          slash: 20,
+        },
+        sword: {
+          thrust: 30,
+          slash: 30,
+        },
+        spear: {
+          thrust: 40,
+          slash: 40,
+        },
+        crossbow: {
+          thrust: 30,
+          slash: 30,
+        },
       },
       peak: {
-        unarmed: 5,
-        sword: 10,
-        spear: 15,
-        crossbow: 10,
+        unarmed: {
+          thrust: 10,
+          slash: 10,
+          // 7
+        },
+        sword: {
+          thrust: 15,
+          slash: 15,
+          // 12
+        },
+        spear: {
+          thrust: 20,
+          slash: 20,
+          // 17
+        },
+        crossbow: {
+          thrust: 17,
+          slash: 17,
+        },
       },
     };
     this.staminaCostRef = {
@@ -8897,6 +8996,10 @@ class App extends Component {
 
       let countCalcUp = limit - attackPeak;
 
+      if (countCalcUp > 10) {
+        countCalcUp = 10;
+      }
+
       player.elasticCounter = {
         state: true,
         direction: player.direction,
@@ -8925,6 +9028,7 @@ class App extends Component {
         },
       };
     }
+    console.log("player elasticCounter set", player.elasticCounter);
   };
   calcElasticCountCoords = (type, subType, data) => {
     let drawCell;
@@ -32985,7 +33089,14 @@ class App extends Component {
           // STEP ATTACK COUNT & CELLS UDER PRE-ATTACK
           if (player.attacking.count < this.attackAnimRef.limit[stamAtkType]) {
             if (player.attacking.count < attackPeak) {
-              // console.log('attack wind up',player.attacking.count,'player',player.number);
+              console.log(
+                "attack wind up",
+                player.attacking.count,
+                "player",
+                player.number,
+                "peak",
+                attackPeak
+              );
             }
             player.attackPeak = false;
             player.action = "attacking";
@@ -33148,8 +33259,8 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
-            // console.log("attack peak count", player.attacking.count);
-            this.setElasticCounter("attacking", "", false, player);
+            console.log("attack peak count", player.attacking.count);
+            // this.setElasticCounter("attacking", "", false, player);
 
             // WEAPON STAMINA COST!!
             if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
@@ -33157,6 +33268,8 @@ class App extends Component {
               player.attackPeak = true;
 
               let melee = true;
+
+              this.setElasticCounter("attacking", "", false, player);
 
               // CREATE NEW PROJECTILE
               if (
@@ -33741,7 +33854,7 @@ class App extends Component {
           ) {
             player.elasticCounter.pause.preState = false;
             player.elasticCounter.pause.state = true;
-            // console.log('start pause, turn on pause');
+            console.log("start pause, turn on pause");
           }
 
           // IF PAUSE IS NOT START, COUNT UP
@@ -33752,18 +33865,18 @@ class App extends Component {
             player.elasticCounter.pause.state !== true
           ) {
             player.elasticCounter.countUp.state = true;
-            // console.log('pause is not start. count up');
+            console.log("pause is not start. count up");
           }
 
           // COUNT UP
           if (player.elasticCounter.countUp.state === true) {
             if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit) {
               if (player.elasticCounter.countUp.count === 0) {
-                // console.log('elastic count up start');
+                console.log("elastic count up start");
               }
 
               player.elasticCounter.countUp.count++;
-              // console.log('elastic counting up: ',player.elasticCounter.countUp.count);
+              console.log("elastic counting up: ", player.elasticCounter.countUp.count);
             }
 
             // FINISH COUNT UP
@@ -33783,13 +33896,13 @@ class App extends Component {
               ) {
                 player.elasticCounter.pause.preState = false;
                 player.elasticCounter.pause.state = true;
-                // console.log('peak pause. turn on pause');
+                console.log("peak pause. turn on pause");
               }
 
               // IF PAUSE IS NOT PEAK, COUNT DOWM
               if (player.elasticCounter.pause.type !== "peak") {
                 player.elasticCounter.countDown.state = true;
-                // console.log('pause is not peak. count down');
+                console.log("pause is not peak. count down");
               }
             }
           }
@@ -33801,33 +33914,33 @@ class App extends Component {
             // COUNT PAUSE
             if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit) {
               if (player.elasticCounter.pause.count === 0) {
-                // console.log('pause count start');
+                console.log("pause count start");
               }
 
               player.elasticCounter.pause.count++;
-              // console.log('pause counting: ',player.elasticCounter.pause.count);
+              console.log("pause counting: ", player.elasticCounter.pause.count);
             }
 
             // FINISH PAUSE
             if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit) {
-              // console.log('pause count finished');
+              console.log("pause count finished");
 
               // IF PAUSE IS START, COUNT UP
               if (player.elasticCounter.pause.type === "start") {
                 player.elasticCounter.countUp.state = true;
-                // console.log('start pause count finished. count up');
+                console.log("start pause count finished. count up");
               }
 
               // IF PAUSE IS PEAK, COUNT DOWN
               if (player.elasticCounter.pause.type === "peak") {
                 player.elasticCounter.countDown.state = true;
-                // console.log('peak pause count finished. count down');
+                console.log("peak pause count finished. count down");
               }
 
               // IF PAUSE IS END, TURN OFF ELASTIC COUNT
               if (player.elasticCounter.pause.type === "end") {
                 player.elasticCounter.state = false;
-                // console.log('end pause count finished. turn off elastic count');
+                console.log("end pause count finished. turn off elastic count");
               }
 
               // RESET PAUSE COUNT
@@ -33841,11 +33954,11 @@ class App extends Component {
             // COUNT DOWN
             if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit) {
               if (player.elasticCounter.countDown.count === 1) {
-                // console.log('elastic count down start',player.elasticCounter.countDown.limit);
+                console.log("elastic count down start", player.elasticCounter.countDown.limit);
               }
 
               player.elasticCounter.countDown.count++;
-              // console.log('elastic counting down: ',player.elasticCounter.countDown.count);
+              console.log("elastic counting down: ", player.elasticCounter.countDown.count);
             }
 
             // FINISH COUNT DOWN
@@ -33855,7 +33968,7 @@ class App extends Component {
                 count: 0,
                 limit: player.elasticCounter.countDown.limit,
               };
-              // console.log('finished count down.');
+              console.log("finished count down.");
 
               // IF PAUSE IS END, COUNT PAUSE
               if (
@@ -33864,13 +33977,13 @@ class App extends Component {
               ) {
                 player.elasticCounter.pause.preState = false;
                 player.elasticCounter.pause.state = true;
-                // console.log('end pause. turn on pause');
+                console.log("end pause. turn on pause");
               }
 
               // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
               if (player.elasticCounter.pause.type !== "end") {
                 player.elasticCounter.state = false;
-                // console.log('pause is not end. turn off elastic count');
+                console.log("pause is not end. turn off elastic count");
               }
 
               if (player.elasticCounter !== "dodging") {
