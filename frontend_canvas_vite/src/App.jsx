@@ -566,7 +566,7 @@ class App extends Component {
         "**_*_4.3_f_0a*",
         "**_*_4.4_a_0a*",
         "**_*_4.5_a_0a*",
-        "**_*_4.6_g_0a*",
+        "**_*_4.6_j_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
         "**_*_4.9_a_0a*",
@@ -13047,7 +13047,7 @@ class App extends Component {
       let boltTarget1 = false;
       let boltTarget2 = false;
       boltTarget1 = this.isBoltInCell(targetCell1.number);
-      if (targetCell2.number) {
+      if (targetCell2?.number) {
         boltTarget2 = this.isBoltInCell(targetCell2.number);
       }
 
@@ -32100,7 +32100,9 @@ class App extends Component {
             } else {
               let indx3 = player.speed.range.indexOf(player.speed.move);
               threshIndx = Math.ceil(this.moveStepRef[indx3].length / 2);
-              inTimeThresh = this.moveStepRef[indx3][threshIndx];
+              // inTimeThresh = this.moveStepRef[indx3][threshIndx];
+              inTimeThresh = this.moveStepRef[indx3][threshIndx + 1];
+              console.log("inTimeThresh", inTimeThresh, "step", player.moving.step);
             }
             if (player.moving.step < inTimeThresh) {
               inTime = true;
@@ -32438,7 +32440,7 @@ class App extends Component {
                 player.speed.move = player.pushBack.prePushMoveSpeed;
               }
               if (player.moveCancel.state === true) {
-                console.log("arrived! reset move cancel");
+                // console.log("arrived! reset move cancel");
                 player.moveCancel.state = false;
               }
 
