@@ -2239,15 +2239,33 @@ class App extends Component {
           state: false,
           count: 0,
           limit: 20,
+          strength: 0,
+          direction: "",
+          directionType: "", //thrust or slash
+          animRef: {},
+          peak: false,
+          charge: 0,
+          chargePeak: false,
+          blunt: false,
+          clashing: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
         },
-        attackStrength: 0,
-        attackPeak: false,
-        defendPeak: false,
-        bluntAttack: false,
-        clashing: {
+        defending: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 4,
+          animRef: {},
+          peak: false,
+          decay: {
+            state: false,
+            count: 0,
+            limit: 25,
+          },
+          direction: "",
+          directionType: "", //thrust or slash
         },
         dodging: {
           countState: false,
@@ -2255,11 +2273,11 @@ class App extends Component {
           count: 0,
           limit: 20,
           peak: {
-            start: 7,
+            start: 8,
             end: 12,
           },
+          direction: "",
         },
-        dodgeDirection: "",
         jumping: {
           checking: false,
           state: false,
@@ -2305,16 +2323,6 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
-        },
-        defending: {
-          state: false,
-          count: 0,
-          limit: 4,
-        },
-        defendDecay: {
-          state: false,
-          count: 0,
-          limit: 25,
         },
         falling: {
           state: false,
@@ -2732,32 +2740,50 @@ class App extends Component {
           target1: { x: 0, y: 0 },
           target2: { x: 0, y: 0 },
         },
-        drowning: false,
         attacking: {
           state: false,
           count: 0,
           limit: 20,
+          strength: 0,
+          direction: "",
+          directionType: "", //thrust or slash
+          animRef: {},
+          peak: false,
+          charge: 0,
+          chargePeak: false,
+          blunt: false,
+          clashing: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
         },
-        attackStrength: 0,
-        attackPeak: false,
-        defendPeak: false,
-        bluntAttack: false,
-        clashing: {
+        defending: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 4,
+          animRef: {},
+          peak: false,
+          decay: {
+            state: false,
+            count: 0,
+            limit: 25,
+          },
+          direction: "",
+          directionType: "", //thrust or slash
         },
+        drowning: false,
         dodging: {
           countState: false,
           state: false,
           count: 0,
           limit: 20,
           peak: {
-            start: 7,
+            start: 8,
             end: 12,
           },
+          direction: "",
         },
-        dodgeDirection: "",
         jumping: {
           checking: false,
           state: false,
@@ -2803,19 +2829,6 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
-        },
-        defending: {
-          state: false,
-          count: 0,
-          limit: 4,
-        },
-        defendDecay: {
-          state: false,
-          count: 0,
-          limit: 25,
-        },
-        defended: {
-          state: false,
         },
         falling: {
           state: false,
@@ -10240,6 +10253,7 @@ class App extends Component {
         speed: this.projectileSpeed,
         elevation: owner.originCell.elevation.number,
         kill: false,
+        charge: 0,
       };
     } else {
       if (projectileType === "bolt") {
@@ -10293,6 +10307,7 @@ class App extends Component {
             speed: this.projectileSpeed,
             elevation: elevation,
             kill: false,
+            charge: owner.attacking.charge,
           };
 
           owner.items.ammo--;
@@ -10365,6 +10380,7 @@ class App extends Component {
             speed: this.projectileSpeed,
             elevation: refCell.elevation.number,
             kill: false,
+            charge: 0,
           };
         }
 
@@ -10418,6 +10434,7 @@ class App extends Component {
             speed: this.projectileSpeed,
             elevation: refCell.elevation.number,
             kill: false,
+            charge: 0,
           };
 
           // owner.items.ammo--;
@@ -23265,6 +23282,7 @@ class App extends Component {
           start: 5,
           end: 10,
         },
+        direction: "",
       };
       player.crits = {
         singleHit: 1,
@@ -23431,16 +23449,34 @@ class App extends Component {
         state: false,
         count: 0,
         limit: 20,
+        strength: 0,
+        direction: "",
+        directionType: "", //thrust or slash
+        animRef: this.attackAnimRef,
+        peak: false,
+        charge: 0,
+        chargePeak: false,
+        blunt: false,
+        clashing: {
+          state: false,
+          count: 0,
+          limit: 10,
+        },
       };
-      player.attackPeak = false;
-      player.defendPeak = false;
-      player.bluntAttack = false;
-      player.clashing = {
+      player.defending = {
         state: false,
         count: 0,
-        limit: 10,
+        limit: 4,
+        animRef: this.defendAnimRef,
+        peak: false,
+        decay: {
+          state: false,
+          count: 0,
+          limit: 25,
+        },
+        direction: "",
+        directionType: "", //thrust or slash
       };
-      player.dodgeDirection = "";
       player.success = {
         attackSuccess: {
           state: false,
@@ -23478,16 +23514,6 @@ class App extends Component {
           x: undefined,
           y: undefined,
         },
-      };
-      player.defending = {
-        state: false,
-        count: 0,
-        limit: 4,
-      };
-      player.defendDecay = {
-        state: false,
-        count: 0,
-        limit: 25,
       };
       player.falling = {
         state: false,
@@ -23729,20 +23755,39 @@ class App extends Component {
       target1: { x: 0, y: 0 },
       target2: { x: 0, y: 0 },
     };
-    player.drowning = false;
     player.attacking = {
       state: false,
       count: 0,
       limit: 20,
+      strength: 0,
+      direction: "",
+      directionType: "", //thrust or slash
+      animRef: this.attackAnimRef,
+      peak: false,
+      charge: 0,
+      chargePeak: false,
+      blunt: false,
+      clashing: {
+        state: false,
+        count: 0,
+        limit: 10,
+      },
     };
-    player.attackPeak = false;
-    player.defendPeak = false;
-    player.bluntAttack = false;
-    player.clashing = {
+    player.defending = {
       state: false,
       count: 0,
-      limit: 10,
+      limit: 4,
+      animRef: this.defendAnimRef,
+      peak: false,
+      decay: {
+        state: false,
+        count: 0,
+        limit: 25,
+      },
+      direction: "",
+      directionType: "", //thrust or slash
     };
+    player.drowning = false;
     player.dodging = {
       countState: false,
       state: false,
@@ -23752,8 +23797,8 @@ class App extends Component {
         start: 7,
         end: 12,
       },
+      direction: "",
     };
-    player.dodgeDirection = "";
     player.jumping = {
       checking: false,
       state: false,
@@ -23799,16 +23844,6 @@ class App extends Component {
         x: undefined,
         y: undefined,
       },
-    };
-    player.defending = {
-      state: false,
-      count: 0,
-      limit: 4,
-    };
-    player.defendDecay = {
-      state: false,
-      count: 0,
-      limit: 25,
     };
     player.falling = {
       state: false,
@@ -24387,20 +24422,39 @@ class App extends Component {
           target1: { x: 0, y: 0 },
           target2: { x: 0, y: 0 },
         };
-        player.drowning = false;
         player.attacking = {
           state: false,
           count: 0,
           limit: 20,
+          strength: 0,
+          direction: "",
+          directionType: "", //thrust or slash
+          animRef: this.attackAnimRef,
+          peak: false,
+          charge: 0,
+          chargePeak: false,
+          blunt: false,
+          clashing: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
         };
-        player.attackPeak = false;
-        player.defendPeak = false;
-        player.bluntAttack = false;
-        player.clashing = {
+        player.defending = {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 4,
+          animRef: this.defendAnimRef,
+          peak: false,
+          decay: {
+            state: false,
+            count: 0,
+            limit: 25,
+          },
+          direction: "",
+          directionType: "", //thrust or slash
         };
+        player.drowning = false;
         player.dodging = {
           countState: false,
           state: false,
@@ -24410,8 +24464,8 @@ class App extends Component {
             start: 7,
             end: 12,
           },
+          direction: "",
         };
-        player.dodgeDirection = "";
         player.jumping = {
           checking: false,
           state: false,
@@ -24457,16 +24511,6 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
-        };
-        player.defending = {
-          state: false,
-          count: 0,
-          limit: 4,
-        };
-        player.defendDecay = {
-          state: false,
-          count: 0,
-          limit: 25,
         };
         player.falling = {
           state: false,
@@ -25098,21 +25142,39 @@ class App extends Component {
             target1: { x: 0, y: 0 },
             target2: { x: 0, y: 0 },
           },
-          drowning: false,
           attacking: {
             state: false,
             count: 0,
             limit: 20,
+            strength: 0,
+            direction: "",
+            directionType: "", //thrust or slash
+            animRef: this.attackAnimRef,
+            peak: false,
+            charge: 0,
+            chargePeak: false,
+            blunt: false,
+            clashing: {
+              state: false,
+              count: 0,
+              limit: 10,
+            },
           },
-          attackStrength: 0,
-          attackPeak: false,
-          defendPeak: false,
-          bluntAttack: false,
-          clashing: {
+          defending: {
             state: false,
             count: 0,
-            limit: 10,
+            limit: 4,
+            animRef: this.defendAnimRef,
+            peak: false,
+            decay: {
+              state: false,
+              count: 0,
+              limit: 25,
+            },
+            direction: "",
+            directionType: "", //thrust or slash
           },
+          drowning: false,
           dodging: {
             countState: false,
             state: false,
@@ -25122,8 +25184,8 @@ class App extends Component {
               start: 7,
               end: 12,
             },
+            direction: "",
           },
-          dodgeDirection: "",
           jumping: {
             checking: false,
             state: false,
@@ -25169,19 +25231,6 @@ class App extends Component {
               x: undefined,
               y: undefined,
             },
-          },
-          defending: {
-            state: false,
-            count: 0,
-            limit: 4,
-          },
-          defendDecay: {
-            state: false,
-            count: 0,
-            limit: 20,
-          },
-          defended: {
-            state: false,
           },
           falling: {
             state: false,
@@ -44350,3 +44399,15 @@ class App extends Component {
 }
 
 export default App;
+
+// set defend decay limit when defense is being started....check player.defending.state use
+
+// defendDecay -> defending.decay
+// defendPeak -> defending.peak
+
+// attackStrength -> attacking.strength
+// attackPeak -> attacking.peak
+// bluntAttack -> attacking.blunt
+// clashing -> attacking.clashing
+
+// update all uses of player.dodgeDirection to .dodging.direction
