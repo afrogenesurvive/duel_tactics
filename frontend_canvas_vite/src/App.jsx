@@ -8590,8 +8590,8 @@ class App extends Component {
       if (player.currentWeapon.name === "") {
         defendType = "unarmed";
       }
-      let defendPeak = this.defendAnimRef.peak[defendType];
-      player.defending.limit = this.defendAnimRef.limit[defendType];
+      let defendPeak = player.defending.animRef.peak[defendType];
+      player.defending.limit = player.defending.animRef.limit[defendType];
 
       if (player.defending.count < defendPeak && player.defending.decay.state !== true) {
         phase = "windup";
@@ -8620,8 +8620,8 @@ class App extends Component {
       if (player.currentWeapon.name === "") {
         atkType = "unarmed";
       }
-      let end = this.attackAnimRef.limit[atkType];
-      let attackPeak = this.attackAnimRef.peak[atkType];
+      let end = player.attacking.animRef.limit[atkType];
+      let attackPeak = player.attacking.animRef.peak[atkType];
 
       if (player.attacking.count < attackPeak) {
         phase = "windup";
@@ -8973,15 +8973,15 @@ class App extends Component {
         y: player.currentPosition.cell.center.y,
       };
 
-      let attackPeak = this.attackAnimRef.peak[player.currentWeapon.type];
+      let attackPeak = player.attacking.animRef.peak[player.currentWeapon.type];
       let stamAtkType = player.currentWeapon.type;
 
       if (player.currentWeapon.type === "") {
-        // this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.unarmed;
-        attackPeak = this.attackAnimRef.peak.unarmed;
+        // this.players[player.number-1].attacking.limit = player.attacking.animRef.limit.unarmed;
+        attackPeak = player.attacking.animRef.peak.unarmed;
         stamAtkType = "unarmed";
       }
-      let limit = (player.attacking.limit = this.attackAnimRef.limit[stamAtkType]);
+      let limit = (player.attacking.limit = player.attacking.animRef.limit[stamAtkType]);
 
       let countCalcUp = limit - attackPeak;
 
@@ -10294,8 +10294,8 @@ class App extends Component {
               state: false,
               count: 0,
               limit:
-                this.attackAnimRef.limit[owner.currentWeapon.type] -
-                this.attackAnimRef.peak[owner.currentWeapon.type],
+                owner.attacking.animRef.limit[owner.currentWeapon.type] -
+                owner.attacking.animRef.peak[owner.currentWeapon.type],
               type: "",
               position: "",
               msg: "attacking",
@@ -13152,11 +13152,11 @@ class App extends Component {
       if (ownerType === "player") {
         if (owner.currentWeapon.name === "") {
           playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
-          if (owner.bluntAttack === true) {
+          if (owner.attacking.blunt === true) {
             playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
           }
         }
-        if (owner.bluntAttack === true && owner.currentWeapon.name !== "") {
+        if (owner.attacking.blunt === true && owner.currentWeapon.name !== "") {
           playerAttackStamType = this.staminaCostRef.attack[owner.currentWeapon.type].blunt;
         }
         if (owner.currentWeapon.name !== "") {
@@ -13497,7 +13497,7 @@ class App extends Component {
         // CROSSBOW BLUNT ATTACK
         if (owner.currentWeapon.type === "crossbow" || owner.currentWeapon.type === "longbow") {
           // CROSSBOW BLUNT ATTACK
-          if (owner.bluntAttack === true) {
+          if (owner.attacking.blunt === true) {
             this.cellsUnderAttack.push({
               number: {
                 x: owner.target.cell1.number.x,
@@ -13677,25 +13677,25 @@ class App extends Component {
         playerAttackStamType = this.staminaCostRef.attack[ownerWeaponType].normal;
       }
 
-      if (owner.bluntAttack === true && ownerWeaponName !== "") {
+      if (owner.attacking.blunt === true && ownerWeaponName !== "") {
         playerAttackStamType = this.staminaCostRef.attack[ownerWeaponType].blunt;
       }
       if (ownerWeaponName === "") {
         playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
-        if (owner.bluntAttack === true) {
+        if (owner.attacking.blunt === true) {
           playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
         }
         defendType = "unarmed";
         ownerWeaponType = "unarmed";
 
-        if (owner.bluntAttack === true) {
+        if (owner.attacking.blunt === true) {
           if (!owner.popups.find((x) => x.msg === "attackingBlunt")) {
             owner.popups.push({
               state: false,
               count: 0,
               limit:
-                this.attackAnimRef.limit[ownerWeaponType] -
-                this.attackAnimRef.peak[ownerWeaponType],
+                owner.attacking.animRef.limit[ownerWeaponType] -
+                owner.attacking.animRef.peak[ownerWeaponType],
               type: "",
               position: "",
               msg: "attackingBlunt",
@@ -13707,7 +13707,7 @@ class App extends Component {
             owner.popups.push({
               state: false,
               count: 0,
-              limit: this.attackAnimRef.limit.unarmed - this.attackAnimRef.peak.unarmed,
+              limit: owner.attacking.animRef.limit.unarmed - owner.attacking.animRef.peak.unarmed,
               type: "",
               position: "",
               msg: "attackingUnarmed",
@@ -13716,14 +13716,14 @@ class App extends Component {
           }
         }
       } else {
-        if (owner.bluntAttack === true) {
+        if (owner.attacking.blunt === true) {
           if (!owner.popups.find((x) => x.msg === "attackingBlunt")) {
             owner.popups.push({
               state: false,
               count: 0,
               limit:
-                this.attackAnimRef.limit[ownerWeaponType] -
-                this.attackAnimRef.peak[ownerWeaponType],
+                owner.attacking.animRef.limit[ownerWeaponType] -
+                owner.attacking.animRef.peak[ownerWeaponType],
               type: "",
               position: "",
               msg: "attackingBlunt",
@@ -13736,8 +13736,8 @@ class App extends Component {
               state: false,
               count: 0,
               limit:
-                this.attackAnimRef.limit[ownerWeaponType] -
-                this.attackAnimRef.peak[ownerWeaponType],
+                owner.attacking.animRef.limit[ownerWeaponType] -
+                owner.attacking.animRef.peak[ownerWeaponType],
               type: "",
               position: "",
               msg: "attacking",
@@ -13753,7 +13753,7 @@ class App extends Component {
       if (targetPlayerRef.currentWeapon.name === "") {
         defendType = "unarmed";
       }
-      let defendPeak = this.defendAnimRef.peak[defendType];
+      let defendPeak = targetPlayerRef.defending.animRef.peak[defendType];
       if (
         targetPlayerRef.defending.count === defendPeak ||
         targetPlayerRef.defending.decay.state === true
@@ -13779,7 +13779,7 @@ class App extends Component {
     const executeAttack = () => {
       // PLAYER BLUNT ATK SUCCESS, TARGET DEFLECTED
       if (ownerType === "player") {
-        if (owner.bluntAttack === true) {
+        if (owner.attacking.blunt === true) {
           console.log(
             "executing melee attack: ",
             ownerType,
@@ -13879,8 +13879,8 @@ class App extends Component {
           });
         }
 
-        if (owner.bluntAttack === true) {
-          owner.bluntAttack = false;
+        if (owner.attacking.blunt === true) {
+          owner.attacking.blunt = false;
         }
 
         owner.stamina.current -= playerAttackStamType.pre;
@@ -13912,7 +13912,7 @@ class App extends Component {
     };
     const handleTargetDefending = () => {
       // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
-      if (ownerType === "player" && owner.bluntAttack === true) {
+      if (ownerType === "player" && owner.attacking.blunt === true) {
         console.log(
           "target defending:",
           ownerType,
@@ -13953,7 +13953,7 @@ class App extends Component {
           // SIDE ATTACK OR FACE TO FACE
           // PEAK DEFEND/PARRY
           if (sideAttack === true || faceToFace === true) {
-            if (targetPlayerRef.defendPeak === true) {
+            if (targetPlayerRef.defending.peak === true) {
               console.log(
                 "target defending:",
                 ownerType,
@@ -14043,8 +14043,8 @@ class App extends Component {
           }
 
           // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
-          // if (targetPlayerRef.defending.decay.state === true && targetPlayerRef.defendPeak !== true) {
-          if (targetPlayerRef.defendPeak !== true) {
+          // if (targetPlayerRef.defending.decay.state === true && targetPlayerRef.defending.peak !== true) {
+          if (targetPlayerRef.defending.peak !== true) {
             if (sideAttack === true) {
               if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) !== 1) {
                 console.log(
@@ -14229,8 +14229,8 @@ class App extends Component {
         );
 
         if (ownerType === "player") {
-          targetPlayerRef.clashing.state = true;
-          owner.clashing.state = true;
+          targetPlayerRef.attacking.clashing.state = true;
+          owner.attacking.clashing.state = true;
         }
 
         // PUSHBACK ATTACKER/PLAYER
@@ -14577,13 +14577,15 @@ class App extends Component {
         //   "here",
         //   owner.attacking.count,
         //   targetPlayerRef.attacking.count,
-        //   this.attackAnimRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance
+        //   targetPlayerRef.attacking.animRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance
         // );
         if (
-          targetPlayerRef.attackPeak === true ||
+          targetPlayerRef.attacking.peak === true ||
           (targetPlayerRef.attacking.count >=
-            this.attackAnimRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance &&
-            targetPlayerRef.attacking.count <= this.attackAnimRef.peak[defenderWeaponType])
+            targetPlayerRef.attacking.animRef.peak[defenderWeaponType] -
+              this.simultaneousAttackAllowance &&
+            targetPlayerRef.attacking.count <=
+              targetPlayerRef.attacking.animRef.peak[defenderWeaponType])
         ) {
           simultaneousAttack = true;
         }
@@ -14612,7 +14614,7 @@ class App extends Component {
         // TARGET NOT DEFENDING, DODGING OR ATTACKING, DAMAGE
         if (
           targetPlayerRef.dodging.state !== true &&
-          // targetPlayerRef.attackPeak !== true &&
+          // targetPlayerRef.attacking.peak !== true &&
           simultaneousAttack !== true &&
           targetDefending !== true
         ) {
@@ -14658,12 +14660,12 @@ class App extends Component {
         playerAttackStamType = this.staminaCostRef.attack[target.currentWeapon.type].normal;
       }
 
-      if (target.bluntAttack === true && target.currentWeapon.name !== "") {
+      if (target.attacking.blunt === true && target.currentWeapon.name !== "") {
         playerAttackStamType = this.staminaCostRef.attack[target.currentWeapon.type].blunt;
       }
       if (target.currentWeapon.name === "") {
         playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
-        if (target.bluntAttack === true) {
+        if (target.attacking.blunt === true) {
           playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
         }
         weapon = "unarmed";
@@ -14675,7 +14677,7 @@ class App extends Component {
       if (target.currentWeapon.name === "") {
         defendType = "unarmed";
       }
-      let defendPeak = this.defendAnimRef.peak[defendType];
+      let defendPeak = target.defending.animRef.peak[defendType];
       if (target.defending.count === defendPeak || target.defending.decay.state === true) {
         playerDefending = true;
       }
@@ -14726,7 +14728,7 @@ class App extends Component {
           deflected !== true
         ) {
           // PLAYER IS ATTACKING ARMED
-          if (target.attackPeak === true && weapon !== "unarmed") {
+          if (target.attacking.peak === true && weapon !== "unarmed") {
             // CHANCE TO KILL BOLT & PUSHBACK
             if (this.rnJesus(1, target.crits.pushBack) === 1) {
               console.log(
@@ -14784,7 +14786,7 @@ class App extends Component {
           }
 
           // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-          if (target.attackPeak === true && weapon === "unarmed") {
+          if (target.attacking.peak === true && weapon === "unarmed") {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -14827,7 +14829,7 @@ class App extends Component {
             // ARMED DEFENSE
             else {
               // PEAK DEFEND
-              if (target.defendPeak === true) {
+              if (target.defending.peak === true) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
@@ -14870,8 +14872,8 @@ class App extends Component {
                 return;
               }
               // OFF PEAK DEFEND
-              // if (target.defending.decay.state === true && target.defendPeak !== true) {
-              if (target.defendPeak !== true) {
+              // if (target.defending.decay.state === true && target.defending.peak !== true) {
+              if (target.defending.peak !== true) {
                 // CHANCE FOR DEFEND SUCCESS
                 if (this.rnJesus(1, target.crits.guardBreak) !== 1) {
                   console.log(
@@ -14938,7 +14940,7 @@ class App extends Component {
           }
 
           //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-          if (playerDefending !== true && target.attackPeak !== true) {
+          if (playerDefending !== true && target.attacking.peak !== true) {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -14962,7 +14964,7 @@ class App extends Component {
         // FRONTAL ATTACK
         if (bolt.direction === this.getOppositeDirection(target.direction) && deflected !== true) {
           // PLAYER ARMED AND ATTACKING
-          if (target.attackPeak === true && weapon !== "unarmed") {
+          if (target.attacking.peak === true && weapon !== "unarmed") {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -14997,7 +14999,7 @@ class App extends Component {
             return;
           }
           // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-          if (target.attackPeak === true && weapon === "unarmed") {
+          if (target.attacking.peak === true && weapon === "unarmed") {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -15020,7 +15022,7 @@ class App extends Component {
           if (playerDefending === true) {
             if (weapon === "unarmed") {
               // UNARMED PEAK DEFEND, SUCCESS
-              if (target.defendPeak === true) {
+              if (target.defending.peak === true) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
@@ -15060,8 +15062,8 @@ class App extends Component {
               }
 
               // UNARMED OFF PEAK DEFEND, Take DAMAGE
-              // if (target.defending.decay.state === true && target.defendPeak !== true) {
-              if (target.defendPeak !== true) {
+              // if (target.defending.decay.state === true && target.defending.peak !== true) {
+              if (target.defending.peak !== true) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
@@ -15083,7 +15085,7 @@ class App extends Component {
 
             // PLAYER DEFENDING AND ARMED, GUARANTEED DEFEND W/ CHANCE TO PUSH BACK
             else {
-              if (target.defendPeak === true) {
+              if (target.defending.peak === true) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
@@ -15125,8 +15127,8 @@ class App extends Component {
                 return;
               }
 
-              // if (target.defending.decay.state === true && target.defendPeak !== true) {
-              if (target.defendPeak !== true) {
+              // if (target.defending.decay.state === true && target.defending.peak !== true) {
+              if (target.defending.peak !== true) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
@@ -15170,7 +15172,7 @@ class App extends Component {
           }
 
           //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-          if (playerDefending !== true && target.attackPeak !== true) {
+          if (playerDefending !== true && target.attacking.peak !== true) {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -15190,7 +15192,7 @@ class App extends Component {
           }
 
           // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-          if (target.attackPeak === true && weapon === "unarmed") {
+          if (target.attacking.peak === true && weapon === "unarmed") {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -15365,7 +15367,7 @@ class App extends Component {
     }
 
     if (ownerType === "player") {
-      if (owner.bluntAttack === true) {
+      if (owner.attacking.blunt === true) {
         damage = 0;
       }
 
@@ -15390,7 +15392,7 @@ class App extends Component {
 
     targetPlayer.hp -= damage;
     if (targetPlayer.hp === 1) {
-      targetPlayer.attackStrength = 1;
+      targetPlayer.attacking.strength = 1;
 
       // ADJUST TARGET MOVE SPEED
       let currentMoveSpeedIndx = targetPlayer.speed.range.indexOf(targetPlayer.speed.move);
@@ -15528,7 +15530,7 @@ class App extends Component {
         }
         target.hp -= damage;
         if (target.hp === 1) {
-          target.attackStrength = 1;
+          target.attacking.strength = 1;
 
           // ADJUST TARGET MOVE SPEED
           let currentMoveSpeedIndx = target.speed.range.indexOf(target.speed.move);
@@ -15655,7 +15657,7 @@ class App extends Component {
         }
         target.hp -= damage;
         if (target.hp === 1) {
-          target.attackStrength = 1;
+          target.attacking.strength = 1;
 
           // ADJUST TARGET MOVE SPEED
           let currentMoveSpeedIndx = target.speed.range.indexOf(target.speed.move);
@@ -17702,6 +17704,15 @@ class App extends Component {
               state: false,
               count: 0,
               limit: this.players[player.number - 1].defending.limit,
+              animRef: this.players[player.number - 1].defending.animRef,
+              peak: false,
+              decay: {
+                state: false,
+                count: 0,
+                limit: this.players[player.number - 1].defending.decay.limit,
+              },
+              direction: "",
+              directionType: "", //thrust or slash
             };
             this.players[player.number - 1].action = "idle";
           }
@@ -17766,6 +17777,15 @@ class App extends Component {
               state: false,
               count: 0,
               limit: this.players[player.number - 1].defending.limit,
+              animRef: this.players[player.number - 1].defending.animRef,
+              peak: false,
+              decay: {
+                state: false,
+                count: 0,
+                limit: this.players[player.number - 1].defending.decay.limit,
+              },
+              direction: "",
+              directionType: "", //thrust or slash
             };
             this.players[player.number - 1].action = "idle";
           }
@@ -17898,6 +17918,15 @@ class App extends Component {
               state: false,
               count: 0,
               limit: this.players[player.number - 1].defending.limit,
+              animRef: this.players[player.number - 1].defending.animRef,
+              peak: false,
+              decay: {
+                state: false,
+                count: 0,
+                limit: this.players[player.number - 1].defending.decay.limit,
+              },
+              direction: "",
+              directionType: "", //thrust or slash
             };
             this.players[player.number - 1].action = "idle";
           }
@@ -17966,6 +17995,15 @@ class App extends Component {
               state: false,
               count: 0,
               limit: this.players[player.number - 1].defending.limit,
+              animRef: this.players[player.number - 1].defending.animRef,
+              peak: false,
+              decay: {
+                state: false,
+                count: 0,
+                limit: this.players[player.number - 1].defending.decay.limit,
+              },
+              direction: "",
+              directionType: "", //thrust or slash
             };
             this.players[player.number - 1].action = "idle";
           }
@@ -19761,7 +19799,7 @@ class App extends Component {
       }
       let shouldDamage = 0;
       if (ownerType === "player") {
-        if (owner.bluntAttack === true) {
+        if (owner.attacking.blunt === true) {
           shouldDamage = this.rnJesus(1, owner.crits.guardBreak);
           if ((shouldDamage = 1)) {
             damage = 1;
@@ -19930,8 +19968,8 @@ class App extends Component {
                         state: false,
                         count: 0,
                         limit:
-                          this.attackAnimRef.limit[player.currentWeapon.type] -
-                          this.attackAnimRef.peak[player.currentWeapon.type],
+                          owner.attacking.animRef.limit[player.currentWeapon.type] -
+                          owner.attacking.animRef.peak[player.currentWeapon.type],
                         type: "",
                         position: "",
                         msg: "missedAttack2",
@@ -22498,11 +22536,15 @@ class App extends Component {
           state: false,
           count: 0,
           limit: player.defending.limit,
-        };
-        this.players[player.number - 1].defending.decay = {
-          state: false,
-          count: 0,
-          limit: player.defending.decay.limit,
+          animRef: player.defending.animRef,
+          peak: false,
+          decay: {
+            state: false,
+            count: 0,
+            limit: player.defending.decay.limit,
+          },
+          direction: "",
+          directionType: "", //thrust or slash
         };
 
         this.getTarget(player);
@@ -23110,11 +23152,15 @@ class App extends Component {
           state: false,
           count: 0,
           limit: puller.defending.limit,
-        };
-        this.players[puller.number - 1].defending.decay = {
-          state: false,
-          count: 0,
-          limit: puller.defending.decay.limit,
+          animRef: puller.defending.animRef,
+          peak: false,
+          decay: {
+            state: false,
+            count: 0,
+            limit: puller.defending.decay.limit,
+          },
+          direction: "",
+          directionType: "", //thrust or slash
         };
 
         if (movePlayer === true) {
@@ -28375,8 +28421,8 @@ class App extends Component {
 
           // ATTACK IS PEAKING!
           if (
-            targetPlayer.attacking.count < this.attackAnimRef.peak.spear &&
-            targetPlayer.attacking.count >= this.attackAnimRef.peak.spear - 4
+            targetPlayer.attacking.count < targetPlayer.attacking.animRef.peak.spear &&
+            targetPlayer.attacking.count >= targetPlayer.attacking.animRef.peak.spear - 4
           ) {
             console.log("almost peak attack");
             let whatDo3 = this.rnJesus(1, 2);
@@ -28738,8 +28784,8 @@ class App extends Component {
 
           // ATTACK IS PEAKING!
           if (
-            targetPlayer.attacking.count < this.attackAnimRef.peak.sword &&
-            targetPlayer.attacking.count >= this.attackAnimRef.peak.sword - 4
+            targetPlayer.attacking.count < targetPlayer.attacking.animRef.peak.sword &&
+            targetPlayer.attacking.count >= targetPlayer.attacking.animRef.peak.sword - 4
           ) {
             console.log("almost peak attack");
             let whatDo = this.rnJesus(1, 2);
@@ -29109,8 +29155,8 @@ class App extends Component {
 
           // ATTACK IS PEAKING!
           if (
-            targetPlayer.attacking.count < this.attackAnimRef.peak.sword &&
-            targetPlayer.attacking.count >= this.attackAnimRef.peak.sword - 4
+            targetPlayer.attacking.count < targetPlayer.attacking.animRef.peak.sword &&
+            targetPlayer.attacking.count >= targetPlayer.attacking.animRef.peak.sword - 4
           ) {
             console.log("almost peak attack");
             let whatDo5 = this.rnJesus(1, 2);
@@ -31417,9 +31463,9 @@ class App extends Component {
           // console.log('ai act -- attack');
           let atkPeak;
           if (plyr.currentWeapon.name === "") {
-            atkPeak = this.attackAnimRef.peak.unarmed;
+            atkPeak = plyr.attacking.animRef.peak.unarmed;
           } else {
-            atkPeak = this.attackAnimRef.peak[plyr.currentWeapon.type];
+            atkPeak = plyr.attacking.animRef.peak[plyr.currentWeapon.type];
           }
           currentInstruction.limit = atkPeak + 2;
           this.keyPressed[plyr.number - 1].attack = true;
@@ -32084,6 +32130,15 @@ class App extends Component {
           state: false,
           count: 0,
           limit: player.defending.limit,
+          animRef: player.defending.animRef,
+          peak: false,
+          decay: {
+            state: false,
+            count: 0,
+            limit: player.defending.decay.limit,
+          },
+          direction: "",
+          directionType: "", //thrust or slash
         };
 
         player.ai.targetAqcuiredReset = true;
@@ -32564,6 +32619,15 @@ class App extends Component {
                     state: false,
                     count: 0,
                     limit: player.defending.limit,
+                    animRef: player.defending.animRef,
+                    peak: false,
+                    decay: {
+                      state: false,
+                      count: 0,
+                      limit: player.defending.decay.limit,
+                    },
+                    direction: "",
+                    directionType: "", //thrust or slash
                   };
 
                   player.ai.targetAqcuiredReset = true;
@@ -32920,14 +32984,18 @@ class App extends Component {
             state: false,
             count: 0,
             limit: player.defending.limit,
+            animRef: player.defending.animRef,
+            peak: false,
+            decay: {
+              state: false,
+              count: 0,
+              limit: player.defending.decay.limit,
+            },
+            direction: "",
+            directionType: "", //thrust or slash
           };
           player.action = "idle";
 
-          player.defending.decay = {
-            state: false,
-            count: 0,
-            limit: player.defending.decay.limit,
-          };
           player.stamina.current += this.staminaCostRef.defend.pre;
 
           if (player.popups.find((x) => x.msg === "defending")) {
@@ -32971,25 +33039,25 @@ class App extends Component {
           let atkType = player.currentWeapon.type;
           let blunt = "normal";
           if (player.currentWeapon.name === "") {
-            atkPeak = this.attackAnimRef.peak.unarmed;
+            atkPeak = player.attacking.animRef.peak.unarmed;
             atkType = "unarmed";
           } else {
-            atkPeak = this.attackAnimRef.peak[player.currentWeapon.type];
+            atkPeak = player.attacking.animRef.peak[player.currentWeapon.type];
           }
-          if (player.bluntAttack === true) {
+          if (player.attacking.blunt === true) {
             blunt = "blunt";
           }
 
           if (player.attacking.count < atkPeak) {
             // console.log('attack windup key release before peak. feinting. refund stamina part');
-            player.bluntAttack = false;
+            player.attacking.blunt = false;
             player.action = "idle";
             player.attacking = {
               state: false,
               count: 0,
               limit: player.attacking.limit,
             };
-            player.attackStrength = 0;
+            player.attacking.strength = 0;
             player.stamina.current += this.staminaCostRef.attack[atkType][blunt].pre;
 
             if (
@@ -33106,22 +33174,23 @@ class App extends Component {
 
         // ATTACKING!
         if (player.attacking.state === true) {
-          let attackPeak = this.attackAnimRef.peak[player.currentWeapon.type];
+          let attackPeak = player.attacking.animRef.peak[player.currentWeapon.type];
           let stamAtkType = player.currentWeapon.type;
 
           if (player.currentWeapon.type === "") {
-            this.players[player.number - 1].attacking.limit = this.attackAnimRef.limit.unarmed;
-            attackPeak = this.attackAnimRef.peak.unarmed;
+            this.players[player.number - 1].attacking.limit =
+              player.attacking.animRef.limit.unarmed;
+            attackPeak = player.attacking.animRef.peak.unarmed;
             stamAtkType = "unarmed";
           }
           let blunt = "normal";
-          if (player.bluntAttack === true) {
+          if (player.attacking.blunt === true) {
             blunt = "blunt";
           }
-          player.attacking.limit = this.attackAnimRef.limit[stamAtkType];
+          player.attacking.limit = player.attacking.animRef.limit[stamAtkType];
 
           // STEP ATTACK COUNT & CELLS UDER PRE-ATTACK
-          if (player.attacking.count < this.attackAnimRef.limit[stamAtkType]) {
+          if (player.attacking.count < player.attacking.animRef.limit[stamAtkType]) {
             if (player.attacking.count < attackPeak) {
               console.log(
                 "attack wind up",
@@ -33132,7 +33201,7 @@ class App extends Component {
                 attackPeak
               );
             }
-            player.attackPeak = false;
+            player.attacking.peak = false;
             player.action = "attacking";
             player.attacking.count++;
             // console.log("attack count", player.attacking.count);
@@ -33144,7 +33213,7 @@ class App extends Component {
             ) {
               // console.log('was attacking then pressed dodging. blunt attack');
 
-              if (player.bluntAttack !== true) {
+              if (player.attacking.blunt !== true) {
                 player.dodging = {
                   countState: false,
                   state: false,
@@ -33157,7 +33226,7 @@ class App extends Component {
                   direction: "",
                 };
                 this.keyPressed[player.number - 1].dodge = false;
-                player.bluntAttack = true;
+                player.attacking.blunt = true;
                 if (
                   player.elasticCounter.state === true &&
                   player.elasticCounter.type === "dodging"
@@ -33231,7 +33300,7 @@ class App extends Component {
                 });
               }
 
-              // if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true) {
+              // if (player.currentWeapon.type === 'crossbow' && player.attacking.blunt === true) {
               if (player.currentWeapon.type === "crossbow") {
                 // console.log('crossbow melee target',player.target);
 
@@ -33269,7 +33338,7 @@ class App extends Component {
 
             if (player.attacking.count > 2) {
               if (!player.popups.find((x) => x.msg === "attacking")) {
-                let limit = this.attackAnimRef.limit[stamAtkType] - player.attacking.count;
+                let limit = player.attacking.animRef.limit[stamAtkType] - player.attacking.count;
                 if (limit === 0) {
                   limit = 5;
                 }
@@ -33286,8 +33355,8 @@ class App extends Component {
                 }
               }
               // else {
-              //   console.log('beep2',this.attackAnimRef.limit[stamAtkType]-player.attacking.count);
-              //   player.popups.find(x => x.msg === "attacking").limit = this.attackAnimRef.limit[stamAtkType]-player.attacking.count
+              //   console.log('beep2',player.attacking.animRef.limit[stamAtkType]-player.attacking.count);
+              //   player.popups.find(x => x.msg === "attacking").limit = player.attacking.animRef.limit[stamAtkType]-player.attacking.count
               // }
             }
           }
@@ -33300,7 +33369,7 @@ class App extends Component {
             // WEAPON STAMINA COST!!
             if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
               player.stamina.current -= this.staminaCostRef.attack[stamAtkType][blunt].peak;
-              player.attackPeak = true;
+              player.attacking.peak = true;
 
               let melee = true;
 
@@ -33309,7 +33378,7 @@ class App extends Component {
               // CREATE NEW PROJECTILE
               if (
                 player.currentWeapon.type === "crossbow" &&
-                player.bluntAttack !== true &&
+                player.attacking.blunt !== true &&
                 player.items.ammo > 0
               ) {
                 // console.log('firing crossbow');
@@ -33325,7 +33394,7 @@ class App extends Component {
               // NO PROJECTILE AMMO
               if (
                 player.currentWeapon.type === "crossbow" &&
-                player.bluntAttack !== true &&
+                player.attacking.blunt !== true &&
                 player.items.ammo <= 0
               ) {
                 // console.log('no ammo!');
@@ -33350,7 +33419,7 @@ class App extends Component {
                 }
               }
 
-              if (player.currentWeapon.type === "crossbow" && player.bluntAttack === true) {
+              if (player.currentWeapon.type === "crossbow" && player.attacking.blunt === true) {
                 melee = true;
               }
 
@@ -33376,14 +33445,14 @@ class App extends Component {
           // ATTACK COOLDOWN AND END!
           if (
             player.attacking.count > attackPeak &&
-            player.attacking.count < this.attackAnimRef.limit[stamAtkType]
+            player.attacking.count < player.attacking.animRef.limit[stamAtkType]
           ) {
             // console.log('attack cooldown',player.attacking.count);
-            player.attackPeak = false;
-            player.bluntAttack = false;
+            player.attacking.peak = false;
+            player.attacking.blunt = false;
           }
 
-          if (player.attacking.count >= this.attackAnimRef.limit[stamAtkType]) {
+          if (player.attacking.count >= player.attacking.animRef.limit[stamAtkType]) {
             // console.log('attack end',player.attacking.count);
 
             player.attacking = {
@@ -33391,8 +33460,8 @@ class App extends Component {
               count: 0,
               limit: player.attacking.limit,
             };
-            player.attackStrength = 0;
-            player.bluntAttack = false;
+            player.attacking.strength = 0;
+            player.attacking.blunt = false;
             player.action = "idle";
 
             if (
@@ -33415,12 +33484,12 @@ class App extends Component {
           }
         }
         // CLASHING
-        if (player.clashing.state === true) {
-          if (player.clashing.count < player.clashing.limit) {
-            player.clashing.count++;
+        if (player.attacking.clashing.state === true) {
+          if (player.attacking.clashing.count < player.attacking.clashing.limit) {
+            player.attacking.clashing.count++;
           }
-          if (player.clashing.count >= player.clashing.limit) {
-            player.clashing = {
+          if (player.attacking.clashing.count >= player.attacking.clashing.limit) {
+            player.attacking.clashing = {
               state: false,
               count: 0,
               limit: 10,
@@ -33434,13 +33503,13 @@ class App extends Component {
           if (player.currentWeapon.name === "") {
             defendType = "unarmed";
           }
-          let defendPeak = this.defendAnimRef.peak[defendType];
-          player.defending.limit = this.defendAnimRef.limit[defendType];
+          let defendPeak = player.defending.animRef.peak[defendType];
+          player.defending.limit = player.defending.animRef.limit[defendType];
 
           if (player.defending.count < defendPeak && player.defending.decay.state !== true) {
             player.defending.count++;
             player.action = "defending";
-            player.defendPeak = false;
+            player.defending.peak = false;
             // console.log(
             //   "defend winding up",
             //   player.defending.count,
@@ -33473,17 +33542,20 @@ class App extends Component {
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
               player.action = "defending";
               player.defending = {
-                state: true,
+                state: false,
                 count: 0,
                 limit: player.defending.limit,
+                animRef: player.defending.animRef,
+                peak: true,
+                decay: {
+                  state: false,
+                  count: 0,
+                  limit: player.defending.decay.limit - defendPeak,
+                },
+                direction: "",
+                directionType: "", //thrust or slash
               };
-              player.defendPeak = true;
               player.stamina.current = player.stamina.current - this.staminaCostRef.defend.peak;
-              player.defending.decay = {
-                state: true,
-                count: 0,
-                limit: player.defending.limit - defendPeak,
-              };
 
               if (!player.popups.find((x) => x.msg === "defending")) {
                 player.popups.push({
@@ -33503,11 +33575,15 @@ class App extends Component {
                 state: false,
                 count: 0,
                 limit: player.defending.limit,
-              };
-              player.defending.decay = {
-                state: true,
-                count: player.defending.decay.limit - 7,
-                limit: player.defending.decay.limit,
+                animRef: player.defending.animRef,
+                peak: false,
+                decay: {
+                  state: false,
+                  count: 0,
+                  limit: player.defending.decay.limit,
+                },
+                direction: "",
+                directionType: "", //thrust or slash
               };
               player.stamina.current = 0;
               player.statusDisplay = {
@@ -33538,7 +33614,7 @@ class App extends Component {
               player.action = "defending";
               player.defending.decay.count++;
               if (player.defending.decay.count === 5) {
-                player.defendPeak = false;
+                player.defending.peak = false;
                 // console.log("peak defend over player", player.number);
               }
 
@@ -33566,6 +33642,15 @@ class App extends Component {
                 state: false,
                 count: 0,
                 limit: player.defending.limit,
+                animRef: player.defending.animRef,
+                peak: false,
+                decay: {
+                  state: false,
+                  count: 0,
+                  limit: player.defending.decay.limit,
+                },
+                direction: "",
+                directionType: "", //thrust or slash
               };
               player.action = "idle";
               console.log(
@@ -33574,11 +33659,6 @@ class App extends Component {
                 player.defending.count,
                 player.defending.decay.limit
               );
-              player.defending.decay = {
-                state: false,
-                count: 0,
-                limit: player.defending.decay.limit,
-              };
 
               if (player.popups.find((x) => x.msg === "defending")) {
                 player.popups.splice(
@@ -35234,7 +35314,7 @@ class App extends Component {
               ) {
                 let atkType = player.currentWeapon.type;
                 let blunt = "normal";
-                if (player.bluntAttack === true) {
+                if (player.attacking.blunt === true) {
                   atkType = "blunt";
                   blunt = "blunt";
                 }
@@ -35289,7 +35369,7 @@ class App extends Component {
                     );
                   }
 
-                  player.bluntAttack = true;
+                  player.attacking.blunt = true;
                   atkType = "blunt";
                 }
 
@@ -44385,30 +44465,3 @@ class App extends Component {
 }
 
 export default App;
-
-player.defending = {
-  state: false,
-  count: 0,
-  limit: player.defending.limit,
-  animRef: player.defending.animRef,
-  peak: false,
-  decay: {
-    state: false,
-    count: 0,
-    limit: player.defending.decay.limit,
-  },
-  direction: "",
-  directionType: "", //thrust or slash
-};
-
-player.dodging = {
-  countState: false,
-  state: false,
-  count: 0,
-  limit: player.dodging.limit,
-  peak: {
-    start: player.dodging.peak.start,
-    end: player.dodging.peak.end,
-  },
-  direction: "",
-};
