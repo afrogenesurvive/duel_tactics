@@ -13076,6 +13076,57 @@ class App extends Component {
     // return trapsToSet;
   };
 
+  checkSetAttackDefendDirectionalInput = (action, player) => {
+    // if (
+    //   this.keyPressed[player.number - 1].north === true ||
+    //   this.keyPressed[player.number - 1].south === true ||
+    //   this.keyPressed[player.number - 1].east === true ||
+    //   this.keyPressed[player.number - 1].west === true
+    // ) {
+    //   set direction and directiontype
+    // }
+    // if no direction input set direction none and direction type as thrust
+    // directionalAttackThresh = player.attacking.animRef.peak.unarmed.thrust.normal/2 (math.cei)
+    //       if already set and input or lack matches current setting, charge
+    //       when checking/setting direction
+    //         if before direcinputthresh
+    //           if there is direction input,
+    //             set direction and directiontype
+    //           else set fdirection to none and dirtype to thrust
+    // return player;
+    // attacking: {
+    //   state: false,
+    //   count: 0,
+    //   limit: 20,
+    //   strength: 0,
+    //   direction: "",
+    //   directionType: "", //thrust or slash
+    //   animRef: {},
+    //   peak: false,
+    //   charge: 0,
+    //   chargePeak: false,
+    //   blunt: false,
+    //   clashing: {
+    //     state: false,
+    //     count: 0,
+    //     limit: 10,
+    //   },
+    // },
+    // defending: {
+    //   state: false,
+    //   count: 0,
+    //   limit: 4,
+    //   animRef: {},
+    //   peak: false,
+    //   decay: {
+    //     state: false,
+    //     count: 0,
+    //     limit: 25,
+    //   },
+    //   direction: "",
+    //   directionType: "", //thrust or slash
+    // },
+  };
   meleeAttackPeak = (ownerType, owner) => {
     // console.log("meleeAttackPeak");
 
@@ -15944,7 +15995,20 @@ class App extends Component {
         player.attacking = {
           state: false,
           count: 0,
-          limit: 15,
+          limit: player.attacking.limit,
+          strength: 0,
+          direction: "",
+          directionType: "", //thrust or slash
+          animRef: player.attacking.animRef,
+          peak: false,
+          charge: 0,
+          chargePeak: false,
+          blunt: false,
+          clashing: {
+            state: false,
+            count: 0,
+            limit: player.attacking.clashing.limit,
+          },
         };
         player.idleAnim = {
           state: false,
@@ -32122,7 +32186,20 @@ class App extends Component {
           player.attacking = {
             state: false,
             count: 0,
-            limit: 15,
+            limit: player.attacking.limit,
+            strength: 0,
+            direction: "",
+            directionType: "", //thrust or slash
+            animRef: player.attacking.animRef,
+            peak: false,
+            charge: 0,
+            chargePeak: false,
+            blunt: false,
+            clashing: {
+              state: false,
+              count: 0,
+              limit: player.attacking.clashing.limit,
+            },
           };
         }
 
@@ -32611,7 +32688,20 @@ class App extends Component {
                     player.attacking = {
                       state: false,
                       count: 0,
-                      limit: 15,
+                      limit: player.attacking.limit,
+                      strength: 0,
+                      direction: "",
+                      directionType: "", //thrust or slash
+                      animRef: player.attacking.animRef,
+                      peak: false,
+                      charge: 0,
+                      chargePeak: false,
+                      blunt: false,
+                      clashing: {
+                        state: false,
+                        count: 0,
+                        limit: player.attacking.clashing.limit,
+                      },
                     };
                   }
 
@@ -33050,14 +33140,26 @@ class App extends Component {
 
           if (player.attacking.count < atkPeak) {
             // console.log('attack windup key release before peak. feinting. refund stamina part');
-            player.attacking.blunt = false;
+
             player.action = "idle";
             player.attacking = {
               state: false,
               count: 0,
               limit: player.attacking.limit,
+              strength: 0,
+              direction: "",
+              directionType: "", //thrust or slash
+              animRef: player.attacking.animRef,
+              peak: false,
+              charge: 0,
+              chargePeak: false,
+              blunt: false,
+              clashing: {
+                state: false,
+                count: 0,
+                limit: player.attacking.clashing.limit,
+              },
             };
-            player.attacking.strength = 0;
             player.stamina.current += this.staminaCostRef.attack[atkType][blunt].pre;
 
             if (
@@ -33174,6 +33276,8 @@ class App extends Component {
 
         // ATTACKING!
         if (player.attacking.state === true) {
+          // player  = this.checkSetAttackDefendDirectionalInput(player);
+
           let attackPeak = player.attacking.animRef.peak[player.currentWeapon.type];
           let stamAtkType = player.currentWeapon.type;
 
@@ -33459,9 +33563,20 @@ class App extends Component {
               state: false,
               count: 0,
               limit: player.attacking.limit,
+              strength: 0,
+              direction: "",
+              directionType: "", //thrust or slash
+              animRef: player.attacking.animRef,
+              peak: false,
+              charge: 0,
+              chargePeak: false,
+              blunt: false,
+              clashing: {
+                state: false,
+                count: 0,
+                limit: player.attacking.clashing.limit,
+              },
             };
-            player.attacking.strength = 0;
-            player.attacking.blunt = false;
             player.action = "idle";
 
             if (
@@ -35373,12 +35488,34 @@ class App extends Component {
                   atkType = "blunt";
                 }
 
+                // player  = this.checkSetAttackDefendDirectionalInput('attack',player);
+
                 player.action = "attacking";
                 player.attacking = {
                   state: true,
                   count: 1,
                   limit: player.attacking.limit,
                 };
+
+                // attacking: {
+                //   state: false,
+                //   count: 0,
+                //   limit: 20,
+                //   strength: 0,
+                //   direction: "",
+                //   directionType: "", //thrust or slash
+                //   animRef: {},
+                //   peak: false,
+                //   charge: 0,
+                //   chargePeak: false,
+                //   blunt: false,
+                //   clashing: {
+                //     state: false,
+                //     count: 0,
+                //     limit: 10,
+                //   },
+                // },
+
                 // console.log('start attack');
 
                 if (plyrPullPushed === true) {
@@ -35399,6 +35536,22 @@ class App extends Component {
                 }
 
                 if (player.defending.count === 0 && player.defending.decay.state !== true) {
+                  // player  = this.checkSetAttackDefendDirectionalInput('defend',player);
+                  // defending: {
+                  //   state: false,
+                  //   count: 0,
+                  //   limit: 4,
+                  //   animRef: {},
+                  //   peak: false,
+                  //   decay: {
+                  //     state: false,
+                  //     count: 0,
+                  //     limit: 25,
+                  //   },
+                  //   direction: "",
+                  //   directionType: "", //thrust or slash
+                  // },
+
                   player.defending.state = true;
                   player.defending.count = 1;
 
