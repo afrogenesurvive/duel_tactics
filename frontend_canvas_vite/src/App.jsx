@@ -13076,24 +13076,101 @@ class App extends Component {
     // return trapsToSet;
   };
 
-  checkSetAttackDefendDirectionalInput = (action, player) => {
-    // if (
-    //   this.keyPressed[player.number - 1].north === true ||
-    //   this.keyPressed[player.number - 1].south === true ||
-    //   this.keyPressed[player.number - 1].east === true ||
-    //   this.keyPressed[player.number - 1].west === true
-    // ) {
-    //   set direction and directiontype
-    // }
-    // if no direction input set direction none and direction type as thrust
-    // directionalAttackThresh = player.attacking.animRef.peak.unarmed.thrust.normal/2 (math.cei)
-    //       if already set and input or lack matches current setting, charge
-    //       when checking/setting direction
-    //         if before direcinputthresh
-    //           if there is direction input,
-    //             set direction and directiontype
-    //           else set fdirection to none and dirtype to thrust
-    // return player;
+  checkSetAttackDefendDirectionalInput = (mode, action, player) => {
+    // stage is either 'init' or 'windup'
+    let input = false;
+    let inputDirection = "";
+    let directionalAttackThresh = 0;
+    let directionalDefendThresh = 0;
+    if (this.keyPressed[player.number - 1].north === true) {
+      input = true;
+      inputDirection = "north";
+    }
+    if (this.keyPressed[player.number - 1].south === true) {
+      input = true;
+      inputDirection = "south";
+    }
+    if (this.keyPressed[player.number - 1].east === true) {
+      input = true;
+      inputDirection = "east";
+    }
+    if (this.keyPressed[player.number - 1].west === true) {
+      input = true;
+      inputDirection = "west";
+    }
+    if (input === true) {
+      if (player[action].direction === "" && player[action].directionType === "") {
+      }
+    }
+
+    if (mode === "init") {
+      if (input === true) {
+        if (player[action].direction === "" && player[action].directionType === "") {
+          console.log(action, mode, " direction unset. setting");
+          player[action].direction = inputDirection;
+          player[action].direction = "slash";
+        } else {
+          console.log(action, mode, " direction already set. resetting");
+          player[action].direction = inputDirection;
+          player[action].direction = "slash";
+        }
+      } else {
+        if (player[action].direction === "" && player[action].directionType === "") {
+          console.log(action, mode, " direction unset. no input. setting");
+          player[action].direction = "none";
+          player[action].direction = "thrust";
+        } else {
+          console.log("no input. direction already set");
+        }
+      }
+    }
+
+    if (mode === "windup") {
+      directionalAttackThresh = Math.ceil(player[action].animRef.peak.unarmed.thrust.normal / 2);
+      if (input === true) {
+        const dirMatch = inputDirection === player[action].direction;
+
+        if (player[action].count < directionalAttackThresh) {
+          if (player[action].direction === "none") {
+            player[action].direction = inputDirection;
+            player[action].direction = "slash";
+          } else {
+            if (dirMatch === false) {
+              if (action === "attacking") {
+                console.log(action, mode, "attacking direction switch. cancel attack");
+                this.attackedCancel(player);
+              }
+              if (action === "defending") {
+                player[action].direction = inputDirection;
+                player[action].direction = "slash";
+              }
+            }
+          }
+        }
+        if (player[action].count >= directionalAttackThresh) {
+          if (player[action].direction === "" && player[action].directionType === "") {
+            player[action].direction = "none";
+            player[action].direction = "thrust";
+            console.log(action, mode, " attack input thresh past. direction unset. setting");
+          }
+        }
+      } else {
+        console.log(action, mode, " no input");
+        if (player[action].count < directionalAttackThresh) {
+          if (player[action].direction === "" && player[action].directionType === "") {
+            player[action].direction = "none";
+            player[action].direction = "thrust";
+            console.log(
+              action,
+              mode,
+              " within attack input thresh. no input. direction unset. setting"
+            );
+          }
+        }
+      }
+    }
+
+    return player;
     // attacking: {
     //   state: false,
     //   count: 0,
@@ -33276,7 +33353,7 @@ class App extends Component {
 
         // ATTACKING!
         if (player.attacking.state === true) {
-          // player  = this.checkSetAttackDefendDirectionalInput(player);
+          // player  = this.checkSetAttackDefendDirectionalInput('windup','attacking',player);
 
           let attackPeak = player.attacking.animRef.peak[player.currentWeapon.type];
           let stamAtkType = player.currentWeapon.type;
@@ -35488,14 +35565,11 @@ class App extends Component {
                   atkType = "blunt";
                 }
 
-                // player  = this.checkSetAttackDefendDirectionalInput('attack',player);
+                // player  = this.checkSetAttackDefendDirectionalInput('init','attacking',player);
 
                 player.action = "attacking";
-                player.attacking = {
-                  state: true,
-                  count: 1,
-                  limit: player.attacking.limit,
-                };
+                player.attacking.state = true;
+                player.attacking.count = 1;
 
                 // attacking: {
                 //   state: false,
