@@ -1,4 +1,6 @@
-// {
+{
+  "prettier.printWidth": 150
+} // {
 //   "editor.foldingStrategy": "indentation",
 //   "editor.folding": true,
 //   "editor.showFoldingControls": "always",
