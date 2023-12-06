@@ -4,10 +4,10 @@ import App from "./App.jsx";
 import "bootstrap/dist/css/bootstrap.css";
 // import './index.css'
 
-// import refreshRuntime from 'react-refresh/runtime';
+import refreshRuntime from "react-refresh/runtime";
 
 // Enable React Refresh
-// refreshRuntime.injectIntoGlobalHook(window);
+refreshRuntime.injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {};
 window.$RefreshSig$ = () => (type) => type;
 
