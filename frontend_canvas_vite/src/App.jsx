@@ -29664,6 +29664,7 @@ class App extends Component {
 
     this.aiAct(aiPlayer);
   };
+  // ..
   aiParsePath = (path, aiPlayer) => {
     // console.log('parsing path',path);
 
