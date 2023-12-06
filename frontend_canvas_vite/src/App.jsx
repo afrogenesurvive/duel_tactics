@@ -29667,7 +29667,7 @@ class App extends Component {
   // ..
   aiParsePath = (path, aiPlayer) => {
     // console.log('parsing path',path);
-
+    // ..
     let instructions = [];
     let init = true;
     let initDirection = this.players[aiPlayer - 1].direction;
