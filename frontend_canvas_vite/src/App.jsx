@@ -3911,7 +3911,8 @@ class App extends Component {
 
     // ASSETS
     this.testRef = React.createRef();
-    this.testRef = React.createRef();
+    this.popupProgressImgRef = React.createRef();
+    this.popupProgressSvgRef = React.createRef();
     this.floorGrassRef = React.createRef();
     this.floorDirtRef = React.createRef();
     this.floorIceRef = React.createRef();
@@ -3929,6 +3930,7 @@ class App extends Component {
     this.floorVoid3Ref = React.createRef();
     this.floorHighlightRef = React.createRef();
     this.floorRubbleRef = React.createRef();
+
     this.wallRef = React.createRef();
     this.wall2Ref = React.createRef();
     this.wall3Ref = React.createRef();
@@ -3948,6 +3950,7 @@ class App extends Component {
     this.barrierASouthRef = React.createRef();
     this.barrierAEastRef = React.createRef();
     this.barrierAWestRef = React.createRef();
+
     this.attack1IndicateRef = React.createRef();
     this.attack2IndicateRef = React.createRef();
     this.attack3IndicateRef = React.createRef();
@@ -4055,6 +4058,23 @@ class App extends Component {
     this.cellVoidingIndicate2Ref = React.createRef();
     this.timerIndicateRef = React.createRef();
 
+    this.itemSpdUpRef = React.createRef();
+    this.itemSpdDownRef = React.createRef();
+    this.itemHpUpRef = React.createRef();
+    this.itemHpDownRef = React.createRef();
+    this.itemFocusUpRef = React.createRef();
+    this.itemFocusDownRef = React.createRef();
+    this.itemStrUpRef = React.createRef();
+    this.itemStrDownRef = React.createRef();
+    this.itemHelmet1Ref = React.createRef();
+    this.itemAmmoRef = React.createRef();
+    this.itemAmmoRef = React.createRef();
+    this.itemMail1Ref = React.createRef();
+    this.itemGreaves1Ref = React.createRef();
+    this.itemBoltNorthRef = React.createRef();
+    this.itemBoltSouthRef = React.createRef();
+    this.itemBoltEastRef = React.createRef();
+    this.itemBoltWestRef = React.createRef();
     this.itemSwordRef = React.createRef();
     this.itemSpearRef = React.createRef();
     this.itemBowRef = React.createRef();
@@ -4063,38 +4083,39 @@ class App extends Component {
     this.boltSouthRef = React.createRef();
     this.boltEastRef = React.createRef();
     this.boltWestRef = React.createRef();
-    this.ammo = React.createRef();
-    this.mail1 = React.createRef();
-    this.mail2 = React.createRef();
-    this.mail3 = React.createRef();
-    this.greaves1 = React.createRef();
-    this.greaves2 = React.createRef();
-    this.greaves3 = React.createRef();
-    this.helmet1 = React.createRef();
-    this.hpUp = React.createRef();
-    this.hpDown = React.createRef();
-    this.spdUp = React.createRef();
-    this.spdDown = React.createRef();
-    this.strUp = React.createRef();
-    this.strDown = React.createRef();
-    this.focusUp = React.createRef();
-    this.focusDown = React.createRef();
-    this.playerImgIdleSheet = React.createRef();
-    this.player2ImgIdleSheet = React.createRef();
-    this.playerComAImgIdleSheet = React.createRef();
-    this.playerComBImgIdleSheet = React.createRef();
-    this.playerImgMoveSheet = React.createRef();
-    this.player2ImgMoveSheet = React.createRef();
-    this.comAImgMoveSheet = React.createRef();
-    this.comBImgMoveSheet = React.createRef();
-    this.player1DefendSheet = React.createRef();
-    this.player2DefendSheet = React.createRef();
-    this.comADefendSheet = React.createRef();
-    this.comBDefendSheet = React.createRef();
-    this.player1AttackSheet = React.createRef();
-    this.player2AttackSheet = React.createRef();
-    this.comAAttackSheet = React.createRef();
-    this.comBAttackSheet = React.createRef();
+    this.ammoRef = React.createRef();
+    this.mail1Ref = React.createRef();
+    this.mail2Ref = React.createRef();
+    this.mail3Ref = React.createRef();
+    this.greaves1Ref = React.createRef();
+    this.greaves2Ref = React.createRef();
+    this.greaves3Ref = React.createRef();
+    this.helmet1Ref = React.createRef();
+    this.hpUpRef = React.createRef();
+    this.hpDownRef = React.createRef();
+    this.spdUpRef = React.createRef();
+    this.spdDownRef = React.createRef();
+    this.strUpRef = React.createRef();
+    this.strDownRef = React.createRef();
+    this.focusUpRef = React.createRef();
+    this.focusDownRef = React.createRef();
+
+    this.playerImgIdleSheetRef = React.createRef();
+    this.player2ImgIdleSheetRef = React.createRef();
+    this.playerComAImgIdleSheetRef = React.createRef();
+    this.playerComBImgIdleSheetRef = React.createRef();
+    this.playerImgMoveSheetRef = React.createRef();
+    this.player2ImgMoveSheetRef = React.createRef();
+    this.comAImgMoveSheetRef = React.createRef();
+    this.comBImgMoveSheetRef = React.createRef();
+    this.player1ImgDefendSheetRef = React.createRef();
+    this.player2ImgDefendSheetRef = React.createRef();
+    this.comAImgDefendSheetRef = React.createRef();
+    this.comBImgDefendSheetRef = React.createRef();
+    this.player1ImgAttackSheetRef = React.createRef();
+    this.player2ImgAttackSheetRef = React.createRef();
+    this.comAImgAttackSheetRef = React.createRef();
+    this.comBImgAttackSheetRef = React.createRef();
   }
 
   componentDidMount() {
@@ -4145,7 +4166,7 @@ class App extends Component {
       context2: context2,
     });
 
-    this.refs.comBImgAttackSheet.onload = () => {
+    this.comBImgAttackSheetRef.current.onload = () => {
       this.addListeners(canvas, canvas2);
 
       this.updateSettingsFormPlayerData({
@@ -6155,9 +6176,9 @@ class App extends Component {
     let sceneY = this.settingsSceneY;
     let tileWidth = this.tileWidth;
 
-    let wall = this.refs.wall;
-    let wall2 = this.refs.wall2;
-    let wall3 = this.refs.wall3;
+    let wall = this.wallRef.current;
+    let wall2 = this.wall2Ref.current;
+    let wall3 = this.wall3Ref.current;
 
     let floorImgs = this.floorImgs;
     let obstacleImgs = this.obstacleImgs;
@@ -8540,11 +8561,11 @@ class App extends Component {
     return popupCoords;
   };
   playerPopupProgressCalc = (player, popup) => {
-    // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
-    // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+    // this.popupProgressSvgRef.current.children[2].setAttribute("height","0")
+    // this.popupProgressSvgRef.current.children[2].setAttribute("fill","white")
 
-    let path = this.refs.popupProgressSvg.children[1];
-    let rect = this.refs.popupProgressSvg.children[2];
+    let path = this.popupProgressSvgRef.current.children[1];
+    let rect = this.popupProgressSvgRef.current.children[2];
 
     let phase = "";
     let perc = 0;
@@ -8773,15 +8794,15 @@ class App extends Component {
     //   for (var i = 0; i < upperIndex+1; i++) {
     //     newArr.push(arr[i]);
     //   }
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    //   this.popupProgressSvgRef.current.children[2].setAttribute("d",newArr.join(" "));
     // }
     // if (emptyPath === true) {
     //   let newArr = arr;
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
+    //   this.popupProgressSvgRef.current.children[2].setAttribute("d",arr.join(" "));
     //   for (var i = 0; i < upperIndex+1; i++) {
     //     newArr.pop();
     //   }
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    //   this.popupProgressSvgRef.current.children[2].setAttribute("d",newArr.join(" "));
     // }
 
     // function svgToPng(svg, callback) {
@@ -8797,11 +8818,11 @@ class App extends Component {
     // });
 
     // SET SVG IMAGE filter
-    // var xml = new XMLSerializer().serializeToString(this.refs.popupProgressSvg);
+    // var xml = new XMLSerializer().serializeToString(this.popupProgressSvgRef.current);
     // var svg64 = btoa(xml); //for utf8: btoa(unescape(encodeURIComponent(xml)))
     // var b64start = 'data:image/svg+xml;base64,';
     // var image64 = b64start + svg64;
-    // this.refs.popupProgressImg.src = image64;
+    // this.popupProgressImgRef.current.src = image64;
 
     // console.log("playerPopupProgressCalc perc: ",((100-perc)/100).toFixed(2) ,(perc/100).toFixed(2));
 
@@ -35029,19 +35050,19 @@ class App extends Component {
         //     }
         //   )
         // }
-        if (!this.cellPopups.find((x) => x.msg === "test" && x.cell.number.x === 4 && x.cell.number.y === 3)) {
-          this.cellPopups.push({
-            state: false,
-            count: 0,
-            limit: 35,
-            type: "",
-            position: "",
-            msg: "test",
-            color: "",
-            img: "",
-            cell: this.gridInfo.find((x) => x.number.x === 4 && x.number.y === 3),
-          });
-        }
+        // if (!this.cellPopups.find((x) => x.msg === "test" && x.cell.number.x === 4 && x.cell.number.y === 3)) {
+        //   this.cellPopups.push({
+        //     state: false,
+        //     count: 0,
+        //     limit: 35,
+        //     type: "",
+        //     position: "",
+        //     msg: "bgvgv",
+        //     color: "",
+        //     img: "",
+        //     cell: this.gridInfo.find((x) => x.number.x === 4 && x.number.y === 3),
+        //   });
+        // }
       }
     }
     //PLAYER
@@ -36131,9 +36152,9 @@ class App extends Component {
         this.y = y;
       }
     }
-    let wall = this.refs.wall;
-    let wall2 = this.refs.wall2;
-    let wall3 = this.refs.wall3;
+    let wall = this.wallRef.current;
+    let wall2 = this.wall2Ref.current;
+    let wall3 = this.wall3Ref.current;
 
     canvas.width = this.canvasWidth;
     canvas.height = this.canvasHeight;
@@ -36255,14 +36276,14 @@ class App extends Component {
         if (this.cellsUnderAttack.length > 0) {
           for (const cll of this.cellsUnderAttack) {
             if (cll.number.x === x && cll.number.y === y) {
-              floor = this.refs.floorAttack;
+              floor = this.floorAttackRef.current;
             }
           }
         }
         if (this.cellsUnderPreAttack.length > 0) {
           for (const cll2 of this.cellsUnderPreAttack) {
             if (cll2.number.x === x && cll2.number.y === y) {
-              floor = this.refs.floorAttack2;
+              floor = this.floorAttack2Ref.current;
             }
           }
         }
@@ -36270,7 +36291,7 @@ class App extends Component {
         if (this.cellsToHighlight.length > 0) {
           for (const cll2 of this.cellsToHighlight) {
             if (cll2.x === x && cll2.y === y) {
-              floor = this.refs.floorVoid;
+              floor = this.floorVoidRef.current;
             }
           }
         }
@@ -36278,7 +36299,7 @@ class App extends Component {
         if (this.cellsToHighlight2.length > 0) {
           for (const cll3 of this.cellsToHighlight2) {
             if (cll3.number.x === x && cll3.number.y === y) {
-              floor = this.refs.floorHighlight;
+              floor = this.floorHighlightRef.current;
             }
           }
         }
@@ -36469,7 +36490,7 @@ class App extends Component {
         }
         // CELL POPUPS
         if (x === this.gridWidth && y === this.gridWidth) {
-          // console.log(this.refs.pickupAmmo);
+          // console.log(this.pickupAmmoRef.current);
 
           for (const popup of this.cellPopups) {
             let popupBorderColor = "black";
@@ -40150,7 +40171,6 @@ class App extends Component {
       cellVoiding2: this.cellVoidingIndicate2Ref.current,
       clashing: this.deflectIndicate2Ref.current,
       timer: this.timerIndicateRef.current,
-      test: this.testRef.current,
     };
     this.indicatorImgs = {
       preAttack: this.preAttackIndicateRef.current,
@@ -40175,278 +40195,278 @@ class App extends Component {
     this.playerImgs = [
       {
         idle: {
-          unarmed: this.refs.playerImgIdleSheet,
-          sword: this.refs.playerImgIdleSheet,
-          spear: this.refs.playerImgIdleSheet,
-          crossbow: this.refs.playerImgIdleSheet,
+          unarmed: this.playerImgIdleSheetRef.current,
+          sword: this.playerImgIdleSheetRef.current,
+          spear: this.playerImgIdleSheetRef.current,
+          crossbow: this.playerImgIdleSheetRef.current,
         },
         walking: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         jumping: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         dodging: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         flanking: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         strafing: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         attacking: {
-          unarmed: this.refs.player1ImgAttackSheet,
-          sword: this.refs.player1ImgAttackSheet,
-          spear: this.refs.player1ImgAttackSheet,
-          crossbow: this.refs.player1ImgAttackSheet,
+          unarmed: this.player1ImgAttackSheetRef.current,
+          sword: this.player1ImgAttackSheetRef.current,
+          spear: this.player1ImgAttackSheetRef.current,
+          crossbow: this.player1ImgAttackSheetRef.current,
         },
         defending: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         deflected: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         pushBack: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         falling: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         pushing: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         pulling: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         pushed: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
         pulled: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
+          unarmed: this.playerImgMoveSheetRef.current,
+          sword: this.playerImgMoveSheetRef.current,
+          spear: this.playerImgMoveSheetRef.current,
+          crossbow: this.playerImgMoveSheetRef.current,
         },
       },
       {
         idle: {
-          unarmed: this.refs.player2ImgIdleSheet,
-          sword: this.refs.player2ImgIdleSheet,
-          spear: this.refs.player2ImgIdleSheet,
-          crossbow: this.refs.player2ImgIdleSheet,
+          unarmed: this.player2ImgIdleSheetRef.current,
+          sword: this.player2ImgIdleSheetRef.current,
+          spear: this.player2ImgIdleSheetRef.current,
+          crossbow: this.player2ImgIdleSheetRef.current,
         },
         walking: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         jumping: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         dodging: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         flanking: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         strafing: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         attacking: {
-          unarmed: this.refs.player2ImgAttackSheet,
-          sword: this.refs.player2ImgAttackSheet,
-          spear: this.refs.player2ImgAttackSheet,
-          crossbow: this.refs.player2ImgAttackSheet,
+          unarmed: this.player2ImgAttackSheetRef.current,
+          sword: this.player2ImgAttackSheetRef.current,
+          spear: this.player2ImgAttackSheetRef.current,
+          crossbow: this.player2ImgAttackSheetRef.current,
         },
         defending: {
-          unarmed: this.refs.player2ImgDefendSheet,
-          sword: this.refs.player2ImgDefendSheet,
-          spear: this.refs.player2ImgDefendSheet,
-          crossbow: this.refs.player2ImgDefendSheet,
+          unarmed: this.player2ImgDefendSheetRef.current,
+          sword: this.player2ImgDefendSheetRef.current,
+          spear: this.player2ImgDefendSheetRef.current,
+          crossbow: this.player2ImgDefendSheetRef.current,
         },
         deflected: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         pushBack: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         falling: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         pushing: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         pulling: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         pushed: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
         pulled: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
+          unarmed: this.player2ImgMoveSheetRef.current,
+          sword: this.player2ImgMoveSheetRef.current,
+          spear: this.player2ImgMoveSheetRef.current,
+          crossbow: this.player2ImgMoveSheetRef.current,
         },
       },
       {
         idle: {
-          unarmed: this.refs.playerComAImgIdleSheet,
-          sword: this.refs.playerComAImgIdleSheet,
-          spear: this.refs.playerComAImgIdleSheet,
-          crossbow: this.refs.playerComAImgIdleSheet,
+          unarmed: this.playerComAImgIdleSheetRef.current,
+          sword: this.playerComAImgIdleSheetRef.current,
+          spear: this.playerComAImgIdleSheetRef.current,
+          crossbow: this.playerComAImgIdleSheetRef.current,
         },
         walking: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         jumping: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         dodging: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         flanking: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         strafing: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         attacking: {
-          unarmed: this.refs.comAImgAttackSheet,
-          sword: this.refs.comAImgAttackSheet,
-          spear: this.refs.comAImgAttackSheet,
-          crossbow: this.refs.comAImgAttackSheet,
+          unarmed: this.comAImgAttackSheetRef.current,
+          sword: this.comAImgAttackSheetRef.current,
+          spear: this.comAImgAttackSheetRef.current,
+          crossbow: this.comAImgAttackSheetRef.current,
         },
         defending: {
-          unarmed: this.refs.comAImgDefendSheet,
-          sword: this.refs.comAImgDefendSheet,
-          spear: this.refs.comAImgDefendSheet,
-          crossbow: this.refs.comAImgDefendSheet,
+          unarmed: this.comAImgDefendSheetRef.current,
+          sword: this.comAImgDefendSheetRef.current,
+          spear: this.comAImgDefendSheetRef.current,
+          crossbow: this.comAImgDefendSheetRef.current,
         },
         deflected: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         pushBack: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         falling: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         pushing: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         pulling: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         pushed: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
         pulled: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
+          unarmed: this.comAImgMoveSheetRef.current,
+          sword: this.comAImgMoveSheetRef.current,
+          spear: this.comAImgMoveSheetRef.current,
+          crossbow: this.comAImgMoveSheetRef.current,
         },
       },
       {
@@ -41189,7 +41209,7 @@ class App extends Component {
 
           <svg
             className="popupProgressSvg hidden"
-            ref="popupProgressSvg"
+            ref={this.popupProgressSvgRef}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -0.5 30 30"
             shapeRendering="crispEdges">
@@ -41209,7 +41229,7 @@ class App extends Component {
             </defs>
           </svg>
 
-          <img src="" className="hidden" height={this.popupImgSize} width={this.popupImgSize} ref="popupProgressImg" alt="logo" />
+          <img src="" className="hidden" height={this.popupImgSize} width={this.popupImgSize} ref={this.popupProgressImgRef} alt="logo" />
 
           <img src={floorGrass} className="hidden" ref={this.floorGrassRef} alt="logo" />
           <img src={floorDirt} className="hidden" ref={this.floorDirtRef} alt="logo" />
@@ -41361,7 +41381,6 @@ class App extends Component {
           <img src={cellVoidingIndicate} className="hidden playerImgs" ref={this.cellVoidingIndicateRef} alt="logo" />
           <img src={cellVoidingIndicate2} className="hidden playerImgs" ref={this.cellVoidingIndicate2Ref} alt="logo" />
           <img src={timerIndicate} className="hidden playerImgs" ref={this.timerIndicateRef} alt="logo" />
-          {/* <img src={timerIndicate} className="hidden playerImgs" ref={this.testRef} id="timerIndicate" alt="..." /> */}
 
           <img src={sword} className="hidden playerImgs" ref={this.itemSwordRef} alt="logo" />
           <img src={spear} className="hidden playerImgs" ref={this.itemSpearRef} alt="logo" />
