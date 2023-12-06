@@ -40603,14 +40603,14 @@ class App extends Component {
       rubble: this.floorRubbleRef.current,
     };
     this.obstacleImgs = {
-      table: this.obstacleAHalfRef.current,
+      // table: this.obstacleAHalfRef.current,
       closet: this.obstacleAFullRef.current,
-      chair: this.obstacleBHalfRef.current,
-      shelf: this.obstacleBFullRef.current,
-      smallBox: this.obstacleCHalfRef.current,
-      largeBox: this.obstacleCFullRef.current,
-      counter: this.obstacleDHalfRef.current,
-      chest: this.obstacleEHalfRef.current,
+      // chair: this.obstacleBHalfRef.current,
+      // shelf: this.obstacleBFullRef.current,
+      // smallBox: this.obstacleCHalfRef.current, //and me
+      // largeBox: this.obstacleCFullRef.current, //revive me
+      // counter: this.obstacleDHalfRef.current,
+      // chest: this.obstacleEHalfRef.current,
       crate: this.obstacleCrateRef.current,
       barrel: this.obstacleBarrelRef.current,
       chest: this.obstacleCrateRef.current,
@@ -40619,7 +40619,7 @@ class App extends Component {
       shelf: this.obstacleCrateRef.current,
       counter: this.obstacleCrateRef.current,
       smallBox: this.obstacleCrateRef.current,
-      largeBox: this.obstacleBarrelRef.current,
+      largeBox: this.obstacleBarrelRef.current, //remove me when obs imgs added
     };
     this.barrierImgs = {
       wall: {
@@ -41058,7 +41058,7 @@ class App extends Component {
             )}
             // SETTINGS BOX
             <div className="settingsSwitch">
-              <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
+              <a className="setSwitchLink" onClick={this.openSettings}>
                 <OverlayTrigger
                   placement={"top"}
                   overlay={
@@ -41073,7 +41073,7 @@ class App extends Component {
               </a>
               {this.aiPlayers[0] && (
                 // {this.updateSettingsFormAiDataData.random &&(
-                <a href="javascript:" className="setSwitchLink cameraModeHighlighted" onClick={this.toggleAiDisplay}>
+                <a className="setSwitchLink cameraModeHighlighted" onClick={this.toggleAiDisplay}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -41089,7 +41089,7 @@ class App extends Component {
               )}
               {!this.aiPlayers[0] && (
                 // {!this.updateSettingsFormAiDataData.random &&(
-                <a href="javascript:" className="setSwitchLink" onClick={this.toggleAiDisplay}>
+                <a className="setSwitchLink" onClick={this.toggleAiDisplay}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -41104,7 +41104,7 @@ class App extends Component {
                 </a>
               )}
               {this.camera.state === false && (
-                <a href="javascript:" className="setSwitchLink" onClick={this.menuToggleCamera}>
+                <a className="setSwitchLink" onClick={this.menuToggleCamera}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -41124,7 +41124,7 @@ class App extends Component {
                   </OverlayTrigger>
                 </a>
               )}
-              <a href="javascript:" className="setSwitchLink" onClick={this.gameReset.bind(this, "soft")}>
+              <a className="setSwitchLink" onClick={this.gameReset.bind(this, "soft")}>
                 <OverlayTrigger
                   placement={"top"}
                   overlay={
