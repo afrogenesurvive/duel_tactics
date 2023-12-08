@@ -13525,7 +13525,7 @@ class App extends Component {
     const charge = () => {
       charging = true;
       player[action].charge++;
-      console.log("charging attack", player[action].charge);
+      // console.log("charging attack", player[action].charge);
     };
 
     const feintAttack = () => {
@@ -13620,13 +13620,35 @@ class App extends Component {
         if (mode === "windup") {
           if (player[action].count < directionalInputThresh) {
             if (input === true) {
+              // console.log("y");
               if (inputDirection === player[action].direction) {
                 charge();
               } else {
-                feintAttack();
+                console.log("still time to set attack direction. changing direction");
+                player[action].direction = inputDirection;
+                player[action].directionType = "slash";
               }
             } else {
-              console.log(" direction and type should already be set, do nothing");
+              if (
+                player[action].direction === "" ||
+                player[action].directionType === ""
+              ) {
+                console.log("winding up within input thresh but no input. set to thrust");
+                player[action].direction = "none";
+                player[action].directionType = "thrust";
+              }
+              // console.log(" direction and type should already be set, do nothing");
+            }
+          } else {
+            if (input === true) {
+              console.log("input thresh passed.");
+              if (inputDirection !== player[action].direction) {
+                console.log("input after thresh w/ different direction. feint attack");
+                feintAttack();
+              }
+              if (inputDirection === player[action].direction) {
+                charge();
+              }
             }
           }
         }
@@ -13681,7 +13703,15 @@ class App extends Component {
       }
     }
 
-    console.log("set attack defend directional input", mode, input, player[action]);
+    // console.log(
+    //   "set attack defend directional input",
+    //   mode,
+    //   input,
+    //   player[action].direction,
+    //   player[action].directionType,
+    //   directionalInputThresh,
+    //   player[action].count
+    // );
 
     return {
       player: player,
@@ -34294,13 +34324,6 @@ class App extends Component {
           if (player.attacking.blunt === true) {
             blunt = "blunt";
           }
-          console.log(
-            "beep",
-            stamAtkType,
-            player.attacking.direction,
-            player.attacking.directionType,
-            chargeType
-          );
 
           attackPeak =
             player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
@@ -34311,17 +34334,28 @@ class App extends Component {
               chargeType
             ];
 
+          console.log(
+            "beep",
+            stamAtkType,
+            player.attacking.direction,
+            player.attacking.directionType,
+            chargeType,
+            player.attacking.charge,
+            player.attacking.count,
+            attackPeak
+          );
+
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
             if (player.attacking.count < attackPeak) {
-              console.log(
-                "attack wind up",
-                player.attacking.count,
-                "player",
-                player.number,
-                "peak",
-                attackPeak
-              );
+              // console.log(
+              //   "attack wind up",
+              //   player.attacking.count,
+              //   "player",
+              //   player.number,
+              //   "peak",
+              //   attackPeak
+              // );
             }
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
@@ -34490,28 +34524,38 @@ class App extends Component {
 
           let executeAttack = false;
           if (
-            chargeType !== "charged" &&
-            player.attacking.count >=
-              player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                .normal
+            player.elasticCounter.state !== true &&
+            player.elasticCounter.type !== "ataacking"
           ) {
-            console.log(
-              "not charging, but past non charge peak. charge attack released early...adjusting peak"
-            );
-            executeAttack = true;
-            player.attacking.chargePeak = true;
-            attackPeak =
-              player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                .normal;
-          } else if (player.attacking.count === attackPeak) {
-            executeAttack = true;
-            player.attacking.peak = true;
-            console.log("execute ", chargeType, " attack at peak normally");
+            if (
+              chargeType !== "charged" &&
+              player.attacking.count >
+                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
+                  .normal
+            ) {
+              console.log(
+                player.attacking.count,
+                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
+                  .normal,
+                "not charging, but past non charge peak. charge attack released early...adjusting peak"
+              );
+              executeAttack = true;
+              player.attacking.chargePeak = true;
+              attackPeak =
+                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
+                  .normal;
+            } else if (player.attacking.count === attackPeak) {
+              executeAttack = true;
+              player.attacking.peak = true;
+              console.log("execute ", chargeType, " attack at peak normally");
+            }
+          } else {
+            console.log("attack peak already reached/passed");
           }
 
           // TIME TO ATTACK IS NOW!
           if (executeAttack === true) {
-            console.log("attack peak count", player.attacking.count);
+            console.log("attack peak!! count", player.attacking.count);
 
             // WEAPON STAMINA COST!!
             if (
