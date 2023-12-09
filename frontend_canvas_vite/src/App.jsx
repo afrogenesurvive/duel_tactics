@@ -13681,14 +13681,19 @@ class App extends Component {
         let defendDecayLimit = Math.ceil(
           (player.defending.decay.limit - defendPeak) * 0.55
         );
-        let defendInputThresh = defendDecayLimit - this.defendPeakAllowance;
+        let defendInputThresh = defendDecayLimit + defendPeak - this.defendPeakAllowance;
         if (input === true) {
           if (player[action].count <= defendInputThresh) {
             player[action].direction = inputDirection;
             player[action].directionType = "slash";
           }
           if (player[action].count > defendInputThresh) {
-            console.log("too late to change direction.");
+            console.log(
+              "too late to change defend direction: count",
+              player[action].count,
+              "thresh",
+              defendInputThresh
+            );
             if (player[action].direction === "" || player[action].directionType === "") {
               player[action].direction = "none";
               player[action].directionType = "thrust";
@@ -13696,8 +13701,10 @@ class App extends Component {
           }
         } else {
           if (player[action].count <= defendInputThresh) {
-            player[action].direction = "none";
-            player[action].directionType = "thrust";
+            if (player[action].direction === "" || player[action].directionType === "") {
+              player[action].direction = "none";
+              player[action].directionType = "thrust";
+            }
           }
         }
       }
@@ -34835,10 +34842,6 @@ class App extends Component {
                   (player.defending.limit - defendPeak) * defendDecayLimitPercentage
                 ),
               };
-              console.log(
-                "cc",
-                (player.defending.limit - defendPeak) * defendDecayLimitPercentage
-              );
               player.stamina.current =
                 player.stamina.current - this.staminaCostRef.defend.peak;
 
