@@ -195,7 +195,10 @@ import player2AttackSheet from "./assets/player/sheetAttack2.png";
 import comAAttackSheet from "./assets/player/sheetAttackComA.png";
 import comBAttackSheet from "./assets/player/sheetAttackComB.png";
 
-import testSprite from "./assets/player/testSprite.png";
+import testSpriteNorth from "./assets/player/testSpriteNorth.png";
+import testSpriteSouth from "./assets/player/testSpriteSouth.png";
+import testSpriteEast from "./assets/player/testSpriteEast.png";
+import testSpriteWest from "./assets/player/testSpriteWest.png";
 
 import "./App.css";
 
@@ -3981,7 +3984,11 @@ class App extends Component {
     this.testData = "";
 
     // ASSETS
-    this.testRef = React.createRef();
+    this.testRefNorth = React.createRef();
+    this.testRefSouth = React.createRef();
+    this.testRefEast = React.createRef();
+    this.testRefWest = React.createRef();
+
     this.popupProgressImgRef = React.createRef();
     this.popupProgressSvgRef = React.createRef();
     this.floorGrassRef = React.createRef();
@@ -40880,14 +40887,14 @@ class App extends Component {
                 color: "red",
                 x: origin2.x,
                 y: origin2.y,
-                img: this.testRef.current,
+                direction: plyr.direction,
               });
             } else {
               this.testDraw[plyr.number - 1] = {
                 color: "red",
                 x: origin2.x,
                 y: origin2.y,
-                img: this.testRef.current,
+                direction: plyr.direction,
               };
             }
           }
@@ -43281,8 +43288,15 @@ class App extends Component {
           context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
           context.fill();
 
+          let testSprites = {
+            north: this.testRefNorth.current,
+            south: this.testRefSouth.current,
+            east: this.testRefEast.current,
+            west: this.testRefWest.current,
+          };
+
           context.drawImage(
-            point.img,
+            testSprites[point.direction],
             point.x,
             point.y - 10,
             55,
@@ -46315,9 +46329,27 @@ class App extends Component {
             alt="logo"
           />
           <img
-            src={testSprite}
+            src={testSpriteNorth}
             className="hidden playerImgs"
-            ref={this.testRef}
+            ref={this.testRefNorth}
+            alt="logo"
+          />
+          <img
+            src={testSpriteSouth}
+            className="hidden playerImgs"
+            ref={this.testRefSouth}
+            alt="logo"
+          />
+          <img
+            src={testSpriteEast}
+            className="hidden playerImgs"
+            ref={this.testRefEast}
+            alt="logo"
+          />
+          <img
+            src={testSpriteWest}
+            className="hidden playerImgs"
+            ref={this.testRefWest}
             alt="logo"
           />
         </div>
