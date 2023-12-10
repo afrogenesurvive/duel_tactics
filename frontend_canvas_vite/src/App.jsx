@@ -3532,6 +3532,16 @@ class App extends Component {
       [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
       [0.2, 0.4, 0.6, 0.8, 1],
     ];
+    this.actionAnimFrameTypeCountRef = {
+      attacking: {
+        typeCount: 7, 
+        sheetLength: 70
+      },
+      defending: {
+        typeCount: 5,
+        sheetLength: 50
+      }
+    }
     this.attackAnimRef = {
       limit: {
         unarmed: {
@@ -3990,9 +4000,13 @@ class App extends Component {
     this.floorHighlightRef = React.createRef();
     this.floorRubbleRef = React.createRef();
 
+    this.cellVoidingIndicateRef = React.createRef();
+    this.cellVoidingIndicate2Ref = React.createRef();
+
     this.wallRef = React.createRef();
     this.wall2Ref = React.createRef();
     this.wall3Ref = React.createRef();
+
     this.obstacleAHalfRef = React.createRef();
     this.obstacleAFullRef = React.createRef();
     this.obstacleBHalfRef = React.createRef();
@@ -4010,70 +4024,87 @@ class App extends Component {
     this.barrierAEastRef = React.createRef();
     this.barrierAWestRef = React.createRef();
 
+    this.unbreakableIndicateRef = React.createRef();
+
+    this.timerIndicateRef = React.createRef();
+
+    this.preAction1IndicateRef = React.createRef();
+    this.preAction2IndicateRef = React.createRef();
+    this.preAction1IndicateRef = React.createRef();
+    this.preAction2IndicateRef = React.createRef();
+
+    this.preAttackIndicateRef = React.createRef();
+    this.preAttack2IndicateRef = React.createRef();
+
     this.attack1IndicateRef = React.createRef();
     this.attack2IndicateRef = React.createRef();
     this.attack3IndicateRef = React.createRef();
+
     this.attackUnarmedIndicateRef = React.createRef();
     this.attackBluntIndicateRef = React.createRef();
+    this.attackBluntIndicate2Ref = React.createRef();
+
     this.attackSuccessIndicateRef = React.createRef();
+
+    this.attackBreakIndicateRef = React.createRef();
+
+    this.attackFeintIndicateRef = React.createRef();
+    this.attackFeintIndicate2Ref = React.createRef();
+    this.attackFeintIndicate3Ref = React.createRef();
+
+    this.attackParriedIndicateRef = React.createRef();
+
+    this.missedIndicateRef = React.createRef();
+    this.missedIndicate2Ref = React.createRef();
+
     this.defendIndicateRef = React.createRef();
     this.defendIndicate1Ref = React.createRef();
     this.defendIndicate2Ref = React.createRef();
     this.defendIndicate3Ref = React.createRef();
     this.defendIndicate4Ref = React.createRef();
+
+    this.defendBreakIndicateRef = React.createRef();
+    this.defendSuccessIndicateRef = React.createRef();
+    this.defendBreakIndicateRef = React.createRef();
+
+    this.defendFeintIndicateRef = React.createRef();
+    this.defendFeintIndicate2Ref = React.createRef();
+    this.defendFeintIndicate3Ref = React.createRef();
+
+    this.boltDefendIndicateRef = React.createRef();
+    this.boltDefendIndicate2Ref = React.createRef();
+    this.boltKilledIndicateRef = React.createRef();
+
     this.deflectIndicateRef = React.createRef();
     this.deflectIndicate2Ref = React.createRef();
     this.deflectInjuredIndicateRef = React.createRef();
     this.deflectInjuredIndicate2Ref = React.createRef();
     this.deflectBluntIndicateRef = React.createRef();
+
     this.pushbackIndicateRef = React.createRef();
+
+    this.dodgeIndicateRef = React.createRef();
+    this.dodgeIndicateRef = React.createRef();
+    this.dodgeFeintIndicateRef = React.createRef();
+    this.dodgeFeintIndicate2Ref = React.createRef();
+    this.dodgeIndicate2Ref = React.createRef();
+
+    this.flankIndicateRef = React.createRef();
+    this.flankIndicate2Ref = React.createRef();
+    this.noFlankIndicateRef = React.createRef();
+
+    this.fallingIndicateRef = React.createRef();
+    this.drowningIndicateRef = React.createRef();
+
     this.ghostIndicateRef = React.createRef();
     this.deathIndicateRef = React.createRef();
-    this.preAttackIndicateRef = React.createRef();
-    this.preAttack2IndicateRef = React.createRef();
-    this.attackBreakIndicateRef = React.createRef();
-    this.defendBreakIndicateRef = React.createRef();
-    this.defendSuccessIndicateRef = React.createRef();
-    this.boltDefendIndicateRef = React.createRef();
-    this.dodgeIndicateRef = React.createRef();
-    this.preAction1IndicateRef = React.createRef();
-    this.preAction2IndicateRef = React.createRef();
-    this.fallingIndicateRef = React.createRef();
-    this.completeMissionIndicateRef = React.createRef();
-    this.flankIndicateRef = React.createRef();
-    this.attackBluntIndicate2Ref = React.createRef();
-    this.enrouteIndicateRef = React.createRef();
-    this.targetSwitchIndicateRef = React.createRef();
-    this.pathSwitchIndicateRef = React.createRef();
-    this.retreatIndicateRef = React.createRef();
-    this.defendSuccessIndicateRef = React.createRef();
+
     this.healIndicateRef = React.createRef();
-    this.preAttack2IndicateRef = React.createRef();
-    this.preAction1IndicateRef = React.createRef();
-    this.preAction2IndicateRef = React.createRef();
-    this.attackBreakIndicateRef = React.createRef();
-    this.missedIndicateRef = React.createRef();
-    this.defendBreakIndicateRef = React.createRef();
-    this.boltDefendIndicateRef = React.createRef();
-    this.dodgeIndicateRef = React.createRef();
-    this.fallingIndicateRef = React.createRef();
-    this.completeMissionIndicateRef = React.createRef();
-    this.flankIndicateRef = React.createRef();
-    this.attackBluntIndicate2Ref = React.createRef();
-    this.enrouteIndicateRef = React.createRef();
-    this.targetSwitchIndicateRef = React.createRef();
-    this.pathSwitchIndicateRef = React.createRef();
-    this.retreatIndicateRef = React.createRef();
-    this.defendSuccessIndicateRef = React.createRef();
-    this.aggressiveModeIndicateRef = React.createRef();
-    this.passiveModeIndicateRef = React.createRef();
-    this.thinkingIndicateRef = React.createRef();
-    this.defendMissionIndicateRef = React.createRef();
-    this.patrolMissionIndicateRef = React.createRef();
-    this.pursueMissionIndicateRef = React.createRef();
-    this.pursueMissionIndicate2Ref = React.createRef();
-    this.retrieveMissionIndicateRef = React.createRef();
-    this.drowningIndicateRef = React.createRef();
+
+    this.outOfStaminaIndicateRef = React.createRef();
+    this.inventoryFullIndicateRef = React.createRef();
+    this.outOfAmmoIndicateRef = React.createRef();
+
     this.destroyedItemIndicateRef = React.createRef();
     this.pickupBuffIndicateRef = React.createRef();
     this.pickupDebuffIndicateRef = React.createRef();
@@ -4082,15 +4113,7 @@ class App extends Component {
     this.dropArmorIndicateRef = React.createRef();
     this.pickupArmorIndicateRef = React.createRef();
     this.pickupAmmoIndicateRef = React.createRef();
-    this.terrainSpeedupIndicateRef = React.createRef();
-    this.terrainSlowdownIndicateRef = React.createRef();
-    this.terrainInjuredIndicateRef = React.createRef();
-    this.outOfStaminaIndicateRef = React.createRef();
-    this.boltKilledIndicateRef = React.createRef();
-    this.attackParriedIndicateRef = React.createRef();
-    this.inventoryFullIndicateRef = React.createRef();
-    this.outOfAmmoIndicateRef = React.createRef();
-    this.missedIndicate2Ref = React.createRef();
+
     this.prePushIndicateRef = React.createRef();
     this.canPushIndicateRef = React.createRef();
     this.noPushingIndicateRef = React.createRef();
@@ -4100,23 +4123,12 @@ class App extends Component {
     this.noPullingIndicateRef = React.createRef();
     this.pullingIndicateRef = React.createRef();
     this.pushedPulledIndicateRef = React.createRef();
-    this.unbreakableIndicateRef = React.createRef();
-    this.dodgeIndicate2Ref = React.createRef();
-    this.attackFeintIndicateRef = React.createRef();
-    this.attackFeintIndicate2Ref = React.createRef();
-    this.attackFeintIndicate3Ref = React.createRef();
-    this.defendFeintIndicateRef = React.createRef();
-    this.defendFeintIndicate2Ref = React.createRef();
-    this.defendFeintIndicate3Ref = React.createRef();
-    this.dodgeFeintIndicateRef = React.createRef();
-    this.dodgeFeintIndicate2Ref = React.createRef();
-    this.boltDefendIndicate2Ref = React.createRef();
-    this.flankIndicate2Ref = React.createRef();
-    this.noFlankIndicateRef = React.createRef();
-    this.cellVoidingIndicateRef = React.createRef();
-    this.cellVoidingIndicate2Ref = React.createRef();
-    this.timerIndicateRef = React.createRef();
 
+    this.terrainSpeedupIndicateRef = React.createRef();
+    this.terrainSlowdownIndicateRef = React.createRef();
+    this.terrainInjuredIndicateRef = React.createRef();
+
+    // ITEMS
     this.itemSpdUpRef = React.createRef();
     this.itemSpdDownRef = React.createRef();
     this.itemHpUpRef = React.createRef();
@@ -4175,6 +4187,27 @@ class App extends Component {
     this.player2ImgAttackSheetRef = React.createRef();
     this.comAImgAttackSheetRef = React.createRef();
     this.comBImgAttackSheetRef = React.createRef();
+
+    // AI
+    this.completeMissionIndicateRef = React.createRef();
+    this.enrouteIndicateRef = React.createRef();
+    this.targetSwitchIndicateRef = React.createRef();
+    this.pathSwitchIndicateRef = React.createRef();
+    this.retreatIndicateRef = React.createRef();
+
+    this.completeMissionIndicateRef = React.createRef();
+    this.enrouteIndicateRef = React.createRef();
+    this.targetSwitchIndicateRef = React.createRef();
+    this.pathSwitchIndicateRef = React.createRef();
+    this.retreatIndicateRef = React.createRef();
+    this.aggressiveModeIndicateRef = React.createRef();
+    this.passiveModeIndicateRef = React.createRef();
+    this.thinkingIndicateRef = React.createRef();
+    this.defendMissionIndicateRef = React.createRef();
+    this.patrolMissionIndicateRef = React.createRef();
+    this.pursueMissionIndicateRef = React.createRef();
+    this.pursueMissionIndicate2Ref = React.createRef();
+    this.retrieveMissionIndicateRef = React.createRef();
   }
 
   componentDidMount() {
@@ -13608,7 +13641,7 @@ class App extends Component {
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
             } else {
-              console.log("do nothing");
+              // console.log("do nothing");
             }
           } else {
             if (player[action].direction === "" || player[action].directionType === "") {
@@ -13662,7 +13695,7 @@ class App extends Component {
             player[action].direction = inputDirection;
             player[action].directionType = "slash";
           } else {
-            console.log("do nothing");
+            // console.log("do nothing");
           }
         } else {
           if (player[action].direction === "" || player[action].directionType === "") {
@@ -34136,12 +34169,12 @@ class App extends Component {
             ) {
               player.elasticCounter.state = false;
             }
-            console.log("defend feinted");
+            // console.log("defend feinted");
           } else {
             if (player.defending.peak === true) {
-              console.log("peak defense. cant feint");
+              // console.log("peak defense. cant feint");
             } else {
-              console.log("too late to feint defense");
+              // console.log("too late to feint defense");
             }
           }
         }
@@ -34345,26 +34378,25 @@ class App extends Component {
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
             if (player.attacking.count < attackPeak) {
-              console.log(
-                "attack windup: direction",
-                player.attacking.direction,
-                player.attacking.directionType,
-                "charging:",
-                chargeType,
-                player.attacking.charge,
-                "atk count:",
-                player.attacking.count,
-                "atk peak:",
-                attackPeak,
-                "atk limit:",
-                player.attacking.limit
-              );
+              // console.log(
+              //   "attack windup: direction",
+              //   player.attacking.direction,
+              //   player.attacking.directionType,
+              //   "charging:",
+              //   chargeType,
+              //   player.attacking.charge,
+              //   "atk count:",
+              //   player.attacking.count,
+              //   "atk peak:",
+              //   attackPeak,
+              //   "atk limit:",
+              //   player.attacking.limit
+              // );
             }
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
             player.action = "attacking";
             player.attacking.count++;
-            // console.log("attack count", player.attacking.count);
 
             // APPLY BLUNT ATTACK
             if (
@@ -34536,12 +34568,12 @@ class App extends Component {
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
                   .normal
             ) {
-              console.log(
-                player.attacking.count,
-                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                  .normal,
-                "not charging, but past non charge peak. charge attack released early...adjusting peak"
-              );
+              // console.log(
+              //   player.attacking.count,
+              //   player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
+              //     .normal,
+              //   "not charging, but past non charge peak. charge attack released early...adjusting peak"
+              // );
               executeAttack = true;
               attackPeak =
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
@@ -34549,7 +34581,7 @@ class App extends Component {
             } else if (player.attacking.count === attackPeak) {
               executeAttack = true;
 
-              console.log("execute ", chargeType, " attack at peak normally");
+              // console.log("execute ", chargeType, " attack at peak normally");
             }
           } else {
             // console.log("attack peak already reached/passed");
@@ -34557,20 +34589,20 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (executeAttack === true) {
-            console.log(
-              "attack peak: direction",
-              player.attacking.direction,
-              player.attacking.directionType,
-              "charging:",
-              chargeType,
-              player.attacking.charge,
-              "atk count:",
-              player.attacking.count,
-              "atk peak:",
-              attackPeak,
-              "atk limit:",
-              player.attacking.limit
-            );
+            // console.log(
+            //   "attack peak: direction",
+            //   player.attacking.direction,
+            //   player.attacking.directionType,
+            //   "charging:",
+            //   chargeType,
+            //   player.attacking.charge,
+            //   "atk count:",
+            //   player.attacking.count,
+            //   "atk peak:",
+            //   attackPeak,
+            //   "atk limit:",
+            //   player.attacking.limit
+            // );
 
             // WEAPON STAMINA COST!!
             if (
@@ -34669,21 +34701,20 @@ class App extends Component {
                 chargeType
               ]
           ) {
-            // console.log('attack cooldown',player.attacking.count);
-            console.log(
-              "attack cooldown: direction",
-              player.attacking.direction,
-              player.attacking.directionType,
-              "charging:",
-              chargeType,
-              player.attacking.charge,
-              "atk count:",
-              player.attacking.count,
-              "atk peak:",
-              attackPeak,
-              "atk limit:",
-              player.attacking.limit
-            );
+            // console.log(
+            //   "attack cooldown: direction",
+            //   player.attacking.direction,
+            //   player.attacking.directionType,
+            //   "charging:",
+            //   chargeType,
+            //   player.attacking.charge,
+            //   "atk count:",
+            //   player.attacking.count,
+            //   "atk peak:",
+            //   attackPeak,
+            //   "atk limit:",
+            //   player.attacking.limit
+            // );
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
             player.attacking.blunt = false;
@@ -34790,21 +34821,14 @@ class App extends Component {
             player.action = "defending";
             player.defending.peak = false;
             // console.log(
-            //   "defend winding up",
+            //   "defend windup: count",
             //   player.defending.count,
-            //   "player",
-            //   player.number,
-            //   defendPeak
+            //   "peak",
+            //   defendPeak,
+            //   "direction & dir type",
+            //   player.defending.direction,
+            //   player.defending.directionType
             // );
-            console.log(
-              "defend windup: count",
-              player.defending.count,
-              "peak",
-              defendPeak,
-              "direction & dir type",
-              player.defending.direction,
-              player.defending.directionType
-            );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
                 state: false,
@@ -34823,13 +34847,6 @@ class App extends Component {
             player.defending.count === defendPeak &&
             player.defending.decay.state !== true
           ) {
-            // console.log(
-            //   "peak defend player",
-            //   player.number,
-            //   player.defending.count,
-            //   player.defending.limit - defendPeak
-            // );
-
             let defendDecayLimitPercentage = 0.55; // calc & increase this based on defend stats
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
               player.action = "defending";
@@ -34857,19 +34874,19 @@ class App extends Component {
                 });
               }
 
-              console.log(
-                "defend peak: count",
-                player.defending.count,
-                "peak",
-                defendPeak,
-                "direction & dir type",
-                player.defending.direction,
-                player.defending.directionType,
-                "decay:",
-                player.defending.decay.state,
-                player.defending.decay.count,
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend peak: count",
+              //   player.defending.count,
+              //   "peak",
+              //   defendPeak,
+              //   "direction & dir type",
+              //   player.defending.direction,
+              //   player.defending.directionType,
+              //   "decay:",
+              //   player.defending.decay.state,
+              //   player.defending.decay.count,
+              //   player.defending.decay.limit
+              // );
             }
             // OUT OF STAMINA
             else {
@@ -34918,12 +34935,12 @@ class App extends Component {
               player.defending.decay.count++;
               if (player.defending.decay.count >= this.defendPeakAllowance) {
                 player.defending.peak = false;
-                console.log(
-                  "peak defend over: count",
-                  player.defending.count,
-                  defendPeak,
-                  player.defending.decay.state
-                );
+                // console.log(
+                //   "peak defend over: count",
+                //   player.defending.count,
+                //   defendPeak,
+                //   player.defending.decay.state
+                // );
               }
 
               if (!player.popups.find((x) => x.msg === "defending")) {
@@ -34938,24 +34955,18 @@ class App extends Component {
                 });
               }
               // console.log(
-              //   "defend decay count",
+              //   "defend decaying: count",
+              //   player.defending.count,
+              //   "peak",
+              //   defendPeak,
+              //   "direction & dir type",
+              //   player.defending.direction,
+              //   player.defending.directionType,
+              //   "decay count",
               //   player.defending.decay.count,
-              //   player.defending.state,
-              //   player.action
+              //   "decay limit",
+              //   player.defending.decay.limit
               // );
-              console.log(
-                "defend decaying: count",
-                player.defending.count,
-                "peak",
-                defendPeak,
-                "direction & dir type",
-                player.defending.direction,
-                player.defending.directionType,
-                "decay count",
-                player.defending.decay.count,
-                "decay limit",
-                player.defending.decay.limit
-              );
             }
 
             if (player.defending.decay.count >= player.defending.decay.limit) {
@@ -34963,14 +34974,14 @@ class App extends Component {
               player.defending.decay.count = 0;
               player.defending.count = defendPeak + player.defending.decay.limit;
               // player.action = "idle";
-              console.log(
-                "defend decay limit. drop defense",
-                player.defending.state,
-                player.defending.count,
-                defendPeak,
-                player.defending.limit,
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend decay limit. drop defense",
+              //   player.defending.state,
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit,
+              //   player.defending.decay.limit
+              // );
 
               if (player.popups.find((x) => x.msg === "defending")) {
                 player.popups.splice(
@@ -34988,11 +34999,11 @@ class App extends Component {
           ) {
             if (player.defending.count < player.defending.limit) {
               player.defending.count++;
-              console.log(
-                "finishing defense after decay/ defense cooldown: count",
-                player.defending.count,
-                player.defending.limit
-              );
+              // console.log(
+              //   "finishing defense after decay/ defense cooldown: count",
+              //   player.defending.count,
+              //   player.defending.limit
+              // );
             }
             if (player.defending.count >= player.defending.limit) {
               player.action = "idle";
@@ -35010,7 +35021,7 @@ class App extends Component {
                 direction: "",
                 directionType: "", //thrust or slash
               };
-              console.log("defend coolodown complete");
+              // console.log("defend coolodown complete");
             }
           }
         }
@@ -40154,236 +40165,255 @@ class App extends Component {
             plyr.currentPosition.cell.number.y === y &&
             plyr.number === 1
           ) {
-            // switch (plyr.action) {
-            //   case "moving":
-            //     let moveSpeed = plyr.speed.move;
-            //     if (plyr.terrainMoveSpeed.state === true) {
-            //       moveSpeed = plyr.terrainMoveSpeed.speed;
-            //     }
-            //     if (plyr.pushing.state === true) {
-            //       moveSpeed = plyr.pushing.moveSpeed;
-            //     }
-            //     if (plyr.pulling.state === true) {
-            //       moveSpeed = plyr.pulling.moveSpeed;
-            //     }
-            //     if (plyr.pushed.state === true) {
-            //       moveSpeed = plyr.pushed.moveSpeed;
-            //     }
-            //     if (plyr.pulled.state === true) {
-            //       moveSpeed = plyr.pulled.moveSpeed;
-            //     }
-            //     let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
-            //     let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
-            //     finalAnimIndex = moveAnimIndex;
-            //     // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-            //     if (plyr.target.cell1.void == true) {
-            //       // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-            //     }
-            //     break;
-            //   case "jumping":
-            //     let rangeIndex4 = plyr.speed.range.indexOf(0.1);
-            //     let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step);
-            //     finalAnimIndex = moveAnimIndex4;
-            //     // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-            //     break;
-            //   case "strafe moving":
-            //     if (plyr.pushBack.state === true) {
-            //       let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
-            //       let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step);
-            //       finalAnimIndex = moveAnimIndex3;
-            //       // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-            //     } else {
-            //       let moveSpeed = plyr.speed.move;
-            //       // if (plyr.pushing.state === true) {
-            //       //   moveSpeed = plyr.pushing.moveSpeed;
-            //       // }
-            //       if (plyr.pulling.state === true) {
-            //         moveSpeed = plyr.pulling.moveSpeed;
-            //       }
-            //       if (plyr.pushed.state === true) {
-            //         moveSpeed = plyr.pushed.moveSpeed;
-            //       }
-            //       if (plyr.pulled.state === true) {
-            //         moveSpeed = plyr.pulled.moveSpeed;
-            //       }
-            //       let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
-            //       let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step);
-            //       finalAnimIndex = moveAnimIndex2;
-            //       // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-            //     }
-            //     break;
-            //   case "flanking":
-            //     let rangeIndex6 = plyr.speed.range.indexOf(0.2);
-            //     let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step);
-            //     finalAnimIndex = moveAnimIndex6;
-            //     // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-            //     // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-            //     break;
-            //   case "attacking":
-            //     // let animIndex = plyr.attacking.count -1;
-            //     let animIndex;
-            //     if (
-            //       plyr.elasticCounter.state === true &&
-            //       plyr.elasticCounter.type === "attacking"
-            //     ) {
-            //       if (plyr.elasticCounter.countUp.state === true) {
-            //         animIndex = plyr.elasticCounter.countUp.count - 1;
-            //       }
-            //       if (plyr.elasticCounter.pause.state === true) {
-            //         if (plyr.elasticCounter.pause.count < 11) {
-            //           animIndex = plyr.elasticCounter.pause.count - 1;
-            //         } else {
-            //           if (plyr.elasticCounter.pause.count % 10 === 0) {
-            //             animIndex = 9;
-            //             // animIndex5 = 10;
-            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-            //           } else {
-            //             let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-            //             animIndex = plyr.elasticCounter.pause.count - mod - 1;
-            //           }
-            //         }
-            //       }
-            //       if (plyr.elasticCounter.countDown.state === true) {
-            //         animIndex = plyr.elasticCounter.countDown.count - 1;
-            //       }
-            //     } else {
-            //       animIndex = plyr.attacking.count - 1;
-            //     }
-            //     finalAnimIndex = animIndex;
-            //     // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-            //     break;
-            //   case "defending":
-            //     let animIndex2 = plyr.defending.count - 1;
-            //     if (plyr.defending.decay.state !== true) {
-            //       if (plyr.defending.count > 0) {
-            //         finalAnimIndex = animIndex2;
-            //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-            //       }
-            //       if (plyr.defending.count === 0) {
-            //         let animIndex2a = 5;
-            //         finalAnimIndex = animIndex2a;
-            //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-            //       }
-            //     }
-            //     if (plyr.defending.decay.state === true) {
-            //       if (plyr.defending.decay.count < 11) {
-            //         animIndex2 = plyr.defending.decay.count - 1;
-            //       } else {
-            //         if (plyr.defending.decay.count % 10 === 0) {
-            //           animIndex2 = 9;
-            //         } else {
-            //           let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
-            //           animIndex2 = plyr.defending.decay.count - mod - 1;
-            //         }
-            //       }
-            //       finalAnimIndex = animIndex2;
-            //     }
-            //     break;
-            //   case "idle":
-            //     if (plyr.number === 1) {
-            //       // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-            //     }
-            //     if (plyr.number === 2) {
-            //       // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-            //     }
-            //     let animIndex3 = plyr.idleAnim.count + 1;
-            //     finalAnimIndex = animIndex3;
-            //     break;
-            //   case "falling":
-            //     let animIndex4 = plyr.falling.count - 1;
-            //     finalAnimIndex = animIndex4;
-            //     // console.log("anim testing fall", plyr.falling.count, "plyr", plyr.number);
-            //     break;
-            //   case "deflected":
-            //     let animIndex5 = plyr.success.deflected.count - 1;
-            //     if (
-            //       plyr.elasticCounter.state === true &&
-            //       plyr.elasticCounter.type === "deflected"
-            //     ) {
-            //       if (plyr.elasticCounter.countUp.state === true) {
-            //         animIndex5 = plyr.elasticCounter.countUp.count - 1;
-            //       }
-            //       if (plyr.elasticCounter.pause.state === true) {
-            //         if (plyr.elasticCounter.pause.count < 11) {
-            //           animIndex5 = plyr.elasticCounter.pause.count - 1;
-            //         } else {
-            //           if (plyr.elasticCounter.pause.count % 10 === 0) {
-            //             animIndex5 = 9;
-            //             // animIndex5 = 10;
-            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-            //           } else {
-            //             let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-            //             animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
-            //           }
-            //         }
-            //       }
-            //       if (plyr.elasticCounter.countDown.state === true) {
-            //         animIndex5 = plyr.elasticCounter.countDown.count - 1;
-            //       }
-            //     }
-            //     if (plyr.halfPushBack.state === true) {
-            //       if (plyr.halfPushBack.countUp.state === true) {
-            //         animIndex5 = plyr.halfPushBack.countUp.count - 1;
-            //       }
-            //       if (plyr.halfPushBack.countDown.state === true) {
-            //         animIndex5 = plyr.halfPushBack.countDown.count - 1;
-            //       }
-            //     }
-            //     finalAnimIndex = animIndex5;
-            //     // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-            //     break;
-            //   case "dodging":
-            //     let animIndex7 = plyr.dodging.count - 1;
-            //     if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "dodging") {
-            //       if (plyr.elasticCounter.countUp.state === true) {
-            //         // animIndex7 = plyr.elasticCounter.countUp.count-1;
-            //         if (plyr.elasticCounter.countUp.count < 11) {
-            //           animIndex7 = plyr.elasticCounter.countUp.count - 1;
-            //         } else {
-            //           if (plyr.elasticCounter.countUp.count % 10 === 0) {
-            //             animIndex7 = 9;
-            //             // animIndex5 = 10;
-            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-            //           } else {
-            //             let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
-            //             animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
-            //           }
-            //         }
-            //       }
-            //       if (plyr.elasticCounter.pause.state === true) {
-            //         if (plyr.elasticCounter.pause.count < 11) {
-            //           animIndex7 = plyr.elasticCounter.pause.count - 1;
-            //         } else {
-            //           if (plyr.elasticCounter.pause.count % 10 === 0) {
-            //             animIndex7 = 9;
-            //             // animIndex5 = 10;
-            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-            //           } else {
-            //             let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-            //             animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
-            //           }
-            //         }
-            //       }
-            //       if (plyr.elasticCounter.countDown.state === true) {
-            //         // animIndex7 = plyr.elasticCounter.countDown.count-1;
-            //         if (plyr.elasticCounter.countDown.count < 11) {
-            //           animIndex7 = plyr.elasticCounter.countDown.count - 1;
-            //         } else {
-            //           if (plyr.elasticCounter.countDown.count % 10 === 0) {
-            //             animIndex7 = 9;
-            //             // animIndex5 = 10;
-            //             // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-            //           } else {
-            //             let mod = Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
-            //             animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
-            //           }
-            //         }
-            //       }
-            //     }
-            //     finalAnimIndex = animIndex7;
-            //     // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-            //     break;
-            // }
+            switch (plyr.action) {
+              case "moving":
+                let moveSpeed = plyr.speed.move;
+                if (plyr.terrainMoveSpeed.state === true) {
+                  moveSpeed = plyr.terrainMoveSpeed.speed;
+                }
+                if (plyr.pushing.state === true) {
+                  moveSpeed = plyr.pushing.moveSpeed;
+                }
+                if (plyr.pulling.state === true) {
+                  moveSpeed = plyr.pulling.moveSpeed;
+                }
+                if (plyr.pushed.state === true) {
+                  moveSpeed = plyr.pushed.moveSpeed;
+                }
+                if (plyr.pulled.state === true) {
+                  moveSpeed = plyr.pulled.moveSpeed;
+                }
+                let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
+                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(
+                  plyr.moving.step
+                );
+                finalAnimIndex = moveAnimIndex;
+                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                if (plyr.target.cell1.void == true) {
+                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                }
+                break;
+              case "jumping":
+                let rangeIndex4 = plyr.speed.range.indexOf(0.1);
+                let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(
+                  plyr.moving.step
+                );
+                finalAnimIndex = moveAnimIndex4;
+                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                break;
+              case "strafe moving":
+                if (plyr.pushBack.state === true) {
+                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
+                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(
+                    plyr.moving.step
+                  );
+                  finalAnimIndex = moveAnimIndex3;
+                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                } else {
+                  let moveSpeed = plyr.speed.move;
+                  // if (plyr.pushing.state === true) {
+                  //   moveSpeed = plyr.pushing.moveSpeed;
+                  // }
+                  if (plyr.pulling.state === true) {
+                    moveSpeed = plyr.pulling.moveSpeed;
+                  }
+                  if (plyr.pushed.state === true) {
+                    moveSpeed = plyr.pushed.moveSpeed;
+                  }
+                  if (plyr.pulled.state === true) {
+                    moveSpeed = plyr.pulled.moveSpeed;
+                  }
+                  let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
+                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(
+                    plyr.moving.step
+                  );
+                  finalAnimIndex = moveAnimIndex2;
+                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                }
+                break;
+              case "flanking":
+                let rangeIndex6 = plyr.speed.range.indexOf(0.2);
+                let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(
+                  plyr.moving.step
+                );
+                finalAnimIndex = moveAnimIndex6;
+                // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                break;
+              case "attacking":
+                // let animIndex = plyr.attacking.count -1;
+                let animIndex;
+                if (
+                  plyr.elasticCounter.state === true &&
+                  plyr.elasticCounter.type === "attacking"
+                ) {
+                  if (plyr.elasticCounter.countUp.state === true) {
+                    animIndex = plyr.elasticCounter.countUp.count - 1;
+                  }
+                  if (plyr.elasticCounter.pause.state === true) {
+                    if (plyr.elasticCounter.pause.count < 11) {
+                      animIndex = plyr.elasticCounter.pause.count - 1;
+                    } else {
+                      if (plyr.elasticCounter.pause.count % 10 === 0) {
+                        animIndex = 9;
+                        // animIndex5 = 10;
+                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                      } else {
+                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                        animIndex = plyr.elasticCounter.pause.count - mod - 1;
+                      }
+                    }
+                  }
+                  if (plyr.elasticCounter.countDown.state === true) {
+                    animIndex = plyr.elasticCounter.countDown.count - 1;
+                  }
+                } else {
+                  animIndex = plyr.attacking.count - 1;
+                }
+                finalAnimIndex = animIndex;
+                console.log(
+                  "anim testing atk",
+                  plyr.attacking.count,
+                  plyr.attacking.limit,
+                  finalAnimIndex
+                );
+                break;
+              case "defending":
+                let animIndex2 = plyr.defending.count - 1;
+                if (plyr.defending.decay.state !== true) {
+                  if (plyr.defending.count > 0) {
+                    finalAnimIndex = animIndex2;
+                    // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+                  }
+                  if (plyr.defending.count === 0) {
+                    let animIndex2a = 5;
+                    finalAnimIndex = animIndex2a;
+                    // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+                  }
+                }
+                if (plyr.defending.decay.state === true) {
+                  if (plyr.defending.decay.count < 11) {
+                    animIndex2 = plyr.defending.decay.count - 1;
+                  } else {
+                    if (plyr.defending.decay.count % 10 === 0) {
+                      animIndex2 = 9;
+                    } else {
+                      let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
+                      animIndex2 = plyr.defending.decay.count - mod - 1;
+                    }
+                  }
+                  finalAnimIndex = animIndex2;
+                }
+                break;
+              case "idle":
+                if (plyr.number === 1) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                if (plyr.number === 2) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                let animIndex3 = plyr.idleAnim.count + 1;
+                finalAnimIndex = animIndex3;
+                break;
+              case "falling":
+                let animIndex4 = plyr.falling.count - 1;
+                finalAnimIndex = animIndex4;
+                // console.log("anim testing fall", plyr.falling.count, "plyr", plyr.number);
+                break;
+              case "deflected":
+                let animIndex5 = plyr.success.deflected.count - 1;
+                if (
+                  plyr.elasticCounter.state === true &&
+                  plyr.elasticCounter.type === "deflected"
+                ) {
+                  if (plyr.elasticCounter.countUp.state === true) {
+                    animIndex5 = plyr.elasticCounter.countUp.count - 1;
+                  }
+                  if (plyr.elasticCounter.pause.state === true) {
+                    if (plyr.elasticCounter.pause.count < 11) {
+                      animIndex5 = plyr.elasticCounter.pause.count - 1;
+                    } else {
+                      if (plyr.elasticCounter.pause.count % 10 === 0) {
+                        animIndex5 = 9;
+                        // animIndex5 = 10;
+                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                      } else {
+                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                        animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
+                      }
+                    }
+                  }
+                  if (plyr.elasticCounter.countDown.state === true) {
+                    animIndex5 = plyr.elasticCounter.countDown.count - 1;
+                  }
+                }
+                if (plyr.halfPushBack.state === true) {
+                  if (plyr.halfPushBack.countUp.state === true) {
+                    animIndex5 = plyr.halfPushBack.countUp.count - 1;
+                  }
+                  if (plyr.halfPushBack.countDown.state === true) {
+                    animIndex5 = plyr.halfPushBack.countDown.count - 1;
+                  }
+                }
+                finalAnimIndex = animIndex5;
+                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+                break;
+              case "dodging":
+                let animIndex7 = plyr.dodging.count - 1;
+                if (
+                  plyr.elasticCounter.state === true &&
+                  plyr.elasticCounter.type === "dodging"
+                ) {
+                  if (plyr.elasticCounter.countUp.state === true) {
+                    // animIndex7 = plyr.elasticCounter.countUp.count-1;
+                    if (plyr.elasticCounter.countUp.count < 11) {
+                      animIndex7 = plyr.elasticCounter.countUp.count - 1;
+                    } else {
+                      if (plyr.elasticCounter.countUp.count % 10 === 0) {
+                        animIndex7 = 9;
+                        // animIndex5 = 10;
+                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                      } else {
+                        let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
+                        animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
+                      }
+                    }
+                  }
+                  if (plyr.elasticCounter.pause.state === true) {
+                    if (plyr.elasticCounter.pause.count < 11) {
+                      animIndex7 = plyr.elasticCounter.pause.count - 1;
+                    } else {
+                      if (plyr.elasticCounter.pause.count % 10 === 0) {
+                        animIndex7 = 9;
+                        // animIndex5 = 10;
+                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                      } else {
+                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                        animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
+                      }
+                    }
+                  }
+                  if (plyr.elasticCounter.countDown.state === true) {
+                    // animIndex7 = plyr.elasticCounter.countDown.count-1;
+                    if (plyr.elasticCounter.countDown.count < 11) {
+                      animIndex7 = plyr.elasticCounter.countDown.count - 1;
+                    } else {
+                      if (plyr.elasticCounter.countDown.count % 10 === 0) {
+                        animIndex7 = 9;
+                        // animIndex5 = 10;
+                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                      } else {
+                        let mod =
+                          Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
+                        animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
+                      }
+                    }
+                  }
+                }
+                finalAnimIndex = animIndex7;
+                // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+                break;
+            }
           }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
@@ -40830,6 +40860,15 @@ class App extends Component {
             // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
             // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
             context.stroke();
+
+            this.testDraw.push({
+              color: "white",
+              x: origin.x,
+              y: origin.y,
+              img: 
+            })
+
+
           }
 
           //PLAYER DEPTH SORTING!!
@@ -43220,6 +43259,18 @@ class App extends Component {
           context.beginPath();
           context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
           context.fill();
+
+          context.drawImage(
+            updatedPlayerImg,
+            sx,
+            sy,
+            sWidth,
+            sHeight,
+            point.x - this.playerDrawWidth / 2,
+            point.y - this.playerDrawHeight / 2,
+            this.playerDrawWidth,
+            this.playerDrawHeight
+          );
         }
       }
     }
@@ -44099,10 +44150,10 @@ class App extends Component {
           crossbow: this.player1ImgAttackSheetRef.current,
         },
         defending: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.player1ImgDefendSheetRef.current,
+          sword: this.player1ImgDefendSheetRef.current,
+          spear: this.player1ImgDefendSheetRef.current,
+          crossbow: this.player1ImgDefendSheetRef.current,
         },
         deflected: {
           unarmed: this.playerImgMoveSheetRef.current,
