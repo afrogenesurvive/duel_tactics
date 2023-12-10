@@ -195,6 +195,8 @@ import player2AttackSheet from "./assets/player/sheetAttack2.png";
 import comAAttackSheet from "./assets/player/sheetAttackComA.png";
 import comBAttackSheet from "./assets/player/sheetAttackComB.png";
 
+import testSprite from "./assets/player/testSprite.png";
+
 import "./App.css";
 
 import DebugBox from "./debugBox";
@@ -3534,14 +3536,14 @@ class App extends Component {
     ];
     this.actionAnimFrameTypeCountRef = {
       attacking: {
-        typeCount: 7, 
-        sheetLength: 70
+        typeCount: 7,
+        sheetLength: 70,
       },
       defending: {
         typeCount: 5,
-        sheetLength: 50
-      }
-    }
+        sheetLength: 50,
+      },
+    };
     this.attackAnimRef = {
       limit: {
         unarmed: {
@@ -40830,7 +40832,7 @@ class App extends Component {
             let origin = popupCoordObject.west;
             let width = popupCoordObject.north.pt4.x - origin.pt3.x;
             let height = popupCoordObject.south.pt2.y - origin.pt3.y;
-            context.strokeStyle = "white";
+            context.strokeStyle = "red";
             context.lineWidth = 2;
             context.beginPath();
             context.roundRect(origin.pt3.x, origin.pt3.y, width, height, 2);
@@ -40846,7 +40848,7 @@ class App extends Component {
               2 -
               (plyr.nextPosition.y - this.floorImageHeight);
             let width2 = this.playerDrawWidth + 2;
-            context.strokeStyle = "white";
+            context.strokeStyle = "blue";
             context.lineWidth = 2;
             context.beginPath();
             context.roundRect(
@@ -40856,19 +40858,38 @@ class App extends Component {
               this.playerDrawHeight * 1.5,
               2
             );
-            // context.roundRect(origin2.x,origin2.y, width2, height2, 2);
-            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
-            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
+            // context.roundRect(origin2.x, origin2.y, width2, height2, 2);
+            // context.roundRect(
+            //   origin2.x,
+            //   origin2.y,
+            //   this.playerDrawWidth,
+            //   this.playerDrawHeight * 1.5,
+            //   2
+            // );
+            // context.roundRect(
+            //   origin2.x,
+            //   origin2.y,
+            //   this.playerDrawWidth + 2,
+            //   this.floorImageHeight * 1.5,
+            //   2
+            // );
             context.stroke();
 
-            this.testDraw.push({
-              color: "white",
-              x: origin.x,
-              y: origin.y,
-              img: 
-            })
-
-
+            if (this.testDraw.length < 2) {
+              this.testDraw.push({
+                color: "red",
+                x: origin2.x,
+                y: origin2.y,
+                img: this.testRef.current,
+              });
+            } else {
+              this.testDraw[plyr.number - 1] = {
+                color: "red",
+                x: origin2.x,
+                y: origin2.y,
+                img: this.testRef.current,
+              };
+            }
           }
 
           //PLAYER DEPTH SORTING!!
@@ -43261,15 +43282,15 @@ class App extends Component {
           context.fill();
 
           context.drawImage(
-            updatedPlayerImg,
-            sx,
-            sy,
-            sWidth,
-            sHeight,
-            point.x - this.playerDrawWidth / 2,
-            point.y - this.playerDrawHeight / 2,
-            this.playerDrawWidth,
-            this.playerDrawHeight
+            point.img,
+            point.x,
+            point.y - 10,
+            55,
+            85
+            // point.x - this.playerDrawWidth / 2,
+            // point.y - this.playerDrawHeight / 2,
+            // this.playerDrawWidth,
+            // this.playerDrawHeight
           );
         }
       }
@@ -46291,6 +46312,12 @@ class App extends Component {
             src={comBAttackSheet}
             className="hidden playerImgs"
             ref={this.comBImgAttackSheetRef}
+            alt="logo"
+          />
+          <img
+            src={testSprite}
+            className="hidden playerImgs"
+            ref={this.testRef}
             alt="logo"
           />
         </div>
