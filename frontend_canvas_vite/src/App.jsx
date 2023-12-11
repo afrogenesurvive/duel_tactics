@@ -200,6 +200,13 @@ import testSpriteSouth from "./assets/player/testSpriteSouth.png";
 import testSpriteEast from "./assets/player/testSpriteEast.png";
 import testSpriteWest from "./assets/player/testSpriteWest.png";
 
+import moveSheetNew from "./assets/player/movingSheetNew.png";
+import idleSheetNew from "./assets/player/idleSheetNew.png";
+import attackSheetNew from "./assets/player/attackSheetNew.png";
+import defendSheetNew from "./assets/player/defendSheetNew.png";
+import dodgeSheetNew from "./assets/player/dodgingSheetNew.png";
+import deflectedFallingSheetNew from "./assets/player/deflectedFallingSheetNew.png";
+
 import "./App.css";
 
 import DebugBox from "./debugBox";
@@ -4217,6 +4224,13 @@ class App extends Component {
     this.pursueMissionIndicateRef = React.createRef();
     this.pursueMissionIndicate2Ref = React.createRef();
     this.retrieveMissionIndicateRef = React.createRef();
+
+    this.moveSheetNewRef = React.createRef();
+    this.idleSheetNewRef = React.createRef();
+    this.attackSheetNewRef = React.createRef();
+    this.defendSheetNewRef = React.createRef();
+    this.dodgeSheetNewRef = React.createRef();
+    this.deflectedFallingSheetNewRef = React.createRef();
   }
 
   componentDidMount() {
@@ -43295,17 +43309,7 @@ class App extends Component {
             west: this.testRefWest.current,
           };
 
-          context.drawImage(
-            testSprites[point.direction],
-            point.x,
-            point.y - 10,
-            55,
-            85
-            // point.x - this.playerDrawWidth / 2,
-            // point.y - this.playerDrawHeight / 2,
-            // this.playerDrawWidth,
-            // this.playerDrawHeight
-          );
+          context.drawImage(testSprites[point.direction], point.x, point.y - 10, 55, 85);
         }
       }
     }
@@ -45045,9 +45049,7 @@ class App extends Component {
           <div className="timer">
             <p className="timerText">{this.time}</p>
           </div>
-
           <Helper players={this.players} />
-
           <div className={this.state.containerInnerClass}>
             <canvas
               width={this.canvasWidth}
@@ -45223,7 +45225,6 @@ class App extends Component {
               />
             )}
           </div>
-
           {this.state.showSettings === true && (
             <Settings
               gridWidth={this.gridWidth}
@@ -45252,7 +45253,6 @@ class App extends Component {
               updateSettingsFormPlayerData={this.updateSettingsFormPlayerData}
             />
           )}
-
           <svg
             className="popupProgressSvg hidden"
             ref={this.popupProgressSvgRef}
@@ -45293,7 +45293,6 @@ class App extends Component {
               </linearGradient>
             </defs>
           </svg>
-
           <img
             src=""
             className="hidden"
@@ -45302,7 +45301,6 @@ class App extends Component {
             ref={this.popupProgressImgRef}
             alt="logo"
           />
-
           <img src={floorGrass} className="hidden" ref={this.floorGrassRef} alt="logo" />
           <img src={floorDirt} className="hidden" ref={this.floorDirtRef} alt="logo" />
           <img src={floorIce} className="hidden" ref={this.floorIceRef} alt="logo" />
@@ -45348,7 +45346,6 @@ class App extends Component {
           <img src={wall} className="hidden" ref={this.wallRef} alt="logo" />
           <img src={wall2} className="hidden" ref={this.wall2Ref} alt="logo" />
           <img src={wall3} className="hidden" ref={this.wall3Ref} alt="logo" />
-
           <img
             src={obstacleAHalf}
             className="hidden"
@@ -45445,7 +45442,6 @@ class App extends Component {
             ref={this.barrierAWestRef}
             alt="logo"
           />
-
           <img
             src={attack1Indicate}
             className="hidden playerImgs"
@@ -45674,7 +45670,6 @@ class App extends Component {
             ref={this.healIndicateRef}
             alt="logo"
           />
-
           <img
             src={preAttack2Indicate}
             className="hidden playerImgs"
@@ -45753,7 +45748,6 @@ class App extends Component {
             ref={this.enrouteIndicateRef}
             alt="logo"
           />
-
           <img
             src={targetSwitchIndicate}
             className="hidden playerImgs"
@@ -45856,7 +45850,6 @@ class App extends Component {
             ref={this.pickupWeaponIndicateRef}
             alt="logo"
           />
-
           <img
             src={dropWeaponIndicate}
             className="hidden playerImgs"
@@ -45899,7 +45892,6 @@ class App extends Component {
             ref={this.terrainInjuredIndicateRef}
             alt="logo"
           />
-
           <img
             src={outOfStaminaIndicate}
             className="hidden playerImgs"
@@ -45930,7 +45922,6 @@ class App extends Component {
             ref={this.outOfAmmoIndicateRef}
             alt="logo"
           />
-
           <img
             src={missedIndicate2}
             className="hidden playerImgs"
@@ -46033,7 +46024,6 @@ class App extends Component {
             ref={this.defendFeintIndicate2Ref}
             alt="logo"
           />
-
           <img
             src={defendFeintIndicate3}
             className="hidden playerImgs"
@@ -46088,7 +46078,6 @@ class App extends Component {
             ref={this.timerIndicateRef}
             alt="logo"
           />
-
           <img
             src={sword}
             className="hidden playerImgs"
@@ -46228,7 +46217,6 @@ class App extends Component {
             ref={this.itemFocusDownRef}
             alt="logo"
           />
-
           <img
             src={playerImgIdleSheet}
             className="hidden playerImgs"
@@ -46253,7 +46241,6 @@ class App extends Component {
             ref={this.playerComBImgIdleSheetRef}
             alt="logo"
           />
-
           <img
             src={playerImgMoveSheet}
             className="hidden playerImgs"
@@ -46278,7 +46265,6 @@ class App extends Component {
             ref={this.comBImgMoveSheetRef}
             alt="logo"
           />
-
           <img
             src={player1DefendSheet}
             className="hidden playerImgs"
@@ -46303,7 +46289,6 @@ class App extends Component {
             ref={this.comBImgDefendSheetRef}
             alt="logo"
           />
-
           <img
             src={player1AttackSheet}
             className="hidden playerImgs"
@@ -46350,6 +46335,42 @@ class App extends Component {
             src={testSpriteWest}
             className="hidden playerImgs"
             ref={this.testRefWest}
+            alt="logo"
+          />
+          <img
+            src={moveSheetNew}
+            className="hidden playerImgs"
+            ref={this.moveSheetNewRef}
+            alt="logo"
+          />
+          <img
+            src={idleSheetNew}
+            className="hidden playerImgs"
+            ref={this.idleSheetNewRef}
+            alt="logo"
+          />
+          <img
+            src={attackSheetNew}
+            className="hidden playerImgs"
+            ref={this.attackSheetNewRef}
+            alt="logo"
+          />
+          <img
+            src={defendSheetNew}
+            className="hidden playerImgs"
+            ref={this.defendSheetNewRef}
+            alt="logo"
+          />
+          <img
+            src={dodgeSheetNew}
+            className="hidden playerImgs"
+            ref={this.dodgeSheetNewRef}
+            alt="logo"
+          />
+          <img
+            src={deflectedFallingSheetNew}
+            className="hidden playerImgs"
+            ref={this.deflectedFallingSheetNewRef}
             alt="logo"
           />
         </div>
