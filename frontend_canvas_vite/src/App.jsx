@@ -33791,11 +33791,14 @@ class App extends Component {
 
                 // CONTINUOUS STRAFING CHECK
                 if (this.keyPressed[player.number - 1].strafe !== true) {
-                  console.log("continuous strafe check");
+                  // console.log("continuous strafe check");
                   player.strafing.state = false;
                   player.strafing.direction = "";
                 } else {
-                  console.log("continuous strafe check 2");
+                  // console.log("continuous strafe check 2", player.moveCancel.state);
+                  if (player.moveCancel.state === true) {
+                    player.strafing.state = false;
+                  }
                   player.strafing.direction = "";
                 }
               }
@@ -36859,6 +36862,7 @@ class App extends Component {
                       img: "",
                     });
                   }
+                  console.log("cant jump fwd here. Check for can kick");
                 }
               }
             }
