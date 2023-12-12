@@ -8937,8 +8937,10 @@ class App extends Component {
       if (player.currentWeapon.name === "") {
         defendType = "unarmed";
       }
-      let defendPeak = player.defending.animRef.peak[defendType];
-      player.defending.limit = player.defending.animRef.limit[defendType];
+      let defendPeak =
+        player.defending.animRef.peak[defendType][player.defending.directionType];
+      player.defending.limit =
+        player.defending.animRef.limit[defendType][player.defending.directionType];
 
       if (player.defending.count < defendPeak && player.defending.decay.state !== true) {
         phase = "windup";
@@ -33016,8 +33018,8 @@ class App extends Component {
       // }
       // player = this.setElasticCounter("test", "start", true, player);
     }
-    if (this.time === 100 && player.number === 1) {
-      // this.pushBack(player, "east");
+    if (this.time === 100 && player.number === 2) {
+      this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
@@ -33789,11 +33791,11 @@ class App extends Component {
 
                 // CONTINUOUS STRAFING CHECK
                 if (this.keyPressed[player.number - 1].strafe !== true) {
-                  // console.log('continuous strafe check');
+                  console.log("continuous strafe check");
                   player.strafing.state = false;
                   player.strafing.direction = "";
                 } else {
-                  // console.log('continuous strafe check 2');
+                  console.log("continuous strafe check 2");
                   player.strafing.direction = "";
                 }
               }
@@ -34959,7 +34961,6 @@ class App extends Component {
             player.defending.animRef.peak[defendType][player.defending.directionType];
           player.defending.limit =
             player.defending.animRef.limit[defendType][player.defending.directionType];
-
           if (
             player.defending.count < defendPeak &&
             player.defending.decay.state !== true
@@ -34974,9 +34975,7 @@ class App extends Component {
               defendPeak,
               "direction & dir type",
               player.defending.direction,
-              player.defending.directionType,
-              "limit",
-              player.defending.limit
+              player.defending.directionType
             );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
@@ -40453,17 +40452,6 @@ class App extends Component {
                 frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
                 remainder = plyr[plyr.action].count % increment;
                 newIndex = frameIndexBase * frameTypeIndex + remainder;
-                console.log(
-                  plyr[plyr.action].count,
-                  plyr[plyr.action].limit,
-                  "xx",
-                  frameIndexBase,
-                  increment,
-                  "yy",
-                  frameTypeIndex,
-                  remainder,
-                  newIndex
-                );
 
                 finalAnimIndex = newIndex;
                 // finalAnimIndex = animIndex;
@@ -40513,17 +40501,6 @@ class App extends Component {
 
                 finalAnimIndex = newIndex;
 
-                console.log(
-                  plyr[plyr.action].count,
-                  plyr[plyr.action].limit,
-                  "xy",
-                  frameIndexBase,
-                  increment,
-                  "yy",
-                  frameTypeIndex,
-                  remainder,
-                  newIndex
-                );
                 break;
               case "idle":
                 if (plyr.number === 1) {
@@ -40568,6 +40545,7 @@ class App extends Component {
                 //     animIndex5 = plyr.elasticCounter.countDown.count - 1;
                 //   }
                 // }
+
                 if (plyr.halfPushBack.state === true) {
                   if (plyr.halfPushBack.countUp.state === true) {
                     animIndex5 = plyr.halfPushBack.countUp.count - 1;
@@ -41323,13 +41301,13 @@ class App extends Component {
                       this.getCellFromDirection(
                         1,
                         plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
+                        plyr.halfPushBack.direction
                       ).x &&
                     x.number.y ===
                       this.getCellFromDirection(
                         1,
                         plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
+                        plyr.halfPushBack.direction
                       ).y
                 )
               ) {
@@ -41777,6 +41755,7 @@ class App extends Component {
             //
             // }
           }
+          // ELASTIC COUNTER DEFENDING
           if (
             (plyr.defending.state === true || plyr.action === "defending") &&
             plyr.moving.state === false &&
