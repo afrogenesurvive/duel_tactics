@@ -152,6 +152,7 @@ import attackParriedIndicate from "./assets/indicators/attackParried.png";
 import inventoryFullIndicate from "./assets/indicators/inventoryFull.png";
 import outOfAmmoIndicate from "./assets/indicators/outOfAmmo.png";
 import timerIndicate from "./assets/indicators/timer.png";
+import chargeIndicate from "./assets/indicators/charge.png";
 
 import mail1 from "./assets/items/mail1.png";
 import mail2 from "./assets/items/mail2.png";
@@ -4072,6 +4073,7 @@ class App extends Component {
     this.attackFeintIndicate3Ref = React.createRef();
 
     this.attackParriedIndicateRef = React.createRef();
+    this.chargeIndicateRef = React.createRef();
 
     this.missedIndicateRef = React.createRef();
     this.missedIndicate2Ref = React.createRef();
@@ -13699,6 +13701,17 @@ class App extends Component {
     const charge = () => {
       charging = true;
       player[action].charge++;
+      if (!player.popups.find((x) => x.msg === "charging")) {
+        player.popups.push({
+          state: false,
+          count: 0,
+          limit: 10,
+          type: "",
+          position: "",
+          msg: "charging",
+          img: "",
+        });
+      }
       // console.log("charging attack", player[action].charge);
     };
 
@@ -44371,6 +44384,7 @@ class App extends Component {
       cellVoiding2: this.cellVoidingIndicate2Ref.current,
       clashing: this.deflectIndicate2Ref.current,
       timer: this.timerIndicateRef.current,
+      charging: this.chargeIndicateRef.current,
     };
     this.indicatorImgs = {
       preAttack: this.preAttackIndicateRef.current,
@@ -46329,6 +46343,12 @@ class App extends Component {
             src={timerIndicate}
             className="hidden playerImgs"
             ref={this.timerIndicateRef}
+            alt="logo"
+          />
+          <img
+            src={chargeIndicate}
+            className="hidden playerImgs"
+            ref={this.chargeIndicateRef}
             alt="logo"
           />
           <img
