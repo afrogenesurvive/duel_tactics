@@ -3791,7 +3791,7 @@ class App extends Component {
       store2: [],
     };
     this.charSpriteHeight = 100;
-    this.charSpriteWidth = 100;
+    this.charSpriteWidth = 60;
     this.playerColourRef = {
       player1: "red",
       player2: "blue",
@@ -3804,6 +3804,8 @@ class App extends Component {
     };
     this.playerDrawWidth = 45;
     this.playerDrawHeight = 45;
+    this.playerDrawWidth2 = 55;
+    this.playerDrawHeight2 = 85;
     this.popupSize = 45;
     this.popupImgSize = 25;
     this.movingObstacles = [];
@@ -17118,10 +17120,18 @@ class App extends Component {
             limit: 6,
           },
           coords: {
-            x: point.x - this.playerDrawWidth / 2,
-            y: point.y - this.playerDrawHeight / 2,
+            // x: point.x - this.playerDrawWidth / 2,
+            // y: point.y - this.playerDrawHeight / 2,
+            x: data.nextPosition.x - this.floorImageHeight / 2,
+            y: data.nextPosition.y - this.floorImageHeight,
           },
         };
+        this.testDraw.push({
+          color: "purple",
+          x: data.halfPushBack.coords.x,
+          y: data.halfPushBack.coords.y,
+          direction: data.direction,
+        });
 
         this.players[data.number - 1] = data;
       } else {
@@ -32897,7 +32907,8 @@ class App extends Component {
       //   this.gridInfo.find((x) => x.number.x === trap.location.x && x.number.y === trap.location.y)[trap.type].trap = trap.trap;
       // }
     }
-    if (this.time === 400 && player.number === 1) {
+    if (this.time === 100 && player.number === 2) {
+      this.pushBack(player, "east");
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
 
@@ -34401,20 +34412,20 @@ class App extends Component {
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
             if (player.attacking.count < attackPeak) {
-              // console.log(
-              //   "attack windup: direction",
-              //   player.attacking.direction,
-              //   player.attacking.directionType,
-              //   "charging:",
-              //   chargeType,
-              //   player.attacking.charge,
-              //   "atk count:",
-              //   player.attacking.count,
-              //   "atk peak:",
-              //   attackPeak,
-              //   "atk limit:",
-              //   player.attacking.limit
-              // );
+              console.log(
+                "attack windup: direction",
+                player.attacking.direction,
+                player.attacking.directionType,
+                "charging:",
+                chargeType,
+                player.attacking.charge,
+                "atk count:",
+                player.attacking.count,
+                "atk peak:",
+                attackPeak,
+                "atk limit:",
+                player.attacking.limit
+              );
             }
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
@@ -34612,20 +34623,20 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (executeAttack === true) {
-            // console.log(
-            //   "attack peak: direction",
-            //   player.attacking.direction,
-            //   player.attacking.directionType,
-            //   "charging:",
-            //   chargeType,
-            //   player.attacking.charge,
-            //   "atk count:",
-            //   player.attacking.count,
-            //   "atk peak:",
-            //   attackPeak,
-            //   "atk limit:",
-            //   player.attacking.limit
-            // );
+            console.log(
+              "attack peak: direction",
+              player.attacking.direction,
+              player.attacking.directionType,
+              "charging:",
+              chargeType,
+              player.attacking.charge,
+              "atk count:",
+              player.attacking.count,
+              "atk peak:",
+              attackPeak,
+              "atk limit:",
+              player.attacking.limit
+            );
 
             // WEAPON STAMINA COST!!
             if (
@@ -34724,20 +34735,20 @@ class App extends Component {
                 chargeType
               ]
           ) {
-            // console.log(
-            //   "attack cooldown: direction",
-            //   player.attacking.direction,
-            //   player.attacking.directionType,
-            //   "charging:",
-            //   chargeType,
-            //   player.attacking.charge,
-            //   "atk count:",
-            //   player.attacking.count,
-            //   "atk peak:",
-            //   attackPeak,
-            //   "atk limit:",
-            //   player.attacking.limit
-            // );
+            console.log(
+              "attack cooldown: direction",
+              player.attacking.direction,
+              player.attacking.directionType,
+              "charging:",
+              chargeType,
+              player.attacking.charge,
+              "atk count:",
+              player.attacking.count,
+              "atk peak:",
+              attackPeak,
+              "atk limit:",
+              player.attacking.limit
+            );
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
             player.attacking.blunt = false;
@@ -34791,7 +34802,7 @@ class App extends Component {
               );
             }
 
-            // console.log('attack end');
+            console.log("attack end");
           }
         }
         // CLASHING
@@ -37934,23 +37945,25 @@ class App extends Component {
       }
       for (var i = 0; i < 1; i++) {
         // if (
-        //   !player.popups.find(x => x.msg === newArray[i]) &&
+        //   !player.popups.find((x) => x.msg === newArray[i]) &&
         //   // player.number === 2 &&
-        //   newArray[i] !==  "hpUp" &&
-        //   newArray[i] !==  "hpDown"
+        //   newArray[i] !== "hpUp" &&
+        //   newArray[i] !== "hpDown"
         // ) {
-        //   player.popups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 30,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       img: '',
-        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-        //     }
-        //   )
+        //   player.popups.push({
+        //     state: false,
+        //     count: 0,
+        //     limit: 30,
+        //     type: "",
+        //     position: "",
+        //     msg: newArray[i],
+        //     img: "",
+        //     cell: this.gridInfo.find(
+        //       (x) =>
+        //         x.number.x === player.currentPosition.cell.number.x &&
+        //         x.number.y === player.currentPosition.cell.number.y
+        //     ),
+        //   });
         // }
         // if (
         //   newArray[i] !==  "hpUp" &&
@@ -40169,6 +40182,10 @@ class App extends Component {
             x: plyr.nextPosition.x,
             y: plyr.nextPosition.y,
           };
+          let newCharDarwPoint = {
+            x: plyr.nextPosition.x - this.floorImageHeight / 2,
+            y: plyr.nextPosition.y - this.floorImageHeight,
+          };
 
           let weapon = plyr.currentWeapon.type;
           if (plyr.currentWeapon.type === "" || !plyr.currentWeapon.type) {
@@ -40294,12 +40311,12 @@ class App extends Component {
                   animIndex = plyr.attacking.count - 1;
                 }
                 finalAnimIndex = animIndex;
-                console.log(
-                  "anim testing atk",
-                  plyr.attacking.count,
-                  plyr.attacking.limit,
-                  finalAnimIndex
-                );
+                // console.log(
+                //   "anim testing atk",
+                //   plyr.attacking.count,
+                //   plyr.attacking.limit,
+                //   finalAnimIndex
+                // );
                 break;
               case "defending":
                 let animIndex2 = plyr.defending.count - 1;
@@ -40336,7 +40353,8 @@ class App extends Component {
                   // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
                 }
                 let animIndex3 = plyr.idleAnim.count + 1;
-                finalAnimIndex = animIndex3;
+                // finalAnimIndex = animIndex3;
+                finalAnimIndex = 1;
                 break;
               case "falling":
                 let animIndex4 = plyr.falling.count - 1;
@@ -40586,7 +40604,8 @@ class App extends Component {
                 // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
               }
               let animIndex3 = plyr.idleAnim.count + 1;
-              finalAnimIndex = animIndex3;
+              // finalAnimIndex = animIndex3;
+              finalAnimIndex = 1;
               break;
             case "falling":
               let animIndex4 = plyr.falling.count - 1;
@@ -40941,10 +40960,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2 - jumpYCalc * 3,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 } else {
                   context.drawImage(
@@ -40953,10 +40972,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -40973,10 +40992,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2 - jumpYCalc * 3,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 } else {
                   context.drawImage(
@@ -40985,10 +41004,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41005,10 +41024,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2 - jumpYCalc * 3,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 } else {
                   context.drawImage(
@@ -41017,27 +41036,12 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
-                // playerDrawLog(
-                //   x,
-                //   y,
-                //   plyr,
-                //   finalAnimIndex,
-                //   updatedPlayerImg,
-                //   sx,
-                //   sy,
-                //   sWidth,
-                //   sHeight,
-                //   point.x - this.playerDrawWidth / 2,
-                //   point.y - this.playerDrawHeight / 2,
-                //   this.playerDrawWidth,
-                //   this.playerDrawHeight
-                // );
               }
             }
             if (direction === "south") {
@@ -41052,10 +41056,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2 - jumpYCalc * 3,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 } else {
                   context.drawImage(
@@ -41064,27 +41068,12 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
-                // playerDrawLog(
-                //   x,
-                //   y,
-                //   plyr,
-                //   finalAnimIndex,
-                //   updatedPlayerImg,
-                //   sx,
-                //   sy,
-                //   sWidth,
-                //   sHeight,
-                //   point.x - this.playerDrawWidth / 2,
-                //   point.y - this.playerDrawHeight / 2,
-                //   this.playerDrawWidth,
-                //   this.playerDrawHeight
-                // );
               }
             }
 
@@ -41114,6 +41103,18 @@ class App extends Component {
                 "player",
                 plyr
               ).drawCell;
+
+              if (x === 0 && y === 0) {
+                // this.testDraw.push({
+                //   color: "purple",
+                //   x: finalCoords.x,
+                //   y: finalCoords.y,
+                //   direction: plyr.direction,
+                // });
+              }
+
+              finalCoords.x -= 5;
+              finalCoords.y -= 10;
 
               // if (x === drawCell.x && y === drawCell.y) {
               //
@@ -41150,8 +41151,8 @@ class App extends Component {
                     sHeight,
                     finalCoords.x,
                     finalCoords.y,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               } else {
@@ -41168,8 +41169,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -41186,8 +41187,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -41204,8 +41205,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -41222,8 +41223,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -41240,10 +41241,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
               }
             }
@@ -41278,10 +41279,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
                 // context.fillStyle = "black";
                 // context.fillRect(point.x, point.y,5,5);
@@ -41301,10 +41302,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
                 // context.fillStyle = "black";
                 // context.fillRect(point.x, point.y,5,5);
@@ -41324,10 +41325,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
                 // context.fillStyle = "black";
                 // context.fillRect(point.x, point.y,5,5);
@@ -41347,10 +41348,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
                 // context.fillStyle = "black";
                 // context.fillRect(point.x, point.y,5,5);
@@ -41367,10 +41368,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
                 // context.fillStyle = "black";
                 // context.fillRect(point.x, point.y,5,5);
@@ -41386,10 +41387,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
                 // context.fillStyle = "black";
                 // context.fillRect(point.x, point.y,5,5);
@@ -41583,10 +41584,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2 - jumpYCalc * 3,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
               }
             }
@@ -41601,10 +41602,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2 - jumpYCalc * 3,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
               }
             }
@@ -41616,10 +41617,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2 - jumpYCalc * 3,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
               }
             }
@@ -41631,10 +41632,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2 - jumpYCalc * 3,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
               }
             }
@@ -41666,21 +41667,6 @@ class App extends Component {
                   this.playerDrawWidth,
                   this.playerDrawHeight
                 );
-                // playerDrawLog(
-                //   x,
-                //   y,
-                //   plyr,
-                //   finalAnimIndex,
-                //   updatedPlayerImg,
-                //   sx,
-                //   sy,
-                //   sWidth,
-                //   sHeight,
-                //   point.x - this.playerDrawWidth / 2,
-                //   point.y - this.playerDrawHeight / 2,
-                //   this.playerDrawWidth,
-                //   this.playerDrawHeight
-                // );
               }
             }
             if (plyr.strafing.direction === "east" || plyr.direction === "east") {
@@ -41701,21 +41687,6 @@ class App extends Component {
                   this.playerDrawWidth,
                   this.playerDrawHeight
                 );
-                // playerDrawLog(
-                //   x,
-                //   y,
-                //   plyr,
-                //   finalAnimIndex,
-                //   updatedPlayerImg,
-                //   sx,
-                //   sy,
-                //   sWidth,
-                //   sHeight,
-                //   point.x - this.playerDrawWidth / 2,
-                //   point.y - this.playerDrawHeight / 2,
-                //   this.playerDrawWidth,
-                //   this.playerDrawHeight
-                // );
               }
             }
             if (plyr.strafing.direction === "south" || plyr.direction === "south") {
@@ -43309,7 +43280,13 @@ class App extends Component {
             west: this.testRefWest.current,
           };
 
-          context.drawImage(testSprites[point.direction], point.x, point.y - 10, 55, 85);
+          // context.drawImage(
+          //   testSprites[point.direction],
+          //   point.x - 5,
+          //   point.y - 10,
+          //   55,
+          //   80
+          // );
         }
       }
     }
@@ -44147,370 +44124,370 @@ class App extends Component {
     this.playerImgs = [
       {
         idle: {
-          unarmed: this.playerImgIdleSheetRef.current,
-          sword: this.playerImgIdleSheetRef.current,
-          spear: this.playerImgIdleSheetRef.current,
-          crossbow: this.playerImgIdleSheetRef.current,
+          unarmed: this.idleSheetNewRef.current,
+          sword: this.idleSheetNewRef.current,
+          spear: this.idleSheetNewRef.current,
+          crossbow: this.idleSheetNewRef.current,
         },
         walking: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         jumping: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         dodging: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.dodgeSheetNewRef.current,
+          sword: this.dodgeSheetNewRef.current,
+          spear: this.dodgeSheetNewRef.current,
+          crossbow: this.dodgeSheetNewRef.current,
         },
         flanking: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         strafing: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         attacking: {
-          unarmed: this.player1ImgAttackSheetRef.current,
-          sword: this.player1ImgAttackSheetRef.current,
-          spear: this.player1ImgAttackSheetRef.current,
-          crossbow: this.player1ImgAttackSheetRef.current,
+          unarmed: this.attackSheetNewRef.current,
+          sword: this.attackSheetNewRef.current,
+          spear: this.attackSheetNewRef.current,
+          crossbow: this.attackSheetNewRef.current,
         },
         defending: {
-          unarmed: this.player1ImgDefendSheetRef.current,
-          sword: this.player1ImgDefendSheetRef.current,
-          spear: this.player1ImgDefendSheetRef.current,
-          crossbow: this.player1ImgDefendSheetRef.current,
+          unarmed: this.defendSheetNewRef.current,
+          sword: this.defendSheetNewRef.current,
+          spear: this.defendSheetNewRef.current,
+          crossbow: this.defendSheetNewRef.current,
         },
         deflected: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.deflectedFallingSheetNewRef.current,
+          sword: this.deflectedFallingSheetNewRef.current,
+          spear: this.deflectedFallingSheetNewRef.current,
+          crossbow: this.deflectedFallingSheetNewRef.current,
         },
         pushBack: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         falling: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.deflectedFallingSheetNewRef.current,
+          sword: this.deflectedFallingSheetNewRef.current,
+          spear: this.deflectedFallingSheetNewRef.current,
+          crossbow: this.deflectedFallingSheetNewRef.current,
         },
         pushing: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pulling: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pushed: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pulled: {
-          unarmed: this.playerImgMoveSheetRef.current,
-          sword: this.playerImgMoveSheetRef.current,
-          spear: this.playerImgMoveSheetRef.current,
-          crossbow: this.playerImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
       },
       {
         idle: {
-          unarmed: this.player2ImgIdleSheetRef.current,
-          sword: this.player2ImgIdleSheetRef.current,
-          spear: this.player2ImgIdleSheetRef.current,
-          crossbow: this.player2ImgIdleSheetRef.current,
+          unarmed: this.idleSheetNewRef.current,
+          sword: this.idleSheetNewRef.current,
+          spear: this.idleSheetNewRef.current,
+          crossbow: this.idleSheetNewRef.current,
         },
         walking: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         jumping: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         dodging: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.dodgeSheetNewRef.current,
+          sword: this.dodgeSheetNewRef.current,
+          spear: this.dodgeSheetNewRef.current,
+          crossbow: this.dodgeSheetNewRef.current,
         },
         flanking: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         strafing: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         attacking: {
-          unarmed: this.player2ImgAttackSheetRef.current,
-          sword: this.player2ImgAttackSheetRef.current,
-          spear: this.player2ImgAttackSheetRef.current,
-          crossbow: this.player2ImgAttackSheetRef.current,
+          unarmed: this.attackSheetNewRef.current,
+          sword: this.attackSheetNewRef.current,
+          spear: this.attackSheetNewRef.current,
+          crossbow: this.attackSheetNewRef.current,
         },
         defending: {
-          unarmed: this.player2ImgDefendSheetRef.current,
-          sword: this.player2ImgDefendSheetRef.current,
-          spear: this.player2ImgDefendSheetRef.current,
-          crossbow: this.player2ImgDefendSheetRef.current,
+          unarmed: this.defendSheetNewRef.current,
+          sword: this.defendSheetNewRef.current,
+          spear: this.defendSheetNewRef.current,
+          crossbow: this.defendSheetNewRef.current,
         },
         deflected: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.deflectedFallingSheetNewRef.current,
+          sword: this.deflectedFallingSheetNewRef.current,
+          spear: this.deflectedFallingSheetNewRef.current,
+          crossbow: this.deflectedFallingSheetNewRef.current,
         },
         pushBack: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         falling: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.deflectedFallingSheetNewRef.current,
+          sword: this.deflectedFallingSheetNewRef.current,
+          spear: this.deflectedFallingSheetNewRef.current,
+          crossbow: this.deflectedFallingSheetNewRef.current,
         },
         pushing: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pulling: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pushed: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pulled: {
-          unarmed: this.player2ImgMoveSheetRef.current,
-          sword: this.player2ImgMoveSheetRef.current,
-          spear: this.player2ImgMoveSheetRef.current,
-          crossbow: this.player2ImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
       },
       {
         idle: {
-          unarmed: this.playerComAImgIdleSheetRef.current,
-          sword: this.playerComAImgIdleSheetRef.current,
-          spear: this.playerComAImgIdleSheetRef.current,
-          crossbow: this.playerComAImgIdleSheetRef.current,
+          unarmed: this.idleSheetNewRef.current,
+          sword: this.idleSheetNewRef.current,
+          spear: this.idleSheetNewRef.current,
+          crossbow: this.idleSheetNewRef.current,
         },
         walking: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         jumping: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         dodging: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.dodgeSheetNewRef.current,
+          sword: this.dodgeSheetNewRef.current,
+          spear: this.dodgeSheetNewRef.current,
+          crossbow: this.dodgeSheetNewRef.current,
         },
         flanking: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         strafing: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         attacking: {
-          unarmed: this.comAImgAttackSheetRef.current,
-          sword: this.comAImgAttackSheetRef.current,
-          spear: this.comAImgAttackSheetRef.current,
-          crossbow: this.comAImgAttackSheetRef.current,
+          unarmed: this.attackSheetNewRef.current,
+          sword: this.attackSheetNewRef.current,
+          spear: this.attackSheetNewRef.current,
+          crossbow: this.attackSheetNewRef.current,
         },
         defending: {
-          unarmed: this.comAImgDefendSheetRef.current,
-          sword: this.comAImgDefendSheetRef.current,
-          spear: this.comAImgDefendSheetRef.current,
-          crossbow: this.comAImgDefendSheetRef.current,
+          unarmed: this.defendSheetNewRef.current,
+          sword: this.defendSheetNewRef.current,
+          spear: this.defendSheetNewRef.current,
+          crossbow: this.defendSheetNewRef.current,
         },
         deflected: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.deflectedFallingSheetNewRef.current,
+          sword: this.deflectedFallingSheetNewRef.current,
+          spear: this.deflectedFallingSheetNewRef.current,
+          crossbow: this.deflectedFallingSheetNewRef.current,
         },
         pushBack: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         falling: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.deflectedFallingSheetNewRef.current,
+          sword: this.deflectedFallingSheetNewRef.current,
+          spear: this.deflectedFallingSheetNewRef.current,
+          crossbow: this.deflectedFallingSheetNewRef.current,
         },
         pushing: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pulling: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pushed: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pulled: {
-          unarmed: this.comAImgMoveSheetRef.current,
-          sword: this.comAImgMoveSheetRef.current,
-          spear: this.comAImgMoveSheetRef.current,
-          crossbow: this.comAImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
       },
       {
         idle: {
-          unarmed: this.playerComBImgIdleSheetRef.current,
-          sword: this.playerComBImgIdleSheetRef.current,
-          spear: this.playerComBImgIdleSheetRef.current,
-          crossbow: this.playerComBImgIdleSheetRef.current,
+          unarmed: this.idleSheetNewRef.current,
+          sword: this.idleSheetNewRef.current,
+          spear: this.idleSheetNewRef.current,
+          crossbow: this.idleSheetNewRef.current,
         },
         walking: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         jumping: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         dodging: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.dodgeSheetNewRef.current,
+          sword: this.dodgeSheetNewRef.current,
+          spear: this.dodgeSheetNewRef.current,
+          crossbow: this.dodgeSheetNewRef.current,
         },
         flanking: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         strafing: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         attacking: {
-          unarmed: this.comBImgAttackSheetRef.current,
-          sword: this.comBImgAttackSheetRef.current,
-          spear: this.comBImgAttackSheetRef.current,
-          crossbow: this.comBImgAttackSheetRef.current,
+          unarmed: this.attackSheetNewRef.current,
+          sword: this.attackSheetNewRef.current,
+          spear: this.attackSheetNewRef.current,
+          crossbow: this.attackSheetNewRef.current,
         },
         defending: {
-          unarmed: this.comBImgDefendSheetRef.current,
-          sword: this.comBImgDefendSheetRef.current,
-          spear: this.comBImgDefendSheetRef.current,
-          crossbow: this.comBImgDefendSheetRef.current,
+          unarmed: this.defendSheetNewRef.current,
+          sword: this.defendSheetNewRef.current,
+          spear: this.defendSheetNewRef.current,
+          crossbow: this.defendSheetNewRef.current,
         },
         deflected: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.deflectedFallingSheetNewRef.current,
+          sword: this.deflectedFallingSheetNewRef.current,
+          spear: this.deflectedFallingSheetNewRef.current,
+          crossbow: this.deflectedFallingSheetNewRef.current,
         },
         pushBack: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         falling: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.deflectedFallingSheetNewRef.current,
+          sword: this.deflectedFallingSheetNewRef.current,
+          spear: this.deflectedFallingSheetNewRef.current,
+          crossbow: this.deflectedFallingSheetNewRef.current,
         },
         pushing: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pulling: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pushed: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
         pulled: {
-          unarmed: this.comBImgMoveSheetRef.current,
-          sword: this.comBImgMoveSheetRef.current,
-          spear: this.comBImgMoveSheetRef.current,
-          crossbow: this.comBImgMoveSheetRef.current,
+          unarmed: this.moveSheetNewRef.current,
+          sword: this.moveSheetNewRef.current,
+          spear: this.moveSheetNewRef.current,
+          crossbow: this.moveSheetNewRef.current,
         },
       },
     ];
@@ -45001,16 +44978,21 @@ class App extends Component {
 
             this.getTarget(player);
 
+            let newCharDarwPoint = {
+              x: player.nextPosition.x - this.floorImageHeight / 2,
+              y: player.nextPosition.y - this.floorImageHeight,
+            };
+
             context.drawImage(
               playerImg,
               sx,
               sy,
               sWidth,
               sHeight,
-              point.x - 30,
-              point.y - 30,
-              this.playerDrawWidth,
-              this.playerDrawHeight
+              newCharDarwPoint.x,
+              newCharDarwPoint.y,
+              this.playerDrawWidth2,
+              this.playerDrawHeight2
             );
           }
         }
