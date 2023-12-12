@@ -9340,10 +9340,11 @@ class App extends Component {
         attackPeak = player.attacking.animRef.peak.unarmed;
         stamAtkType = "unarmed";
       }
-      let countCalcUp = player.attacking.limit - player.attacking.count;
-      if (countCalcUp > 10) {
-        countCalcUp = 10;
-      }
+      let countCalcUp = Math.floor((player.attacking.limit - player.attacking.count) / 2);
+      // console.log("beep", countCalcUp);
+      // if (countCalcUp > 10) {
+      //   countCalcUp = 10;
+      // }
 
       let direction = player.attacking.direction;
       if (direction === "none") {
@@ -9379,6 +9380,74 @@ class App extends Component {
           limit: 0,
         },
       };
+    }
+
+    if (type === "defending") {
+      let direction = player.defending.direction;
+      if (subType === "peak") {
+        let point = {
+          x: player.currentPosition.cell.center.x,
+          y: player.currentPosition.cell.center.y,
+        };
+
+        let defendType = player.currentWeapon.type;
+        if (player.currentWeapon.name === "") {
+          defendType = "unarmed";
+        }
+        let defendPeak =
+          player.defending.animRef.peak[defendType][player.defending.directionType];
+
+        let countCalcUp = Math.floor((player.defending.limit - defendPeak) / 2);
+        // let countCalcUp = Math.floor(
+        //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
+        // );
+        // console.log("beep", countCalcUp);
+        // if (countCalcUp > 10) {
+        //   countCalcUp = 10;
+        // }
+
+        if (direction === "none") {
+          direction = player.direction;
+        }
+
+        player.elasticCounter = {
+          state: true,
+          direction: direction,
+          type: "defending",
+          subType: "",
+          countUp: {
+            state: false,
+            count: 0,
+            limit: countCalcUp,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: countCalcUp,
+          },
+          coords: {
+            // x: point.x - this.playerDrawWidth / 2,
+            // y: point.y - this.playerDrawHeight / 2,
+            x: player.nextPosition.x - this.floorImageHeight / 2,
+            y: player.nextPosition.y - this.floorImageHeight,
+          },
+          pause: {
+            preState: pause,
+            state: false,
+            type: "",
+            count: 0,
+            limit: 0,
+          },
+        };
+      }
+      if (subType === "decay") {
+        if (direction === "none") {
+          direction = player.direction;
+        }
+        if (player.elasticCounter.direction !== direction) {
+          player.elasticCounter.direction = direction;
+        }
+      }
     }
 
     if (type === "test") {
@@ -32949,7 +33018,7 @@ class App extends Component {
     }
     if (this.time === 100 && player.number === 1) {
       // this.pushBack(player, "east");
-      this.setDeflection(player, "parried", false);
+      // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
 
@@ -34846,7 +34915,7 @@ class App extends Component {
               );
             }
 
-            console.log("attack end");
+            // console.log("attack end");
           }
         }
         // CLASHING
@@ -34898,15 +34967,17 @@ class App extends Component {
             player.defending.count++;
             player.action = "defending";
             player.defending.peak = false;
-            // console.log(
-            //   "defend windup: count",
-            //   player.defending.count,
-            //   "peak",
-            //   defendPeak,
-            //   "direction & dir type",
-            //   player.defending.direction,
-            //   player.defending.directionType
-            // );
+            console.log(
+              "defend windup: count",
+              player.defending.count,
+              "peak",
+              defendPeak,
+              "direction & dir type",
+              player.defending.direction,
+              player.defending.directionType,
+              "limit",
+              player.defending.limit
+            );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
                 state: false,
@@ -34952,19 +35023,20 @@ class App extends Component {
                 });
               }
 
-              // console.log(
-              //   "defend peak: count",
-              //   player.defending.count,
-              //   "peak",
-              //   defendPeak,
-              //   "direction & dir type",
-              //   player.defending.direction,
-              //   player.defending.directionType,
-              //   "decay:",
-              //   player.defending.decay.state,
-              //   player.defending.decay.count,
-              //   player.defending.decay.limit
-              // );
+              player = this.setElasticCounter("defending", "peak", false, player);
+              console.log(
+                "defend peak: count",
+                player.defending.count,
+                "peak",
+                defendPeak,
+                "direction & dir type",
+                player.defending.direction,
+                player.defending.directionType,
+                "decay:",
+                player.defending.decay.state,
+                player.defending.decay.count,
+                player.defending.decay.limit
+              );
             }
             // OUT OF STAMINA
             else {
@@ -35032,19 +35104,20 @@ class App extends Component {
                   img: "",
                 });
               }
-              // console.log(
-              //   "defend decaying: count",
-              //   player.defending.count,
-              //   "peak",
-              //   defendPeak,
-              //   "direction & dir type",
-              //   player.defending.direction,
-              //   player.defending.directionType,
-              //   "decay count",
-              //   player.defending.decay.count,
-              //   "decay limit",
-              //   player.defending.decay.limit
-              // );
+              player = this.setElasticCounter("defending", "decay", false, player);
+              console.log(
+                "defend decaying: count",
+                player.defending.count,
+                "peak",
+                defendPeak,
+                "direction & dir type",
+                player.defending.direction,
+                player.defending.directionType,
+                "decay count",
+                player.defending.decay.count,
+                "decay limit",
+                player.defending.decay.limit
+              );
             }
 
             if (player.defending.decay.count >= player.defending.decay.limit) {
@@ -35052,14 +35125,14 @@ class App extends Component {
               player.defending.decay.count = 0;
               player.defending.count = defendPeak + player.defending.decay.limit;
               // player.action = "idle";
-              // console.log(
-              //   "defend decay limit. drop defense",
-              //   player.defending.state,
-              //   player.defending.count,
-              //   defendPeak,
-              //   player.defending.limit,
-              //   player.defending.decay.limit
-              // );
+              console.log(
+                "defend decay limit. drop defense",
+                player.defending.state,
+                player.defending.count,
+                defendPeak,
+                player.defending.limit,
+                player.defending.decay.limit
+              );
 
               if (player.popups.find((x) => x.msg === "defending")) {
                 player.popups.splice(
@@ -35077,11 +35150,11 @@ class App extends Component {
           ) {
             if (player.defending.count < player.defending.limit) {
               player.defending.count++;
-              // console.log(
-              //   "finishing defense after decay/ defense cooldown: count",
-              //   player.defending.count,
-              //   player.defending.limit
-              // );
+              console.log(
+                "finishing defense after decay/ defense cooldown: count",
+                player.defending.count,
+                player.defending.limit
+              );
             }
             if (player.defending.count >= player.defending.limit) {
               player.action = "idle";
@@ -35099,7 +35172,7 @@ class App extends Component {
                 direction: "",
                 directionType: "", //thrust or slash
               };
-              // console.log("defend coolodown complete");
+              console.log("defend coolodown complete");
             }
           }
         }
@@ -35414,7 +35487,7 @@ class App extends Component {
           ) {
             player.elasticCounter.pause.preState = false;
             player.elasticCounter.pause.state = true;
-            console.log("start pause, turn on pause");
+            // console.log("start pause, turn on pause");
           }
 
           // IF PAUSE IS NOT START, COUNT UP
@@ -35425,7 +35498,7 @@ class App extends Component {
             player.elasticCounter.pause.state !== true
           ) {
             player.elasticCounter.countUp.state = true;
-            console.log("pause is not start. count up");
+            // console.log("pause is not start. count up");
           }
 
           // COUNT UP
@@ -35434,11 +35507,11 @@ class App extends Component {
               player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit
             ) {
               if (player.elasticCounter.countUp.count === 0) {
-                console.log("elastic count up start");
+                // console.log("elastic count up start");
               }
 
               player.elasticCounter.countUp.count++;
-              console.log("elastic counting up: ", player.elasticCounter.countUp.count);
+              // console.log("elastic counting up: ", player.elasticCounter.countUp.count);
             }
 
             // FINISH COUNT UP
@@ -35451,7 +35524,7 @@ class App extends Component {
                 count: 0,
                 limit: player.elasticCounter.countUp.limit,
               };
-              console.log("finished count up. elastic counter peak");
+              // console.log("finished count up. elastic counter peak");
 
               // IF PAUSE IS PEAK, COUNT PAUSE AT PEAK
               if (
@@ -35460,13 +35533,13 @@ class App extends Component {
               ) {
                 player.elasticCounter.pause.preState = false;
                 player.elasticCounter.pause.state = true;
-                console.log("peak pause. turn on pause");
+                // console.log("peak pause. turn on pause");
               }
 
               // IF PAUSE IS NOT PEAK, COUNT DOWM
               if (player.elasticCounter.pause.type !== "peak") {
                 player.elasticCounter.countDown.state = true;
-                console.log("pause is not peak. count down");
+                // console.log("pause is not peak. count down");
               }
             }
           }
@@ -35478,33 +35551,33 @@ class App extends Component {
             // COUNT PAUSE
             if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit) {
               if (player.elasticCounter.pause.count === 0) {
-                console.log("pause count start");
+                // console.log("pause count start");
               }
 
               player.elasticCounter.pause.count++;
-              console.log("pause counting: ", player.elasticCounter.pause.count);
+              // console.log("pause counting: ", player.elasticCounter.pause.count);
             }
 
             // FINISH PAUSE
             if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit) {
-              console.log("pause count finished");
+              // console.log("pause count finished");
 
               // IF PAUSE IS START, COUNT UP
               if (player.elasticCounter.pause.type === "start") {
                 player.elasticCounter.countUp.state = true;
-                console.log("start pause count finished. count up");
+                // console.log("start pause count finished. count up");
               }
 
               // IF PAUSE IS PEAK, COUNT DOWN
               if (player.elasticCounter.pause.type === "peak") {
                 player.elasticCounter.countDown.state = true;
-                console.log("peak pause count finished. count down");
+                // console.log("peak pause count finished. count down");
               }
 
               // IF PAUSE IS END, TURN OFF ELASTIC COUNT
               if (player.elasticCounter.pause.type === "end") {
                 player.elasticCounter.state = false;
-                console.log("end pause count finished. turn off elastic count");
+                // console.log("end pause count finished. turn off elastic count");
               }
 
               // RESET PAUSE COUNT
@@ -35521,17 +35594,17 @@ class App extends Component {
               player.elasticCounter.countDown.limit
             ) {
               if (player.elasticCounter.countDown.count === 1) {
-                console.log(
-                  "elastic count down start",
-                  player.elasticCounter.countDown.limit
-                );
+                // console.log(
+                //   "elastic count down start",
+                //   player.elasticCounter.countDown.limit
+                // );
               }
 
               player.elasticCounter.countDown.count++;
-              console.log(
-                "elastic counting down: ",
-                player.elasticCounter.countDown.count
-              );
+              // console.log(
+              //   "elastic counting down: ",
+              //   player.elasticCounter.countDown.count
+              // );
             }
 
             // FINISH COUNT DOWN
@@ -35544,7 +35617,7 @@ class App extends Component {
                 count: 0,
                 limit: player.elasticCounter.countDown.limit,
               };
-              console.log("finished count down.");
+              // console.log("finished count down.");
 
               // IF PAUSE IS END, COUNT PAUSE
               if (
@@ -35553,14 +35626,14 @@ class App extends Component {
               ) {
                 player.elasticCounter.pause.preState = false;
                 player.elasticCounter.pause.state = true;
-                console.log("end pause. turn on pause");
+                // console.log("end pause. turn on pause");
               }
 
               // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
               if (player.elasticCounter.pause.type !== "end") {
                 player.elasticCounter.state = false;
                 player.elasticCounter.type = "";
-                console.log("pause is not end. turn off elastic count");
+                // console.log("pause is not end. turn off elastic count");
               }
 
               // if (player.elasticCounter !== "dodging") {
@@ -40242,7 +40315,11 @@ class App extends Component {
           if (plyr.attacking.state === true && plyr.success.deflected.state !== true) {
             plyr.action = "attacking";
           }
-
+          let frameIndexBase;
+          let increment;
+          let frameTypeIndex;
+          let remainder;
+          let newIndex;
           // SET ANIMATION INDEX USED FOR SPRITE SHEET STEPPING BASED ON ACTION
           // FOR TESTING BY CALLING ONLY @ 1 CELL
           if (
@@ -40365,7 +40442,31 @@ class App extends Component {
                 //   animIndex = plyr.attacking.count - 1;
                 // }
                 animIndex = plyr.attacking.count - 1;
-                finalAnimIndex = animIndex;
+
+                frameIndexBase =
+                  this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
+                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+                increment = Math.ceil(
+                  plyr[plyr.action].limit /
+                    this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+                );
+                frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
+                remainder = plyr[plyr.action].count % increment;
+                newIndex = frameIndexBase * frameTypeIndex + remainder;
+                console.log(
+                  plyr[plyr.action].count,
+                  plyr[plyr.action].limit,
+                  "xx",
+                  frameIndexBase,
+                  increment,
+                  "yy",
+                  frameTypeIndex,
+                  remainder,
+                  newIndex
+                );
+
+                finalAnimIndex = newIndex;
+                // finalAnimIndex = animIndex;
                 // console.log(
                 //   "anim testing atk",
                 //   plyr.attacking.count,
@@ -40375,30 +40476,54 @@ class App extends Component {
                 break;
               case "defending":
                 let animIndex2 = plyr.defending.count - 1;
-                if (plyr.defending.decay.state !== true) {
-                  if (plyr.defending.count > 0) {
-                    finalAnimIndex = animIndex2;
-                    // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-                  }
-                  if (plyr.defending.count === 0) {
-                    let animIndex2a = 5;
-                    finalAnimIndex = animIndex2a;
-                    // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-                  }
-                }
-                if (plyr.defending.decay.state === true) {
-                  if (plyr.defending.decay.count < 11) {
-                    animIndex2 = plyr.defending.decay.count - 1;
-                  } else {
-                    if (plyr.defending.decay.count % 10 === 0) {
-                      animIndex2 = 9;
-                    } else {
-                      let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
-                      animIndex2 = plyr.defending.decay.count - mod - 1;
-                    }
-                  }
-                  finalAnimIndex = animIndex2;
-                }
+                // if (plyr.defending.decay.state !== true) {
+                //   if (plyr.defending.count > 0) {
+                //     finalAnimIndex = animIndex2;
+                //     // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+                //   }
+                //   if (plyr.defending.count === 0) {
+                //     let animIndex2a = 5;
+                //     finalAnimIndex = animIndex2a;
+                //     // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+                //   }
+                // }
+                // if (plyr.defending.decay.state === true) {
+                //   if (plyr.defending.decay.count < 11) {
+                //     animIndex2 = plyr.defending.decay.count - 1;
+                //   } else {
+                //     if (plyr.defending.decay.count % 10 === 0) {
+                //       animIndex2 = 9;
+                //     } else {
+                //       let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
+                //       animIndex2 = plyr.defending.decay.count - mod - 1;
+                //     }
+                //   }
+                //   finalAnimIndex = animIndex2;
+                // }
+                frameIndexBase =
+                  this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
+                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+                increment = Math.ceil(
+                  plyr[plyr.action].limit /
+                    this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+                );
+                frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
+                remainder = plyr[plyr.action].count % increment;
+                newIndex = frameIndexBase * frameTypeIndex + remainder;
+
+                finalAnimIndex = newIndex;
+
+                console.log(
+                  plyr[plyr.action].count,
+                  plyr[plyr.action].limit,
+                  "xy",
+                  frameIndexBase,
+                  increment,
+                  "yy",
+                  frameTypeIndex,
+                  remainder,
+                  newIndex
+                );
                 break;
               case "idle":
                 if (plyr.number === 1) {
@@ -40624,37 +40749,61 @@ class App extends Component {
               //   animIndex = plyr.attacking.count - 1;
               // }
 
-              animIndex = plyr.attacking.count - 1;
-              finalAnimIndex = animIndex;
+              // animIndex = plyr.attacking.count - 1;
+              // finalAnimIndex = animIndex;
+              frameIndexBase =
+                this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
+                this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+              increment = Math.ceil(
+                plyr[plyr.action].limit /
+                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+              );
+              frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
+              remainder = plyr[plyr.action].count % increment;
+              newIndex = frameIndexBase * frameTypeIndex + remainder;
+
+              finalAnimIndex = newIndex;
               // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
               break;
             case "defending":
               let animIndex2 = plyr.defending.count - 1;
 
-              if (plyr.defending.decay.state !== true) {
-                if (plyr.defending.count > 0) {
-                  finalAnimIndex = animIndex2;
-                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-                }
-                if (plyr.defending.count === 0) {
-                  let animIndex2a = 5;
-                  finalAnimIndex = animIndex2a;
-                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-                }
-              }
-              if (plyr.defending.decay.state === true) {
-                if (plyr.defending.decay.count < 11) {
-                  animIndex2 = plyr.defending.decay.count - 1;
-                } else {
-                  if (plyr.defending.decay.count % 10 === 0) {
-                    animIndex2 = 9;
-                  } else {
-                    let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
-                    animIndex2 = plyr.defending.decay.count - mod - 1;
-                  }
-                }
-                finalAnimIndex = animIndex2;
-              }
+              // if (plyr.defending.decay.state !== true) {
+              //   if (plyr.defending.count > 0) {
+              //     finalAnimIndex = animIndex2;
+              //     // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+              //   }
+              //   if (plyr.defending.count === 0) {
+              //     let animIndex2a = 5;
+              //     finalAnimIndex = animIndex2a;
+              //     // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+              //   }
+              // }
+              // if (plyr.defending.decay.state === true) {
+              //   if (plyr.defending.decay.count < 11) {
+              //     animIndex2 = plyr.defending.decay.count - 1;
+              //   } else {
+              //     if (plyr.defending.decay.count % 10 === 0) {
+              //       animIndex2 = 9;
+              //     } else {
+              //       let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
+              //       animIndex2 = plyr.defending.decay.count - mod - 1;
+              //     }
+              //   }
+              //   finalAnimIndex = animIndex2;
+              // }
+              frameIndexBase =
+                this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
+                this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+              increment = Math.ceil(
+                plyr[plyr.action].limit /
+                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+              );
+              frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
+              remainder = plyr[plyr.action].count % increment;
+              newIndex = frameIndexBase * frameTypeIndex + remainder;
+
+              finalAnimIndex = newIndex;
 
               break;
             case "idle":
@@ -41443,7 +41592,7 @@ class App extends Component {
             }
           }
 
-          // ATTACKING
+          // ELASTIC COUNTER ATTACKING
           if (
             (plyr.attacking.state === true || plyr.action === "attacking") &&
             plyr.moving.state === false &&
@@ -41627,6 +41776,166 @@ class App extends Component {
             //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
             //
             // }
+          }
+          if (
+            (plyr.defending.state === true || plyr.action === "defending") &&
+            plyr.moving.state === false &&
+            plyr.ghost.state !== true &&
+            plyr.dodging.state !== true
+          ) {
+            if (
+              plyr.elasticCounter.state === true &&
+              plyr.elasticCounter.type === "defending"
+            ) {
+              let finalCoords = this.calcElasticCountCoords(
+                "attacking",
+                "player",
+                plyr
+              ).coords;
+              let drawCell = this.calcElasticCountCoords(
+                "attacking",
+                "player",
+                plyr
+              ).drawCell;
+              finalCoords.x -= 5;
+              finalCoords.y -= 10;
+
+              // test logging
+              if (x === this.gridWidth && y === this.gridWidth) {
+                if (plyr.elasticCounter.countUp.state === true) {
+                  // this.testDraw.push({
+                  //   color: "red",
+                  //   x: finalCoords.x,
+                  //   y: finalCoords.y,
+                  // });
+                  // console.log('attacking elastic count coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
+                }
+                if (plyr.elasticCounter.countDown.state === true) {
+                  // this.testDraw.push({
+                  //   color: "blue",
+                  //   x: finalCoords.x,
+                  //   y: finalCoords.y,
+                  // });
+                  // console.log('attacking elastic count coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
+                }
+                if (plyr.elasticCounter.pause.state === true) {
+                  // this.testDraw.push({
+                  //   color: "blue",
+                  //   x: finalCoords.x,
+                  //   y: finalCoords.y,
+                  // });
+                  // console.log('attacking elastic count coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
+                }
+              }
+
+              if (
+                !this.gridInfo.find(
+                  (x) =>
+                    x.number.x ===
+                      this.getCellFromDirection(
+                        1,
+                        plyr.currentPosition.cell.number,
+                        plyr.elasticCounter.direction
+                      ).x &&
+                    x.number.y ===
+                      this.getCellFromDirection(
+                        1,
+                        plyr.currentPosition.cell.number,
+                        plyr.elasticCounter.direction
+                      ).y
+                )
+              ) {
+                if (
+                  x === plyr.currentPosition.cell.number.x &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(
+                    updatedPlayerImg,
+                    sx,
+                    sy,
+                    sWidth,
+                    sHeight,
+                    finalCoords.x,
+                    finalCoords.y,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
+                  );
+                }
+              } else {
+                if (plyr.elasticCounter.direction === "north") {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(
+                      updatedPlayerImg,
+                      sx,
+                      sy,
+                      sWidth,
+                      sHeight,
+                      finalCoords.x,
+                      finalCoords.y,
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
+                    );
+                  }
+                }
+                if (plyr.elasticCounter.direction === "east") {
+                  if (
+                    x === plyr.currentPosition.cell.number.x + 1 &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(
+                      updatedPlayerImg,
+                      sx,
+                      sy,
+                      sWidth,
+                      sHeight,
+                      finalCoords.x,
+                      finalCoords.y,
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
+                    );
+                  }
+                }
+                if (plyr.elasticCounter.direction === "west") {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(
+                      updatedPlayerImg,
+                      sx,
+                      sy,
+                      sWidth,
+                      sHeight,
+                      finalCoords.x,
+                      finalCoords.y,
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
+                    );
+                  }
+                }
+                if (plyr.elasticCounter.direction === "south") {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y + 1
+                  ) {
+                    context.drawImage(
+                      updatedPlayerImg,
+                      sx,
+                      sy,
+                      sWidth,
+                      sHeight,
+                      finalCoords.x,
+                      finalCoords.y,
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
+                    );
+                  }
+                }
+              }
+            }
           }
 
           if (plyr.jumping.state === true) {
