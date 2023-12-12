@@ -9412,6 +9412,7 @@ class App extends Component {
       };
     }
 
+    return player;
     // console.log("player elasticCounter set", player.elasticCounter);
   };
   calcElasticCountCoords = (type, subType, data) => {
@@ -16060,11 +16061,11 @@ class App extends Component {
       }
     }
 
-    this.players[player.number - 1] = player;
-
     if (pushBack !== true) {
-      this.setElasticCounter("deflected", "", true, player);
+      player = this.setElasticCounter("deflected", "", true, player);
     }
+
+    this.players[player.number - 1] = player;
   };
   unsetDeflection = (player) => {
     this.players[player.number - 1].success.deflected = {
@@ -32945,7 +32946,7 @@ class App extends Component {
       // for (const trap of testTraps) {
       //   this.gridInfo.find((x) => x.number.x === trap.location.x && x.number.y === trap.location.y)[trap.type].trap = trap.trap;
       // }
-      // this.setElasticCounter("test", "start", true, player);
+      // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 2) {
       // this.pushBack(player, "east");
@@ -34695,7 +34696,7 @@ class App extends Component {
 
               let melee = true;
 
-              this.setElasticCounter("attacking", "", false, player);
+              player = this.setElasticCounter("attacking", "", false, player);
 
               player.attacking.peak = true;
               if (player.attacking.charge > 0) {
@@ -35239,7 +35240,7 @@ class App extends Component {
                 });
               }
 
-              this.setElasticCounter("dodging", "", true, player);
+              player = this.setElasticCounter("dodging", "", true, player);
             } else {
               player.stamina.current = 0;
               player.dodging = {
