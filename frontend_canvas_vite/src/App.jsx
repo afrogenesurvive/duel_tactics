@@ -202,6 +202,7 @@ import testSpriteWest from "./assets/player/testSpriteWest.png";
 
 import moveSheetNew from "./assets/player/movingSheetNew.png";
 import idleSheetNew from "./assets/player/idleSheetNew.png";
+import idleSheetNew2 from "./assets/player/idleSheetNew2.png";
 import attackSheetNew from "./assets/player/attackSheetNew.png";
 import defendSheetNew from "./assets/player/defendSheetNew.png";
 import dodgeSheetNew from "./assets/player/dodgingSheetNew.png";
@@ -2460,7 +2461,7 @@ class App extends Component {
         idleAnim: {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 6,
         },
         ai: {
           state: false,
@@ -2966,7 +2967,7 @@ class App extends Component {
         idleAnim: {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 6,
         },
         ai: {
           state: false,
@@ -4229,6 +4230,7 @@ class App extends Component {
 
     this.moveSheetNewRef = React.createRef();
     this.idleSheetNewRef = React.createRef();
+    this.idleSheetNew2Ref = React.createRef();
     this.attackSheetNewRef = React.createRef();
     this.defendSheetNewRef = React.createRef();
     this.dodgeSheetNewRef = React.createRef();
@@ -40228,8 +40230,17 @@ class App extends Component {
                 let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(
                   plyr.moving.step
                 );
-                finalAnimIndex = moveAnimIndex;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                finalAnimIndex = moveAnimIndex + 1;
+                // console.log(
+                //   "anim testing mv spd",
+                //   plyr.speed.move,
+                //   "step",
+                //   plyr.moving.step,
+                //   "plyr",
+                //   plyr.number,
+                //   "index",
+                //   finalAnimIndex
+                // );
                 if (plyr.target.cell1.void == true) {
                   // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
                 }
@@ -40485,7 +40496,7 @@ class App extends Component {
               }
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
               let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
-              finalAnimIndex = moveAnimIndex;
+              finalAnimIndex = moveAnimIndex + 1;
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               if (plyr.target.cell1.void == true) {
                 // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
@@ -44036,10 +44047,10 @@ class App extends Component {
     this.playerImgs = [
       {
         idle: {
-          unarmed: this.idleSheetNewRef.current,
-          sword: this.idleSheetNewRef.current,
-          spear: this.idleSheetNewRef.current,
-          crossbow: this.idleSheetNewRef.current,
+          unarmed: this.idleSheetNew2Ref.current,
+          sword: this.idleSheetNew2Ref.current,
+          spear: this.idleSheetNew2Ref.current,
+          crossbow: this.idleSheetNew2Ref.current,
         },
         walking: {
           unarmed: this.moveSheetNewRef.current,
@@ -44128,10 +44139,10 @@ class App extends Component {
       },
       {
         idle: {
-          unarmed: this.idleSheetNewRef.current,
-          sword: this.idleSheetNewRef.current,
-          spear: this.idleSheetNewRef.current,
-          crossbow: this.idleSheetNewRef.current,
+          unarmed: this.idleSheetNew2Ref.current,
+          sword: this.idleSheetNew2Ref.current,
+          spear: this.idleSheetNew2Ref.current,
+          crossbow: this.idleSheetNew2Ref.current,
         },
         walking: {
           unarmed: this.moveSheetNewRef.current,
@@ -44220,10 +44231,10 @@ class App extends Component {
       },
       {
         idle: {
-          unarmed: this.idleSheetNewRef.current,
-          sword: this.idleSheetNewRef.current,
-          spear: this.idleSheetNewRef.current,
-          crossbow: this.idleSheetNewRef.current,
+          unarmed: this.idleSheetNew2Ref.current,
+          sword: this.idleSheetNew2Ref.current,
+          spear: this.idleSheetNew2Ref.current,
+          crossbow: this.idleSheetNew2Ref.current,
         },
         walking: {
           unarmed: this.moveSheetNewRef.current,
@@ -44312,10 +44323,10 @@ class App extends Component {
       },
       {
         idle: {
-          unarmed: this.idleSheetNewRef.current,
-          sword: this.idleSheetNewRef.current,
-          spear: this.idleSheetNewRef.current,
-          crossbow: this.idleSheetNewRef.current,
+          unarmed: this.idleSheetNew2Ref.current,
+          sword: this.idleSheetNew2Ref.current,
+          spear: this.idleSheetNew2Ref.current,
+          crossbow: this.idleSheetNew2Ref.current,
         },
         walking: {
           unarmed: this.moveSheetNewRef.current,
@@ -46241,6 +46252,12 @@ class App extends Component {
             src={idleSheetNew}
             className="hidden playerImgs"
             ref={this.idleSheetNewRef}
+            alt="logo"
+          />
+          <img
+            src={idleSheetNew2}
+            className="hidden playerImgs"
+            ref={this.idleSheetNew2Ref}
             alt="logo"
           />
           <img
