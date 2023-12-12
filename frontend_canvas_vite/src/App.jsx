@@ -9329,25 +9329,31 @@ class App extends Component {
         y: player.currentPosition.cell.center.y,
       };
 
-      let attackPeak = player.attacking.animRef.peak[player.currentWeapon.type];
       let stamAtkType = player.currentWeapon.type;
+      let chargeType = "normal";
+      if (player.attacking.charge > 0) {
+        chargeType = "charged";
+      }
 
       if (player.currentWeapon.type === "") {
         // this.players[player.number-1].attacking.limit = player.attacking.animRef.limit.unarmed;
         attackPeak = player.attacking.animRef.peak.unarmed;
         stamAtkType = "unarmed";
       }
-      let limit = (player.attacking.limit = player.attacking.animRef.limit[stamAtkType]);
-
-      let countCalcUp = limit - attackPeak;
-
+      let limit = player.attacking.limit;
+      let countCalcUp = limit - player.attacking.count;
       if (countCalcUp > 10) {
         countCalcUp = 10;
       }
 
+      let direction = player.attacking.direction;
+      if (direction === "none") {
+        direction = player.direction;
+      }
+
       player.elasticCounter = {
         state: true,
-        direction: player.direction,
+        direction: direction,
         type: "attacking",
         subType: "",
         countUp: {
@@ -9375,6 +9381,37 @@ class App extends Component {
         },
       };
     }
+
+    if (type === "test") {
+      player.elasticCounter = {
+        state: true,
+        direction: player.direction,
+        type: "attacking",
+        subType: "",
+        countUp: {
+          state: false,
+          count: 0,
+          limit: 15,
+        },
+        countDown: {
+          state: false,
+          count: 0,
+          limit: 15,
+        },
+        coords: {
+          x: player.nextPosition.x - this.floorImageHeight / 2,
+          y: player.nextPosition.y - this.floorImageHeight,
+        },
+        pause: {
+          preState: pause,
+          state: false,
+          type: subType, //start, peak, end
+          count: 0,
+          limit: 0,
+        },
+      };
+    }
+
     // console.log("player elasticCounter set", player.elasticCounter);
   };
   calcElasticCountCoords = (type, subType, data) => {
@@ -32884,7 +32921,7 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 200 && player.number === 1) {
+    if (this.time === 100 && player.number === 1) {
       // this.setAutoCamera("test", player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
@@ -32908,6 +32945,7 @@ class App extends Component {
       // for (const trap of testTraps) {
       //   this.gridInfo.find((x) => x.number.x === trap.location.x && x.number.y === trap.location.y)[trap.type].trap = trap.trap;
       // }
+      // this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 2) {
       // this.pushBack(player, "east");
@@ -33855,11 +33893,11 @@ class App extends Component {
         }
 
         if (player.jumping.state === true) {
-          console.log(
-            "mid jump",
-            player.moving.step
-            // player.currentPosition.cell.number,
-          );
+          // console.log(
+          //   "mid jump",
+          //   player.moving.step
+          //   // player.currentPosition.cell.number,
+          // );
 
           if (
             nextPosition.x >= player.target.cell1.center.x - 1 &&
@@ -33917,7 +33955,7 @@ class App extends Component {
                 // console.log('barrier bloackage ',blockType);
               }
 
-              console.log("@ mid jump cell 1", player.target.cell1.number);
+              // console.log("@ mid jump cell 1", player.target.cell1.number);
               break;
             }
           }
@@ -33951,7 +33989,7 @@ class App extends Component {
 
           for (const el of atDestRanges2) {
             if (el === true) {
-              console.log("at jump destination", player.target.cell2.number);
+              // console.log("at jump destination", player.target.cell2.number);
               // console.log('next position is destination a',player.number);
               player.newMoveDelay.state = true;
 
@@ -34415,20 +34453,20 @@ class App extends Component {
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
             if (player.attacking.count < attackPeak) {
-              console.log(
-                "attack windup: direction",
-                player.attacking.direction,
-                player.attacking.directionType,
-                "charging:",
-                chargeType,
-                player.attacking.charge,
-                "atk count:",
-                player.attacking.count,
-                "atk peak:",
-                attackPeak,
-                "atk limit:",
-                player.attacking.limit
-              );
+              // console.log(
+              //   "attack windup: direction",
+              //   player.attacking.direction,
+              //   player.attacking.directionType,
+              //   "charging:",
+              //   chargeType,
+              //   player.attacking.charge,
+              //   "atk count:",
+              //   player.attacking.count,
+              //   "atk peak:",
+              //   attackPeak,
+              //   "atk limit:",
+              //   player.attacking.limit
+              // );
             }
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
@@ -34597,10 +34635,11 @@ class App extends Component {
           let executeAttack = false;
           if (
             player.elasticCounter.state !== true &&
-            player.elasticCounter.type !== "ataacking"
+            player.elasticCounter.type !== "attacking"
           ) {
             if (
               chargeType !== "charged" &&
+              player.attacking.charge > 0 &&
               player.attacking.count >
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
                   .normal
@@ -34609,12 +34648,16 @@ class App extends Component {
               //   player.attacking.count,
               //   player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
               //     .normal,
-              //   "not charging, but past non charge peak. charge attack released early...adjusting peak"
+              //   "not currentlt charging, but past non charge peak. charge attack released early...adjusting peak"
               // );
               executeAttack = true;
               attackPeak =
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
                   .normal;
+              player.attacking.limit =
+                player.attacking.animRef.limit[stamAtkType][
+                  player.attacking.directionType
+                ].charged;
             } else if (player.attacking.count === attackPeak) {
               executeAttack = true;
 
@@ -34626,20 +34669,20 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (executeAttack === true) {
-            console.log(
-              "attack peak: direction",
-              player.attacking.direction,
-              player.attacking.directionType,
-              "charging:",
-              chargeType,
-              player.attacking.charge,
-              "atk count:",
-              player.attacking.count,
-              "atk peak:",
-              attackPeak,
-              "atk limit:",
-              player.attacking.limit
-            );
+            // console.log(
+            //   "attack peak: direction",
+            //   player.attacking.direction,
+            //   player.attacking.directionType,
+            //   "charging:",
+            //   chargeType,
+            //   player.attacking.charge,
+            //   "atk count:",
+            //   player.attacking.count,
+            //   "atk peak:",
+            //   attackPeak,
+            //   "atk limit:",
+            //   player.attacking.limit
+            // );
 
             // WEAPON STAMINA COST!!
             if (
@@ -34738,20 +34781,20 @@ class App extends Component {
                 chargeType
               ]
           ) {
-            console.log(
-              "attack cooldown: direction",
-              player.attacking.direction,
-              player.attacking.directionType,
-              "charging:",
-              chargeType,
-              player.attacking.charge,
-              "atk count:",
-              player.attacking.count,
-              "atk peak:",
-              attackPeak,
-              "atk limit:",
-              player.attacking.limit
-            );
+            // console.log(
+            //   "attack cooldown: direction",
+            //   player.attacking.direction,
+            //   player.attacking.directionType,
+            //   "charging:",
+            //   chargeType,
+            //   player.attacking.charge,
+            //   "atk count:",
+            //   player.attacking.count,
+            //   "atk peak:",
+            //   attackPeak,
+            //   "atk limit:",
+            //   player.attacking.limit
+            // );
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
             player.attacking.blunt = false;
@@ -34805,7 +34848,7 @@ class App extends Component {
               );
             }
 
-            console.log("attack end");
+            // console.log("attack end");
           }
         }
         // CLASHING
@@ -35364,7 +35407,7 @@ class App extends Component {
           player.elasticCounter.state === true &&
           player.elasticCounter.type !== "deflected"
         ) {
-          player.action = player.elasticCounter.type;
+          // player.action = player.elasticCounter.type;
 
           // IF PAUSE IS START, COUNT PAUSE 1ST
           if (
@@ -35384,7 +35427,7 @@ class App extends Component {
             player.elasticCounter.pause.state !== true
           ) {
             player.elasticCounter.countUp.state = true;
-            // console.log("pause is not start. count up");
+            console.log("pause is not start. count up");
           }
 
           // COUNT UP
@@ -35410,7 +35453,7 @@ class App extends Component {
                 count: 0,
                 limit: player.elasticCounter.countUp.limit,
               };
-              // console.log('finished count up. elastic counter peak');
+              console.log("finished count up. elastic counter peak");
 
               // IF PAUSE IS PEAK, COUNT PAUSE AT PEAK
               if (
@@ -35521,9 +35564,9 @@ class App extends Component {
                 console.log("pause is not end. turn off elastic count");
               }
 
-              if (player.elasticCounter !== "dodging") {
-                player.action = "idle";
-              }
+              // if (player.elasticCounter !== "dodging") {
+              //   player.action = "idle";
+              // }
             }
           }
         }
@@ -36771,7 +36814,7 @@ class App extends Component {
             // ALREADY ATTACKING/DEFENDING!!
             if (player.attacking.state === true || player.defending.state === true) {
               if (this.keyPressed[player.number - 1].attack === true) {
-                // console.log('already attacking');
+                // console.log("already attacking");
               }
               if (this.keyPressed[player.number - 1].defend === true) {
                 // console.log('already defending',player.number);
@@ -36860,7 +36903,7 @@ class App extends Component {
                 player.attacking.state = true;
                 player.attacking.count = 1;
 
-                // console.log('start attack');
+                // console.log("start attack");
 
                 if (plyrPullPushed === true) {
                   breakPulledPushed = true;
