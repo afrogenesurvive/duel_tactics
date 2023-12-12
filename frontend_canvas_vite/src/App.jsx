@@ -4285,7 +4285,7 @@ class App extends Component {
       context2: context2,
     });
 
-    this.comBImgAttackSheetRef.current.onload = () => {
+    this.deflectedFallingSheetNewRef.current.onload = () => {
       this.addListeners(canvas, canvas2);
 
       this.updateSettingsFormPlayerData({
