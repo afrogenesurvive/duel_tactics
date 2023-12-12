@@ -9340,8 +9340,7 @@ class App extends Component {
         attackPeak = player.attacking.animRef.peak.unarmed;
         stamAtkType = "unarmed";
       }
-      let limit = player.attacking.limit;
-      let countCalcUp = limit - player.attacking.count;
+      let countCalcUp = player.attacking.limit - player.attacking.count;
       if (countCalcUp > 10) {
         countCalcUp = 10;
       }
@@ -32948,9 +32947,9 @@ class App extends Component {
       // }
       // player = this.setElasticCounter("test", "start", true, player);
     }
-    if (this.time === 100 && player.number === 2) {
+    if (this.time === 100 && player.number === 1) {
       // this.pushBack(player, "east");
-      // this.setDeflection(player, "parried", true);
+      this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
 
@@ -34454,20 +34453,20 @@ class App extends Component {
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
             if (player.attacking.count < attackPeak) {
-              // console.log(
-              //   "attack windup: direction",
-              //   player.attacking.direction,
-              //   player.attacking.directionType,
-              //   "charging:",
-              //   chargeType,
-              //   player.attacking.charge,
-              //   "atk count:",
-              //   player.attacking.count,
-              //   "atk peak:",
-              //   attackPeak,
-              //   "atk limit:",
-              //   player.attacking.limit
-              // );
+              console.log(
+                "attack windup: direction",
+                player.attacking.direction,
+                player.attacking.directionType,
+                "charging:",
+                chargeType,
+                player.attacking.charge,
+                "atk count:",
+                player.attacking.count,
+                "atk peak:",
+                attackPeak,
+                "atk limit:",
+                player.attacking.limit
+              );
             }
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
@@ -34670,20 +34669,20 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (executeAttack === true) {
-            // console.log(
-            //   "attack peak: direction",
-            //   player.attacking.direction,
-            //   player.attacking.directionType,
-            //   "charging:",
-            //   chargeType,
-            //   player.attacking.charge,
-            //   "atk count:",
-            //   player.attacking.count,
-            //   "atk peak:",
-            //   attackPeak,
-            //   "atk limit:",
-            //   player.attacking.limit
-            // );
+            console.log(
+              "attack peak: direction",
+              player.attacking.direction,
+              player.attacking.directionType,
+              "charging:",
+              chargeType,
+              player.attacking.charge,
+              "atk count:",
+              player.attacking.count,
+              "atk peak:",
+              attackPeak,
+              "atk limit:",
+              player.attacking.limit
+            );
 
             // WEAPON STAMINA COST!!
             if (
@@ -34807,8 +34806,6 @@ class App extends Component {
               chargeType
             ]
           ) {
-            // console.log('attack end',player.attacking.count);
-
             player.attacking = {
               state: false,
               count: 0,
@@ -34849,7 +34846,7 @@ class App extends Component {
               );
             }
 
-            // console.log("attack end");
+            console.log("attack end");
           }
         }
         // CLASHING
@@ -35562,6 +35559,7 @@ class App extends Component {
               // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
               if (player.elasticCounter.pause.type !== "end") {
                 player.elasticCounter.state = false;
+                player.elasticCounter.type = "";
                 console.log("pause is not end. turn off elastic count");
               }
 
@@ -40339,33 +40337,34 @@ class App extends Component {
               case "attacking":
                 // let animIndex = plyr.attacking.count -1;
                 let animIndex;
-                if (
-                  plyr.elasticCounter.state === true &&
-                  plyr.elasticCounter.type === "attacking"
-                ) {
-                  if (plyr.elasticCounter.countUp.state === true) {
-                    animIndex = plyr.elasticCounter.countUp.count - 1;
-                  }
-                  if (plyr.elasticCounter.pause.state === true) {
-                    if (plyr.elasticCounter.pause.count < 11) {
-                      animIndex = plyr.elasticCounter.pause.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.pause.count % 10 === 0) {
-                        animIndex = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                        animIndex = plyr.elasticCounter.pause.count - mod - 1;
-                      }
-                    }
-                  }
-                  if (plyr.elasticCounter.countDown.state === true) {
-                    animIndex = plyr.elasticCounter.countDown.count - 1;
-                  }
-                } else {
-                  animIndex = plyr.attacking.count - 1;
-                }
+                // if (
+                //   plyr.elasticCounter.state === true &&
+                //   plyr.elasticCounter.type === "attacking"
+                // ) {
+                //   if (plyr.elasticCounter.countUp.state === true) {
+                //     animIndex = plyr.elasticCounter.countUp.count - 1;
+                //   }
+                //   if (plyr.elasticCounter.pause.state === true) {
+                //     if (plyr.elasticCounter.pause.count < 11) {
+                //       animIndex = plyr.elasticCounter.pause.count - 1;
+                //     } else {
+                //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+                //         animIndex = 9;
+                //         // animIndex5 = 10;
+                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                //       } else {
+                //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                //         animIndex = plyr.elasticCounter.pause.count - mod - 1;
+                //       }
+                //     }
+                //   }
+                //   if (plyr.elasticCounter.countDown.state === true) {
+                //     animIndex = plyr.elasticCounter.countDown.count - 1;
+                //   }
+                // } else {
+                //   animIndex = plyr.attacking.count - 1;
+                // }
+                animIndex = plyr.attacking.count - 1;
                 finalAnimIndex = animIndex;
                 // console.log(
                 //   "anim testing atk",
@@ -40419,31 +40418,31 @@ class App extends Component {
                 break;
               case "deflected":
                 let animIndex5 = plyr.success.deflected.count - 1;
-                if (
-                  plyr.elasticCounter.state === true &&
-                  plyr.elasticCounter.type === "deflected"
-                ) {
-                  if (plyr.elasticCounter.countUp.state === true) {
-                    animIndex5 = plyr.elasticCounter.countUp.count - 1;
-                  }
-                  if (plyr.elasticCounter.pause.state === true) {
-                    if (plyr.elasticCounter.pause.count < 11) {
-                      animIndex5 = plyr.elasticCounter.pause.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.pause.count % 10 === 0) {
-                        animIndex5 = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                        animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
-                      }
-                    }
-                  }
-                  if (plyr.elasticCounter.countDown.state === true) {
-                    animIndex5 = plyr.elasticCounter.countDown.count - 1;
-                  }
-                }
+                // if (
+                //   plyr.elasticCounter.state === true &&
+                //   plyr.elasticCounter.type === "deflected"
+                // ) {
+                //   if (plyr.elasticCounter.countUp.state === true) {
+                //     animIndex5 = plyr.elasticCounter.countUp.count - 1;
+                //   }
+                //   if (plyr.elasticCounter.pause.state === true) {
+                //     if (plyr.elasticCounter.pause.count < 11) {
+                //       animIndex5 = plyr.elasticCounter.pause.count - 1;
+                //     } else {
+                //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+                //         animIndex5 = 9;
+                //         // animIndex5 = 10;
+                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                //       } else {
+                //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                //         animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
+                //       }
+                //     }
+                //   }
+                //   if (plyr.elasticCounter.countDown.state === true) {
+                //     animIndex5 = plyr.elasticCounter.countDown.count - 1;
+                //   }
+                // }
                 if (plyr.halfPushBack.state === true) {
                   if (plyr.halfPushBack.countUp.state === true) {
                     animIndex5 = plyr.halfPushBack.countUp.count - 1;
@@ -40457,56 +40456,56 @@ class App extends Component {
                 break;
               case "dodging":
                 let animIndex7 = plyr.dodging.count - 1;
-                if (
-                  plyr.elasticCounter.state === true &&
-                  plyr.elasticCounter.type === "dodging"
-                ) {
-                  if (plyr.elasticCounter.countUp.state === true) {
-                    // animIndex7 = plyr.elasticCounter.countUp.count-1;
-                    if (plyr.elasticCounter.countUp.count < 11) {
-                      animIndex7 = plyr.elasticCounter.countUp.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.countUp.count % 10 === 0) {
-                        animIndex7 = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
-                        animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
-                      }
-                    }
-                  }
-                  if (plyr.elasticCounter.pause.state === true) {
-                    if (plyr.elasticCounter.pause.count < 11) {
-                      animIndex7 = plyr.elasticCounter.pause.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.pause.count % 10 === 0) {
-                        animIndex7 = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                        animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
-                      }
-                    }
-                  }
-                  if (plyr.elasticCounter.countDown.state === true) {
-                    // animIndex7 = plyr.elasticCounter.countDown.count-1;
-                    if (plyr.elasticCounter.countDown.count < 11) {
-                      animIndex7 = plyr.elasticCounter.countDown.count - 1;
-                    } else {
-                      if (plyr.elasticCounter.countDown.count % 10 === 0) {
-                        animIndex7 = 9;
-                        // animIndex5 = 10;
-                        // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                      } else {
-                        let mod =
-                          Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
-                        animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
-                      }
-                    }
-                  }
-                }
+                // if (
+                //   plyr.elasticCounter.state === true &&
+                //   plyr.elasticCounter.type === "dodging"
+                // ) {
+                //   if (plyr.elasticCounter.countUp.state === true) {
+                //     // animIndex7 = plyr.elasticCounter.countUp.count-1;
+                //     if (plyr.elasticCounter.countUp.count < 11) {
+                //       animIndex7 = plyr.elasticCounter.countUp.count - 1;
+                //     } else {
+                //       if (plyr.elasticCounter.countUp.count % 10 === 0) {
+                //         animIndex7 = 9;
+                //         // animIndex5 = 10;
+                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                //       } else {
+                //         let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
+                //         animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
+                //       }
+                //     }
+                //   }
+                //   if (plyr.elasticCounter.pause.state === true) {
+                //     if (plyr.elasticCounter.pause.count < 11) {
+                //       animIndex7 = plyr.elasticCounter.pause.count - 1;
+                //     } else {
+                //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+                //         animIndex7 = 9;
+                //         // animIndex5 = 10;
+                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                //       } else {
+                //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                //         animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
+                //       }
+                //     }
+                //   }
+                //   if (plyr.elasticCounter.countDown.state === true) {
+                //     // animIndex7 = plyr.elasticCounter.countDown.count-1;
+                //     if (plyr.elasticCounter.countDown.count < 11) {
+                //       animIndex7 = plyr.elasticCounter.countDown.count - 1;
+                //     } else {
+                //       if (plyr.elasticCounter.countDown.count % 10 === 0) {
+                //         animIndex7 = 9;
+                //         // animIndex5 = 10;
+                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                //       } else {
+                //         let mod =
+                //           Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
+                //         animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
+                //       }
+                //     }
+                //   }
+                // }
                 finalAnimIndex = animIndex7;
                 // console.log(
                 //   "anim testing dodge",
@@ -40597,34 +40596,35 @@ class App extends Component {
               // let animIndex = plyr.attacking.count -1;
               let animIndex;
 
-              if (
-                plyr.elasticCounter.state === true &&
-                plyr.elasticCounter.type === "attacking"
-              ) {
-                if (plyr.elasticCounter.countUp.state === true) {
-                  animIndex = plyr.elasticCounter.countUp.count - 1;
-                }
-                if (plyr.elasticCounter.pause.state === true) {
-                  if (plyr.elasticCounter.pause.count < 11) {
-                    animIndex = plyr.elasticCounter.pause.count - 1;
-                  } else {
-                    if (plyr.elasticCounter.pause.count % 10 === 0) {
-                      animIndex = 9;
-                      // animIndex5 = 10;
-                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                    } else {
-                      let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                      animIndex = plyr.elasticCounter.pause.count - mod - 1;
-                    }
-                  }
-                }
-                if (plyr.elasticCounter.countDown.state === true) {
-                  animIndex = plyr.elasticCounter.countDown.count - 1;
-                }
-              } else {
-                animIndex = plyr.attacking.count - 1;
-              }
+              // if (
+              //   plyr.elasticCounter.state === true &&
+              //   plyr.elasticCounter.type === "attacking"
+              // ) {
+              //   if (plyr.elasticCounter.countUp.state === true) {
+              //     animIndex = plyr.elasticCounter.countUp.count - 1;
+              //   }
+              //   if (plyr.elasticCounter.pause.state === true) {
+              //     if (plyr.elasticCounter.pause.count < 11) {
+              //       animIndex = plyr.elasticCounter.pause.count - 1;
+              //     } else {
+              //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+              //         animIndex = 9;
+              //         // animIndex5 = 10;
+              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+              //       } else {
+              //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+              //         animIndex = plyr.elasticCounter.pause.count - mod - 1;
+              //       }
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.countDown.state === true) {
+              //     animIndex = plyr.elasticCounter.countDown.count - 1;
+              //   }
+              // } else {
+              //   animIndex = plyr.attacking.count - 1;
+              // }
 
+              animIndex = plyr.attacking.count - 1;
               finalAnimIndex = animIndex;
               // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
               break;
@@ -40676,31 +40676,31 @@ class App extends Component {
             case "deflected":
               let animIndex5 = plyr.success.deflected.count - 1;
 
-              if (
-                plyr.elasticCounter.state === true &&
-                plyr.elasticCounter.type === "deflected"
-              ) {
-                if (plyr.elasticCounter.countUp.state === true) {
-                  animIndex5 = plyr.elasticCounter.countUp.count - 1;
-                }
-                if (plyr.elasticCounter.pause.state === true) {
-                  if (plyr.elasticCounter.pause.count < 11) {
-                    animIndex5 = plyr.elasticCounter.pause.count - 1;
-                  } else {
-                    if (plyr.elasticCounter.pause.count % 10 === 0) {
-                      animIndex5 = 9;
-                      // animIndex5 = 10;
-                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                    } else {
-                      let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                      animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
-                    }
-                  }
-                }
-                if (plyr.elasticCounter.countDown.state === true) {
-                  animIndex5 = plyr.elasticCounter.countDown.count - 1;
-                }
-              }
+              // if (
+              //   plyr.elasticCounter.state === true &&
+              //   plyr.elasticCounter.type === "deflected"
+              // ) {
+              //   if (plyr.elasticCounter.countUp.state === true) {
+              //     animIndex5 = plyr.elasticCounter.countUp.count - 1;
+              //   }
+              //   if (plyr.elasticCounter.pause.state === true) {
+              //     if (plyr.elasticCounter.pause.count < 11) {
+              //       animIndex5 = plyr.elasticCounter.pause.count - 1;
+              //     } else {
+              //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+              //         animIndex5 = 9;
+              //         // animIndex5 = 10;
+              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+              //       } else {
+              //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+              //         animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
+              //       }
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.countDown.state === true) {
+              //     animIndex5 = plyr.elasticCounter.countDown.count - 1;
+              //   }
+              // }
               if (plyr.halfPushBack.state === true) {
                 if (plyr.halfPushBack.countUp.state === true) {
                   animIndex5 = plyr.halfPushBack.countUp.count - 1;
@@ -40715,57 +40715,57 @@ class App extends Component {
             case "dodging":
               let animIndex7 = plyr.dodging.count - 1;
 
-              if (
-                plyr.elasticCounter.state === true &&
-                plyr.elasticCounter.type === "dodging"
-              ) {
-                if (plyr.elasticCounter.countUp.state === true) {
-                  // animIndex7 = plyr.elasticCounter.countUp.count-1;
+              // if (
+              //   plyr.elasticCounter.state === true &&
+              //   plyr.elasticCounter.type === "dodging"
+              // ) {
+              //   if (plyr.elasticCounter.countUp.state === true) {
+              //     // animIndex7 = plyr.elasticCounter.countUp.count-1;
 
-                  if (plyr.elasticCounter.countUp.count < 11) {
-                    animIndex7 = plyr.elasticCounter.countUp.count - 1;
-                  } else {
-                    if (plyr.elasticCounter.countUp.count % 10 === 0) {
-                      animIndex7 = 9;
-                      // animIndex5 = 10;
-                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                    } else {
-                      let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
-                      animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
-                    }
-                  }
-                }
-                if (plyr.elasticCounter.pause.state === true) {
-                  if (plyr.elasticCounter.pause.count < 11) {
-                    animIndex7 = plyr.elasticCounter.pause.count - 1;
-                  } else {
-                    if (plyr.elasticCounter.pause.count % 10 === 0) {
-                      animIndex7 = 9;
-                      // animIndex5 = 10;
-                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                    } else {
-                      let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                      animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
-                    }
-                  }
-                }
-                if (plyr.elasticCounter.countDown.state === true) {
-                  // animIndex7 = plyr.elasticCounter.countDown.count-1;
+              //     if (plyr.elasticCounter.countUp.count < 11) {
+              //       animIndex7 = plyr.elasticCounter.countUp.count - 1;
+              //     } else {
+              //       if (plyr.elasticCounter.countUp.count % 10 === 0) {
+              //         animIndex7 = 9;
+              //         // animIndex5 = 10;
+              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+              //       } else {
+              //         let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
+              //         animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
+              //       }
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.pause.state === true) {
+              //     if (plyr.elasticCounter.pause.count < 11) {
+              //       animIndex7 = plyr.elasticCounter.pause.count - 1;
+              //     } else {
+              //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+              //         animIndex7 = 9;
+              //         // animIndex5 = 10;
+              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+              //       } else {
+              //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+              //         animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
+              //       }
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.countDown.state === true) {
+              //     // animIndex7 = plyr.elasticCounter.countDown.count-1;
 
-                  if (plyr.elasticCounter.countDown.count < 11) {
-                    animIndex7 = plyr.elasticCounter.countDown.count - 1;
-                  } else {
-                    if (plyr.elasticCounter.countDown.count % 10 === 0) {
-                      animIndex7 = 9;
-                      // animIndex5 = 10;
-                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                    } else {
-                      let mod = Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
-                      animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
-                    }
-                  }
-                }
-              }
+              //     if (plyr.elasticCounter.countDown.count < 11) {
+              //       animIndex7 = plyr.elasticCounter.countDown.count - 1;
+              //     } else {
+              //       if (plyr.elasticCounter.countDown.count % 10 === 0) {
+              //         animIndex7 = 9;
+              //         // animIndex5 = 10;
+              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+              //       } else {
+              //         let mod = Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
+              //         animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
+              //       }
+              //     }
+              //   }
+              // }
 
               finalAnimIndex = animIndex7;
               // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
@@ -41470,16 +41470,28 @@ class App extends Component {
               // test logging
               if (x === this.gridWidth && y === this.gridWidth) {
                 if (plyr.elasticCounter.countUp.state === true) {
-                  // this.testDraw.push({color: 'red',x:finalCoords.x,y:finalCoords.y })
-                  // console.log('dodging elastic count coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
+                  // this.testDraw.push({
+                  //   color: "red",
+                  //   x: finalCoords.x,
+                  //   y: finalCoords.y,
+                  // });
+                  // console.log('attacking elastic count coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
                 }
                 if (plyr.elasticCounter.countDown.state === true) {
-                  // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
-                  // console.log('dodging elastic count coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
+                  // this.testDraw.push({
+                  //   color: "blue",
+                  //   x: finalCoords.x,
+                  //   y: finalCoords.y,
+                  // });
+                  // console.log('attacking elastic count coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
                 }
                 if (plyr.elasticCounter.pause.state === true) {
-                  // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
-                  // console.log('dodging elastic count coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
+                  // this.testDraw.push({
+                  //   color: "blue",
+                  //   x: finalCoords.x,
+                  //   y: finalCoords.y,
+                  // });
+                  // console.log('attacking elastic count coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
                 }
               }
 
@@ -41512,8 +41524,8 @@ class App extends Component {
                     sHeight,
                     finalCoords.x,
                     finalCoords.y,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               } else {
@@ -41530,8 +41542,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -41548,8 +41560,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -41566,8 +41578,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -41584,8 +41596,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
