@@ -3831,7 +3831,7 @@ class App extends Component {
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
-    this.showPlayerOutlines = true;
+    this.showPlayerOutlines = false;
 
     // CAMERA
     this.toggleCameraMode = false;
@@ -9241,8 +9241,10 @@ class App extends Component {
           limit: countCalc,
         },
         coords: {
-          x: point.x - this.playerDrawWidth / 2,
-          y: point.y - this.playerDrawHeight / 2,
+          // x: point.x - this.playerDrawWidth / 2,
+          // y: point.y - this.playerDrawHeight / 2,
+          x: player.nextPosition.x - this.floorImageHeight / 2,
+          y: player.nextPosition.y - this.floorImageHeight,
         },
         pause: {
           preState: pause,
@@ -9304,8 +9306,10 @@ class App extends Component {
           // limit: countCalcDown,
         },
         coords: {
-          x: point.x - this.playerDrawWidth / 2,
-          y: point.y - this.playerDrawHeight / 2,
+          // x: point.x - this.playerDrawWidth / 2,
+          // y: point.y - this.playerDrawHeight / 2,
+          x: player.nextPosition.x - this.floorImageHeight / 2,
+          y: player.nextPosition.y - this.floorImageHeight,
         },
         pause: {
           preState: pause,
@@ -9355,8 +9359,10 @@ class App extends Component {
           limit: countCalcUp,
         },
         coords: {
-          x: point.x - this.playerDrawWidth / 2,
-          y: point.y - this.playerDrawHeight / 2,
+          // x: point.x - this.playerDrawWidth / 2,
+          // y: point.y - this.playerDrawHeight / 2,
+          x: player.nextPosition.x - this.floorImageHeight / 2,
+          y: player.nextPosition.y - this.floorImageHeight,
         },
         pause: {
           preState: pause,
@@ -17126,12 +17132,6 @@ class App extends Component {
             y: data.nextPosition.y - this.floorImageHeight,
           },
         };
-        this.testDraw.push({
-          color: "purple",
-          x: data.halfPushBack.coords.x,
-          y: data.halfPushBack.coords.y,
-          direction: data.direction,
-        });
 
         this.players[data.number - 1] = data;
       } else {
@@ -32908,7 +32908,8 @@ class App extends Component {
       // }
     }
     if (this.time === 100 && player.number === 2) {
-      this.pushBack(player, "east");
+      // this.pushBack(player, "east");
+      // this.setDeflection(player, "parried", true);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
 
@@ -40914,22 +40915,6 @@ class App extends Component {
             //   2
             // );
             context.stroke();
-
-            if (this.testDraw.length < 2) {
-              this.testDraw.push({
-                color: "red",
-                x: origin2.x,
-                y: origin2.y,
-                direction: plyr.direction,
-              });
-            } else {
-              this.testDraw[plyr.number - 1] = {
-                color: "red",
-                x: origin2.x,
-                y: origin2.y,
-                direction: plyr.direction,
-              };
-            }
           }
 
           //PLAYER DEPTH SORTING!!
@@ -41419,6 +41404,8 @@ class App extends Component {
                 "player",
                 plyr
               ).drawCell;
+              finalCoords.x -= 5;
+              finalCoords.y -= 10;
 
               // test logging
               if (x === this.gridWidth && y === this.gridWidth) {
@@ -41555,10 +41542,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
               }
             }
@@ -41662,10 +41649,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
               }
             }
@@ -41682,10 +41669,10 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
               }
             }
@@ -41703,26 +41690,11 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
-                // playerDrawLog(
-                //   x,
-                //   y,
-                //   plyr,
-                //   finalAnimIndex,
-                //   updatedPlayerImg,
-                //   sx,
-                //   sy,
-                //   sWidth,
-                //   sHeight,
-                //   point.x - this.playerDrawWidth / 2,
-                //   point.y - this.playerDrawHeight / 2,
-                //   this.playerDrawWidth,
-                //   this.playerDrawHeight
-                // );
               }
             }
 
@@ -41738,26 +41710,11 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
-                // playerDrawLog(
-                //   x,
-                //   y,
-                //   plyr,
-                //   finalAnimIndex,
-                //   updatedPlayerImg,
-                //   sx,
-                //   sy,
-                //   sWidth,
-                //   sHeight,
-                //   point.x - this.playerDrawWidth / 2,
-                //   point.y - this.playerDrawHeight / 2,
-                //   this.playerDrawWidth,
-                //   this.playerDrawHeight
-                // );
               }
             }
             if (plyr.strafing.direction === "southWest") {
@@ -41772,26 +41729,11 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
-                // playerDrawLog(
-                //   x,
-                //   y,
-                //   plyr,
-                //   finalAnimIndex,
-                //   updatedPlayerImg,
-                //   sx,
-                //   sy,
-                //   sWidth,
-                //   sHeight,
-                //   point.x - this.playerDrawWidth / 2,
-                //   point.y - this.playerDrawHeight / 2,
-                //   this.playerDrawWidth,
-                //   this.playerDrawHeight
-                // );
               }
             }
           }
@@ -41810,10 +41752,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41830,10 +41772,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41850,10 +41792,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41870,10 +41812,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41891,10 +41833,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41910,10 +41852,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41929,10 +41871,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41948,10 +41890,10 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    point.x - this.playerDrawWidth / 2,
-                    point.y - this.playerDrawHeight / 2,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    newCharDarwPoint.x - 5,
+                    newCharDarwPoint.y - 10,
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               }
@@ -41967,26 +41909,11 @@ class App extends Component {
                 sy,
                 sWidth,
                 sHeight,
-                point.x - this.playerDrawWidth / 2,
-                point.y - this.playerDrawHeight / 2,
-                this.playerDrawWidth,
-                this.playerDrawHeight
+                newCharDarwPoint.x - 5,
+                newCharDarwPoint.y - 10,
+                this.playerDrawWidth2,
+                this.playerDrawHeight2
               );
-              // playerDrawLog(
-              //     x,
-              //     y,
-              //     plyr,
-              //     finalAnimIndex,
-              //     updatedPlayerImg,
-              //     sx,
-              //     sy,
-              //     sWidth,
-              //     sHeight,
-              //     point.x - this.playerDrawWidth / 2,
-              //     point.y - this.playerDrawHeight / 2,
-              //     this.playerDrawWidth,
-              //     this.playerDrawHeight
-              //   );
             }
 
             // OUT OF BOUNDS
@@ -42006,26 +41933,11 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  newCharDarwPoint.x - 5,
+                  newCharDarwPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
-                // playerDrawLog(
-                //   x,
-                //   y,
-                //   plyr,
-                //   finalAnimIndex,
-                //   updatedPlayerImg,
-                //   sx,
-                //   sy,
-                //   sWidth,
-                //   sHeight,
-                //   point.x - this.playerDrawWidth / 2,
-                //   point.y - this.playerDrawHeight / 2,
-                //   this.playerDrawWidth,
-                //   this.playerDrawHeight
-                // );
               }
             }
           }
@@ -42045,6 +41957,8 @@ class App extends Component {
                 "player",
                 plyr
               ).drawCell;
+              finalCoords.x -= 5;
+              finalCoords.y -= 10;
 
               if (
                 !this.gridInfo.find(
@@ -42075,8 +41989,8 @@ class App extends Component {
                     sHeight,
                     finalCoords.x,
                     finalCoords.y,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               } else {
@@ -42093,8 +42007,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -42111,8 +42025,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -42129,8 +42043,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -42147,8 +42061,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -42179,6 +42093,8 @@ class App extends Component {
                 "player",
                 plyr
               ).drawCell;
+              finalCoords.x -= 5;
+              finalCoords.y -= 10;
 
               // test logging
               if (x === this.gridWidth && y === this.gridWidth) {
@@ -42225,8 +42141,8 @@ class App extends Component {
                     sHeight,
                     finalCoords.x,
                     finalCoords.y,
-                    this.playerDrawWidth,
-                    this.playerDrawHeight
+                    this.playerDrawWidth2,
+                    this.playerDrawHeight2
                   );
                 }
               } else {
@@ -42243,8 +42159,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -42261,8 +42177,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -42279,8 +42195,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -42297,8 +42213,8 @@ class App extends Component {
                       sHeight,
                       finalCoords.x,
                       finalCoords.y,
-                      this.playerDrawWidth,
-                      this.playerDrawHeight
+                      this.playerDrawWidth2,
+                      this.playerDrawHeight2
                     );
                   }
                 }
@@ -42428,6 +42344,10 @@ class App extends Component {
                     y: this.players[plyr.number - 1].target.cell1.center.y,
                   },
                 };
+                let origin2 = {
+                  x: plyr.nextPosition.x - this.floorImageHeight / 2,
+                  y: plyr.nextPosition.y - this.floorImageHeight,
+                };
 
                 plyr.direction = "north";
                 plyr.respawn = false;
@@ -42439,10 +42359,12 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  respawnPoint.center.x - 25,
-                  respawnPoint.center.y - 50,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
+                  // respawnPoint.center.x - 25,
+                  // respawnPoint.center.y - 50,
+                  origin2.x - 5,
+                  origin2.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
                 );
 
                 if (
