@@ -40354,8 +40354,8 @@ class App extends Component {
                   // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
                 }
                 let animIndex3 = plyr.idleAnim.count + 1;
-                // finalAnimIndex = animIndex3;
-                finalAnimIndex = 1;
+                finalAnimIndex = animIndex3;
+                // finalAnimIndex = 1;
                 break;
               case "falling":
                 let animIndex4 = plyr.falling.count - 1;
@@ -40453,7 +40453,12 @@ class App extends Component {
                   }
                 }
                 finalAnimIndex = animIndex7;
-                // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+                // console.log(
+                //   "anim testing dodge",
+                //   plyr.dodging.count,
+                //   "plyr",
+                //   plyr.number
+                // );
                 break;
             }
           }
@@ -40605,8 +40610,8 @@ class App extends Component {
                 // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
               }
               let animIndex3 = plyr.idleAnim.count + 1;
-              // finalAnimIndex = animIndex3;
-              finalAnimIndex = 1;
+              finalAnimIndex = animIndex3;
+              // finalAnimIndex = 1;
               break;
             case "falling":
               let animIndex4 = plyr.falling.count - 1;
@@ -43194,21 +43199,6 @@ class App extends Component {
           context.beginPath();
           context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
           context.fill();
-
-          let testSprites = {
-            north: this.testRefNorth.current,
-            south: this.testRefSouth.current,
-            east: this.testRefEast.current,
-            west: this.testRefWest.current,
-          };
-
-          // context.drawImage(
-          //   testSprites[point.direction],
-          //   point.x - 5,
-          //   point.y - 10,
-          //   55,
-          //   80
-          // );
         }
       }
     }
