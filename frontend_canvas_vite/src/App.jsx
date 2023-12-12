@@ -33537,7 +33537,7 @@ class App extends Component {
               threshIndx = Math.ceil(this.moveStepRef[indx3].length / 2);
               // inTimeThresh = this.moveStepRef[indx3][threshIndx];
               inTimeThresh = this.moveStepRef[indx3][threshIndx + 1];
-              console.log("inTimeThresh", inTimeThresh, "step", player.moving.step);
+              // console.log("inTimeThresh", inTimeThresh, "step", player.moving.step);
             }
             if (player.moving.step < inTimeThresh) {
               inTime = true;
@@ -33650,7 +33650,7 @@ class App extends Component {
               console.log("too late to move cancel. move step is", player.moving.step);
             }
           } else if (player.moveCancel.state === true) {
-            console.log("already move cancelling");
+            // console.log("already move cancelling");
           }
         }
       }
