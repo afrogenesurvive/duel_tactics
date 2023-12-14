@@ -34558,7 +34558,8 @@ class App extends Component {
             ];
           if (
             player.attacking.peakCount === 0 ||
-            player.attacking.peakCount !== attackPeak
+            player.attacking.peakCount < attackPeak
+            // player.attacking.peakCount !== attackPeak
           ) {
             console.log(
               "attacking peakCount changed. was",
