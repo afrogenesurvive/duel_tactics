@@ -13712,7 +13712,7 @@ class App extends Component {
           img: "",
         });
       }
-      // console.log("charging attack", player[action].charge);
+      console.log("charging attack", player[action].charge);
     };
 
     const feintAttack = () => {
@@ -13809,13 +13809,16 @@ class App extends Component {
           if (player[action].count < directionalInputThresh) {
             if (input === true) {
               // console.log("y");
-              if (inputDirection === player[action].direction) {
-                charge();
-              } else {
-                console.log("still time to set attack direction. changing direction");
-                player[action].direction = inputDirection;
-                player[action].directionType = "slash";
-              }
+              // if (inputDirection === player[action].direction) {
+              //   charge();
+              // } else {
+              //   console.log("still time to set attack direction. changing direction");
+              //   player[action].direction = inputDirection;
+              //   player[action].directionType = "slash";
+              // }
+              console.log("still time to set attack direction. changing direction");
+              player[action].direction = inputDirection;
+              player[action].directionType = "slash";
             } else {
               if (
                 player[action].direction === "" ||
