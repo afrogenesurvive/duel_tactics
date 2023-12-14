@@ -13712,7 +13712,7 @@ class App extends Component {
           img: "",
         });
       }
-      console.log("charging attack", player[action].charge);
+      // console.log("charging attack", player[action].charge);
     };
 
     const feintAttack = () => {
@@ -13845,6 +13845,7 @@ class App extends Component {
           }
         }
       }
+      console.log("direction input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
@@ -33053,7 +33054,7 @@ class App extends Component {
       // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 2) {
-      this.pushBack(player, "east");
+      // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
@@ -34560,7 +34561,7 @@ class App extends Component {
             player.attacking.peakCount !== attackPeak
           ) {
             console.log(
-              "attacking peakCoutn changed. was",
+              "attacking peakCount changed. was",
               player.attacking.peakCount,
               "now",
               attackPeak
@@ -34572,18 +34573,13 @@ class App extends Component {
           if (player.attacking.count < player.attacking.limit) {
             if (player.attacking.count < player.attacking.peakCount) {
               console.log(
-                "attack windup: direction",
+                "atk windup:",
                 player.attacking.direction,
-                player.attacking.directionType,
-                "charging:",
-                chargeType,
-                player.attacking.charge,
-                "atk count:",
+                "counts:",
                 player.attacking.count,
-                "atk peak:",
-                attackPeak,
-                "atk limit:",
-                player.attacking.limit
+                player.attacking.peakCount,
+                player.attacking.limit,
+                chargeType === "charged"
               );
               player.attacking.peak = false;
               player.attacking.chargePeak = false;
@@ -34763,12 +34759,15 @@ class App extends Component {
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
                   .normal
             ) {
-              // console.log(
-              //   player.attacking.count,
-              //   player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-              //     .normal,
-              //   "not currentlt charging, but past non charge peak. charge attack released early...adjusting peak"
-              // );
+              console.log(
+                "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
+              );
+              console.log(
+                "counts",
+                player.attacking.count,
+                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
+                  .normal
+              );
               executeAttack = true;
               attackPeak =
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
@@ -34781,7 +34780,7 @@ class App extends Component {
             } else if (player.attacking.count === attackPeak) {
               executeAttack = true;
               player.attacking.peakCount = attackPeak;
-              // console.log("execute ", chargeType, " attack at peak normally");
+              console.log("execute ", chargeType, " attack at peak normally");
             }
           } else {
             // console.log("attack peak already reached/passed");
@@ -34789,21 +34788,6 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (executeAttack === true) {
-            console.log(
-              "attack peak: direction",
-              player.attacking.direction,
-              player.attacking.directionType,
-              "charging:",
-              chargeType,
-              player.attacking.charge,
-              "atk count:",
-              player.attacking.count,
-              "atk peak:",
-              attackPeak,
-              "atk limit:",
-              player.attacking.limit
-            );
-
             // WEAPON STAMINA COST!!
             if (
               player.stamina.current -
@@ -34814,6 +34798,16 @@ class App extends Component {
                 this.staminaCostRef.attack[stamAtkType][blunt].peak;
 
               let melee = true;
+
+              console.log(
+                "atk peak:",
+                player.attacking.direction,
+                "counts:",
+                player.attacking.count,
+                player.attacking.peakCount,
+                player.attacking.limit,
+                chargeType === "charged"
+              );
 
               player = this.setElasticCounter("attacking", "", false, player);
 
@@ -34898,20 +34892,15 @@ class App extends Component {
             player.attacking.count > player.attacking.peakCount &&
             player.attacking.count < player.attacking.limit
           ) {
-            // console.log(
-            //   "attack cooldown: direction",
-            //   player.attacking.direction,
-            //   player.attacking.directionType,
-            //   "charging:",
-            //   chargeType,
-            //   player.attacking.charge,
-            //   "atk count:",
-            //   player.attacking.count,
-            //   "atk peak:",
-            //   attackPeak,
-            //   "atk limit:",
-            //   player.attacking.limit
-            // );
+            console.log(
+              "atk cooldown:",
+              player.attacking.direction,
+              "counts:",
+              player.attacking.count,
+              player.attacking.peakCount,
+              player.attacking.limit,
+              chargeType === "charged"
+            );
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
             player.attacking.blunt = false;
