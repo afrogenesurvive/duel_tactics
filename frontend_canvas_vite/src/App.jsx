@@ -2260,6 +2260,7 @@ class App extends Component {
           peak: false,
           charge: 0,
           chargePeak: false,
+          peakCount: 0,
           blunt: false,
           clashing: {
             state: false,
@@ -2273,6 +2274,7 @@ class App extends Component {
           limit: 4,
           animRef: {},
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -2763,6 +2765,7 @@ class App extends Component {
           directionType: "", //thrust or slash
           animRef: {},
           peak: false,
+          peakCount: 0,
           charge: 0,
           chargePeak: false,
           blunt: false,
@@ -2778,6 +2781,7 @@ class App extends Component {
           limit: 4,
           animRef: {},
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -8935,20 +8939,14 @@ class App extends Component {
     // plyr.prePull.state === true ||
 
     if (player.action === "defending") {
-      let defendType = player.currentWeapon.type;
-      if (player.currentWeapon.name === "") {
-        defendType = "unarmed";
-      }
-      let defendPeak =
-        player.defending.animRef.peak[defendType][player.defending.directionType];
-      player.defending.limit =
-        player.defending.animRef.limit[defendType][player.defending.directionType];
-
-      if (player.defending.count < defendPeak && player.defending.decay.state !== true) {
+      if (
+        player.defending.count < player.defending.peakCount &&
+        player.defending.decay.state !== true
+      ) {
         phase = "windup";
-        perc = (player.defending.count / defendPeak) * 100;
+        perc = (player.defending.count / player.defending.peakCount) * 100;
       } else if (
-        player.defending.count === defendPeak &&
+        player.defending.count === player.defending.peakCount &&
         player.defending.decay.state !== true
       ) {
         phase = "peak";
@@ -8961,39 +8959,57 @@ class App extends Component {
           player.defending.decay.count < player.defending.decay.limit &&
           player.defending.decay.count > 5
         ) {
-          phase = "cooldown";
-          perc = (player.defending.decay.count / player.defending.decay.limit) * 100;
-        }
-        if (player.defending.decay.count >= player.defending.decay.limit) {
-          phase = "off";
+          phase = "peak";
+          // phase = "cooldown";
+          // perc = (player.defending.decay.count / player.defending.decay.limit) * 100;
         }
       }
-    }
-    if (player.action === "attacking") {
-      let atkType = player.currentWeapon.type;
-      if (player.currentWeapon.name === "") {
-        atkType = "unarmed";
+      if (
+        player.defending.count > player.defending.peakCount &&
+        player.defending.count < player.defending.limit &&
+        player.defending.decay.state !== true
+      ) {
+        phase = "cooldown";
+        perc =
+          ((player.defending.count - player.defending.peakCount) /
+            (player.defending.limit - player.defending.peakCount)) *
+          100;
       }
-      let end = player.attacking.animRef.limit[atkType];
-      let attackPeak = player.attacking.animRef.peak[atkType];
-
-      if (player.attacking.count < attackPeak) {
-        phase = "windup";
-        perc = (player.attacking.count / attackPeak) * 100;
+      if (player.defending.count >= player.defending.limit) {
+        phase = "off";
       }
-      if (player.attacking.count === attackPeak) {
+      if (phase === "") {
         phase = "peak";
       }
-      if (player.attacking.count > attackPeak && player.attacking.count < end) {
-        if (player.attacking.count < attackPeak + 5) {
-          phase = "peak";
+      // console.log("perkies: def", phase, perc, player.defending.count);
+    }
+    if (player.action === "attacking") {
+      let end = player.attacking.limit;
+
+      if (
+        player.attacking.peak === true ||
+        player.attacking.chargePeak === true ||
+        player.attacking.count === player.attacking.peakCount
+      ) {
+        phase = "peak";
+      } else if (player.attacking.count < end) {
+        // if count is less or > peak!!!
+
+        if (player.attacking.count < player.attacking.peakCount) {
+          phase = "windup";
+          if (popup.msg === "charging") {
+          } else {
+            perc = (player.attacking.count / player.attacking.peakCount) * 100;
+          }
         }
-        if (player.attacking.count > attackPeak + 5) {
+        if (player.attacking.count > player.attacking.peakCount) {
           phase = "cooldown";
           perc =
-            ((player.attacking.count - (attackPeak + 5)) / (end - (attackPeak + 5))) *
+            ((player.attacking.count - player.attacking.peakCount) /
+              (player.attacking.limit - player.attacking.peakCount)) *
             100;
         }
+        // console.log("perkies: atk", phase, perc, player.attacking.count);
       }
       if (player.attacking.count >= end) {
         phase = "off";
@@ -9333,17 +9349,6 @@ class App extends Component {
         y: player.currentPosition.cell.center.y,
       };
 
-      let stamAtkType = player.currentWeapon.type;
-      let chargeType = "normal";
-      if (player.attacking.charge > 0) {
-        chargeType = "charged";
-      }
-
-      if (player.currentWeapon.type === "") {
-        // this.players[player.number-1].attacking.limit = player.attacking.animRef.limit.unarmed;
-        attackPeak = player.attacking.animRef.peak.unarmed;
-        stamAtkType = "unarmed";
-      }
       let countCalcUp = Math.floor((player.attacking.limit - player.attacking.count) / 2);
       // console.log("beep", countCalcUp);
       // if (countCalcUp > 10) {
@@ -9394,14 +9399,9 @@ class App extends Component {
           y: player.currentPosition.cell.center.y,
         };
 
-        let defendType = player.currentWeapon.type;
-        if (player.currentWeapon.name === "") {
-          defendType = "unarmed";
-        }
-        let defendPeak =
-          player.defending.animRef.peak[defendType][player.defending.directionType];
-
-        let countCalcUp = Math.floor((player.defending.limit - defendPeak) / 2);
+        let countCalcUp = Math.floor(
+          (player.defending.limit - player.defending.peakCount) / 2
+        );
         // let countCalcUp = Math.floor(
         //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
         // );
@@ -13712,7 +13712,7 @@ class App extends Component {
           img: "",
         });
       }
-      // console.log("charging attack", player[action].charge);
+      console.log("charging attack", player[action].charge);
     };
 
     const feintAttack = () => {
@@ -13748,6 +13748,7 @@ class App extends Component {
           directionType: "", //thrust or slash
           animRef: player.attacking.animRef,
           peak: false,
+          peakCount: 0,
           charge: 0,
           chargePeak: false,
           blunt: false,
@@ -13834,7 +13835,11 @@ class App extends Component {
                 feintAttack();
               }
               if (inputDirection === player[action].direction) {
-                charge();
+                if (player[action].count > player[action].peakCount) {
+                  console.log("past peak. no charging");
+                } else {
+                  charge();
+                }
               }
             }
           }
@@ -16846,6 +16851,7 @@ class App extends Component {
           directionType: "", //thrust or slash
           animRef: player.attacking.animRef,
           peak: false,
+          peakCount: 0,
           charge: 0,
           chargePeak: false,
           blunt: false,
@@ -16893,6 +16899,7 @@ class App extends Component {
           limit: player.defending.limit,
           animRef: player.defending.animRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -18663,6 +18670,7 @@ class App extends Component {
               limit: this.players[player.number - 1].defending.limit,
               animRef: this.players[player.number - 1].defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -18736,6 +18744,7 @@ class App extends Component {
               limit: this.players[player.number - 1].defending.limit,
               animRef: this.players[player.number - 1].defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -18877,6 +18886,7 @@ class App extends Component {
               limit: this.players[player.number - 1].defending.limit,
               animRef: this.players[player.number - 1].defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -18954,6 +18964,7 @@ class App extends Component {
               limit: this.players[player.number - 1].defending.limit,
               animRef: this.players[player.number - 1].defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -23579,6 +23590,7 @@ class App extends Component {
           limit: player.defending.limit,
           animRef: player.defending.animRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -24212,6 +24224,7 @@ class App extends Component {
           limit: puller.defending.limit,
           animRef: puller.defending.animRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -24537,6 +24550,7 @@ class App extends Component {
         directionType: "", //thrust or slash
         animRef: this.attackAnimRef,
         peak: false,
+        peakCount: 0,
         charge: 0,
         chargePeak: false,
         blunt: false,
@@ -24552,6 +24566,7 @@ class App extends Component {
         limit: this.defendAnimRef.limit.sword.slash,
         animRef: this.defendAnimRef,
         peak: false,
+        peakCount: 0,
         decay: {
           state: false,
           count: 0,
@@ -24848,6 +24863,7 @@ class App extends Component {
       directionType: "", //thrust or slash
       animRef: this.attackAnimRef,
       peak: false,
+      peakCount: 0,
       charge: 0,
       chargePeak: false,
       blunt: false,
@@ -24863,6 +24879,7 @@ class App extends Component {
       limit: 4,
       animRef: this.defendAnimRef,
       peak: false,
+      peakCount: 0,
       decay: {
         state: false,
         count: 0,
@@ -25515,6 +25532,7 @@ class App extends Component {
           directionType: "", //thrust or slash
           animRef: this.attackAnimRef,
           peak: false,
+          peakCount: 0,
           charge: 0,
           chargePeak: false,
           blunt: false,
@@ -25530,6 +25548,7 @@ class App extends Component {
           limit: this.defendAnimRef.limit[currentWeapon.type].slash,
           animRef: this.defendAnimRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -26248,6 +26267,7 @@ class App extends Component {
             directionType: "", //thrust or slash
             animRef: this.attackAnimRef,
             peak: false,
+            peakCount: 0,
             charge: 0,
             chargePeak: false,
             blunt: false,
@@ -26263,6 +26283,7 @@ class App extends Component {
             limit: this.defendAnimRef.limit[currentWeapon.type].slash,
             animRef: this.defendAnimRef,
             peak: false,
+            peakCount: 0,
             decay: {
               state: false,
               count: 0,
@@ -33371,6 +33392,7 @@ class App extends Component {
             directionType: "", //thrust or slash
             animRef: player.attacking.animRef,
             peak: false,
+            peakCount: 0,
             charge: 0,
             chargePeak: false,
             blunt: false,
@@ -33388,6 +33410,7 @@ class App extends Component {
           limit: player.defending.limit,
           animRef: player.defending.animRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -33881,6 +33904,7 @@ class App extends Component {
                       directionType: "", //thrust or slash
                       animRef: player.attacking.animRef,
                       peak: false,
+                      peakCount: 0,
                       charge: 0,
                       chargePeak: false,
                       blunt: false,
@@ -33898,6 +33922,7 @@ class App extends Component {
                     limit: player.defending.limit,
                     animRef: player.defending.animRef,
                     peak: false,
+                    peakCount: 0,
                     decay: {
                       state: false,
                       count: 0,
@@ -34278,13 +34303,9 @@ class App extends Component {
           if (player.currentWeapon.name === "") {
             defendType = "unarmed";
           }
-          let defendPeak =
-            player.defending.animRef.peak[defendType][player.defending.directionType];
-          player.defending.limit =
-            player.defending.animRef.limit[defendType][player.defending.directionType];
 
           if (player.defending.decay.state !== true) {
-            if (player.defending.count < defendPeak) {
+            if (player.defending.count < player.defending.peakCount) {
               canFeint = true;
             }
           } else {
@@ -34302,6 +34323,7 @@ class App extends Component {
               limit: player.defending.limit,
               animRef: player.defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -34390,12 +34412,8 @@ class App extends Component {
           if (player.attacking.blunt === true) {
             blunt = "blunt";
           }
-          atkPeak =
-            player.attacking.animRef.peak[atkType][player.attacking.directionType][
-              chargeType
-            ];
 
-          if (player.attacking.count < atkPeak) {
+          if (player.attacking.count < player.attacking.peakCount) {
             // console.log('attack windup key release before peak. feinting. refund stamina part');
 
             player.action = "idle";
@@ -34408,6 +34426,7 @@ class App extends Component {
               directionType: "", //thrust or slash
               animRef: player.attacking.animRef,
               peak: false,
+              peakCount: 0,
               charge: 0,
               chargePeak: false,
               blunt: false,
@@ -34536,10 +34555,22 @@ class App extends Component {
             player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
               chargeType
             ];
+          if (
+            player.attacking.peakCount === 0 ||
+            player.attacking.peakCount !== attackPeak
+          ) {
+            console.log(
+              "attacking peakCoutn changed. was",
+              player.attacking.peakCount,
+              "now",
+              attackPeak
+            );
+            player.attacking.peakCount = attackPeak;
+          }
 
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
-            if (player.attacking.count < attackPeak) {
+            if (player.attacking.count < player.attacking.peakCount) {
               console.log(
                 "attack windup: direction",
                 player.attacking.direction,
@@ -34554,9 +34585,10 @@ class App extends Component {
                 "atk limit:",
                 player.attacking.limit
               );
+              player.attacking.peak = false;
+              player.attacking.chargePeak = false;
             }
-            player.attacking.peak = false;
-            player.attacking.chargePeak = false;
+
             player.action = "attacking";
             player.attacking.count++;
 
@@ -34745,9 +34777,10 @@ class App extends Component {
                 player.attacking.animRef.limit[stamAtkType][
                   player.attacking.directionType
                 ].charged;
+              player.attacking.peakCount = attackPeak;
             } else if (player.attacking.count === attackPeak) {
               executeAttack = true;
-
+              player.attacking.peakCount = attackPeak;
               // console.log("execute ", chargeType, " attack at peak normally");
             }
           } else {
@@ -34862,11 +34895,8 @@ class App extends Component {
           // ATTACK COOLDOWN AND END!
           if (
             executeAttack !== true &&
-            player.attacking.count > attackPeak &&
-            player.attacking.count <
-              player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-                chargeType
-              ]
+            player.attacking.count > player.attacking.peakCount &&
+            player.attacking.count < player.attacking.limit
           ) {
             // console.log(
             //   "attack cooldown: direction",
@@ -34887,12 +34917,7 @@ class App extends Component {
             player.attacking.blunt = false;
           }
 
-          if (
-            player.attacking.count >=
-            player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-              chargeType
-            ]
-          ) {
+          if (player.attacking.count >= player.attacking.limit) {
             player.attacking = {
               state: false,
               count: 0,
@@ -34902,6 +34927,7 @@ class App extends Component {
               directionType: "", //thrust or slash
               animRef: player.attacking.animRef,
               peak: false,
+              peakCount: 0,
               charge: 0,
               chargePeak: false,
               blunt: false,
@@ -34975,6 +35001,7 @@ class App extends Component {
           }
           let defendPeak =
             player.defending.animRef.peak[defendType][player.defending.directionType];
+          player.defending.peakCount = defendPeak;
           player.defending.limit =
             player.defending.animRef.limit[defendType][player.defending.directionType];
           if (
@@ -34984,15 +35011,15 @@ class App extends Component {
             player.defending.count++;
             player.action = "defending";
             player.defending.peak = false;
-            console.log(
-              "defend windup: count",
-              player.defending.count,
-              "peak",
-              defendPeak,
-              "direction & dir type",
-              player.defending.direction,
-              player.defending.directionType
-            );
+            // console.log(
+            //   "defend windup: count",
+            //   player.defending.count,
+            //   "peak",
+            //   defendPeak,
+            //   "direction & dir type",
+            //   player.defending.direction,
+            //   player.defending.directionType
+            // );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
                 state: false,
@@ -35039,19 +35066,19 @@ class App extends Component {
               }
 
               player = this.setElasticCounter("defending", "peak", false, player);
-              console.log(
-                "defend peak: count",
-                player.defending.count,
-                "peak",
-                defendPeak,
-                "direction & dir type",
-                player.defending.direction,
-                player.defending.directionType,
-                "decay:",
-                player.defending.decay.state,
-                player.defending.decay.count,
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend peak: count",
+              //   player.defending.count,
+              //   "peak",
+              //   defendPeak,
+              //   "direction & dir type",
+              //   player.defending.direction,
+              //   player.defending.directionType,
+              //   "decay:",
+              //   player.defending.decay.state,
+              //   player.defending.decay.count,
+              //   player.defending.decay.limit
+              // );
             }
             // OUT OF STAMINA
             else {
@@ -35063,6 +35090,7 @@ class App extends Component {
                 limit: player.defending.limit,
                 animRef: player.defending.animRef,
                 peak: false,
+                peakCount: 0,
                 decay: {
                   state: false,
                   count: 0,
@@ -35120,19 +35148,19 @@ class App extends Component {
                 });
               }
               player = this.setElasticCounter("defending", "decay", false, player);
-              console.log(
-                "defend decaying: count",
-                player.defending.count,
-                "peak",
-                defendPeak,
-                "direction & dir type",
-                player.defending.direction,
-                player.defending.directionType,
-                "decay count",
-                player.defending.decay.count,
-                "decay limit",
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend decaying: count",
+              //   player.defending.count,
+              //   "peak",
+              //   defendPeak,
+              //   "direction & dir type",
+              //   player.defending.direction,
+              //   player.defending.directionType,
+              //   "decay count",
+              //   player.defending.decay.count,
+              //   "decay limit",
+              //   player.defending.decay.limit
+              // );
             }
 
             if (player.defending.decay.count >= player.defending.decay.limit) {
@@ -35140,21 +35168,21 @@ class App extends Component {
               player.defending.decay.count = 0;
               player.defending.count = defendPeak + player.defending.decay.limit;
               // player.action = "idle";
-              console.log(
-                "defend decay limit. drop defense",
-                player.defending.state,
-                player.defending.count,
-                defendPeak,
-                player.defending.limit,
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend decay limit. drop defense",
+              //   player.defending.state,
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit,
+              //   player.defending.decay.limit
+              // );
 
-              if (player.popups.find((x) => x.msg === "defending")) {
-                player.popups.splice(
-                  player.popups.findIndex((x) => x.msg === "defending"),
-                  1
-                );
-              }
+              // if (player.popups.find((x) => x.msg === "defending")) {
+              //   player.popups.splice(
+              //     player.popups.findIndex((x) => x.msg === "defending"),
+              //     1
+              //   );
+              // }
             }
           }
 
@@ -35165,11 +35193,12 @@ class App extends Component {
           ) {
             if (player.defending.count < player.defending.limit) {
               player.defending.count++;
-              console.log(
-                "finishing defense after decay/ defense cooldown: count",
-                player.defending.count,
-                player.defending.limit
-              );
+              // console.log(
+              //   "finishing defense after decay/ defense cooldown: count",
+              //   player.defending.count,
+              //   player.defending.peakCount,
+              //   player.defending.limit
+              // );
             }
             if (player.defending.count >= player.defending.limit) {
               player.action = "idle";
@@ -35179,6 +35208,7 @@ class App extends Component {
                 limit: player.defending.limit,
                 animRef: player.defending.animRef,
                 peak: false,
+                peakCount: 0,
                 decay: {
                   state: false,
                   count: 0,
@@ -35187,6 +35217,13 @@ class App extends Component {
                 direction: "",
                 directionType: "", //thrust or slash
               };
+
+              if (player.popups.find((x) => x.msg === "defending")) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === "defending"),
+                  1
+                );
+              }
               console.log("defend coolodown complete");
             }
           }
@@ -42954,7 +42991,8 @@ class App extends Component {
                       popup.msg === "defending" ||
                       popup.msg === "prePush" ||
                       popup.msg === "prePull" ||
-                      popup.msg === "dodging"
+                      popup.msg === "dodging" ||
+                      popup.msg === "charging"
                     ) {
                       popupProgress = true;
                     }
@@ -43007,6 +43045,7 @@ class App extends Component {
                         5
                       );
                       context.fill();
+                      // console.log("playerPopupProgress init", perc);
                     }
 
                     if (writeValue === true) {
@@ -43137,7 +43176,8 @@ class App extends Component {
                         popup.msg === "defending" ||
                         popup.msg === "prePush" ||
                         popup.msg === "prePull" ||
-                        popup.msg === "dodging"
+                        popup.msg === "dodging" ||
+                        popup.msg === "charging"
                       ) {
                         popupProgress = true;
                       }
@@ -43189,6 +43229,11 @@ class App extends Component {
                           5
                         );
                         context.fill();
+                        // console.log(
+                        //   "playerPopupProgress continue",
+                        //   perc,
+                        //   this.popupSize * perc
+                        // );
                       }
 
                       if (writeValue === true) {
@@ -43211,6 +43256,30 @@ class App extends Component {
                           this.popupImgSize * 0.75
                         );
                       } else {
+                        if (player.action === "defending") {
+                          if (player.defending.peak === true) {
+                            popup.img = this.popupImageRef.defending_1;
+                          }
+                          if (player.defending.decay.state === true) {
+                            let prog =
+                              100 -
+                              (player.defending.decay.count /
+                                player.defending.decay.limit) *
+                                100;
+                            if (prog > 10) {
+                              popup.img = this.popupImageRef.defending_4;
+                            }
+                            if (prog > 30) {
+                              popup.img = this.popupImageRef.defending_3;
+                            }
+                            if (prog > 50) {
+                              popup.img = this.popupImageRef.defending_2;
+                            }
+                            if (prog > 70) {
+                              popup.img = this.popupImageRef.defending_1;
+                            }
+                          }
+                        }
                         context.drawImage(
                           popup.img,
                           popupDrawCoords.origin.x + centerPopupOffset,
