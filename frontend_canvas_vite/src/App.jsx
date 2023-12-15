@@ -13739,7 +13739,7 @@ class App extends Component {
           chargeType
         ];
 
-      if (player.attacking.count < atkPeak) {
+      if (player.attacking.count < player.attacking.peakCount) {
         // console.log('attack windup key release before peak. feinting. refund stamina part');
 
         player.action = "idle";
@@ -13853,7 +13853,7 @@ class App extends Component {
           }
         }
       }
-      console.log("direction input thresh", directionalInputThresh);
+      console.log("directional input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
@@ -13889,12 +13889,17 @@ class App extends Component {
             player[action].directionType = "slash";
           }
           if (player[action].count > defendInputThresh) {
-            console.log(
-              "too late to change defend direction: count",
-              player[action].count,
-              "thresh",
-              defendInputThresh
-            );
+            if (player[action].direction !== "") {
+              if (player[action].direction !== inputDirection) {
+                console.log(
+                  "too late to change defend direction: count",
+                  player[action].count,
+                  "thresh",
+                  defendInputThresh
+                );
+              }
+            }
+
             if (player[action].direction === "" || player[action].directionType === "") {
               player[action].direction = "none";
               player[action].directionType = "thrust";
@@ -13908,6 +13913,7 @@ class App extends Component {
             }
           }
         }
+        console.log("directional input thresh", defendInputThresh);
       }
     }
 
@@ -34362,12 +34368,12 @@ class App extends Component {
             ) {
               player.elasticCounter.state = false;
             }
-            // console.log("defend feinted");
+            console.log("defend feinted");
           } else {
             if (player.defending.peak === true) {
-              // console.log("peak defense. cant feint");
+              console.log("peak defense. cant feint");
             } else {
-              // console.log("too late to feint defense");
+              console.log("too late to feint defense");
             }
           }
         }
@@ -34564,12 +34570,17 @@ class App extends Component {
           let blunt = "normal";
           if (player.attacking.blunt === true) {
             blunt = "blunt";
+            console.log("blunt attack");
           }
 
-          attackPeak =
-            player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
-              chargeType
-            ];
+          if (player.attacking.directionType === "") {
+            attackPeak = 0;
+          } else {
+            attackPeak =
+              player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
+                chargeType
+              ];
+          }
 
           if (
             player.attacking.peakCount === 0 ||
@@ -34629,7 +34640,7 @@ class App extends Component {
               player.dodging.state === true ||
               this.keyPressed[player.number - 1].dodge === true
             ) {
-              // console.log('was attacking then pressed dodging. blunt attack');
+              console.log("was attacking then pressed dodging. blunt attack");
 
               if (player.attacking.blunt !== true) {
                 player.dodging = {
@@ -34822,7 +34833,8 @@ class App extends Component {
                 "execute ",
                 chargeType,
                 " attack at peak normally",
-                player.attacking.charge
+                player.attacking.charge,
+                player.attacking.blunt
               );
             }
           } else {
@@ -35031,6 +35043,7 @@ class App extends Component {
           if (player.currentWeapon.name === "") {
             defendType = "unarmed";
           }
+
           let defendPeak =
             player.defending.animRef.peak[defendType][player.defending.directionType];
           player.defending.peakCount = defendPeak;
@@ -35043,15 +35056,14 @@ class App extends Component {
             player.defending.count++;
             player.action = "defending";
             player.defending.peak = false;
-            // console.log(
-            //   "defend windup: count",
-            //   player.defending.count,
-            //   "peak",
-            //   defendPeak,
-            //   "direction & dir type",
-            //   player.defending.direction,
-            //   player.defending.directionType
-            // );
+            console.log(
+              "defend windup:",
+              player.defending.direction,
+              "counts",
+              player.defending.count,
+              defendPeak,
+              player.defending.limit
+            );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
                 state: false,
@@ -35098,19 +35110,18 @@ class App extends Component {
               }
 
               player = this.setElasticCounter("defending", "peak", false, player);
-              // console.log(
-              //   "defend peak: count",
-              //   player.defending.count,
-              //   "peak",
-              //   defendPeak,
-              //   "direction & dir type",
-              //   player.defending.direction,
-              //   player.defending.directionType,
-              //   "decay:",
-              //   player.defending.decay.state,
-              //   player.defending.decay.count,
-              //   player.defending.decay.limit
-              // );
+              console.log(
+                "defend peak:",
+                player.defending.direction,
+                "counts",
+                player.defending.count,
+                defendPeak,
+                player.defending.limit,
+                "decay:",
+                player.defending.decay.state,
+                player.defending.decay.count,
+                player.defending.decay.limit
+              );
             }
             // OUT OF STAMINA
             else {
@@ -35180,41 +35191,32 @@ class App extends Component {
                 });
               }
               player = this.setElasticCounter("defending", "decay", false, player);
-              // console.log(
-              //   "defend decaying: count",
-              //   player.defending.count,
-              //   "peak",
-              //   defendPeak,
-              //   "direction & dir type",
-              //   player.defending.direction,
-              //   player.defending.directionType,
-              //   "decay count",
-              //   player.defending.decay.count,
-              //   "decay limit",
-              //   player.defending.decay.limit
-              // );
+              console.log(
+                "defend decay:",
+                player.defending.direction,
+                "counts",
+                player.defending.count,
+                defendPeak,
+                player.defending.limit,
+                "decay:",
+                player.defending.decay.state,
+                player.defending.decay.count,
+                player.defending.decay.limit
+              );
             }
 
             if (player.defending.decay.count >= player.defending.decay.limit) {
               player.defending.decay.state = false;
               player.defending.decay.count = 0;
               player.defending.count = defendPeak + player.defending.decay.limit;
-              // player.action = "idle";
-              // console.log(
-              //   "defend decay limit. drop defense",
-              //   player.defending.state,
-              //   player.defending.count,
-              //   defendPeak,
-              //   player.defending.limit,
-              //   player.defending.decay.limit
-              // );
-
-              // if (player.popups.find((x) => x.msg === "defending")) {
-              //   player.popups.splice(
-              //     player.popups.findIndex((x) => x.msg === "defending"),
-              //     1
-              //   );
-              // }
+              console.log(
+                "defend decay end:",
+                player.defending.direction,
+                "counts",
+                player.defending.count,
+                defendPeak,
+                player.defending.limit
+              );
             }
           }
 
@@ -35225,12 +35227,14 @@ class App extends Component {
           ) {
             if (player.defending.count < player.defending.limit) {
               player.defending.count++;
-              // console.log(
-              //   "finishing defense after decay/ defense cooldown: count",
-              //   player.defending.count,
-              //   player.defending.peakCount,
-              //   player.defending.limit
-              // );
+              console.log(
+                "defend cooldown:",
+                player.defending.direction,
+                "counts",
+                player.defending.count,
+                defendPeak,
+                player.defending.limit
+              );
             }
             if (player.defending.count >= player.defending.limit) {
               player.action = "idle";
@@ -35256,7 +35260,7 @@ class App extends Component {
                   1
                 );
               }
-              console.log("defend coolodown complete");
+              console.log("defend end");
             }
           }
         }
