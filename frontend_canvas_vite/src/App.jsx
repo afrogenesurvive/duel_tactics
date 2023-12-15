@@ -13809,16 +13809,17 @@ class App extends Component {
           if (player[action].count < directionalInputThresh) {
             if (input === true) {
               // console.log("y");
-              // if (inputDirection === player[action].direction) {
-              //   charge();
-              // } else {
-              //   console.log("still time to set attack direction. changing direction");
-              //   player[action].direction = inputDirection;
-              //   player[action].directionType = "slash";
-              // }
-              console.log("still time to set attack direction. changing direction");
-              player[action].direction = inputDirection;
-              player[action].directionType = "slash";
+              if (inputDirection === player[action].direction) {
+                // charge();
+              } else {
+                console.log(
+                  "still time to set attack direction. changing direction",
+                  player[action].direction,
+                  inputDirection
+                );
+                player[action].direction = inputDirection;
+                player[action].directionType = "slash";
+              }
             } else {
               if (
                 player[action].direction === "" ||
@@ -34551,18 +34552,24 @@ class App extends Component {
             blunt = "blunt";
           }
 
-          attackPeak =
-            player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
-              chargeType
-            ];
-          player.attacking.limit =
-            player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-              chargeType
-            ];
+          if (
+            player.attacking.limit === 0 ||
+            player.attacking.count < player.attacking.peakCount
+          ) {
+            attackPeak =
+              player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
+                chargeType
+              ];
+          }
+          // attackPeak =
+          //     player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
+          //       chargeType
+          //     ];
+
           if (
             player.attacking.peakCount === 0 ||
-            player.attacking.peakCount < attackPeak
-            // player.attacking.peakCount !== attackPeak
+            // player.attacking.count < attackPeak
+            player.attacking.peakCount !== attackPeak
           ) {
             console.log(
               "attacking peakCount changed. was",
@@ -34572,6 +34579,20 @@ class App extends Component {
             );
             player.attacking.peakCount = attackPeak;
           }
+
+          if (
+            player.attacking.limit === 0 ||
+            player.attacking.count < player.attacking.peakCount
+          ) {
+            player.attacking.limit =
+              player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
+                chargeType
+              ];
+          }
+          // player.attacking.limit =
+          //   player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
+          //     chargeType
+          //   ];
 
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
@@ -34761,7 +34782,10 @@ class App extends Component {
               player.attacking.charge > 0 &&
               player.attacking.count >
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                  .normal
+                  .normal &&
+              player.attacking.count <
+                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
+                  .charged
             ) {
               console.log(
                 "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
@@ -34952,7 +34976,7 @@ class App extends Component {
               );
             }
 
-            // console.log("attack end");
+            console.log("attack end");
           }
         }
         // CLASHING
