@@ -13853,7 +13853,7 @@ class App extends Component {
           }
         }
       }
-      console.log("directional input thresh", directionalInputThresh);
+      // console.log("directional input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
@@ -13913,7 +13913,7 @@ class App extends Component {
             }
           }
         }
-        console.log("directional input thresh", defendInputThresh);
+        // console.log("directional input thresh", defendInputThresh);
       }
     }
 
@@ -34570,7 +34570,7 @@ class App extends Component {
           let blunt = "normal";
           if (player.attacking.blunt === true) {
             blunt = "blunt";
-            console.log("blunt attack");
+            // console.log("blunt attack");
           }
 
           if (player.attacking.directionType === "") {
@@ -36479,7 +36479,7 @@ class App extends Component {
               }
             }
             if (keyPressedDirection === player.direction) {
-              console.log("!! dodge roll key combo!!");
+              console.log("!! dodge roll key combo!! or kick");
             } else {
               // console.log('cant flank2');
             }
@@ -37148,15 +37148,20 @@ class App extends Component {
             this.keyPressed[player.number - 1].attack !== true &&
             this.keyPressed[player.number - 1].defend !== true
           ) {
-            if (player.dodging.state !== true && player.dodging.countState !== true) {
-              // console.log('start dodge wind up');
-              player.dodging.countState = true;
+            if (player.attacking.state !== true && player.defending.state !== true) {
+              if (player.dodging.state !== true && player.dodging.countState !== true) {
+                console.log("start dodge wind up");
+                player.dodging.countState = true;
 
-              if (plyrPullPushed === true) {
-                breakPulledPushed = true;
+                if (plyrPullPushed === true) {
+                  breakPulledPushed = true;
+                }
+              }
+              if (player.dodging.state === true || player.dodging.countState === true) {
+                console.log("already dodging");
               }
             } else {
-              // console.log('already dodging');
+              console.log("cant dodge while already attacking or defending");
             }
           }
 
