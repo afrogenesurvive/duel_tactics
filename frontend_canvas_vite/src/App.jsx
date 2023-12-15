@@ -9098,6 +9098,10 @@ class App extends Component {
         phase = "off";
       }
     }
+    if (popup.msg === "charging") {
+      phase = "windup";
+      perc = (player.attacking.charge / 33) * 100;
+    }
 
     if (phase === "windup") {
       fillPath = true;
@@ -13712,7 +13716,7 @@ class App extends Component {
           img: "",
         });
       }
-      console.log("charging attack", player[action].charge);
+      // console.log("charging attack", player[action].charge);
     };
 
     const feintAttack = () => {
@@ -34419,7 +34423,10 @@ class App extends Component {
           }
 
           if (player.attacking.count < player.attacking.peakCount) {
-            // console.log('attack windup key release before peak. feinting. refund stamina part');
+            console
+              .log
+              // "attack windup key release before peak. feinting. refund stamina part"
+              ();
 
             player.action = "idle";
             player.attacking = {
@@ -34455,6 +34462,13 @@ class App extends Component {
             if (popup) {
               player.popups.splice(
                 player.popups.findIndex((x) => x.msg === "attacking"),
+                1
+              );
+            }
+            popup = player.popups.find((x) => x.msg === "charging");
+            if (popup) {
+              player.popups.splice(
+                player.popups.findIndex((x) => x.msg === "charging"),
                 1
               );
             }
@@ -34562,12 +34576,12 @@ class App extends Component {
             player.attacking.count < player.attacking.peakCount
             // chargeType === "charged"
           ) {
-            console.log(
-              "attacking peakCount changed. was",
-              player.attacking.peakCount,
-              "now",
-              attackPeak
-            );
+            // console.log(
+            //   "attacking peakCount changed. was",
+            //   player.attacking.peakCount,
+            //   "now",
+            //   attackPeak
+            // );
             player.attacking.peakCount = attackPeak;
           }
 
@@ -34576,14 +34590,14 @@ class App extends Component {
             player.attacking.count < player.attacking.peakCount
             // chargeType === "charged"
           ) {
-            console.log(
-              "attacking limit changed. was",
-              player.attacking.limit,
-              "now",
-              player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-                chargeType
-              ]
-            );
+            // console.log(
+            //   "attacking limit changed. was",
+            //   player.attacking.limit,
+            //   "now",
+            //   player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
+            //     chargeType
+            //   ]
+            // );
             player.attacking.limit =
               player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
                 chargeType
@@ -34804,7 +34818,12 @@ class App extends Component {
             } else if (player.attacking.count === attackPeak) {
               executeAttack = true;
               player.attacking.peakCount = attackPeak;
-              console.log("execute ", chargeType, " attack at peak normally");
+              console.log(
+                "execute ",
+                chargeType,
+                " attack at peak normally",
+                player.attacking.charge
+              );
             }
           } else {
             // console.log("attack peak already reached/passed");
