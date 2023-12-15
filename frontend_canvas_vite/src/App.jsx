@@ -36129,9 +36129,9 @@ class App extends Component {
             //   " move step: ",
             //   player.moving.step
             // );
-            console.log("flanking step 1: ");
+            // console.log("flanking step 1: ");
             // console.log("2", player.currentPosition.cell.number);
-
+            let continueFlank = false;
             if (
               this.keyPressed[player.number - 1].north === true ||
               this.keyPressed[player.number - 1].south === true ||
@@ -36142,6 +36142,7 @@ class App extends Component {
                 console.log(
                   "already flanking in this direction. no move interrupt. continue flank"
                 );
+                continueFlank = true;
               } else {
                 console.log(
                   "flanking cancelled by move input!",
@@ -36188,6 +36189,10 @@ class App extends Component {
                 }
               }
             } else {
+              continueFlank = true;
+            }
+
+            if (continueFlank === true) {
               let target = this.getTarget(player);
 
               let myCell = this.gridInfo.find(
