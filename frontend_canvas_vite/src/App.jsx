@@ -34552,24 +34552,15 @@ class App extends Component {
             blunt = "blunt";
           }
 
-          if (
-            player.attacking.limit === 0 ||
-            player.attacking.count < player.attacking.peakCount
-          ) {
-            attackPeak =
-              player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
-                chargeType
-              ];
-          }
-          // attackPeak =
-          //     player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
-          //       chargeType
-          //     ];
+          attackPeak =
+            player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
+              chargeType
+            ];
 
           if (
             player.attacking.peakCount === 0 ||
-            // player.attacking.count < attackPeak
-            player.attacking.peakCount !== attackPeak
+            player.attacking.count < player.attacking.peakCount
+            // chargeType === "charged"
           ) {
             console.log(
               "attacking peakCount changed. was",
@@ -34583,16 +34574,21 @@ class App extends Component {
           if (
             player.attacking.limit === 0 ||
             player.attacking.count < player.attacking.peakCount
+            // chargeType === "charged"
           ) {
+            console.log(
+              "attacking limit changed. was",
+              player.attacking.limit,
+              "now",
+              player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
+                chargeType
+              ]
+            );
             player.attacking.limit =
               player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
                 chargeType
               ];
           }
-          // player.attacking.limit =
-          //   player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-          //     chargeType
-          //   ];
 
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
