@@ -13787,8 +13787,39 @@ class App extends Component {
         player[action].animRef.peak.unarmed.thrust.normal / 2
       );
       if (player.currentWeapon.type === "crossbow") {
-        player[action].direction = "none";
-        player[action].directionType = "thrust";
+        if (mode === "init") {
+          player[action].direction = "none";
+          player[action].directionType = "thrust";
+        }
+        if (mode === "windup") {
+          if (player[action].count < directionalInputThresh) {
+            if (input === true) {
+              if (inputDirection === player.direction) {
+                player[action].direction = inputDirection;
+                player[action].directionType = "slash";
+              } else {
+                console.log(
+                  "crossbow directional atk & charge can only be in player direction"
+                );
+              }
+            }
+          } else {
+            if (input === true) {
+              // console.log("input thresh passed.");
+              if (inputDirection !== player[action].direction) {
+                console.log("input after thresh w/ different direction. feint attack");
+                feintAttack();
+              }
+              if (inputDirection === player[action].direction) {
+                if (player[action].count > player[action].peakCount) {
+                  console.log("past peak. no charging");
+                } else {
+                  charge();
+                }
+              }
+            }
+          }
+        }
       } else {
         if (mode === "init") {
           if (input === true) {
