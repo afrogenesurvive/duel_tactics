@@ -9618,7 +9618,7 @@ class App extends Component {
       y: undefined,
     };
 
-    let getMod = (direction, unit2) => {
+    const getMod = (direction, unit2) => {
       let mod2 = mod;
       switch (direction) {
         case "north":
@@ -9649,6 +9649,93 @@ class App extends Component {
       }
 
       return mod2;
+    };
+
+    const finish = (base2, unit2) => {
+      switch (this.gridWidth) {
+        case 12:
+          unit2 = base2 / 1.5;
+          break;
+        case 9:
+          unit2 = base2;
+          break;
+        case 6:
+          unit2 = base2 * 2;
+          break;
+        case 3:
+          unit2 = base2 * 6;
+          break;
+        default:
+      }
+
+      let dir = data.elasticCounter.direction;
+      let baseCoords = {
+        x: data.elasticCounter.coords.x,
+        y: data.elasticCounter.coords.y,
+      };
+
+      if (data.elasticCounter.countUp.state === true) {
+        dir = data.elasticCounter.direction;
+      }
+      if (data.elasticCounter.countDown.state === true) {
+        dir = this.getOppositeDirection(data.elasticCounter.direction);
+      }
+
+      mod = getMod(dir, unit2);
+
+      if (data.elasticCounter.pause.state !== true) {
+        finalCoords = {
+          x: baseCoords.x + mod.x,
+          y: baseCoords.y + mod.y,
+        };
+      } else {
+        finalCoords = {
+          x: baseCoords.x,
+          y: baseCoords.y,
+        };
+      }
+
+      let targetCell;
+      data.elasticCounter.coords = finalCoords;
+
+      targetCell = this.getCellFromDirection(
+        1,
+        data.currentPosition.cell.number,
+        data.elasticCounter.direction
+      );
+      let targetCellRef = this.gridInfo.find(
+        (x) => x.number.x === targetCell.x && x.number.y === targetCell.y
+      );
+      drawCell = { x: undefined, y: undefined };
+
+      if (data.elasticCounter.countUp.state === true) {
+        if (targetCellRef) {
+          drawCell = targetCellRef.number;
+        } else {
+          drawCell = data.currentPosition.cell.number;
+        }
+      }
+      if (
+        data.elasticCounter.pause.state === true &&
+        data.elasticCounter.pause.type === "peak"
+      ) {
+        if (targetCellRef) {
+          drawCell = targetCellRef.number;
+        } else {
+          drawCell = data.currentPosition.cell.number;
+        }
+      }
+      if (data.elasticCounter.countDown.state === true) {
+        drawCell = data.currentPosition.cell.number;
+      }
+      if (
+        (data.elasticCounter.pause.state === true &&
+          data.elasticCounter.pause.type === "start") ||
+        (data.elasticCounter.pause.state === true &&
+          data.elasticCounter.pause.type === "end")
+      ) {
+        drawCell = data.currentPosition.cell.number;
+      }
     };
 
     if (type === "halfPushBack") {
@@ -9746,7 +9833,7 @@ class App extends Component {
           drawCell = data.currentPosition.cell.number;
         }
 
-        this.players[data.number - 1] = data;
+        // this.players[data.number - 1] = data;
       }
       if (subType === "obstacle") {
         if (data.countUp.state === true) {
@@ -9779,92 +9866,7 @@ class App extends Component {
         base = 0.002;
       }
 
-      switch (this.gridWidth) {
-        case 12:
-          unit = base / 1.5;
-          break;
-        case 9:
-          unit = base;
-          break;
-        case 6:
-          unit = base * 2;
-          break;
-        case 3:
-          unit = base * 6;
-          break;
-        default:
-      }
-
-      let dir = data.elasticCounter.direction;
-      let baseCoords = {
-        x: data.elasticCounter.coords.x,
-        y: data.elasticCounter.coords.y,
-      };
-
-      if (data.elasticCounter.countUp.state === true) {
-        dir = data.elasticCounter.direction;
-      }
-      if (data.elasticCounter.countDown.state === true) {
-        dir = this.getOppositeDirection(data.elasticCounter.direction);
-      }
-
-      mod = getMod(dir, unit);
-
-      if (data.elasticCounter.pause.state !== true) {
-        finalCoords = {
-          x: baseCoords.x + mod.x,
-          y: baseCoords.y + mod.y,
-        };
-      } else {
-        finalCoords = {
-          x: baseCoords.x,
-          y: baseCoords.y,
-        };
-      }
-
-      let targetCell;
-      data.elasticCounter.coords = finalCoords;
-
-      targetCell = this.getCellFromDirection(
-        1,
-        data.currentPosition.cell.number,
-        data.elasticCounter.direction
-      );
-      let targetCellRef = this.gridInfo.find(
-        (x) => x.number.x === targetCell.x && x.number.y === targetCell.y
-      );
-      drawCell = { x: undefined, y: undefined };
-
-      if (data.elasticCounter.countUp.state === true) {
-        if (targetCellRef) {
-          drawCell = targetCellRef.number;
-        } else {
-          drawCell = data.currentPosition.cell.number;
-        }
-      }
-      if (
-        data.elasticCounter.pause.state === true &&
-        data.elasticCounter.pause.type === "peak"
-      ) {
-        if (targetCellRef) {
-          drawCell = targetCellRef.number;
-        } else {
-          drawCell = data.currentPosition.cell.number;
-        }
-      }
-      if (data.elasticCounter.countDown.state === true) {
-        drawCell = data.currentPosition.cell.number;
-      }
-      if (
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "start") ||
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "end")
-      ) {
-        drawCell = data.currentPosition.cell.number;
-      }
-
-      this.players[data.number - 1] = data;
+      finish(base, unit);
     }
 
     if (type === "dodging") {
@@ -9884,95 +9886,7 @@ class App extends Component {
         base = 0.002;
       }
 
-      switch (this.gridWidth) {
-        case 12:
-          unit = base / 1.5;
-          break;
-        case 9:
-          unit = base;
-          break;
-        case 6:
-          unit = base * 2;
-          break;
-        case 3:
-          unit = base * 6;
-          break;
-        default:
-      }
-
-      // console.log('unit',unit);
-      let dir = data.elasticCounter.direction;
-      let baseCoords = {
-        x: data.elasticCounter.coords.x,
-        y: data.elasticCounter.coords.y,
-      };
-
-      if (data.elasticCounter.countUp.state === true) {
-        dir = data.elasticCounter.direction;
-      }
-      if (data.elasticCounter.countDown.state === true) {
-        dir = this.getOppositeDirection(data.elasticCounter.direction);
-      }
-
-      mod = getMod(dir, unit);
-
-      if (data.elasticCounter.pause.state !== true) {
-        finalCoords = {
-          x: baseCoords.x + mod.x,
-          y: baseCoords.y + mod.y,
-        };
-      } else {
-        finalCoords = {
-          x: baseCoords.x,
-          y: baseCoords.y,
-        };
-      }
-
-      // console.log('calcElasticCountCoords',baseCoords,'plyr coords',data.elasticCounter.coords,'mod',mod,'dir',dir,data.elasticCounter.direction);
-
-      let targetCell;
-      data.elasticCounter.coords = finalCoords;
-
-      targetCell = this.getCellFromDirection(
-        1,
-        data.currentPosition.cell.number,
-        data.elasticCounter.direction
-      );
-      let targetCellRef = this.gridInfo.find(
-        (x) => x.number.x === targetCell.x && x.number.y === targetCell.y
-      );
-      drawCell = { x: undefined, y: undefined };
-
-      if (data.elasticCounter.countUp.state === true) {
-        if (targetCellRef) {
-          drawCell = targetCellRef.number;
-        } else {
-          drawCell = data.currentPosition.cell.number;
-        }
-      }
-      if (
-        data.elasticCounter.pause.state === true &&
-        data.elasticCounter.pause.type === "peak"
-      ) {
-        if (targetCellRef) {
-          drawCell = targetCellRef.number;
-        } else {
-          drawCell = data.currentPosition.cell.number;
-        }
-      }
-      if (data.elasticCounter.countDown.state === true) {
-        drawCell = data.currentPosition.cell.number;
-      }
-      if (
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "start") ||
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "end")
-      ) {
-        drawCell = data.currentPosition.cell.number;
-      }
-
-      this.players[data.number - 1] = data;
+      finish(base, unit);
     }
 
     if (type === "attacking") {
@@ -9992,97 +9906,13 @@ class App extends Component {
         base = 0.0008;
       }
 
-      switch (this.gridWidth) {
-        case 12:
-          unit = base / 1.5;
-          break;
-        case 9:
-          unit = base;
-          break;
-        case 6:
-          unit = base * 2;
-          break;
-        case 3:
-          unit = base * 6;
-          break;
-        default:
-      }
-
-      let dir = data.elasticCounter.direction;
-      let baseCoords = {
-        x: data.elasticCounter.coords.x,
-        y: data.elasticCounter.coords.y,
-      };
-
-      if (data.elasticCounter.countUp.state === true) {
-        dir = data.elasticCounter.direction;
-      }
-      if (data.elasticCounter.countDown.state === true) {
-        dir = this.getOppositeDirection(data.elasticCounter.direction);
-      }
-
-      mod = getMod(dir, unit);
-
-      if (data.elasticCounter.pause.state !== true) {
-        finalCoords = {
-          x: baseCoords.x + mod.x,
-          y: baseCoords.y + mod.y,
-        };
-      } else {
-        finalCoords = {
-          x: baseCoords.x,
-          y: baseCoords.y,
-        };
-      }
-
-      let targetCell;
-      data.elasticCounter.coords = finalCoords;
-
-      targetCell = this.getCellFromDirection(
-        1,
-        data.currentPosition.cell.number,
-        data.elasticCounter.direction
-      );
-      let targetCellRef = this.gridInfo.find(
-        (x) => x.number.x === targetCell.x && x.number.y === targetCell.y
-      );
-      drawCell = { x: undefined, y: undefined };
-
-      if (data.elasticCounter.countUp.state === true) {
-        if (targetCellRef) {
-          drawCell = targetCellRef.number;
-        } else {
-          drawCell = data.currentPosition.cell.number;
-        }
-      }
-      if (
-        data.elasticCounter.pause.state === true &&
-        data.elasticCounter.pause.type === "peak"
-      ) {
-        if (targetCellRef) {
-          drawCell = targetCellRef.number;
-        } else {
-          drawCell = data.currentPosition.cell.number;
-        }
-      }
-      if (data.elasticCounter.countDown.state === true) {
-        drawCell = data.currentPosition.cell.number;
-      }
-      if (
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "start") ||
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "end")
-      ) {
-        drawCell = data.currentPosition.cell.number;
-      }
-
-      this.players[data.number - 1] = data;
+      finish(base, unit);
     }
 
     return {
       coords: finalCoords,
       drawCell: drawCell,
+      player: data,
     };
   };
 
@@ -41440,6 +41270,7 @@ class App extends Component {
           }
 
           //PLAYER DEPTH SORTING!!
+          let elasticCountCalcResult;
 
           // IN-GRID MOVING & MID STRAFE KEY RELEASE
           if (
@@ -41600,16 +41431,14 @@ class App extends Component {
               plyr.halfPushBack.state === true &&
               plyr.success.deflected.state !== true
             ) {
-              let finalCoords = this.calcElasticCountCoords(
+              elasticCountCalcResult = this.calcElasticCountCoords(
                 "halfPushBack",
                 "player",
                 plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "halfPushBack",
-                "player",
-                plyr
-              ).drawCell;
+              );
+              let finalCoords = elasticCountCalcResult.coords;
+              let drawCell = elasticCountCalcResult.drawCell;
+              plyr = elasticCountCalcResult.player;
 
               if (x === 0 && y === 0) {
                 // this.testDraw.push({
@@ -41916,16 +41745,14 @@ class App extends Component {
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "attacking"
             ) {
-              let finalCoords = this.calcElasticCountCoords(
+              elasticCountCalcResult = this.calcElasticCountCoords(
                 "attacking",
                 "player",
                 plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "attacking",
-                "player",
-                plyr
-              ).drawCell;
+              );
+              let finalCoords = elasticCountCalcResult.coords;
+              let drawCell = elasticCountCalcResult.drawCell;
+              plyr = elasticCountCalcResult.player;
               finalCoords.x -= 5;
               finalCoords.y -= 10;
 
@@ -42101,16 +41928,15 @@ class App extends Component {
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "defending"
             ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "attacking",
+              elasticCountCalcResult = this.calcElasticCountCoords(
+                "defending",
                 "player",
                 plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "attacking",
-                "player",
-                plyr
-              ).drawCell;
+              );
+              let finalCoords = elasticCountCalcResult.coords;
+              let drawCell = elasticCountCalcResult.drawCell;
+              plyr = elasticCountCalcResult.player;
+
               finalCoords.x -= 5;
               finalCoords.y -= 10;
 
@@ -42642,16 +42468,14 @@ class App extends Component {
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "deflected"
             ) {
-              let finalCoords = this.calcElasticCountCoords(
+              elasticCountCalcResult = this.calcElasticCountCoords(
                 "deflected",
                 "player",
                 plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "deflected",
-                "player",
-                plyr
-              ).drawCell;
+              );
+              let finalCoords = elasticCountCalcResult.coords;
+              let drawCell = elasticCountCalcResult.drawCell;
+              plyr = elasticCountCalcResult.player;
               finalCoords.x -= 5;
               finalCoords.y -= 10;
 
@@ -42778,16 +42602,14 @@ class App extends Component {
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "dodging"
             ) {
-              let finalCoords = this.calcElasticCountCoords(
+              elasticCountCalcResult = this.calcElasticCountCoords(
                 "dodging",
                 "player",
                 plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "dodging",
-                "player",
-                plyr
-              ).drawCell;
+              );
+              let finalCoords = elasticCountCalcResult.coords;
+              let drawCell = elasticCountCalcResult.drawCell;
+              plyr = elasticCountCalcResult.player;
               finalCoords.x -= 5;
               finalCoords.y -= 10;
 
