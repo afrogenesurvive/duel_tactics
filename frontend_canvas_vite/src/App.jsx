@@ -7499,7 +7499,11 @@ class App extends Component {
     }
 
     if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
-      if (args === "attackFocusBreak" || args === "zoomreset") {
+      if (
+        args === "attackFocusBreak" ||
+        args === "defendFocusBreak" ||
+        args === "zoomreset"
+      ) {
         if (this.camera.instructions.length > 0) {
           if (
             this.camera.instructions[this.camera.instructions.length - 1].action ===
@@ -7719,7 +7723,93 @@ class App extends Component {
         }
 
         break;
+      case "defendFocus":
+        weaponType = "melee";
+        if (prePanZoom === true) {
+          this.camera.preInstructions.push("zoom_in_" + prePanZoomAmount + "");
+        }
+
+        if (livingHumanPlayerCount === 1) {
+          this.camera.preInstructions.push(
+            "moveTo_" +
+              player.currentPosition.cell.number.x +
+              "_" +
+              player.currentPosition.cell.number.y +
+              "_fast"
+            // 'waitFor_50',
+          );
+
+          if (weaponType === "melee") {
+            getZoom(weaponType);
+          }
+        }
+
+        if (livingHumanPlayerCount === 2) {
+          // twoPlayerCalc();
+          getPath()
+            .then((pathSet) => {
+              // console.log('Path set:', pathSet);
+              parsedPreInstructions = pathSet;
+
+              finish();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+
+          let finish = () => {
+            this.autoCamPanWaitingForPath = false;
+            // console.log('parsedPreInstructions',parsedPreInstructions);
+
+            if (parsedPreInstructions.length < 4) {
+              // console.log('attack focus auto cam: 2 players in close range');
+
+              if (prePanZoom === true) {
+                this.camera.preInstructions.push("zoom_in_" + prePanZoomAmount + "");
+              }
+
+              if (weaponType === "melee") {
+                this.camera.preInstructions.push(
+                  "moveTo_" +
+                    player.currentPosition.cell.number.x +
+                    "_" +
+                    player.currentPosition.cell.number.y +
+                    "_fast"
+                );
+
+                getZoom(weaponType);
+              }
+            } else {
+              // console.log('attack focus auto cam: 2 players at a distance');
+
+              // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
+
+              let intermediateCell =
+                this.getIntermediateCellByArea(parsedPreInstructions);
+
+              this.camera.preInstructions.push(
+                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
+                // 'waitFor_50',
+              );
+
+              getZoom("ranged");
+            }
+          };
+        }
+
+        break;
       case "attackFocusBreak":
+        this.autoCamPanWaitingForPath = false;
+        if (this.camera.zoom.x - 1 > this.zoomThresh) {
+          if (reset === true && attackFocusBreakZoomCorrection !== "") {
+            this.camera.preInstructions.push(attackFocusBreakZoomCorrection);
+          } else {
+            let zoomDifference = 0;
+            this.camera.preInstructions.push("zoom_outToInit");
+          }
+        }
+        break;
+      case "defendFocusBreak":
         this.autoCamPanWaitingForPath = false;
         if (this.camera.zoom.x - 1 > this.zoomThresh) {
           if (reset === true && attackFocusBreakZoomCorrection !== "") {
@@ -34368,6 +34458,11 @@ class App extends Component {
             ) {
               player.elasticCounter.state = false;
             }
+
+            if (this.camera.customView.state !== true && player.ai.state !== true) {
+              this.setAutoCamera("defendFocusBreak", player);
+            }
+
             console.log("defend feinted");
           } else {
             if (player.defending.peak === true) {
@@ -35075,6 +35170,27 @@ class App extends Component {
                 img: "",
               });
             }
+
+            if (player.defending.count <= 2) {
+              // CAMERA DEFEND FOCUS
+              if (
+                this.camera.customView.state !== true &&
+                this.settingAutoCamera === false &&
+                player.ai.state !== true &&
+                this.camera.preInstructions.length === 0 &&
+                this.camera.instructions.length === 0
+              ) {
+                if (this.players[0].dead.state !== true) {
+                  if (player.number === 1) {
+                    this.setAutoCamera("defendFocus", player);
+                  }
+                } else if (player.number === 2) {
+                  this.setAutoCamera("defendFocus", player);
+                }
+              } else {
+                console.log("no setting auto cam: defendFocus");
+              }
+            }
           }
 
           // PEAK, START DECAY
@@ -35259,6 +35375,19 @@ class App extends Component {
                   player.popups.findIndex((x) => x.msg === "defending"),
                   1
                 );
+              }
+
+              // AUTO CAM (DEF FOCUS BREAK)
+              if (
+                this.camera.customView.state !== true &&
+                // this.settingAutoCamera === false &&
+                player.ai.state !== true &&
+                this.camera.preInstructions.length === 0 &&
+                this.camera.instructions.length === 0
+              ) {
+                this.setAutoCamera("defendFocusBreak", player);
+              } else {
+                console.log("no setting auto cam: defendFocusBreak");
               }
               console.log("defend end");
             }
