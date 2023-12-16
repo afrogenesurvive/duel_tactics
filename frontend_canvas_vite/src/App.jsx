@@ -152,6 +152,7 @@ import attackParriedIndicate from "./assets/indicators/attackParried.png";
 import inventoryFullIndicate from "./assets/indicators/inventoryFull.png";
 import outOfAmmoIndicate from "./assets/indicators/outOfAmmo.png";
 import timerIndicate from "./assets/indicators/timer.png";
+import chargeIndicate from "./assets/indicators/charge.png";
 
 import mail1 from "./assets/items/mail1.png";
 import mail2 from "./assets/items/mail2.png";
@@ -804,6 +805,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -891,6 +894,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "sword1",
           item: {},
@@ -985,6 +990,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1085,6 +1092,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1172,6 +1181,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1259,6 +1270,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1346,6 +1359,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1433,6 +1448,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1520,6 +1537,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1646,6 +1665,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1690,6 +1711,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1734,6 +1757,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "sword1",
           item: {},
@@ -1778,6 +1803,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "sword1",
           item: {},
@@ -2259,6 +2286,7 @@ class App extends Component {
           peak: false,
           charge: 0,
           chargePeak: false,
+          peakCount: 0,
           blunt: false,
           clashing: {
             state: false,
@@ -2272,6 +2300,7 @@ class App extends Component {
           limit: 4,
           animRef: {},
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -2762,6 +2791,7 @@ class App extends Component {
           directionType: "", //thrust or slash
           animRef: {},
           peak: false,
+          peakCount: 0,
           charge: 0,
           chargePeak: false,
           blunt: false,
@@ -2777,6 +2807,7 @@ class App extends Component {
           limit: 4,
           animRef: {},
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -4072,6 +4103,7 @@ class App extends Component {
     this.attackFeintIndicate3Ref = React.createRef();
 
     this.attackParriedIndicateRef = React.createRef();
+    this.chargeIndicateRef = React.createRef();
 
     this.missedIndicateRef = React.createRef();
     this.missedIndicate2Ref = React.createRef();
@@ -7493,7 +7525,11 @@ class App extends Component {
     }
 
     if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
-      if (args === "attackFocusBreak" || args === "zoomreset") {
+      if (
+        args === "attackFocusBreak" ||
+        args === "defendFocusBreak" ||
+        args === "zoomreset"
+      ) {
         if (this.camera.instructions.length > 0) {
           if (
             this.camera.instructions[this.camera.instructions.length - 1].action ===
@@ -7713,7 +7749,93 @@ class App extends Component {
         }
 
         break;
+      case "defendFocus":
+        weaponType = "melee";
+        if (prePanZoom === true) {
+          this.camera.preInstructions.push("zoom_in_" + prePanZoomAmount + "");
+        }
+
+        if (livingHumanPlayerCount === 1) {
+          this.camera.preInstructions.push(
+            "moveTo_" +
+              player.currentPosition.cell.number.x +
+              "_" +
+              player.currentPosition.cell.number.y +
+              "_fast"
+            // 'waitFor_50',
+          );
+
+          if (weaponType === "melee") {
+            getZoom(weaponType);
+          }
+        }
+
+        if (livingHumanPlayerCount === 2) {
+          // twoPlayerCalc();
+          getPath()
+            .then((pathSet) => {
+              // console.log('Path set:', pathSet);
+              parsedPreInstructions = pathSet;
+
+              finish();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+
+          let finish = () => {
+            this.autoCamPanWaitingForPath = false;
+            // console.log('parsedPreInstructions',parsedPreInstructions);
+
+            if (parsedPreInstructions.length < 4) {
+              // console.log('attack focus auto cam: 2 players in close range');
+
+              if (prePanZoom === true) {
+                this.camera.preInstructions.push("zoom_in_" + prePanZoomAmount + "");
+              }
+
+              if (weaponType === "melee") {
+                this.camera.preInstructions.push(
+                  "moveTo_" +
+                    player.currentPosition.cell.number.x +
+                    "_" +
+                    player.currentPosition.cell.number.y +
+                    "_fast"
+                );
+
+                getZoom(weaponType);
+              }
+            } else {
+              // console.log('attack focus auto cam: 2 players at a distance');
+
+              // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
+
+              let intermediateCell =
+                this.getIntermediateCellByArea(parsedPreInstructions);
+
+              this.camera.preInstructions.push(
+                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
+                // 'waitFor_50',
+              );
+
+              getZoom("ranged");
+            }
+          };
+        }
+
+        break;
       case "attackFocusBreak":
+        this.autoCamPanWaitingForPath = false;
+        if (this.camera.zoom.x - 1 > this.zoomThresh) {
+          if (reset === true && attackFocusBreakZoomCorrection !== "") {
+            this.camera.preInstructions.push(attackFocusBreakZoomCorrection);
+          } else {
+            let zoomDifference = 0;
+            this.camera.preInstructions.push("zoom_outToInit");
+          }
+        }
+        break;
+      case "defendFocusBreak":
         this.autoCamPanWaitingForPath = false;
         if (this.camera.zoom.x - 1 > this.zoomThresh) {
           if (reset === true && attackFocusBreakZoomCorrection !== "") {
@@ -8933,20 +9055,14 @@ class App extends Component {
     // plyr.prePull.state === true ||
 
     if (player.action === "defending") {
-      let defendType = player.currentWeapon.type;
-      if (player.currentWeapon.name === "") {
-        defendType = "unarmed";
-      }
-      let defendPeak =
-        player.defending.animRef.peak[defendType][player.defending.directionType];
-      player.defending.limit =
-        player.defending.animRef.limit[defendType][player.defending.directionType];
-
-      if (player.defending.count < defendPeak && player.defending.decay.state !== true) {
+      if (
+        player.defending.count < player.defending.peakCount &&
+        player.defending.decay.state !== true
+      ) {
         phase = "windup";
-        perc = (player.defending.count / defendPeak) * 100;
+        perc = (player.defending.count / player.defending.peakCount) * 100;
       } else if (
-        player.defending.count === defendPeak &&
+        player.defending.count === player.defending.peakCount &&
         player.defending.decay.state !== true
       ) {
         phase = "peak";
@@ -8959,39 +9075,57 @@ class App extends Component {
           player.defending.decay.count < player.defending.decay.limit &&
           player.defending.decay.count > 5
         ) {
-          phase = "cooldown";
-          perc = (player.defending.decay.count / player.defending.decay.limit) * 100;
-        }
-        if (player.defending.decay.count >= player.defending.decay.limit) {
-          phase = "off";
+          phase = "peak";
+          // phase = "cooldown";
+          // perc = (player.defending.decay.count / player.defending.decay.limit) * 100;
         }
       }
-    }
-    if (player.action === "attacking") {
-      let atkType = player.currentWeapon.type;
-      if (player.currentWeapon.name === "") {
-        atkType = "unarmed";
+      if (
+        player.defending.count > player.defending.peakCount &&
+        player.defending.count < player.defending.limit &&
+        player.defending.decay.state !== true
+      ) {
+        phase = "cooldown";
+        perc =
+          ((player.defending.count - player.defending.peakCount) /
+            (player.defending.limit - player.defending.peakCount)) *
+          100;
       }
-      let end = player.attacking.animRef.limit[atkType];
-      let attackPeak = player.attacking.animRef.peak[atkType];
-
-      if (player.attacking.count < attackPeak) {
-        phase = "windup";
-        perc = (player.attacking.count / attackPeak) * 100;
+      if (player.defending.count >= player.defending.limit) {
+        phase = "off";
       }
-      if (player.attacking.count === attackPeak) {
+      if (phase === "") {
         phase = "peak";
       }
-      if (player.attacking.count > attackPeak && player.attacking.count < end) {
-        if (player.attacking.count < attackPeak + 5) {
-          phase = "peak";
+      // console.log("perkies: def", phase, perc, player.defending.count);
+    }
+    if (player.action === "attacking") {
+      let end = player.attacking.limit;
+
+      if (
+        player.attacking.peak === true ||
+        player.attacking.chargePeak === true ||
+        player.attacking.count === player.attacking.peakCount
+      ) {
+        phase = "peak";
+      } else if (player.attacking.count < end) {
+        // if count is less or > peak!!!
+
+        if (player.attacking.count < player.attacking.peakCount) {
+          phase = "windup";
+          if (popup.msg === "charging") {
+          } else {
+            perc = (player.attacking.count / player.attacking.peakCount) * 100;
+          }
         }
-        if (player.attacking.count > attackPeak + 5) {
+        if (player.attacking.count > player.attacking.peakCount) {
           phase = "cooldown";
           perc =
-            ((player.attacking.count - (attackPeak + 5)) / (end - (attackPeak + 5))) *
+            ((player.attacking.count - player.attacking.peakCount) /
+              (player.attacking.limit - player.attacking.peakCount)) *
             100;
         }
+        // console.log("perkies: atk", phase, perc, player.attacking.count);
       }
       if (player.attacking.count >= end) {
         phase = "off";
@@ -9079,6 +9213,10 @@ class App extends Component {
       if (player.prePull.count >= player.prePull.limit) {
         phase = "off";
       }
+    }
+    if (popup.msg === "charging") {
+      phase = "windup";
+      perc = (player.attacking.charge / 33) * 100;
     }
 
     if (phase === "windup") {
@@ -9331,17 +9469,6 @@ class App extends Component {
         y: player.currentPosition.cell.center.y,
       };
 
-      let stamAtkType = player.currentWeapon.type;
-      let chargeType = "normal";
-      if (player.attacking.charge > 0) {
-        chargeType = "charged";
-      }
-
-      if (player.currentWeapon.type === "") {
-        // this.players[player.number-1].attacking.limit = player.attacking.animRef.limit.unarmed;
-        attackPeak = player.attacking.animRef.peak.unarmed;
-        stamAtkType = "unarmed";
-      }
       let countCalcUp = Math.floor((player.attacking.limit - player.attacking.count) / 2);
       // console.log("beep", countCalcUp);
       // if (countCalcUp > 10) {
@@ -9392,14 +9519,9 @@ class App extends Component {
           y: player.currentPosition.cell.center.y,
         };
 
-        let defendType = player.currentWeapon.type;
-        if (player.currentWeapon.name === "") {
-          defendType = "unarmed";
-        }
-        let defendPeak =
-          player.defending.animRef.peak[defendType][player.defending.directionType];
-
-        let countCalcUp = Math.floor((player.defending.limit - defendPeak) / 2);
+        let countCalcUp = Math.floor(
+          (player.defending.limit - player.defending.peakCount) / 2
+        );
         // let countCalcUp = Math.floor(
         //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
         // );
@@ -12789,7 +12911,34 @@ class App extends Component {
           if (trap.acting.count === trap.acting.peak) {
             // console.log("trap is acting: attack peak");
 
+            let whatDirection = this.rnJesus(0, 4);
+            switch (whatDirection) {
+              case 0:
+                trap.acting.direction = "none";
+                trap.acting.directionType = "thrust";
+                break;
+              case 1:
+                trap.acting.direction = "north";
+                trap.acting.directionType = "slash";
+                break;
+              case 0:
+                trap.acting.direction = "south";
+                trap.acting.directionType = "slash";
+                break;
+              case 0:
+                trap.acting.direction = "east";
+                trap.acting.directionType = "slash";
+                break;
+              case 0:
+                trap.acting.direction = "west";
+                trap.acting.directionType = "slash";
+                break;
+              default:
+                break;
+            }
             if (trap.item.subType === "crossbow") {
+              trap.acting.direction = "none";
+              trap.acting.directionType = "thrust";
               if (trap.ammo > 0) {
                 trap.ammo--;
                 let result = this.projectileCreator(
@@ -12848,6 +12997,8 @@ class App extends Component {
           if (trap.acting.count >= trap.acting.limit) {
             trap.acting.count = 0;
             trap.acting.state = false;
+            trap.acting.direction = "";
+            trap.acting.directionType = "";
             console.log("trap action complete");
             this.cellPopups.splice(
               this.cellPopups.indexOf(
@@ -13671,7 +13822,6 @@ class App extends Component {
     console.log("trapsToSet", trapsToSet);
     // return trapsToSet;
   };
-  setObstacleBarrierDirectionalAttack = () => {};
   checkSetAttackDefendDirectionalInput = (mode, action, player) => {
     // stage is either 'init' or 'windup'
     let charging = false;
@@ -13699,6 +13849,17 @@ class App extends Component {
     const charge = () => {
       charging = true;
       player[action].charge++;
+      if (!player.popups.find((x) => x.msg === "charging")) {
+        player.popups.push({
+          state: false,
+          count: 0,
+          limit: 10,
+          type: "",
+          position: "",
+          msg: "charging",
+          img: "",
+        });
+      }
       // console.log("charging attack", player[action].charge);
     };
 
@@ -13722,7 +13883,7 @@ class App extends Component {
           chargeType
         ];
 
-      if (player.attacking.count < atkPeak) {
+      if (player.attacking.count < player.attacking.peakCount) {
         // console.log('attack windup key release before peak. feinting. refund stamina part');
 
         player.action = "idle";
@@ -13735,6 +13896,7 @@ class App extends Component {
           directionType: "", //thrust or slash
           animRef: player.attacking.animRef,
           peak: false,
+          peakCount: 0,
           charge: 0,
           chargePeak: false,
           blunt: false,
@@ -13796,9 +13958,13 @@ class App extends Component {
             if (input === true) {
               // console.log("y");
               if (inputDirection === player[action].direction) {
-                charge();
+                // charge();
               } else {
-                console.log("still time to set attack direction. changing direction");
+                console.log(
+                  "still time to set attack direction. changing direction",
+                  player[action].direction,
+                  inputDirection
+                );
                 player[action].direction = inputDirection;
                 player[action].directionType = "slash";
               }
@@ -13821,12 +13987,17 @@ class App extends Component {
                 feintAttack();
               }
               if (inputDirection === player[action].direction) {
-                charge();
+                if (player[action].count > player[action].peakCount) {
+                  console.log("past peak. no charging");
+                } else {
+                  charge();
+                }
               }
             }
           }
         }
       }
+      // console.log("directional input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
@@ -13862,12 +14033,17 @@ class App extends Component {
             player[action].directionType = "slash";
           }
           if (player[action].count > defendInputThresh) {
-            console.log(
-              "too late to change defend direction: count",
-              player[action].count,
-              "thresh",
-              defendInputThresh
-            );
+            if (player[action].direction !== "") {
+              if (player[action].direction !== inputDirection) {
+                console.log(
+                  "too late to change defend direction: count",
+                  player[action].count,
+                  "thresh",
+                  defendInputThresh
+                );
+              }
+            }
+
             if (player[action].direction === "" || player[action].directionType === "") {
               player[action].direction = "none";
               player[action].directionType = "thrust";
@@ -13881,6 +14057,7 @@ class App extends Component {
             }
           }
         }
+        // console.log("directional input thresh", defendInputThresh);
       }
     }
 
@@ -16833,6 +17010,7 @@ class App extends Component {
           directionType: "", //thrust or slash
           animRef: player.attacking.animRef,
           peak: false,
+          peakCount: 0,
           charge: 0,
           chargePeak: false,
           blunt: false,
@@ -16880,6 +17058,7 @@ class App extends Component {
           limit: player.defending.limit,
           animRef: player.defending.animRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -16910,6 +17089,9 @@ class App extends Component {
             msg: "attackCancelled",
             img: "",
           });
+        }
+        if (this.camera.customView.state !== true && player.ai.state !== true) {
+          this.setAutoCamera("defendFocusBreak", player);
         }
 
         break;
@@ -18650,6 +18832,7 @@ class App extends Component {
               limit: this.players[player.number - 1].defending.limit,
               animRef: this.players[player.number - 1].defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -18723,6 +18906,7 @@ class App extends Component {
               limit: this.players[player.number - 1].defending.limit,
               animRef: this.players[player.number - 1].defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -18864,6 +19048,7 @@ class App extends Component {
               limit: this.players[player.number - 1].defending.limit,
               animRef: this.players[player.number - 1].defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -18941,6 +19126,7 @@ class App extends Component {
               limit: this.players[player.number - 1].defending.limit,
               animRef: this.players[player.number - 1].defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -23566,6 +23752,7 @@ class App extends Component {
           limit: player.defending.limit,
           animRef: player.defending.animRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -24199,6 +24386,7 @@ class App extends Component {
           limit: puller.defending.limit,
           animRef: puller.defending.animRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -24524,6 +24712,7 @@ class App extends Component {
         directionType: "", //thrust or slash
         animRef: this.attackAnimRef,
         peak: false,
+        peakCount: 0,
         charge: 0,
         chargePeak: false,
         blunt: false,
@@ -24539,6 +24728,7 @@ class App extends Component {
         limit: this.defendAnimRef.limit.sword.slash,
         animRef: this.defendAnimRef,
         peak: false,
+        peakCount: 0,
         decay: {
           state: false,
           count: 0,
@@ -24835,6 +25025,7 @@ class App extends Component {
       directionType: "", //thrust or slash
       animRef: this.attackAnimRef,
       peak: false,
+      peakCount: 0,
       charge: 0,
       chargePeak: false,
       blunt: false,
@@ -24850,6 +25041,7 @@ class App extends Component {
       limit: 4,
       animRef: this.defendAnimRef,
       peak: false,
+      peakCount: 0,
       decay: {
         state: false,
         count: 0,
@@ -25502,6 +25694,7 @@ class App extends Component {
           directionType: "", //thrust or slash
           animRef: this.attackAnimRef,
           peak: false,
+          peakCount: 0,
           charge: 0,
           chargePeak: false,
           blunt: false,
@@ -25517,6 +25710,7 @@ class App extends Component {
           limit: this.defendAnimRef.limit[currentWeapon.type].slash,
           animRef: this.defendAnimRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -26235,6 +26429,7 @@ class App extends Component {
             directionType: "", //thrust or slash
             animRef: this.attackAnimRef,
             peak: false,
+            peakCount: 0,
             charge: 0,
             chargePeak: false,
             blunt: false,
@@ -26250,6 +26445,7 @@ class App extends Component {
             limit: this.defendAnimRef.limit[currentWeapon.type].slash,
             animRef: this.defendAnimRef,
             peak: false,
+            peakCount: 0,
             decay: {
               state: false,
               count: 0,
@@ -33019,7 +33215,7 @@ class App extends Component {
       // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 2) {
-      this.pushBack(player, "east");
+      // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
@@ -33358,6 +33554,7 @@ class App extends Component {
             directionType: "", //thrust or slash
             animRef: player.attacking.animRef,
             peak: false,
+            peakCount: 0,
             charge: 0,
             chargePeak: false,
             blunt: false,
@@ -33375,6 +33572,7 @@ class App extends Component {
           limit: player.defending.limit,
           animRef: player.defending.animRef,
           peak: false,
+          peakCount: 0,
           decay: {
             state: false,
             count: 0,
@@ -33868,6 +34066,7 @@ class App extends Component {
                       directionType: "", //thrust or slash
                       animRef: player.attacking.animRef,
                       peak: false,
+                      peakCount: 0,
                       charge: 0,
                       chargePeak: false,
                       blunt: false,
@@ -33885,6 +34084,7 @@ class App extends Component {
                     limit: player.defending.limit,
                     animRef: player.defending.animRef,
                     peak: false,
+                    peakCount: 0,
                     decay: {
                       state: false,
                       count: 0,
@@ -34265,13 +34465,9 @@ class App extends Component {
           if (player.currentWeapon.name === "") {
             defendType = "unarmed";
           }
-          let defendPeak =
-            player.defending.animRef.peak[defendType][player.defending.directionType];
-          player.defending.limit =
-            player.defending.animRef.limit[defendType][player.defending.directionType];
 
           if (player.defending.decay.state !== true) {
-            if (player.defending.count < defendPeak) {
+            if (player.defending.count < player.defending.peakCount) {
               canFeint = true;
             }
           } else {
@@ -34289,6 +34485,7 @@ class App extends Component {
               limit: player.defending.limit,
               animRef: player.defending.animRef,
               peak: false,
+              peakCount: 0,
               decay: {
                 state: false,
                 count: 0,
@@ -34318,12 +34515,17 @@ class App extends Component {
             ) {
               player.elasticCounter.state = false;
             }
-            // console.log("defend feinted");
+
+            if (this.camera.customView.state !== true && player.ai.state !== true) {
+              this.setAutoCamera("defendFocusBreak", player);
+            }
+
+            console.log("defend feinted");
           } else {
             if (player.defending.peak === true) {
-              // console.log("peak defense. cant feint");
+              console.log("peak defense. cant feint");
             } else {
-              // console.log("too late to feint defense");
+              console.log("too late to feint defense");
             }
           }
         }
@@ -34377,13 +34579,12 @@ class App extends Component {
           if (player.attacking.blunt === true) {
             blunt = "blunt";
           }
-          atkPeak =
-            player.attacking.animRef.peak[atkType][player.attacking.directionType][
-              chargeType
-            ];
 
-          if (player.attacking.count < atkPeak) {
-            // console.log('attack windup key release before peak. feinting. refund stamina part');
+          if (player.attacking.count < player.attacking.peakCount) {
+            console
+              .log
+              // "attack windup key release before peak. feinting. refund stamina part"
+              ();
 
             player.action = "idle";
             player.attacking = {
@@ -34395,6 +34596,7 @@ class App extends Component {
               directionType: "", //thrust or slash
               animRef: player.attacking.animRef,
               peak: false,
+              peakCount: 0,
               charge: 0,
               chargePeak: false,
               blunt: false,
@@ -34421,6 +34623,13 @@ class App extends Component {
                 1
               );
             }
+            popup = player.popups.find((x) => x.msg === "charging");
+            if (popup) {
+              player.popups.splice(
+                player.popups.findIndex((x) => x.msg === "charging"),
+                1
+              );
+            }
 
             if (this.camera.customView.state !== true && player.ai.state !== true) {
               this.setAutoCamera("attackFocusBreak", player);
@@ -34437,7 +34646,7 @@ class App extends Component {
           this.keyPressed[player.number - 1].dodge !== true &&
           player.flanking.state !== true
         ) {
-          // console.log('released dodge key while winding up. cancel dodge.');
+          console.log("released dodge key while winding up. cancel dodge.");
           player.stamina.current += this.staminaCostRef.dodge.pre;
           player.action = "idle";
           player.dodging = {
@@ -34513,37 +34722,67 @@ class App extends Component {
           let blunt = "normal";
           if (player.attacking.blunt === true) {
             blunt = "blunt";
+            // console.log("blunt attack");
           }
 
-          attackPeak =
-            player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
-              chargeType
-            ];
-          player.attacking.limit =
-            player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-              chargeType
-            ];
+          if (player.attacking.directionType === "") {
+            attackPeak = 0;
+          } else {
+            attackPeak =
+              player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
+                chargeType
+              ];
+          }
+
+          if (
+            player.attacking.peakCount === 0 ||
+            player.attacking.count < player.attacking.peakCount
+            // chargeType === "charged"
+          ) {
+            // console.log(
+            //   "attacking peakCount changed. was",
+            //   player.attacking.peakCount,
+            //   "now",
+            //   attackPeak
+            // );
+            player.attacking.peakCount = attackPeak;
+          }
+
+          if (
+            player.attacking.limit === 0 ||
+            player.attacking.count < player.attacking.peakCount
+            // chargeType === "charged"
+          ) {
+            // console.log(
+            //   "attacking limit changed. was",
+            //   player.attacking.limit,
+            //   "now",
+            //   player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
+            //     chargeType
+            //   ]
+            // );
+            player.attacking.limit =
+              player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
+                chargeType
+              ];
+          }
 
           // STEP ATTACKING COUNT
           if (player.attacking.count < player.attacking.limit) {
-            if (player.attacking.count < attackPeak) {
+            if (player.attacking.count < player.attacking.peakCount) {
               console.log(
-                "attack windup: direction",
+                "atk windup:",
                 player.attacking.direction,
-                player.attacking.directionType,
-                "charging:",
-                chargeType,
-                player.attacking.charge,
-                "atk count:",
+                "counts:",
                 player.attacking.count,
-                "atk peak:",
-                attackPeak,
-                "atk limit:",
-                player.attacking.limit
+                player.attacking.peakCount,
+                player.attacking.limit,
+                chargeType === "charged"
               );
+              player.attacking.peak = false;
+              player.attacking.chargePeak = false;
             }
-            player.attacking.peak = false;
-            player.attacking.chargePeak = false;
+
             player.action = "attacking";
             player.attacking.count++;
 
@@ -34553,7 +34792,7 @@ class App extends Component {
               player.dodging.state === true ||
               this.keyPressed[player.number - 1].dodge === true
             ) {
-              // console.log('was attacking then pressed dodging. blunt attack');
+              console.log("was attacking then pressed dodging. blunt attack");
 
               if (player.attacking.blunt !== true) {
                 player.dodging = {
@@ -34716,14 +34955,20 @@ class App extends Component {
               player.attacking.charge > 0 &&
               player.attacking.count >
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                  .normal
+                  .normal &&
+              player.attacking.count <
+                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
+                  .charged
             ) {
-              // console.log(
-              //   player.attacking.count,
-              //   player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-              //     .normal,
-              //   "not currentlt charging, but past non charge peak. charge attack released early...adjusting peak"
-              // );
+              console.log(
+                "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
+              );
+              console.log(
+                "counts",
+                player.attacking.count,
+                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
+                  .normal
+              );
               executeAttack = true;
               attackPeak =
                 player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
@@ -34732,10 +34977,17 @@ class App extends Component {
                 player.attacking.animRef.limit[stamAtkType][
                   player.attacking.directionType
                 ].charged;
+              player.attacking.peakCount = attackPeak;
             } else if (player.attacking.count === attackPeak) {
               executeAttack = true;
-
-              // console.log("execute ", chargeType, " attack at peak normally");
+              player.attacking.peakCount = attackPeak;
+              console.log(
+                "execute ",
+                chargeType,
+                " attack at peak normally",
+                player.attacking.charge,
+                player.attacking.blunt
+              );
             }
           } else {
             // console.log("attack peak already reached/passed");
@@ -34743,21 +34995,6 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (executeAttack === true) {
-            console.log(
-              "attack peak: direction",
-              player.attacking.direction,
-              player.attacking.directionType,
-              "charging:",
-              chargeType,
-              player.attacking.charge,
-              "atk count:",
-              player.attacking.count,
-              "atk peak:",
-              attackPeak,
-              "atk limit:",
-              player.attacking.limit
-            );
-
             // WEAPON STAMINA COST!!
             if (
               player.stamina.current -
@@ -34768,6 +35005,16 @@ class App extends Component {
                 this.staminaCostRef.attack[stamAtkType][blunt].peak;
 
               let melee = true;
+
+              console.log(
+                "atk peak:",
+                player.attacking.direction,
+                "counts:",
+                player.attacking.count,
+                player.attacking.peakCount,
+                player.attacking.limit,
+                chargeType === "charged"
+              );
 
               player = this.setElasticCounter("attacking", "", false, player);
 
@@ -34849,37 +35096,24 @@ class App extends Component {
           // ATTACK COOLDOWN AND END!
           if (
             executeAttack !== true &&
-            player.attacking.count > attackPeak &&
-            player.attacking.count <
-              player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-                chargeType
-              ]
+            player.attacking.count > player.attacking.peakCount &&
+            player.attacking.count < player.attacking.limit
           ) {
-            // console.log(
-            //   "attack cooldown: direction",
-            //   player.attacking.direction,
-            //   player.attacking.directionType,
-            //   "charging:",
-            //   chargeType,
-            //   player.attacking.charge,
-            //   "atk count:",
-            //   player.attacking.count,
-            //   "atk peak:",
-            //   attackPeak,
-            //   "atk limit:",
-            //   player.attacking.limit
-            // );
+            console.log(
+              "atk cooldown:",
+              player.attacking.direction,
+              "counts:",
+              player.attacking.count,
+              player.attacking.peakCount,
+              player.attacking.limit,
+              chargeType === "charged"
+            );
             player.attacking.peak = false;
             player.attacking.chargePeak = false;
             player.attacking.blunt = false;
           }
 
-          if (
-            player.attacking.count >=
-            player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-              chargeType
-            ]
-          ) {
+          if (player.attacking.count >= player.attacking.limit) {
             player.attacking = {
               state: false,
               count: 0,
@@ -34889,6 +35123,7 @@ class App extends Component {
               directionType: "", //thrust or slash
               animRef: player.attacking.animRef,
               peak: false,
+              peakCount: 0,
               charge: 0,
               chargePeak: false,
               blunt: false,
@@ -34920,7 +35155,7 @@ class App extends Component {
               );
             }
 
-            // console.log("attack end");
+            console.log("attack end");
           }
         }
         // CLASHING
@@ -34960,8 +35195,10 @@ class App extends Component {
           if (player.currentWeapon.name === "") {
             defendType = "unarmed";
           }
+
           let defendPeak =
             player.defending.animRef.peak[defendType][player.defending.directionType];
+          player.defending.peakCount = defendPeak;
           player.defending.limit =
             player.defending.animRef.limit[defendType][player.defending.directionType];
           if (
@@ -34972,13 +35209,12 @@ class App extends Component {
             player.action = "defending";
             player.defending.peak = false;
             console.log(
-              "defend windup: count",
-              player.defending.count,
-              "peak",
-              defendPeak,
-              "direction & dir type",
+              "defend windup:",
               player.defending.direction,
-              player.defending.directionType
+              "counts",
+              player.defending.count,
+              defendPeak,
+              player.defending.limit
             );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
@@ -34990,6 +35226,27 @@ class App extends Component {
                 msg: "defending",
                 img: "",
               });
+            }
+
+            if (player.defending.count <= 2) {
+              // CAMERA DEFEND FOCUS
+              if (
+                this.camera.customView.state !== true &&
+                this.settingAutoCamera === false &&
+                player.ai.state !== true &&
+                this.camera.preInstructions.length === 0 &&
+                this.camera.instructions.length === 0
+              ) {
+                if (this.players[0].dead.state !== true) {
+                  if (player.number === 1) {
+                    this.setAutoCamera("defendFocus", player);
+                  }
+                } else if (player.number === 2) {
+                  this.setAutoCamera("defendFocus", player);
+                }
+              } else {
+                console.log("no setting auto cam: defendFocus");
+              }
             }
           }
 
@@ -35027,13 +35284,12 @@ class App extends Component {
 
               player = this.setElasticCounter("defending", "peak", false, player);
               console.log(
-                "defend peak: count",
-                player.defending.count,
-                "peak",
-                defendPeak,
-                "direction & dir type",
+                "defend peak:",
                 player.defending.direction,
-                player.defending.directionType,
+                "counts",
+                player.defending.count,
+                defendPeak,
+                player.defending.limit,
                 "decay:",
                 player.defending.decay.state,
                 player.defending.decay.count,
@@ -35050,6 +35306,7 @@ class App extends Component {
                 limit: player.defending.limit,
                 animRef: player.defending.animRef,
                 peak: false,
+                peakCount: 0,
                 decay: {
                   state: false,
                   count: 0,
@@ -35108,16 +35365,15 @@ class App extends Component {
               }
               player = this.setElasticCounter("defending", "decay", false, player);
               console.log(
-                "defend decaying: count",
-                player.defending.count,
-                "peak",
-                defendPeak,
-                "direction & dir type",
+                "defend decay:",
                 player.defending.direction,
-                player.defending.directionType,
-                "decay count",
+                "counts",
+                player.defending.count,
+                defendPeak,
+                player.defending.limit,
+                "decay:",
+                player.defending.decay.state,
                 player.defending.decay.count,
-                "decay limit",
                 player.defending.decay.limit
               );
             }
@@ -35126,22 +35382,14 @@ class App extends Component {
               player.defending.decay.state = false;
               player.defending.decay.count = 0;
               player.defending.count = defendPeak + player.defending.decay.limit;
-              // player.action = "idle";
               console.log(
-                "defend decay limit. drop defense",
-                player.defending.state,
+                "defend decay end:",
+                player.defending.direction,
+                "counts",
                 player.defending.count,
                 defendPeak,
-                player.defending.limit,
-                player.defending.decay.limit
+                player.defending.limit
               );
-
-              if (player.popups.find((x) => x.msg === "defending")) {
-                player.popups.splice(
-                  player.popups.findIndex((x) => x.msg === "defending"),
-                  1
-                );
-              }
             }
           }
 
@@ -35153,8 +35401,11 @@ class App extends Component {
             if (player.defending.count < player.defending.limit) {
               player.defending.count++;
               console.log(
-                "finishing defense after decay/ defense cooldown: count",
+                "defend cooldown:",
+                player.defending.direction,
+                "counts",
                 player.defending.count,
+                defendPeak,
                 player.defending.limit
               );
             }
@@ -35166,6 +35417,7 @@ class App extends Component {
                 limit: player.defending.limit,
                 animRef: player.defending.animRef,
                 peak: false,
+                peakCount: 0,
                 decay: {
                   state: false,
                   count: 0,
@@ -35174,7 +35426,27 @@ class App extends Component {
                 direction: "",
                 directionType: "", //thrust or slash
               };
-              console.log("defend coolodown complete");
+
+              if (player.popups.find((x) => x.msg === "defending")) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === "defending"),
+                  1
+                );
+              }
+
+              // AUTO CAM (DEF FOCUS BREAK)
+              if (
+                this.camera.customView.state !== true &&
+                // this.settingAutoCamera === false &&
+                player.ai.state !== true &&
+                this.camera.preInstructions.length === 0 &&
+                this.camera.instructions.length === 0
+              ) {
+                this.setAutoCamera("defendFocusBreak", player);
+              } else {
+                console.log("no setting auto cam: defendFocusBreak");
+              }
+              console.log("defend end");
             }
           }
         }
@@ -35338,7 +35610,7 @@ class App extends Component {
           if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
             player.dodging.count++;
             player.action = "dodging";
-            // console.log('dodge count',player.dodging.count);
+            console.log("dodge count", player.dodging.count);
 
             if (!player.popups.find((x) => x.msg === "dodging")) {
               player.popups.push({
@@ -35376,7 +35648,7 @@ class App extends Component {
           ) {
             player.dodging.state = true;
 
-            // console.log("dodge peak", player.dodging.count);
+            console.log("dodge peak", player.dodging.count);
           }
 
           // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
@@ -36043,59 +36315,70 @@ class App extends Component {
             //   " move step: ",
             //   player.moving.step
             // );
-            // console.log(
-            //   "flanking step 1: ",
-            //   player.moving.state,
-            //   player.moving.step,
-            //   "-",
-            //   player.turning.state
-            // );
+            // console.log("flanking step 1: ");
             // console.log("2", player.currentPosition.cell.number);
-
+            let continueFlank = false;
             if (
               this.keyPressed[player.number - 1].north === true ||
               this.keyPressed[player.number - 1].south === true ||
               this.keyPressed[player.number - 1].east === true ||
               this.keyPressed[player.number - 1].west === true
             ) {
-              console.log("flanking cancelled by move input!");
-              player.action = "idle";
-              player.turning.toDirection = player.direction;
-
-              this.players[player.number - 1].statusDisplay = {
-                state: true,
-                status: "flanking cancelled!",
-                count: 1,
-                limit: this.players[player.number - 1].statusDisplay.limit,
-              };
-              player.flanking = {
-                checking: false,
-                direction: "",
-                preFlankDirection: "",
-                state: false,
-                step: 0,
-                target1: { x: 0, y: 0 },
-                target2: { x: 0, y: 0 },
-              };
-
-              if (player.popups.find((x) => x.msg === "flanking2")) {
-                player.popups.splice(
-                  player.popups.findIndex((y) => y.msg === "flanking2"),
-                  1
+              if (player.flanking.direction === keyPressedDirection) {
+                console.log(
+                  "already flanking in this direction. no move interrupt. continue flank"
                 );
-              }
-              if (!player.popups.find((x) => x.msg === "noFlanking")) {
-                player.popups.push({
+                continueFlank = true;
+              } else {
+                console.log(
+                  "flanking cancelled by move input!",
+                  player.flanking.direction,
+                  player.turning.toDirection,
+                  player.direction,
+                  keyPressedDirection
+                );
+                player.action = "idle";
+                player.turning.toDirection = player.direction;
+
+                this.players[player.number - 1].statusDisplay = {
+                  state: true,
+                  status: "flanking cancelled!",
+                  count: 1,
+                  limit: this.players[player.number - 1].statusDisplay.limit,
+                };
+                player.flanking = {
+                  checking: false,
+                  direction: "",
+                  preFlankDirection: "",
                   state: false,
-                  count: 0,
-                  limit: 30,
-                  type: "",
-                  position: "",
-                  msg: "noFlanking",
-                  img: "",
-                });
+                  step: 0,
+                  target1: { x: 0, y: 0 },
+                  target2: { x: 0, y: 0 },
+                };
+
+                if (player.popups.find((x) => x.msg === "flanking2")) {
+                  player.popups.splice(
+                    player.popups.findIndex((y) => y.msg === "flanking2"),
+                    1
+                  );
+                }
+                if (!player.popups.find((x) => x.msg === "noFlanking")) {
+                  player.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "noFlanking",
+                    img: "",
+                  });
+                }
               }
             } else {
+              continueFlank = true;
+            }
+
+            if (continueFlank === true) {
               let target = this.getTarget(player);
 
               let myCell = this.gridInfo.find(
@@ -36205,197 +36488,240 @@ class App extends Component {
         // START
         if (
           this.keyPressed[player.number - 1].dodge === true &&
-          player.flanking.state !== true
+          player.flanking.state !== true &&
+          player.attacking.state !== true
         ) {
           if (
             this.keyPressed[player.number - 1].north === true ||
             this.keyPressed[player.number - 1].south === true ||
             this.keyPressed[player.number - 1].east === true ||
-            (this.keyPressed[player.number - 1].west === true &&
-              player.strafing.state !== true &&
-              player.flanking.state !== true)
+            this.keyPressed[player.number - 1].west === true
           ) {
-            // RESET DODGING
-            this.players[player.number - 1].dodging = {
-              countState: false,
-              state: false,
-              count: 0,
-              limit: player.dodging.limit,
-              peak: {
-                start: player.dodging.peak.start,
-                end: player.dodging.peak.end,
-              },
-              direction: "",
-            };
-            player.action = "idle";
+            if (player.strafing.state !== true && player.flanking.state !== true) {
+              const cancelDodge = () => {
+                // RESET DODGING
+                this.players[player.number - 1].stamina.current +=
+                  this.staminaCostRef.dodge.pre;
+                this.players[player.number - 1].dodging = {
+                  countState: false,
+                  state: false,
+                  count: 0,
+                  limit: player.dodging.limit,
+                  peak: {
+                    start: player.dodging.peak.start,
+                    end: player.dodging.peak.end,
+                  },
+                  direction: "",
+                };
+                player.action = "idle";
+                if (
+                  player.elasticCounter.state === true &&
+                  player.elasticCounter.type === "dodging"
+                ) {
+                  player.elasticCounter.state = false;
+                }
+              };
 
-            if (player.dodging.countState === true || player.dodging.state === true) {
-              this.players[player.number - 1].stamina.current +=
-                this.staminaCostRef.dodge.pre;
-            }
+              const continueDodge = () => {
+                player.dodging.countState = true;
+              };
+              let canFlank1 = false;
 
-            if (keyPressedDirection !== player.direction) {
-              let canFlank = false;
-              switch (player.direction) {
-                case "north":
-                  if (keyPressedDirection === "east" || keyPressedDirection === "west") {
-                    canFlank = true;
-                  }
-                  break;
-                case "south":
-                  if (keyPressedDirection === "east" || keyPressedDirection === "west") {
-                    canFlank = true;
-                  }
-                  break;
-                case "west":
-                  if (
-                    keyPressedDirection === "north" ||
-                    keyPressedDirection === "south"
-                  ) {
-                    canFlank = true;
-                  }
-                  break;
-                case "east":
-                  if (
-                    keyPressedDirection === "north" ||
-                    keyPressedDirection === "south"
-                  ) {
-                    canFlank = true;
-                  }
-                  break;
+              if (player.dodging.countState === true && player.dodging.state !== true) {
+                if (
+                  player.dodging.count <=
+                  player.dodging.peak.start - player.crits.dodge
+                ) {
+                  canFlank1 = true;
+                  console.log("can flank before dodge peak start");
+                } else {
+                  console.log("too late in dodge windup to flank");
+                  continueDodge();
+                }
+              }
+              if (player.dodging.countState === true && player.dodging.state === true) {
+                console.log("peak dodging. can't flank");
+              }
+              if (player.dodging.countState !== true && player.dodging.state !== true) {
+                console.log("highly unlikely. can flank anyway");
+                canFlank1 = true;
               }
 
-              if (canFlank === true) {
-                if (player.stamina.current - this.staminaCostRef.flank >= 0) {
-                  // console.log('flanking step',keyPressedDirection,player.direction);
-                  this.players[player.number - 1].flanking.checking = true;
-                  this.players[player.number - 1].flanking.direction =
-                    keyPressedDirection;
-                  this.players[player.number - 1].flanking.preFlankDirection =
-                    player.direction;
+              if (canFlank1 === true) {
+                cancelDodge();
+                if (keyPressedDirection !== player.direction) {
+                  let canFlank2 = false;
+                  switch (player.direction) {
+                    case "north":
+                      if (
+                        keyPressedDirection === "east" ||
+                        keyPressedDirection === "west"
+                      ) {
+                        canFlank2 = true;
+                      }
+                      break;
+                    case "south":
+                      if (
+                        keyPressedDirection === "east" ||
+                        keyPressedDirection === "west"
+                      ) {
+                        canFlank2 = true;
+                      }
+                      break;
+                    case "west":
+                      if (
+                        keyPressedDirection === "north" ||
+                        keyPressedDirection === "south"
+                      ) {
+                        canFlank2 = true;
+                      }
+                      break;
+                    case "east":
+                      if (
+                        keyPressedDirection === "north" ||
+                        keyPressedDirection === "south"
+                      ) {
+                        canFlank2 = true;
+                      }
+                      break;
+                  }
 
-                  let target = this.getTarget(player);
+                  if (canFlank2 === true) {
+                    if (player.stamina.current - this.staminaCostRef.flank >= 0) {
+                      // console.log('flanking step',keyPressedDirection,player.direction);
+                      this.players[player.number - 1].flanking.checking = true;
+                      this.players[player.number - 1].flanking.direction =
+                        keyPressedDirection;
+                      this.players[player.number - 1].flanking.preFlankDirection =
+                        player.direction;
 
-                  let myCell = this.gridInfo.find(
-                    (elem2) =>
-                      elem2.number.x === player.currentPosition.cell.number.x &&
-                      elem2.number.y === player.currentPosition.cell.number.y
-                  );
-                  let myCellBlock = this.checkMyCellBarrier(keyPressedDirection, myCell);
+                      let target = this.getTarget(player);
 
-                  // if (target.cell1.free === true) {
-                  if (target.cell1.free === true && myCellBlock !== true) {
-                    player.stamina.current =
-                      player.stamina.current - this.staminaCostRef.flank;
-                    // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
+                      let myCell = this.gridInfo.find(
+                        (elem2) =>
+                          elem2.number.x === player.currentPosition.cell.number.x &&
+                          elem2.number.y === player.currentPosition.cell.number.y
+                      );
+                      let myCellBlock = this.checkMyCellBarrier(
+                        keyPressedDirection,
+                        myCell
+                      );
 
-                    // console.log('flanking step 0 plyr dir: ',player.direction,' pre-flank dir: ',player.flanking.preFlankDirection,' flank dir: ',player.flanking.direction,"current position: ",player.currentPosition.cell.number,' strafing: ',player.strafing.state,' move step: ',player.moving.step);
+                      // if (target.cell1.free === true) {
+                      if (target.cell1.free === true && myCellBlock !== true) {
+                        player.stamina.current =
+                          player.stamina.current - this.staminaCostRef.flank;
+                        // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
 
-                    this.players[player.number - 1].flanking.checking = false;
-                    this.players[player.number - 1].flanking.state = true;
-                    this.players[player.number - 1].flanking.step = 1;
-                    this.players[player.number - 1].flanking.target1 =
-                      target.cell1.number;
-                    // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
-                    // player.action = 'moving';
+                        // console.log('flanking step 0 plyr dir: ',player.direction,' pre-flank dir: ',player.flanking.preFlankDirection,' flank dir: ',player.flanking.direction,"current position: ",player.currentPosition.cell.number,' strafing: ',player.strafing.state,' move step: ',player.moving.step);
 
-                    if (
-                      !player.popups.find((x) => x.msg === "preAction2") &&
-                      !player.popups.find((x) => x.msg === "dodgeStart")
-                    ) {
-                      player.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 5,
-                        type: "",
-                        position: "",
-                        msg: "preAction2",
-                        img: "",
-                      });
-                    }
+                        this.players[player.number - 1].flanking.checking = false;
+                        this.players[player.number - 1].flanking.state = true;
+                        this.players[player.number - 1].flanking.step = 1;
+                        this.players[player.number - 1].flanking.target1 =
+                          target.cell1.number;
+                        // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
+                        // player.action = 'moving';
 
-                    player.action = "flanking";
-                    player.moving = {
-                      state: true,
-                      step: 0,
-                      course: "",
-                      origin: {
-                        number: {
-                          x: player.currentPosition.cell.number.x,
-                          y: player.currentPosition.cell.number.y,
-                        },
-                        center: {
-                          x: player.currentPosition.cell.center.x,
-                          y: player.currentPosition.cell.center.y,
-                        },
-                      },
-                      destination: target.cell1.center,
-                    };
-                    nextPosition = this.lineCrementer(player);
-                    player.nextPosition = nextPosition;
-                    // console.log("1", player.currentPosition.cell.number);
-                    if (
-                      this.mouseOverCell.state === true &&
-                      this.mouseOverCell.cell.number.x ===
-                        player.currentPosition.cell.number.x &&
-                      this.mouseOverCell.cell.number.y ===
-                        player.currentPosition.cell.number.y
-                    ) {
-                      this.clicked.player = undefined;
+                        if (
+                          !player.popups.find((x) => x.msg === "preAction2") &&
+                          !player.popups.find((x) => x.msg === "dodgeStart")
+                        ) {
+                          player.popups.push({
+                            state: false,
+                            count: 0,
+                            limit: 5,
+                            type: "",
+                            position: "",
+                            msg: "preAction2",
+                            img: "",
+                          });
+                        }
+
+                        player.action = "flanking";
+                        player.moving = {
+                          state: true,
+                          step: 0,
+                          course: "",
+                          origin: {
+                            number: {
+                              x: player.currentPosition.cell.number.x,
+                              y: player.currentPosition.cell.number.y,
+                            },
+                            center: {
+                              x: player.currentPosition.cell.center.x,
+                              y: player.currentPosition.cell.center.y,
+                            },
+                          },
+                          destination: target.cell1.center,
+                        };
+                        nextPosition = this.lineCrementer(player);
+                        player.nextPosition = nextPosition;
+                        // console.log("1", player.currentPosition.cell.number);
+                        if (
+                          this.mouseOverCell.state === true &&
+                          this.mouseOverCell.cell.number.x ===
+                            player.currentPosition.cell.number.x &&
+                          this.mouseOverCell.cell.number.y ===
+                            player.currentPosition.cell.number.y
+                        ) {
+                          this.clicked.player = undefined;
+                        }
+                      } else {
+                        // console.log(
+                        //   "cancel flanking 1",
+                        //   player.flanking.direction,
+                        //   player.flanking.preFlankDirection,
+                        //   player.direction,
+                        //   player.action
+                        // );
+                        player.action = "idle";
+                        player.turning.toDirection = player.direction;
+
+                        this.players[player.number - 1].flanking.checking = false;
+                        this.players[player.number - 1].flanking.state = false;
+                        this.players[player.number - 1].flanking.direction = "";
+                        this.players[player.number - 1].flanking.preFlankDirection = "";
+
+                        if (!player.popups.find((x) => x.msg === "noFlanking")) {
+                          player.popups.push({
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: "",
+                            position: "",
+                            msg: "noFlanking",
+                            img: "",
+                          });
+                        }
+                        if (player.popups.find((x) => x.msg === "flanking2")) {
+                          player.popups.splice(
+                            player.popups.findIndex((y) => y.msg === "flanking2"),
+                            1
+                          );
+                        }
+                      }
+                    } else {
+                      // console.log('flank stam check. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
+                      player.action = "idle";
+                      player.stamina.current = 0;
+                      player.statusDisplay = {
+                        state: true,
+                        status: "Out of Stamina",
+                        count: 1,
+                        limit: player.statusDisplay.limit,
+                      };
                     }
                   } else {
-                    // console.log(
-                    //   "cancel flanking 1",
-                    //   player.flanking.direction,
-                    //   player.flanking.preFlankDirection,
-                    //   player.direction,
-                    //   player.action
-                    // );
-                    player.action = "idle";
-                    player.turning.toDirection = player.direction;
-
-                    this.players[player.number - 1].flanking.checking = false;
-                    this.players[player.number - 1].flanking.state = false;
-                    this.players[player.number - 1].flanking.direction = "";
-                    this.players[player.number - 1].flanking.preFlankDirection = "";
-
-                    if (!player.popups.find((x) => x.msg === "noFlanking")) {
-                      player.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 30,
-                        type: "",
-                        position: "",
-                        msg: "noFlanking",
-                        img: "",
-                      });
-                    }
-                    if (player.popups.find((x) => x.msg === "flanking2")) {
-                      player.popups.splice(
-                        player.popups.findIndex((y) => y.msg === "flanking2"),
-                        1
-                      );
-                    }
+                    console.log("cant flank2 incompatible direction");
                   }
-                } else {
-                  // console.log('flank stam check. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
-                  player.action = "idle";
-                  player.stamina.current = 0;
-                  player.statusDisplay = {
-                    state: true,
-                    status: "Out of Stamina",
-                    count: 1,
-                    limit: player.statusDisplay.limit,
-                  };
                 }
-              } else {
-                // console.log('cant flank1');
+                if (keyPressedDirection === player.direction) {
+                  console.log("!! dodge roll key combo!! or kick");
+                }
               }
-            }
-            if (keyPressedDirection === player.direction) {
-              console.log("!! dodge roll key combo!!");
             } else {
-              // console.log('cant flank2');
+              console.log("already strafing and/or flanking. cant start flank");
             }
           }
         }
@@ -37062,15 +37388,20 @@ class App extends Component {
             this.keyPressed[player.number - 1].attack !== true &&
             this.keyPressed[player.number - 1].defend !== true
           ) {
-            if (player.dodging.state !== true && player.dodging.countState !== true) {
-              // console.log('start dodge wind up');
-              player.dodging.countState = true;
+            if (player.attacking.state !== true && player.defending.state !== true) {
+              if (player.dodging.state !== true && player.dodging.countState !== true) {
+                console.log("start dodge wind up");
+                player.dodging.countState = true;
 
-              if (plyrPullPushed === true) {
-                breakPulledPushed = true;
+                if (plyrPullPushed === true) {
+                  breakPulledPushed = true;
+                }
+              }
+              if (player.dodging.state === true || player.dodging.countState === true) {
+                console.log("already dodging");
               }
             } else {
-              // console.log('already dodging');
+              console.log("cant dodge while already attacking or defending");
             }
           }
 
@@ -42941,7 +43272,8 @@ class App extends Component {
                       popup.msg === "defending" ||
                       popup.msg === "prePush" ||
                       popup.msg === "prePull" ||
-                      popup.msg === "dodging"
+                      popup.msg === "dodging" ||
+                      popup.msg === "charging"
                     ) {
                       popupProgress = true;
                     }
@@ -42994,6 +43326,7 @@ class App extends Component {
                         5
                       );
                       context.fill();
+                      // console.log("playerPopupProgress init", perc);
                     }
 
                     if (writeValue === true) {
@@ -43124,7 +43457,8 @@ class App extends Component {
                         popup.msg === "defending" ||
                         popup.msg === "prePush" ||
                         popup.msg === "prePull" ||
-                        popup.msg === "dodging"
+                        popup.msg === "dodging" ||
+                        popup.msg === "charging"
                       ) {
                         popupProgress = true;
                       }
@@ -43176,6 +43510,11 @@ class App extends Component {
                           5
                         );
                         context.fill();
+                        // console.log(
+                        //   "playerPopupProgress continue",
+                        //   perc,
+                        //   this.popupSize * perc
+                        // );
                       }
 
                       if (writeValue === true) {
@@ -43198,6 +43537,30 @@ class App extends Component {
                           this.popupImgSize * 0.75
                         );
                       } else {
+                        if (player.action === "defending") {
+                          if (player.defending.peak === true) {
+                            popup.img = this.popupImageRef.defending_1;
+                          }
+                          if (player.defending.decay.state === true) {
+                            let prog =
+                              100 -
+                              (player.defending.decay.count /
+                                player.defending.decay.limit) *
+                                100;
+                            if (prog > 10) {
+                              popup.img = this.popupImageRef.defending_4;
+                            }
+                            if (prog > 30) {
+                              popup.img = this.popupImageRef.defending_3;
+                            }
+                            if (prog > 50) {
+                              popup.img = this.popupImageRef.defending_2;
+                            }
+                            if (prog > 70) {
+                              popup.img = this.popupImageRef.defending_1;
+                            }
+                          }
+                        }
                         context.drawImage(
                           popup.img,
                           popupDrawCoords.origin.x + centerPopupOffset,
@@ -44371,6 +44734,7 @@ class App extends Component {
       cellVoiding2: this.cellVoidingIndicate2Ref.current,
       clashing: this.deflectIndicate2Ref.current,
       timer: this.timerIndicateRef.current,
+      charging: this.chargeIndicateRef.current,
     };
     this.indicatorImgs = {
       preAttack: this.preAttackIndicateRef.current,
@@ -46329,6 +46693,12 @@ class App extends Component {
             src={timerIndicate}
             className="hidden playerImgs"
             ref={this.timerIndicateRef}
+            alt="logo"
+          />
+          <img
+            src={chargeIndicate}
+            className="hidden playerImgs"
+            ref={this.chargeIndicateRef}
             alt="logo"
           />
           <img
