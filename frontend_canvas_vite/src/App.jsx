@@ -805,6 +805,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -892,6 +894,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "sword1",
           item: {},
@@ -986,6 +990,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1086,6 +1092,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1173,6 +1181,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1260,6 +1270,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1347,6 +1359,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1434,6 +1448,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1521,6 +1537,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1647,6 +1665,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1691,6 +1711,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "crossbow1",
           item: {},
@@ -1735,6 +1757,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "sword1",
           item: {},
@@ -1779,6 +1803,8 @@ class App extends Component {
             count: 0,
             peak: 0,
             limit: 0,
+            direction: "",
+            directionType: "",
           },
           itemNameRef: "sword1",
           item: {},
@@ -12885,6 +12911,31 @@ class App extends Component {
           if (trap.acting.count === trap.acting.peak) {
             // console.log("trap is acting: attack peak");
 
+            let whatDirection = this.rnJesus(0, 4);
+            switch (whatDirection) {
+              case 0:
+                trap.acting.direction = "none";
+                trap.acting.directionType = "thrust";
+                break;
+              case 1:
+                trap.acting.direction = "north";
+                trap.acting.directionType = "slash";
+                break;
+              case 0:
+                trap.acting.direction = "south";
+                trap.acting.directionType = "slash";
+                break;
+              case 0:
+                trap.acting.direction = "east";
+                trap.acting.directionType = "slash";
+                break;
+              case 0:
+                trap.acting.direction = "west";
+                trap.acting.directionType = "slash";
+                break;
+              default:
+                break;
+            }
             if (trap.item.subType === "crossbow") {
               if (trap.ammo > 0) {
                 trap.ammo--;
@@ -12944,6 +12995,8 @@ class App extends Component {
           if (trap.acting.count >= trap.acting.limit) {
             trap.acting.count = 0;
             trap.acting.state = false;
+            trap.acting.direction = "";
+            trap.acting.directionType = "";
             console.log("trap action complete");
             this.cellPopups.splice(
               this.cellPopups.indexOf(
@@ -17035,6 +17088,9 @@ class App extends Component {
             msg: "attackCancelled",
             img: "",
           });
+        }
+        if (this.camera.customView.state !== true && player.ai.state !== true) {
+          this.setAutoCamera("defendFocusBreak", player);
         }
 
         break;
