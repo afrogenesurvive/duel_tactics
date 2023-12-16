@@ -9651,19 +9651,19 @@ class App extends Component {
       return mod2;
     };
 
-    const finish = (base2, unit2) => {
+    const finish = (base2, unit3) => {
       switch (this.gridWidth) {
         case 12:
-          unit2 = base2 / 1.5;
+          unit3 = base2 / 1.5;
           break;
         case 9:
-          unit2 = base2;
+          unit3 = base2;
           break;
         case 6:
-          unit2 = base2 * 2;
+          unit3 = base2 * 2;
           break;
         case 3:
-          unit2 = base2 * 6;
+          unit3 = base2 * 6;
           break;
         default:
       }
@@ -9681,7 +9681,7 @@ class App extends Component {
         dir = this.getOppositeDirection(data.elasticCounter.direction);
       }
 
-      mod = getMod(dir, unit2);
+      mod = getMod(dir, unit3);
 
       if (data.elasticCounter.pause.state !== true) {
         finalCoords = {
@@ -9889,26 +9889,42 @@ class App extends Component {
       finish(base, unit);
     }
 
-    if (type === "attacking") {
+    if (type === "attacking" || type === "defending") {
       let base = 0.002;
       let unit;
 
       if (data.elasticCounter.countUp.count <= 3) {
-        base = 0.003;
+        if (data[type].directionType === "thrust") {
+          base = 0.003;
+        }
+        if (data[type].directionType === "slash") {
+          base = 0.005;
+        }
       }
       if (
         data.elasticCounter.countUp.count > 3 &&
         data.elasticCounter.countUp.count < 6
       ) {
-        base = 0.001;
+        if (data[type].directionType === "thrust") {
+          base = 0.001;
+        }
+        if (data[type].directionType === "slash") {
+          base = 0.003;
+        }
       }
       if (data.elasticCounter.countUp.count > 6) {
-        base = 0.0008;
+        if (data[type].directionType === "thrust") {
+          base = 0.0008;
+        }
+        if (data[type].directionType === "slash") {
+          base = 0.002;
+        }
       }
 
       finish(base, unit);
     }
 
+    // console.log("calcElasticCountCoords", finalCoords);
     return {
       coords: finalCoords,
       drawCell: drawCell,
@@ -33046,7 +33062,7 @@ class App extends Component {
     }
     if (this.time === 100 && player.number === 2) {
       // this.pushBack(player, "east");
-      // this.setDeflection(player, "parried", false);
+      this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
 
@@ -40459,7 +40475,7 @@ class App extends Component {
           // console.log("this.playerDrawHeight", thisplayerDrawHeight);
         };
 
-        for (const plyr of this.players) {
+        for (let plyr of this.players) {
           let point = {
             x: plyr.nextPosition.x,
             y: plyr.nextPosition.y,
@@ -41436,9 +41452,17 @@ class App extends Component {
                 "player",
                 plyr
               );
-              let finalCoords = elasticCountCalcResult.coords;
-              let drawCell = elasticCountCalcResult.drawCell;
-              plyr = elasticCountCalcResult.player;
+              let finalCoords = this.calcElasticCountCoords(
+                "halfPushBack",
+                "player",
+                plyr
+              ).coords;
+              let drawCell = this.calcElasticCountCoords(
+                "halfPushBack",
+                "player",
+                plyr
+              ).drawCell;
+              plyr = this.calcElasticCountCoords("halfPushBack", "player", plyr).player;
 
               if (x === 0 && y === 0) {
                 // this.testDraw.push({
@@ -41745,14 +41769,17 @@ class App extends Component {
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "attacking"
             ) {
-              elasticCountCalcResult = this.calcElasticCountCoords(
+              let finalCoords = this.calcElasticCountCoords(
                 "attacking",
                 "player",
                 plyr
-              );
-              let finalCoords = elasticCountCalcResult.coords;
-              let drawCell = elasticCountCalcResult.drawCell;
-              plyr = elasticCountCalcResult.player;
+              ).coords;
+              let drawCell = this.calcElasticCountCoords(
+                "attacking",
+                "player",
+                plyr
+              ).drawCell;
+              plyr = this.calcElasticCountCoords("attacking", "player", plyr).player;
               finalCoords.x -= 5;
               finalCoords.y -= 10;
 
@@ -41928,14 +41955,17 @@ class App extends Component {
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "defending"
             ) {
-              elasticCountCalcResult = this.calcElasticCountCoords(
+              let finalCoords = this.calcElasticCountCoords(
                 "defending",
                 "player",
                 plyr
-              );
-              let finalCoords = elasticCountCalcResult.coords;
-              let drawCell = elasticCountCalcResult.drawCell;
-              plyr = elasticCountCalcResult.player;
+              ).coords;
+              let drawCell = this.calcElasticCountCoords(
+                "defending",
+                "player",
+                plyr
+              ).drawCell;
+              plyr = this.calcElasticCountCoords("defending", "player", plyr).player;
 
               finalCoords.x -= 5;
               finalCoords.y -= 10;
@@ -42468,14 +42498,17 @@ class App extends Component {
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "deflected"
             ) {
-              elasticCountCalcResult = this.calcElasticCountCoords(
+              let finalCoords = this.calcElasticCountCoords(
                 "deflected",
                 "player",
                 plyr
-              );
-              let finalCoords = elasticCountCalcResult.coords;
-              let drawCell = elasticCountCalcResult.drawCell;
-              plyr = elasticCountCalcResult.player;
+              ).coords;
+              let drawCell = this.calcElasticCountCoords(
+                "deflected",
+                "player",
+                plyr
+              ).drawCell;
+              plyr = this.calcElasticCountCoords("deflected", "player", plyr).player;
               finalCoords.x -= 5;
               finalCoords.y -= 10;
 
@@ -42602,14 +42635,18 @@ class App extends Component {
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "dodging"
             ) {
-              elasticCountCalcResult = this.calcElasticCountCoords(
+              let finalCoords = this.calcElasticCountCoords(
                 "dodging",
                 "player",
                 plyr
-              );
-              let finalCoords = elasticCountCalcResult.coords;
-              let drawCell = elasticCountCalcResult.drawCell;
-              plyr = elasticCountCalcResult.player;
+              ).coords;
+              let drawCell = this.calcElasticCountCoords(
+                "dodging",
+                "player",
+                plyr
+              ).drawCell;
+
+              plyr = this.calcElasticCountCoords("dodging", "player", plyr).player;
               finalCoords.x -= 5;
               finalCoords.y -= 10;
 
