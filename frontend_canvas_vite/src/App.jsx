@@ -3622,8 +3622,8 @@ class App extends Component {
         },
         crossbow: {
           thrust: {
-            normal: 50,
-            charged: 60,
+            normal: 40,
+            charged: 50,
           },
           slash: {
             normal: 50,
