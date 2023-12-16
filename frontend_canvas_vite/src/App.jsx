@@ -12937,6 +12937,8 @@ class App extends Component {
                 break;
             }
             if (trap.item.subType === "crossbow") {
+              trap.acting.direction = "none";
+              trap.acting.directionType = "thrust";
               if (trap.ammo > 0) {
                 trap.ammo--;
                 let result = this.projectileCreator(
@@ -13820,7 +13822,6 @@ class App extends Component {
     console.log("trapsToSet", trapsToSet);
     // return trapsToSet;
   };
-  setObstacleBarrierDirectionalAttack = () => {};
   checkSetAttackDefendDirectionalInput = (mode, action, player) => {
     // stage is either 'init' or 'windup'
     let charging = false;
