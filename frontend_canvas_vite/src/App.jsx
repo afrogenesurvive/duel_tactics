@@ -20,6 +20,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import logo from "./logo.svg";
+import bgCompass from "./assets/bgCompass.png";
+
 import floorDirt from "./assets/terrain/floorDirt.png";
 import floorGrass from "./assets/terrain/floorGrass.png";
 import floorIce from "./assets/terrain/floorIce.png";
@@ -1451,7 +1453,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "crossbow1",
+          itemNameRef: "sword1",
           item: {},
           ammo: 0,
         },
@@ -4029,6 +4031,8 @@ class App extends Component {
     this.testRefSouth = React.createRef();
     this.testRefEast = React.createRef();
     this.testRefWest = React.createRef();
+
+    this.bgCompassRef = React.createRef();
 
     this.popupProgressImgRef = React.createRef();
     this.popupProgressSvgRef = React.createRef();
@@ -12767,15 +12771,15 @@ class App extends Component {
                 trap.acting.direction = "north";
                 trap.acting.directionType = "slash";
                 break;
-              case 0:
+              case 2:
                 trap.acting.direction = "south";
                 trap.acting.directionType = "slash";
                 break;
-              case 0:
+              case 3:
                 trap.acting.direction = "east";
                 trap.acting.directionType = "slash";
                 break;
-              case 0:
+              case 4:
                 trap.acting.direction = "west";
                 trap.acting.directionType = "slash";
                 break;
@@ -12843,8 +12847,8 @@ class App extends Component {
           if (trap.acting.count >= trap.acting.limit) {
             trap.acting.count = 0;
             trap.acting.state = false;
-            trap.acting.direction = "";
-            trap.acting.directionType = "";
+            // trap.acting.direction = "";
+            // trap.acting.directionType = "";
             console.log("trap action complete");
             this.cellPopups.splice(
               this.cellPopups.indexOf(
@@ -13535,6 +13539,7 @@ class App extends Component {
           if (elem.obstacle.state === true) {
             type = "obstacle";
             elem[type].trap = trapRandomizer(elem[type].trap, type);
+            elem[type].trap.state = true;
             elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
             trapsToSet.push({
               type: type,
@@ -13545,6 +13550,7 @@ class App extends Component {
           if (elem.barrier.state === true) {
             type = "barrier";
             elem[type].trap = trapRandomizer(elem[type].trap, type);
+            elem[type].trap.state = true;
             elem[type].trap = this.obstacleBarrierTrapInitSet("", type, elem);
             trapsToSet.push({
               type: type,
@@ -14707,7 +14713,8 @@ class App extends Component {
           ownerWeaponType,
           "@",
           logCellNo,
-          "successfully. damage,deflect target/defender"
+          "successfully. damage,deflect target/defender",
+          owner.trap.acting.direction
         );
         this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
 
@@ -33062,7 +33069,7 @@ class App extends Component {
     }
     if (this.time === 100 && player.number === 2) {
       // this.pushBack(player, "east");
-      this.setDeflection(player, "parried", false);
+      // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
 
@@ -45556,6 +45563,13 @@ class App extends Component {
                 />
               </div>
             )}
+            //BACKGROUND COMPASS
+            <img
+              src={bgCompass}
+              className="bgCompass"
+              ref={this.bgCompassRef}
+              alt="logo"
+            />
             // SETTINGS BOX
             <div className="settingsSwitch">
               <a className="setSwitchLink" onClick={this.openSettings}>
@@ -45777,6 +45791,13 @@ class App extends Component {
             ref={this.popupProgressImgRef}
             alt="logo"
           />
+          <img
+            src={bgCompass}
+            className="hidden bgCompass"
+            ref={this.bgCompassRef}
+            alt="logo"
+          />
+
           <img src={floorGrass} className="hidden" ref={this.floorGrassRef} alt="logo" />
           <img src={floorDirt} className="hidden" ref={this.floorDirtRef} alt="logo" />
           <img src={floorIce} className="hidden" ref={this.floorIceRef} alt="logo" />
