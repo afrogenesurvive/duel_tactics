@@ -3713,7 +3713,7 @@ class App extends Component {
         },
         sword: {
           thrust: 15,
-          slash: 20,
+          slash: 15,
           // 12
         },
         spear: {
@@ -9526,8 +9526,11 @@ class App extends Component {
 
       if (subType === "windup") {
         let countCalcUp = Math.floor(
-          (player.defending.limit - player.defending.peakCount) / 2
+          (player.defending.peakCount - player.defending.count) / 2
         );
+        // Math.floor(
+        //   (player.defending.limit - player.defending.peakCount) / 2
+        // );
 
         if (direction === "none") {
           direction = player.direction;
@@ -13989,7 +13992,7 @@ class App extends Component {
             }
           }
         }
-        // console.log("directional input thresh", defendInputThresh);
+        console.log("directional input thresh", defendInputThresh);
       }
     }
 
@@ -34459,7 +34462,7 @@ class App extends Component {
             if (player.defending.peak === true) {
               console.log("peak defense. cant feint");
             } else {
-              console.log("too late to feint defense");
+              // console.log("too late to feint defense");
             }
           }
         }
@@ -35212,7 +35215,7 @@ class App extends Component {
                   this.setAutoCamera("defendFocus", player);
                 }
               } else {
-                console.log("no setting auto cam: defendFocus");
+                // console.log("no setting auto cam: defendFocus");
               }
             }
           }
@@ -35229,8 +35232,6 @@ class App extends Component {
 
           let executeDefend = false;
           if (
-            player.elasticCounter.state &&
-            player.elasticCounter.type !== "defending" &&
             player.elasticCounter.subType !== "windup" &&
             player.defending.count === player.defending.peakCount &&
             player.defending.decay.state !== true
