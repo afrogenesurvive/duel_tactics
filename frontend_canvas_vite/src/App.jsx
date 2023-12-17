@@ -13906,34 +13906,29 @@ class App extends Component {
         }
         let defendPeak =
           player.defending.animRef.peak[defendType][player.defending.directionType];
-        let defendDecayLimit = Math.ceil(
-          (player.defending.decay.limit - defendPeak) * 0.55
-        );
+        let defendDecayLimit = player.defending.decay.limit;
         let defendInputThresh = defendDecayLimit + defendPeak - this.defendPeakAllowance;
-        if (input === true) {
-          if (player[action].count <= defendInputThresh) {
-            player[action].direction = inputDirection;
-            player[action].directionType = "slash";
-          }
-          if (player[action].count > defendInputThresh) {
-            if (player[action].direction !== "") {
-              if (player[action].direction !== inputDirection) {
-                console.log(
-                  "too late to change defend direction: count",
-                  player[action].count,
-                  "thresh",
-                  defendInputThresh
-                );
-              }
+        if (player[action].count <= defendInputThresh) {
+          if (input === true) {
+            if (player[action].direction === inputDirection) {
+            } else {
+              console.log(
+                "changing defend direction before thresh. from",
+                player[action].direction,
+                "to",
+                inputDirection
+              );
+              player[action].direction = inputDirection;
+              player[action].directionType = "slash";
             }
-
-            if (player[action].direction === "" || player[action].directionType === "") {
-              player[action].direction = "none";
-              player[action].directionType = "thrust";
-            }
+          } else {
+            player[action].direction = "none";
+            player[action].directionType = "thrust";
           }
         } else {
-          if (player[action].count <= defendInputThresh) {
+          if (input === true) {
+            console.log("too late to change defend direction: count");
+          } else {
             if (player[action].direction === "" || player[action].directionType === "") {
               player[action].direction = "none";
               player[action].directionType = "thrust";
@@ -35075,6 +35070,8 @@ class App extends Component {
             player
           ).player;
 
+          let defendDecayLimitPercentage = 0.55; // calc & increase this based on defend stats
+
           let defendType = player.currentWeapon.type;
           if (player.currentWeapon.name === "") {
             defendType = "unarmed";
@@ -35085,6 +35082,9 @@ class App extends Component {
           player.defending.peakCount = defendPeak;
           player.defending.limit =
             player.defending.animRef.limit[defendType][player.defending.directionType];
+          player.defending.decay.limit = Math.ceil(
+            (player.defending.limit - defendPeak) * defendDecayLimitPercentage
+          );
           if (
             player.defending.count < defendPeak &&
             player.defending.decay.state !== true
@@ -35139,18 +35139,12 @@ class App extends Component {
             player.defending.count === defendPeak &&
             player.defending.decay.state !== true
           ) {
-            let defendDecayLimitPercentage = 0.55; // calc & increase this based on defend stats
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
               player.action = "defending";
               player.defending.peak = true;
               player.defending.count++;
-              player.defending.decay = {
-                state: true,
-                count: 0,
-                limit: Math.ceil(
-                  (player.defending.limit - defendPeak) * defendDecayLimitPercentage
-                ),
-              };
+              player.defending.decay.state = true;
+              player.defending.decay.count = 0;
               player.stamina.current =
                 player.stamina.current - this.staminaCostRef.defend.peak;
 
