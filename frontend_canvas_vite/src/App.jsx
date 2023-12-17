@@ -3865,7 +3865,7 @@ class App extends Component {
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
-    this.showPlayerOutlines = false;
+    this.showPlayerOutlines = true;
 
     // CAMERA
     this.toggleCameraMode = false;
