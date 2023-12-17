@@ -3707,13 +3707,13 @@ class App extends Component {
       },
       peak: {
         unarmed: {
-          thrust: 10,
-          slash: 10,
+          thrust: 11,
+          slash: 11,
           // 7
         },
         sword: {
           thrust: 15,
-          slash: 15,
+          slash: 20,
           // 12
         },
         spear: {
@@ -9478,6 +9478,12 @@ class App extends Component {
       // if (countCalcUp > 10) {
       //   countCalcUp = 10;
       // }
+      if (subType === "windup") {
+        let dirInputThresh = Math.ceil(
+          player[type].animRef.peak.unarmed.thrust.normal / 2
+        );
+        countCalcUp = Math.floor(dirInputThresh / 2);
+      }
 
       let direction = player.attacking.direction;
       if (direction === "none") {
@@ -9488,7 +9494,7 @@ class App extends Component {
         state: true,
         direction: direction,
         type: "attacking",
-        subType: "",
+        subType: subType,
         countUp: {
           state: false,
           count: 0,
@@ -9517,22 +9523,11 @@ class App extends Component {
 
     if (type === "defending") {
       let direction = player.defending.direction;
-      if (subType === "peak") {
-        let point = {
-          x: player.currentPosition.cell.center.x,
-          y: player.currentPosition.cell.center.y,
-        };
 
+      if (subType === "windup") {
         let countCalcUp = Math.floor(
           (player.defending.limit - player.defending.peakCount) / 2
         );
-        // let countCalcUp = Math.floor(
-        //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
-        // );
-        // console.log("beep", countCalcUp);
-        // if (countCalcUp > 10) {
-        //   countCalcUp = 10;
-        // }
 
         if (direction === "none") {
           direction = player.direction;
@@ -9542,7 +9537,7 @@ class App extends Component {
           state: true,
           direction: direction,
           type: "defending",
-          subType: "",
+          subType: subType,
           countUp: {
             state: false,
             count: 0,
@@ -9568,12 +9563,76 @@ class App extends Component {
           },
         };
       }
+      if (subType === "peak") {
+        let point = {
+          x: player.currentPosition.cell.center.x,
+          y: player.currentPosition.cell.center.y,
+        };
+
+        let countCalcUp = Math.floor(
+          (player.defending.limit - player.defending.peakCount) / 2
+        );
+        // let countCalcUp = Math.floor(
+        //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
+        // );
+        // console.log("beep", countCalcUp);
+        // if (countCalcUp > 10) {
+        //   countCalcUp = 10;
+        // }
+
+        if (direction === "none") {
+          direction = player.direction;
+        }
+
+        player.elasticCounter = {
+          state: true,
+          direction: direction,
+          type: "defending",
+          subType: subType,
+          countUp: {
+            state: false,
+            count: 0,
+            limit: countCalcUp,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: countCalcUp,
+          },
+          coords: {
+            // x: point.x - this.playerDrawWidth / 2,
+            // y: point.y - this.playerDrawHeight / 2,
+            x: player.nextPosition.x - this.floorImageHeight / 2,
+            y: player.nextPosition.y - this.floorImageHeight,
+          },
+          pause: {
+            preState: pause,
+            state: false,
+            type: "",
+            count: 0,
+            limit: 0,
+          },
+        };
+      }
+
       if (subType === "decay") {
+        let remainder = player.defending.limit - player.defending.count;
         if (direction === "none") {
           direction = player.direction;
         }
         if (player.elasticCounter.direction !== direction) {
           player.elasticCounter.direction = direction;
+          player.elasticCounter.subType = subType;
+
+          let countCalcUp = Math.floor(remainder / 2);
+          player.elasticCounter.countUp.limit = countCalcUp;
+          player.elasticCounter.countDown.limit = countCalcUp;
+          player.elasticCounter.countUp.count = 0;
+          player.elasticCounter.countDown.count = 0;
+          if (player.elasticCounter.countDown.state === true) {
+            player.elasticCounter.countUp.state = true;
+            player.elasticCounter.countDown.state = false;
+          }
         }
       }
     }
@@ -9701,12 +9760,7 @@ class App extends Component {
 
       let targetCell;
       data.elasticCounter.coords = finalCoords;
-
-      targetCell = this.getCellFromDirection(
-        1,
-        data.currentPosition.cell.number,
-        data.elasticCounter.direction
-      );
+      targetCell = this.getCellFromDirection(1, data.currentPosition.cell.number, dir);
       let targetCellRef = this.gridInfo.find(
         (x) => x.number.x === targetCell.x && x.number.y === targetCell.y
       );
@@ -13880,7 +13934,7 @@ class App extends Component {
           }
         }
       }
-      // console.log("directional input thresh", directionalInputThresh);
+      console.log("directional input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
@@ -33067,7 +33121,8 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 100 && player.number === 1) {
+    if (this.time === 50 && player.number === 1) {
+      this.toggleCameraCustomView();
       // this.setAutoCamera("test", player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
@@ -34822,12 +34877,21 @@ class App extends Component {
               //   player.popups.find(x => x.msg === "attacking").limit = player.attacking.animRef.limit[stamAtkType]-player.attacking.count
               // }
             }
+            let dirInputThresh = Math.ceil(
+              player.attacking.animRef.peak.unarmed.thrust.normal / 2
+            );
+            if (player.attacking.count === dirInputThresh) {
+              if (player.elasticCounter.state !== true) {
+                player = this.setElasticCounter("attacking", "windup", false, player);
+              }
+            }
           }
 
           let executeAttack = false;
           if (
             player.elasticCounter.state !== true &&
-            player.elasticCounter.type !== "attacking"
+            player.elasticCounter.type !== "attacking" &&
+            player.elasticCounter.subType !== "peak"
           ) {
             if (
               chargeType !== "charged" &&
@@ -34895,7 +34959,7 @@ class App extends Component {
                 chargeType === "charged"
               );
 
-              player = this.setElasticCounter("attacking", "", false, player);
+              player = this.setElasticCounter("attacking", "peak", false, player);
 
               player.attacking.peak = true;
               if (player.attacking.charge > 0) {
@@ -35079,12 +35143,31 @@ class App extends Component {
 
           let defendPeak =
             player.defending.animRef.peak[defendType][player.defending.directionType];
-          player.defending.peakCount = defendPeak;
-          player.defending.limit =
+
+          let defenseValueDecreased = false;
+          if (
+            player.defending.decay.state !== true &&
+            defendPeak !== player.defending.peakCount
+          ) {
+            if (defendPeak > player.defending.peakCount) {
+              defenseValueDecreased = true;
+            }
+            console.log(
+              "defend peak changed from",
+              player.defending.peakCount,
+              "to",
+              defendPeak
+            );
+            player.defending.peakCount = defendPeak;
+          }
+
+          let limit =
             player.defending.animRef.limit[defendType][player.defending.directionType];
-          player.defending.decay.limit = Math.ceil(
-            (player.defending.limit - defendPeak) * defendDecayLimitPercentage
-          );
+          if (player.defending.decay.state !== true && limit !== player.defending.limit) {
+            console.log("defend limit changed from", player.defending.limit, "to", limit);
+            player.defending.limit = limit;
+          }
+
           if (
             player.defending.count < defendPeak &&
             player.defending.decay.state !== true
@@ -35134,17 +35217,38 @@ class App extends Component {
             }
           }
 
-          // PEAK, START DECAY
-          else if (
-            player.defending.count === defendPeak &&
+          if (
+            defenseValueDecreased === true &&
+            player.defending.count > player.defending.peakCount
+          ) {
+            console.log(
+              "defend was deirectional now non directional & pask peak. Execute defend"
+            );
+            player.defending.peakCount = player.defending.count;
+          }
+
+          let executeDefend = false;
+          if (
+            player.elasticCounter.state &&
+            player.elasticCounter.type !== "defending" &&
+            player.elasticCounter.subType !== "windup" &&
+            player.defending.count === player.defending.peakCount &&
             player.defending.decay.state !== true
           ) {
+            executeDefend = true;
+          }
+
+          // PEAK, START DECAY
+          if (executeDefend === true) {
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
               player.action = "defending";
               player.defending.peak = true;
               player.defending.count++;
               player.defending.decay.state = true;
               player.defending.decay.count = 0;
+              player.defending.decay.limit = Math.ceil(
+                (player.defending.limit - defendPeak) * defendDecayLimitPercentage
+              );
               player.stamina.current =
                 player.stamina.current - this.staminaCostRef.defend.peak;
 
@@ -35323,6 +35427,13 @@ class App extends Component {
                 this.setAutoCamera("defendFocusBreak", player);
               } else {
                 console.log("no setting auto cam: defendFocusBreak");
+              }
+              // RESET ELASTIC COUNTER
+              if (
+                player.elasticCounter.state === true &&
+                player.elasticCounter.type === "defending"
+              ) {
+                player.elasticCounter.state = false;
               }
               console.log("defend end");
             }
@@ -42004,6 +42115,7 @@ class App extends Component {
 
               // test logging
               if (x === this.gridWidth && y === this.gridWidth) {
+                this.testDraw.push({ color: "red", x: finalCoords.x, y: finalCoords.y });
                 if (plyr.elasticCounter.countUp.state === true) {
                   // this.testDraw.push({
                   //   color: "red",
