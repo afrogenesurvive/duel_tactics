@@ -13839,6 +13839,8 @@ class App extends Component {
           player.elasticCounter.type === "attacking"
         ) {
           player.elasticCounter.state = false;
+          player.elasticCounter.type = "";
+          player.elasticCounter.subType = "";
         }
 
         let popup = player.popups.find((x) => x.msg === "attacking");
@@ -16945,6 +16947,8 @@ class App extends Component {
       player.elasticCounter.type === player.action
     ) {
       player.elasticCounter.state = false;
+      player.elasticCounter.type = "";
+      player.elasticCounter.subType = "";
     }
 
     switch (player.action) {
@@ -34467,6 +34471,8 @@ class App extends Component {
               player.elasticCounter.type === "defending"
             ) {
               player.elasticCounter.state = false;
+              player.elasticCounter.type = "";
+              player.elasticCounter.subType = "";
             }
 
             if (this.camera.customView.state !== true && player.ai.state !== true) {
@@ -34567,6 +34573,8 @@ class App extends Component {
               player.elasticCounter.type === "attacking"
             ) {
               player.elasticCounter.state = false;
+              player.elasticCounter.type = "";
+              player.elasticCounter.subType = "";
             }
 
             let popup = player.popups.find((x) => x.msg === "attacking");
@@ -34583,6 +34591,7 @@ class App extends Component {
                 1
               );
             }
+            console.log("attack feinted");
 
             if (this.camera.customView.state !== true && player.ai.state !== true) {
               this.setAutoCamera("attackFocusBreak", player);
@@ -34618,6 +34627,8 @@ class App extends Component {
             player.elasticCounter.type === "dodging"
           ) {
             player.elasticCounter.state = false;
+            player.elasticCounter.type = "";
+            player.elasticCounter.subType = "";
           }
 
           if (player.popups.find((x) => x.msg === "dodging")) {
@@ -34768,6 +34779,8 @@ class App extends Component {
                   player.elasticCounter.type === "dodging"
                 ) {
                   player.elasticCounter.state = false;
+                  player.elasticCounter.type = "";
+                  player.elasticCounter.subType = "";
                 }
               }
             }
@@ -35241,7 +35254,7 @@ class App extends Component {
             player.defending.count > player.defending.peakCount
           ) {
             console.log(
-              "defend was deirectional now non directional & pask peak. Execute defend"
+              "defend was directional now non directional & pask peak. Execute defend"
             );
             player.defending.peakCount = player.defending.count;
           }
@@ -35451,6 +35464,8 @@ class App extends Component {
                 player.elasticCounter.type === "defending"
               ) {
                 player.elasticCounter.state = false;
+                player.elasticCounter.type = "";
+                player.elasticCounter.subType = "";
               }
               console.log("defend end");
             }
@@ -35857,6 +35872,8 @@ class App extends Component {
               // IF PAUSE IS END, TURN OFF ELASTIC COUNT
               if (player.elasticCounter.pause.type === "end") {
                 player.elasticCounter.state = false;
+                player.elasticCounter.type = "";
+                player.elasticCounter.subType = "";
                 // console.log("end pause count finished. turn off elastic count");
               }
 
@@ -35913,6 +35930,7 @@ class App extends Component {
               if (player.elasticCounter.pause.type !== "end") {
                 player.elasticCounter.state = false;
                 player.elasticCounter.type = "";
+                player.elasticCounter.subType = "";
                 // console.log("pause is not end. turn off elastic count");
               }
 
@@ -36249,6 +36267,8 @@ class App extends Component {
             player.elasticCounter.type === "dodging"
           ) {
             player.elasticCounter.state = false;
+            player.elasticCounter.type = "";
+            player.elasticCounter.subType = "";
           }
 
           if (this.players[player.number - 1].popups.find((x) => x.msg === "dodging")) {
@@ -36525,6 +36545,8 @@ class App extends Component {
                   player.elasticCounter.type === "dodging"
                 ) {
                   player.elasticCounter.state = false;
+                  player.elasticCounter.type = "";
+                  player.elasticCounter.subType = "";
                 }
               };
 
@@ -37277,6 +37299,8 @@ class App extends Component {
                       player.elasticCounter.type === "dodging"
                     ) {
                       player.elasticCounter.state = false;
+                      player.elasticCounter.type = "";
+                      player.elasticCounter.subType = "";
                     }
                   }
                   this.keyPressed[player.number - 1].dodge = false;
@@ -37711,6 +37735,8 @@ class App extends Component {
           // IF PAUSE IS END, TURN OFF ELASTIC COUNT
           if (player.elasticCounter.pause.type === "end") {
             player.elasticCounter.state = false;
+            player.elasticCounter.type = "";
+            player.elasticCounter.subType = "";
             // player.action = "idle";
             // console.log('end pause count finished. turn off elastic count');
           }
@@ -37762,6 +37788,8 @@ class App extends Component {
           // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
           if (player.elasticCounter.pause.type !== "end") {
             player.elasticCounter.state = false;
+            player.elasticCounter.type = "";
+            player.elasticCounter.subType = "";
             player.action = "idle";
 
             // reset deflected here?
@@ -38394,68 +38422,68 @@ class App extends Component {
 
     // POPUPS
     // Testing
-    if (this.time === 50 || this.time === 300) {
-      let newArray = [];
-      let x = 0;
-      let y = 0;
-      for (const [key, value] of Object.entries(this.popupImageRef)) {
-        newArray.push(key);
-      }
-      for (var i = 0; i < 1; i++) {
-        // if (
-        //   !player.popups.find((x) => x.msg === newArray[i]) &&
-        //   // player.number === 2 &&
-        //   newArray[i] !== "hpUp" &&
-        //   newArray[i] !== "hpDown"
-        // ) {
-        //   player.popups.push({
-        //     state: false,
-        //     count: 0,
-        //     limit: 30,
-        //     type: "",
-        //     position: "",
-        //     msg: newArray[i],
-        //     img: "",
-        //     cell: this.gridInfo.find(
-        //       (x) =>
-        //         x.number.x === player.currentPosition.cell.number.x &&
-        //         x.number.y === player.currentPosition.cell.number.y
-        //     ),
-        //   });
-        // }
-        // if (
-        //   newArray[i] !==  "hpUp" &&
-        //   newArray[i] !==  "hpDown" &&
-        //   !this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 1 && x.cell.number.y === 5)
-        // ) {
-        //   this.cellPopups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 35,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       img: '',
-        //       cell: this.gridInfo.find(x => x.number.x === 1 && x.number.y === 5)
-        //     }
-        //   )
-        // }
-        // if (!this.cellPopups.find((x) => x.msg === "test" && x.cell.number.x === 4 && x.cell.number.y === 3)) {
-        //   this.cellPopups.push({
-        //     state: false,
-        //     count: 0,
-        //     limit: 35,
-        //     type: "",
-        //     position: "",
-        //     msg: "bgvgv",
-        //     color: "",
-        //     img: "",
-        //     cell: this.gridInfo.find((x) => x.number.x === 4 && x.number.y === 3),
-        //   });
-        // }
-      }
-    }
+    // if (this.time === 250 || this.time === 500) {
+    //   let newArray = [];
+    //   let x = 0;
+    //   let y = 0;
+    //   for (const [key, value] of Object.entries(this.popupImageRef)) {
+    //     newArray.push(key);
+    //   }
+    //   player.popups.push({
+    //     state: false,
+    //     count: 0,
+    //     limit: 30,
+    //     type: "",
+    //     position: "",
+    //     msg: "hpUp" + "_-5",
+    //     img: "",
+    //     cell: this.gridInfo.find(
+    //       (x) =>
+    //         x.number.x === player.currentPosition.cell.number.x &&
+    //         x.number.y === player.currentPosition.cell.number.y
+    //     ),
+    //   });
+    //   for (var i = 0; i < 10; i++) {
+    //     if (
+    //       !player.popups.find((x) => x.msg === newArray[i])
+    //       // player.number === 2 &&
+    //       // newArray[i] !== "hpUp" &&
+    //       // newArray[i] !== "hpDown"
+    //     ) {
+    //       if (newArray[i] === "hpUp" || newArray[i] === "hpDown") {
+    //         player.popups.push({
+    //           state: false,
+    //           count: 0,
+    //           limit: 30,
+    //           type: "",
+    //           position: "",
+    //           msg: newArray[i] + "_-5",
+    //           img: "",
+    //           cell: this.gridInfo.find(
+    //             (x) =>
+    //               x.number.x === player.currentPosition.cell.number.x &&
+    //               x.number.y === player.currentPosition.cell.number.y
+    //           ),
+    //         });
+    //       } else {
+    //         player.popups.push({
+    //           state: false,
+    //           count: 0,
+    //           limit: 30,
+    //           type: "",
+    //           position: "",
+    //           msg: newArray[i],
+    //           img: "",
+    //           cell: this.gridInfo.find(
+    //             (x) =>
+    //               x.number.x === player.currentPosition.cell.number.x &&
+    //               x.number.y === player.currentPosition.cell.number.y
+    //           ),
+    //         });
+    //       }
+    //     }
+    //   }
+    // }
     //PLAYER
     if (player.popups.length > 0) {
       for (const popup of player.popups) {
