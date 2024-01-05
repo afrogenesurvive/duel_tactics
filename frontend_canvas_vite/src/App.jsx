@@ -13811,6 +13811,7 @@ class App extends Component {
       if (player.attacking.count < player.attacking.peakCount) {
         // console.log('attack windup key release before peak. feinting. refund stamina part');
 
+        let dir = player.attacking.direction;
         player.action = "idle";
         player.attacking = {
           state: false,
@@ -13850,10 +13851,59 @@ class App extends Component {
             1
           );
         }
+        if (dir === "none") {
+          popup = player.popups.find((x) => x.msg === "noDirection2");
+          if (popup) {
+            player.popups.splice(
+              player.popups.findIndex((x) => x.msg === "noDirection2"),
+              1
+            );
+          }
+        } else {
+          popup = player.popups.find((x) => x.msg === dir + "Direction");
+          if (popup) {
+            player.popups.splice(
+              player.popups.findIndex((x) => x.msg === dir + "Direction"),
+              1
+            );
+          }
+        }
+        popup = player.popups.find((x) => x.msg === "charging");
+        if (popup) {
+          player.popups.splice(
+            player.popups.findIndex((x) => x.msg === "charging"),
+            1
+          );
+        }
 
         if (this.camera.customView.state !== true && player.ai.state !== true) {
           this.setAutoCamera("attackFocusBreak", player);
         }
+      }
+    };
+
+    const popup = (dir) => {
+      let msg = dir + "Direction";
+      if (dir === "none") {
+        msg = "noDirection2";
+      }
+      const popup = player.popups.find((x) => x.msg === "noDirection2");
+      if (popup) {
+        player.popups.splice(
+          player.popups.findIndex((x) => x.msg === "noDirection2"),
+          1
+        );
+      }
+      if (!player.popups.find((x) => x.msg === msg)) {
+        player.popups.push({
+          state: false,
+          count: 0,
+          limit: player.defending.limit,
+          type: "",
+          position: "",
+          msg: msg,
+          img: "",
+        });
       }
     };
 
@@ -13865,6 +13915,7 @@ class App extends Component {
         if (mode === "init") {
           player[action].direction = "none";
           player[action].directionType = "thrust";
+          // popup("none");
         }
         if (mode === "windup") {
           if (player[action].count < directionalInputThresh) {
@@ -13872,6 +13923,7 @@ class App extends Component {
               if (inputDirection === player.direction) {
                 player[action].direction = inputDirection;
                 player[action].directionType = "slash";
+                popup(inputDirection);
               } else {
                 console.log(
                   "crossbow directional atk & charge can only be in player direction"
@@ -13901,6 +13953,7 @@ class App extends Component {
             if (player[action].direction === "" || player[action].directionType === "") {
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
+              // popup(inputDirection);
             } else {
               // console.log("do nothing");
             }
@@ -13908,6 +13961,7 @@ class App extends Component {
             if (player[action].direction === "" || player[action].directionType === "") {
               player[action].direction = "none";
               player[action].directionType = "thrust";
+              popup("none");
             }
           }
         }
@@ -13925,6 +13979,7 @@ class App extends Component {
                 );
                 player[action].direction = inputDirection;
                 player[action].directionType = "slash";
+                popup(inputDirection);
               }
             } else {
               if (
@@ -13934,6 +13989,7 @@ class App extends Component {
                 console.log("winding up within input thresh but no input. set to thrust");
                 player[action].direction = "none";
                 player[action].directionType = "thrust";
+                popup("none");
               }
               // console.log(" direction and type should already be set, do nothing");
             }
@@ -13955,7 +14011,7 @@ class App extends Component {
           }
         }
       }
-      console.log("directional input thresh", directionalInputThresh);
+      console.log("directional attack input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
@@ -13964,6 +14020,7 @@ class App extends Component {
           if (player[action].direction === "" || player[action].directionType === "") {
             player[action].direction = inputDirection;
             player[action].directionType = "slash";
+            // popup(inputDirection);
           } else {
             // console.log("do nothing");
           }
@@ -13971,6 +14028,7 @@ class App extends Component {
           if (player[action].direction === "" || player[action].directionType === "") {
             player[action].direction = "none";
             player[action].directionType = "thrust";
+            // popup("none");
           }
         }
       }
@@ -13995,10 +14053,12 @@ class App extends Component {
               );
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
+              popup(inputDirection);
             }
           } else {
             player[action].direction = "none";
             player[action].directionType = "thrust";
+            popup("none");
           }
         } else {
           if (input === true) {
@@ -14007,10 +14067,11 @@ class App extends Component {
             if (player[action].direction === "" || player[action].directionType === "") {
               player[action].direction = "none";
               player[action].directionType = "thrust";
+              popup("none");
             }
           }
         }
-        console.log("directional input thresh", defendInputThresh);
+        console.log("directional defend input thresh", defendInputThresh);
       }
     }
 
@@ -34436,6 +34497,7 @@ class App extends Component {
             }
           }
           if (canFeint === true) {
+            let dir = player.defending.direction;
             player.defending = {
               state: false,
               count: 0,
@@ -34461,6 +34523,25 @@ class App extends Component {
                 1
               );
             }
+            let popup;
+            if (dir === "none") {
+              popup = player.popups.find((x) => x.msg === "noDirection2");
+              if (popup) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === "noDirection2"),
+                  1
+                );
+              }
+            } else {
+              popup = player.popups.find((x) => x.msg === dir + "Direction");
+              if (popup) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === dir + "Direction"),
+                  1
+                );
+              }
+            }
+
             if (player.falling.state !== true && player.moving.state !== true) {
               player.action = "idle";
             }
@@ -34544,7 +34625,7 @@ class App extends Component {
               .log
               // "attack windup key release before peak. feinting. refund stamina part"
               ();
-
+            let dir = player.attacking.direction;
             player.action = "idle";
             player.attacking = {
               state: false,
@@ -34591,6 +34672,25 @@ class App extends Component {
                 1
               );
             }
+
+            if (dir === "none") {
+              popup = player.popups.find((x) => x.msg === "noDirection2");
+              if (popup) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === "noDirection2"),
+                  1
+                );
+              }
+            } else {
+              popup = player.popups.find((x) => x.msg === dir + "Direction");
+              if (popup) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === dir + "Direction"),
+                  1
+                );
+              }
+            }
+
             console.log("attack feinted");
 
             if (this.camera.customView.state !== true && player.ai.state !== true) {
@@ -35071,6 +35171,8 @@ class App extends Component {
           // ATTACK COOLDOWN AND END!
           if (
             executeAttack !== true &&
+            player.attacking.count !== 0 &&
+            player.attacking.peakCount !== 0 &&
             player.attacking.count > player.attacking.peakCount &&
             player.attacking.count < player.attacking.limit
           ) {
@@ -35088,7 +35190,10 @@ class App extends Component {
             player.attacking.blunt = false;
           }
 
-          if (player.attacking.count >= player.attacking.limit) {
+          if (
+            player.attacking.count >= player.attacking.limit &&
+            player.attacking.count !== 0
+          ) {
             player.attacking = {
               state: false,
               count: 0,
@@ -44783,6 +44888,14 @@ class App extends Component {
       clashing: this.deflectIndicate2Ref.current,
       timer: this.timerIndicateRef.current,
       charging: this.chargeIndicateRef.current,
+
+      noDirection: this.noDirectionIndicateRef.current,
+      noDirection2: this.noDirectionIndicate2Ref.current,
+      noDirection3: this.noDirectionIndicate3Ref.current,
+      northDirection: this.northDirectionIndicateRef.current,
+      southDirection: this.southDirectionIndicateRef.current,
+      eastDirection: this.eastDirectionIndicateRef.current,
+      westDirection: this.westDirectionIndicateRef.current,
     };
     this.indicatorImgs = {
       preAttack: this.preAttackIndicateRef.current,
