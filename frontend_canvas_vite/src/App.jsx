@@ -13882,12 +13882,26 @@ class App extends Component {
       }
     };
 
-    const popup = (dir) => {
+    const popup = (dir, prevDir) => {
       let msg = dir + "Direction";
+      let popup;
       if (dir === "none") {
         msg = "noDirection2";
       }
-      const popup = player.popups.find((x) => x.msg === "noDirection2");
+      if (action === "defending") {
+        if (prevDir === "none") {
+          prevDir = "noDirection2";
+        }
+        popup = player.popups.find((x) => x.msg === prevDir);
+        if (popup) {
+          player.popups.splice(
+            player.popups.findIndex((x) => x.msg === prevDir),
+            1
+          );
+        }
+      }
+
+      popup = player.popups.find((x) => x.msg === "noDirection2");
       if (popup) {
         player.popups.splice(
           player.popups.findIndex((x) => x.msg === "noDirection2"),
@@ -13921,9 +13935,9 @@ class App extends Component {
           if (player[action].count < directionalInputThresh) {
             if (input === true) {
               if (inputDirection === player.direction) {
+                popup(inputDirection, player[action].direction);
                 player[action].direction = inputDirection;
                 player[action].directionType = "slash";
-                popup(inputDirection);
               } else {
                 console.log(
                   "crossbow directional atk & charge can only be in player direction"
@@ -13951,17 +13965,17 @@ class App extends Component {
         if (mode === "init") {
           if (input === true) {
             if (player[action].direction === "" || player[action].directionType === "") {
+              popup(inputDirection, player[action].direction);
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
-              // popup(inputDirection);
             } else {
               // console.log("do nothing");
             }
           } else {
             if (player[action].direction === "" || player[action].directionType === "") {
+              popup("none", player[action].direction);
               player[action].direction = "none";
               player[action].directionType = "thrust";
-              popup("none");
             }
           }
         }
@@ -13977,9 +13991,9 @@ class App extends Component {
                   player[action].direction,
                   inputDirection
                 );
+                popup(inputDirection, player[action].direction);
                 player[action].direction = inputDirection;
                 player[action].directionType = "slash";
-                popup(inputDirection);
               }
             } else {
               if (
@@ -13987,9 +14001,9 @@ class App extends Component {
                 player[action].directionType === ""
               ) {
                 console.log("winding up within input thresh but no input. set to thrust");
+                popup("none", player[action].direction);
                 player[action].direction = "none";
                 player[action].directionType = "thrust";
-                popup("none");
               }
               // console.log(" direction and type should already be set, do nothing");
             }
@@ -14051,23 +14065,23 @@ class App extends Component {
                 "to",
                 inputDirection
               );
+              popup(inputDirection, player[action].direction);
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
-              popup(inputDirection);
             }
           } else {
+            popup("none", player[action].direction);
             player[action].direction = "none";
             player[action].directionType = "thrust";
-            popup("none");
           }
         } else {
           if (input === true) {
             console.log("too late to change defend direction: count");
           } else {
             if (player[action].direction === "" || player[action].directionType === "") {
+              popup("none", player[action].direction);
               player[action].direction = "none";
               player[action].directionType = "thrust";
-              popup("none");
             }
           }
         }
@@ -34528,7 +34542,7 @@ class App extends Component {
               popup = player.popups.find((x) => x.msg === "noDirection2");
               if (popup) {
                 player.popups.splice(
-                  player.popups.findIndex((x) => x.msg === "noDirection2"),
+                  player.popups.findIndex((x) => x.msg === "noDirection3"),
                   1
                 );
               }
@@ -34674,7 +34688,7 @@ class App extends Component {
             }
 
             if (dir === "none") {
-              popup = player.popups.find((x) => x.msg === "noDirection2");
+              popup = player.popups.find((x) => x.msg === "noDirection3");
               if (popup) {
                 player.popups.splice(
                   player.popups.findIndex((x) => x.msg === "noDirection2"),
