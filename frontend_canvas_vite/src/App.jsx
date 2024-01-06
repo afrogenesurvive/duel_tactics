@@ -35584,15 +35584,9 @@ class App extends Component {
                 directionType: "", //thrust or slash
               };
 
-              if (player.popups.find((x) => x.msg === "defending")) {
-                player.popups.splice(
-                  player.popups.findIndex((x) => x.msg === "defending"),
-                  1
-                );
-              }
-
               let popup;
               let popupsToRemove = [
+                "defending",
                 "noDirection3",
                 "northDirection",
                 "southDirection",
@@ -41816,7 +41810,6 @@ class App extends Component {
               plyr = this.calcElasticCountCoords("halfPushBack", "player", plyr).player;
 
               if (x === 0 && y === 0) {
-                console.log("there");
                 // this.testDraw.push({
                 //   color: "purple",
                 //   x: finalCoords.x,
@@ -43354,6 +43347,7 @@ class App extends Component {
                       "southWest",
                     ];
 
+                    // REMOVE 1ST FREE POSITION IF IT'S THE SAME AS PLAYER'S DIRECTION
                     if (plyr.strafing.state === true) {
                       if (positions[0] === plyr.strafing.direction) {
                         const first = positions.shift();
@@ -43377,6 +43371,7 @@ class App extends Component {
                     let dir = undefined;
 
                     // CHECK OTHER PLAYER'S POSITION AND THE POPUPS POSITION
+                    // REMOVE OCCUPIED POSITIONS
                     for (const plyr2 of this.players) {
                       if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                         let myPos = plyr.currentPosition.cell.number;
@@ -43424,6 +43419,7 @@ class App extends Component {
                     }
 
                     // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
+                    // REMOVE OCCUPIED POSITIONS
                     for (const popup2 of this.cellPopups) {
                       dir = undefined;
 
@@ -43457,11 +43453,18 @@ class App extends Component {
                     // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
 
                     if (!positions[0]) {
-                      // console.log('no open positions for new or postponed popup', popup.msg);
+                      console.log(
+                        "no open positions for new or postponed popup",
+                        popup.msg
+                      );
                       popup.state = false;
                       popup.count = 0;
                     } else {
                       popup.position = positions[0];
+                      // console.log("xpop", popup.msg, popup.position);
+                      if (currentPopups.find((x) => x.msg === popup.msg)) {
+                        console.log("popup already exists", popup.msg);
+                      }
                     }
 
                     let popupProgress = false;
@@ -43646,7 +43649,10 @@ class App extends Component {
                     if (dirs.find((x) => x === popup.position)) {
                       plyr.popups.find((x) => x.msg === popup.msg).position = "";
                       plyr.popups.find((x) => x.msg === popup.msg).state = false;
-                      // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
+                      console.log(
+                        "A new invalid direction === popup's position. reconsidering...",
+                        popup.msg
+                      );
                     } else {
                       let popupProgress = false;
                       let showProgress = false;
@@ -43749,7 +43755,7 @@ class App extends Component {
                           this.popupImgSize * 0.75
                         );
                       } else {
-                        if (player.action === "defending") {
+                        if (player.action === "defending" && popup.msg === "defending") {
                           if (player.defending.peak === true) {
                             popup.img = this.popupImageRef.defending_1;
                           }
@@ -43771,6 +43777,8 @@ class App extends Component {
                             if (prog > 70) {
                               popup.img = this.popupImageRef.defending_1;
                             }
+                          } else {
+                            popup.img = this.popupImageRef.defending;
                           }
                         }
                         context.drawImage(
