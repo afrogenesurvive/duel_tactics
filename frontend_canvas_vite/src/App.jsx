@@ -13883,6 +13883,10 @@ class App extends Component {
         "eastDirection",
         "westDirection",
       ];
+      popupsToRemove.splice(
+        popupsToRemove.findIndex((x) => x === msg),
+        1
+      );
       for (const pop of popupsToRemove) {
         popup = player.popups.find((x) => x.msg === pop);
         if (popup) {
@@ -43461,9 +43465,8 @@ class App extends Component {
                       popup.count = 0;
                     } else {
                       popup.position = positions[0];
-                      // console.log("xpop", popup.msg, popup.position);
                       if (currentPopups.find((x) => x.msg === popup.msg)) {
-                        console.log("popup already exists", popup.msg);
+                        // console.log("popup already exists", popup.msg);
                       }
                     }
 
