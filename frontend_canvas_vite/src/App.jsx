@@ -13754,21 +13754,26 @@ class App extends Component {
     let inputDirection = "";
     let directionalInputThresh = 0;
     let directionalDefendThresh = 0;
+    let inputCount = 0;
     if (this.keyPressed[player.number - 1].north === true) {
       input = true;
       inputDirection = "north";
+      inputCount++;
     }
     if (this.keyPressed[player.number - 1].south === true) {
       input = true;
       inputDirection = "south";
+      inputCount++;
     }
     if (this.keyPressed[player.number - 1].east === true) {
       input = true;
       inputDirection = "east";
+      inputCount++;
     }
     if (this.keyPressed[player.number - 1].west === true) {
       input = true;
       inputDirection = "west";
+      inputCount++;
     }
 
     const charge = () => {
@@ -13943,7 +13948,12 @@ class App extends Component {
                 if (player[action].count > player[action].peakCount) {
                   console.log("past peak. no charging");
                 } else {
-                  charge();
+                  if (inputCount > 1) {
+                    console.log("directional attack w/ multiple inputs. feint attack");
+                    feintAttack();
+                  } else {
+                    charge();
+                  }
                 }
               }
             }
@@ -14006,7 +14016,12 @@ class App extends Component {
                 if (player[action].count > player[action].peakCount) {
                   console.log("past peak. no charging");
                 } else {
-                  charge();
+                  if (inputCount > 1) {
+                    console.log("directional attack w/ multiple inputs. feint attack");
+                    feintAttack();
+                  } else {
+                    charge();
+                  }
                 }
               }
             }
@@ -33874,7 +33889,14 @@ class App extends Component {
       }
       // DON'T READ INPUTS. JUST MOVE!!
       if (player.moving.state === true) {
-        // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
+        // console.log(
+        //   "player ",
+        //   player.number,
+        //   " ",
+        //   player.action,
+        //   " : ",
+        //   player.moving.step
+        // );
 
         nextPosition = this.lineCrementer(player);
         player.nextPosition = nextPosition;
@@ -35332,6 +35354,7 @@ class App extends Component {
             player.defending.limit = limit;
           }
 
+          // WINDUP
           if (
             player.defending.count < defendPeak &&
             player.defending.decay.state !== true
@@ -36946,6 +36969,8 @@ class App extends Component {
         if (
           player.attacking.state === false &&
           player.defending.state === false &&
+          player.action !== "attacking" &&
+          player.action !== "defending" &&
           player.defending.count < 1 &&
           player.dodging.state === false &&
           player.dodging.countState === false &&
@@ -36976,7 +37001,6 @@ class App extends Component {
             if (plyrPullPushed === true) {
               breakPulledPushed = true;
             }
-
             if (player.newMoveDelay.state !== true) {
               // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
               if (
@@ -37386,6 +37410,7 @@ class App extends Component {
 
         // CAN READ NON-MOVE INPUTS!!
         if (
+          player.moving.state !== true &&
           player.strafing.state === false &&
           player.turning.state !== true &&
           player.postPull.state !== true &&
