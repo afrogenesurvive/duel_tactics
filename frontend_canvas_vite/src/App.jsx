@@ -154,7 +154,15 @@ import attackParriedIndicate from "./assets/indicators/attackParried.png";
 import inventoryFullIndicate from "./assets/indicators/inventoryFull.png";
 import outOfAmmoIndicate from "./assets/indicators/outOfAmmo.png";
 import timerIndicate from "./assets/indicators/timer.png";
+
 import chargeIndicate from "./assets/indicators/charge.png";
+import noDirectionIndicate from "./assets/indicators/noDirection1.png";
+import noDirectionIndicate2 from "./assets/indicators/noDirection2.png";
+import noDirectionIndicate3 from "./assets/indicators/noDirection3.png";
+import northDirectionIndicate from "./assets/indicators/northDirection.png";
+import southDirectionIndicate from "./assets/indicators/southDirection.png";
+import eastDirectionIndicate from "./assets/indicators/eastDirection.png";
+import westDirectionIndicate from "./assets/indicators/westDirection.png";
 
 import mail1 from "./assets/items/mail1.png";
 import mail2 from "./assets/items/mail2.png";
@@ -210,6 +218,8 @@ import attackSheetNew from "./assets/player/attackSheetNew.png";
 import defendSheetNew from "./assets/player/defendSheetNew.png";
 import dodgeSheetNew from "./assets/player/dodgingSheetNew.png";
 import deflectedFallingSheetNew from "./assets/player/deflectedFallingSheetNew.png";
+
+import bg_1 from "./assets/backgrounds/bg_field_1.png";
 
 import "./App.css";
 
@@ -3622,8 +3632,8 @@ class App extends Component {
         },
         crossbow: {
           thrust: {
-            normal: 50,
-            charged: 60,
+            normal: 40,
+            charged: 50,
           },
           slash: {
             normal: 50,
@@ -3707,8 +3717,8 @@ class App extends Component {
       },
       peak: {
         unarmed: {
-          thrust: 10,
-          slash: 10,
+          thrust: 11,
+          slash: 11,
           // 7
         },
         sword: {
@@ -3865,7 +3875,21 @@ class App extends Component {
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
-    this.showPlayerOutlines = false;
+    this.showPlayerOutlines = true;
+
+    this.backgroundImage = "src/assets/backgrounds/bg_seaCloudsNight_1.png";
+    this.backgroundImageRef = {
+      sea_clouds_1: "bg_seaClouds_1",
+      sea_clouds_2: "bg_seaClouds_1",
+      sea_clouds_3: "bg_seaClouds_1",
+      sea_clouds_4: "bg_seaClouds_1",
+      sea_clouds_night_1: "bg_seaCloudsNight_1",
+      sea_coast_1: "bg_seaCoast_1",
+      nothern_lights_1: "bg_northernLights_1",
+      field_1: "bg_field_1",
+      field_2: "bg_field_2",
+      field_3: "bg_field_3",
+    };
 
     // CAMERA
     this.toggleCameraMode = false;
@@ -4025,6 +4049,11 @@ class App extends Component {
 
     this.testDraw = [];
     this.testData = "";
+    this.testCount = {
+      state: false,
+      count: 0,
+      limit: 0,
+    };
 
     // ASSETS
     this.testRefNorth = React.createRef();
@@ -4183,6 +4212,14 @@ class App extends Component {
     this.terrainSlowdownIndicateRef = React.createRef();
     this.terrainInjuredIndicateRef = React.createRef();
 
+    this.noDirectionIndicateRef = React.createRef();
+    this.noDirectionIndicate2Ref = React.createRef();
+    this.noDirectionIndicate3Ref = React.createRef();
+    this.northDirectionIndicateRef = React.createRef();
+    this.southDirectionIndicateRef = React.createRef();
+    this.eastDirectionIndicateRef = React.createRef();
+    this.westDirectionIndicateRef = React.createRef();
+
     // ITEMS
     this.itemSpdUpRef = React.createRef();
     this.itemSpdDownRef = React.createRef();
@@ -4271,6 +4308,8 @@ class App extends Component {
     this.defendSheetNewRef = React.createRef();
     this.dodgeSheetNewRef = React.createRef();
     this.deflectedFallingSheetNewRef = React.createRef();
+
+    this.bg_1Ref = React.createRef();
   }
 
   componentDidMount() {
@@ -5958,6 +5997,14 @@ class App extends Component {
     if (plyrNo === 2) {
       this.debugBoxStyle2 = "debugDisplay2 closedDebug";
     }
+  };
+  switchBackgroundImage = (args) => {
+    let img = this.backgroundImageRef[args];
+    this.backgroundImage = `src/assets/backgrounds/${img}.png`;
+
+    document.getElementsByClassName(
+      this.state.containerInnerClass
+    )[0].style.backgroundImage = `url('${this.backgroundImage}')`;
   };
 
   getCustomPlyrStartPosList = (args) => {
@@ -8663,6 +8710,79 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
+  circleArcCrementer = (player) => {
+    const getPointOnArc = (
+      centerX,
+      centerY,
+      radius,
+      startAngle,
+      arcLength,
+      increment
+    ) => {
+      // Calculate the angle for the given increment
+      const angle = startAngle + arcLength * increment;
+
+      // Calculate the coordinates of the point on the arc
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      return { x, y };
+    };
+
+    const getPointOnArc2 = (originX, originY, radius, angle, fraction) => {
+      const radians = (angle - fraction * 360) * (Math.PI / 180);
+      const x = originX + radius * Math.cos(radians);
+      const y = originY + radius * Math.sin(radians);
+      return { x, y };
+    };
+
+    const centerX = player.currentPosition.cell.center.x;
+    // const centerX = player.nextPosititon.x;
+    const centerY = player.currentPosition.cell.center.y;
+    // const centerY = player.nextPosititon.y;
+    const radius = 100;
+    const startAngle = 0;
+    const arcLength = Math.PI; // Half circle
+
+    const point1 = getPointOnArc(
+      centerX,
+      centerY,
+      radius,
+      startAngle,
+      arcLength,
+      (this.testCount.count / this.testCount.limit) * 100
+    );
+    const point2 = getPointOnArc2(
+      centerX,
+      centerY,
+      radius,
+      startAngle,
+      this.testCount.count / this.testCount.limit
+    );
+
+    // point1 = this.cartesianToIsometric(point1);
+    // point2 = this.cartesianToIsometric(point2);
+    console.log(
+      "increment",
+      this.testCount.count / this.testCount.limit,
+      "point1",
+      point1
+    );
+    // console.log("point2", point2);
+
+    this.testDraw.push(
+      {
+        color: "purple",
+        x: point1.x,
+        y: point1.y,
+      }
+      // {
+      //   color: "red",
+      //   x: point2.x,
+      //   y: point2.y,
+      // }
+    );
+  };
   arcBoltCrementer = () => {};
   obstacleMoveCrementer = (obstacleCell, destCell) => {
     // console.log('obstacle line crementer',obstacle.moving.step,obstacle.moving.moveSpeed);
@@ -9478,6 +9598,12 @@ class App extends Component {
       // if (countCalcUp > 10) {
       //   countCalcUp = 10;
       // }
+      if (subType === "windup") {
+        let dirInputThresh = Math.ceil(
+          player[type].animRef.peak.unarmed.thrust.normal / 2
+        );
+        countCalcUp = Math.floor(dirInputThresh / 2);
+      }
 
       let direction = player.attacking.direction;
       if (direction === "none") {
@@ -9488,7 +9614,7 @@ class App extends Component {
         state: true,
         direction: direction,
         type: "attacking",
-        subType: "",
+        subType: subType,
         countUp: {
           state: false,
           count: 0,
@@ -9517,22 +9643,14 @@ class App extends Component {
 
     if (type === "defending") {
       let direction = player.defending.direction;
-      if (subType === "peak") {
-        let point = {
-          x: player.currentPosition.cell.center.x,
-          y: player.currentPosition.cell.center.y,
-        };
 
+      if (subType === "windup") {
         let countCalcUp = Math.floor(
-          (player.defending.limit - player.defending.peakCount) / 2
+          (player.defending.peakCount - player.defending.count) / 2
         );
-        // let countCalcUp = Math.floor(
-        //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
+        // Math.floor(
+        //   (player.defending.limit - player.defending.peakCount) / 2
         // );
-        // console.log("beep", countCalcUp);
-        // if (countCalcUp > 10) {
-        //   countCalcUp = 10;
-        // }
 
         if (direction === "none") {
           direction = player.direction;
@@ -9542,7 +9660,7 @@ class App extends Component {
           state: true,
           direction: direction,
           type: "defending",
-          subType: "",
+          subType: subType,
           countUp: {
             state: false,
             count: 0,
@@ -9568,12 +9686,101 @@ class App extends Component {
           },
         };
       }
+      if (subType === "peak") {
+        let point = {
+          x: player.currentPosition.cell.center.x,
+          y: player.currentPosition.cell.center.y,
+        };
+
+        let countCalcUp = Math.floor(
+          (player.defending.limit - player.defending.peakCount) / 2
+        );
+        // let countCalcUp = Math.floor(
+        //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
+        // );
+        // console.log("beep", countCalcUp);
+        // if (countCalcUp > 10) {
+        //   countCalcUp = 10;
+        // }
+
+        if (direction === "none") {
+          direction = player.direction;
+        }
+
+        player.elasticCounter = {
+          state: true,
+          direction: direction,
+          type: "defending",
+          subType: subType,
+          countUp: {
+            state: false,
+            count: 0,
+            limit: countCalcUp,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: countCalcUp,
+          },
+          coords: {
+            // x: point.x - this.playerDrawWidth / 2,
+            // y: point.y - this.playerDrawHeight / 2,
+            x: player.nextPosition.x - this.floorImageHeight / 2,
+            y: player.nextPosition.y - this.floorImageHeight,
+          },
+          pause: {
+            preState: pause,
+            state: false,
+            type: "",
+            count: 0,
+            limit: 0,
+          },
+        };
+      }
+
       if (subType === "decay") {
+        let remainder =
+          player.defending.limit -
+          (player.defending.peakCount + player.defending.decay.count);
+
         if (direction === "none") {
           direction = player.direction;
         }
         if (player.elasticCounter.direction !== direction) {
+          let countCalcDown;
+          let countCalcUp = Math.floor(remainder / 2);
+          if (player.elasticCounter.direction === this.getOppositeDirection(direction)) {
+            console.log("opposite direction!!");
+            countCalcUp = Math.floor(remainder * 0.75); //0.66
+            countCalcDown = Math.floor(remainder * 0.25); //0.33
+          } else {
+            countCalcDown = countCalcUp;
+          }
+
           player.elasticCounter.direction = direction;
+          player.elasticCounter.subType = subType;
+
+          console.log(
+            "count",
+            player.defending.count,
+            "limit",
+            player.defending.limit,
+            "remainder",
+            remainder,
+            "calc up/dwn",
+            countCalcUp,
+            countCalcDown,
+            "dir",
+            player.elasticCounter.direction
+          );
+          player.elasticCounter.countUp.limit = countCalcUp;
+          player.elasticCounter.countDown.limit = countCalcDown;
+          player.elasticCounter.countUp.count = 0;
+          player.elasticCounter.countDown.count = 0;
+          if (player.elasticCounter.countDown.state === true) {
+            player.elasticCounter.countUp.state = true;
+            player.elasticCounter.countDown.state = false;
+          }
         }
       }
     }
@@ -9701,12 +9908,7 @@ class App extends Component {
 
       let targetCell;
       data.elasticCounter.coords = finalCoords;
-
-      targetCell = this.getCellFromDirection(
-        1,
-        data.currentPosition.cell.number,
-        data.elasticCounter.direction
-      );
+      targetCell = this.getCellFromDirection(1, data.currentPosition.cell.number, dir);
       let targetCellRef = this.gridInfo.find(
         (x) => x.number.x === targetCell.x && x.number.y === targetCell.y
       );
@@ -13679,23 +13881,29 @@ class App extends Component {
     let charging = false;
     let input = false;
     let inputDirection = "";
+    let inputDirections = [];
     let directionalInputThresh = 0;
     let directionalDefendThresh = 0;
+    let inputCount = 0;
     if (this.keyPressed[player.number - 1].north === true) {
       input = true;
-      inputDirection = "north";
+      inputDirections.push("north");
+      inputCount++;
     }
     if (this.keyPressed[player.number - 1].south === true) {
       input = true;
-      inputDirection = "south";
+      inputDirections.push("south");
+      inputCount++;
     }
     if (this.keyPressed[player.number - 1].east === true) {
       input = true;
-      inputDirection = "east";
+      inputDirections.push("east");
+      inputCount++;
     }
     if (this.keyPressed[player.number - 1].west === true) {
       input = true;
-      inputDirection = "west";
+      inputDirections.push("west");
+      inputCount++;
     }
 
     const charge = () => {
@@ -13738,6 +13946,7 @@ class App extends Component {
       if (player.attacking.count < player.attacking.peakCount) {
         // console.log('attack windup key release before peak. feinting. refund stamina part');
 
+        let dir = player.attacking.direction;
         player.action = "idle";
         player.attacking = {
           state: false,
@@ -13766,14 +13975,28 @@ class App extends Component {
           player.elasticCounter.type === "attacking"
         ) {
           player.elasticCounter.state = false;
+          player.elasticCounter.type = "";
+          player.elasticCounter.subType = "";
         }
 
-        let popup = player.popups.find((x) => x.msg === "attacking");
-        if (popup) {
-          player.popups.splice(
-            player.popups.findIndex((x) => x.msg === "attacking"),
-            1
-          );
+        let popup;
+        let popupsToRemove = [
+          "attacking",
+          "charging",
+          "noDirection3",
+          "northDirection",
+          "southDirection",
+          "eastDirection",
+          "westDirection",
+        ];
+        for (const pop of popupsToRemove) {
+          popup = player.popups.find((x) => x.msg === pop);
+          if (popup) {
+            player.popups.splice(
+              player.popups.findIndex((x) => x.msg === pop),
+              1
+            );
+          }
         }
 
         if (this.camera.customView.state !== true && player.ai.state !== true) {
@@ -13782,17 +14005,114 @@ class App extends Component {
       }
     };
 
+    const popup = (dir, prevDir) => {
+      let msg = dir + "Direction";
+      if (dir === "none") {
+        msg = "noDirection3";
+      }
+      let popup;
+      let popupsToRemove = [
+        "noDirection3",
+        "northDirection",
+        "southDirection",
+        "eastDirection",
+        "westDirection",
+      ];
+      popupsToRemove.splice(
+        popupsToRemove.findIndex((x) => x === msg),
+        1
+      );
+      for (const pop of popupsToRemove) {
+        popup = player.popups.find((x) => x.msg === pop);
+        if (popup) {
+          player.popups.splice(
+            player.popups.findIndex((x) => x.msg === pop),
+            1
+          );
+        }
+      }
+      if (!player.popups.find((x) => x.msg === msg)) {
+        player.popups.push({
+          state: false,
+          count: 0,
+          limit: player.defending.limit,
+          type: "",
+          position: "",
+          msg: msg,
+          img: "",
+        });
+      }
+    };
+
     if (action === "attacking") {
       directionalInputThresh = Math.ceil(
         player[action].animRef.peak.unarmed.thrust.normal / 2
       );
       if (player.currentWeapon.type === "crossbow") {
-        player[action].direction = "none";
-        player[action].directionType = "thrust";
+        if (mode === "init") {
+          player[action].direction = "none";
+          player[action].directionType = "thrust";
+          // popup("none");
+        }
+        if (mode === "windup") {
+          if (player[action].count < directionalInputThresh) {
+            if (input === true) {
+              if (inputCount > 1) {
+                inputDirections = inputDirections.filter(
+                  (x) => x !== player[action].direction
+                );
+                inputDirection = inputDirections[0];
+              } else {
+                inputDirection = inputDirections[0];
+              }
+
+              if (inputDirection === player.direction) {
+                popup(inputDirection, player[action].direction);
+                player[action].direction = inputDirection;
+                player[action].directionType = "slash";
+              } else {
+                console.log(
+                  "crossbow directional atk & charge can only be in player direction"
+                );
+              }
+            }
+          } else {
+            if (input === true) {
+              // console.log("input thresh passed.");
+              if (inputCount > 1) {
+                inputDirections = inputDirections.filter(
+                  (x) => x !== player[action].direction
+                );
+                inputDirection = inputDirections[0];
+              } else {
+                inputDirection = inputDirections[0];
+              }
+
+              if (inputDirection !== player[action].direction) {
+                console.log("input after thresh w/ different direction. feint attack");
+                feintAttack();
+              }
+              if (inputDirection === player[action].direction) {
+                if (player[action].count > player[action].peakCount) {
+                  console.log("past peak. no charging");
+                } else {
+                  if (inputCount > 1) {
+                    console.log("directional attack w/ multiple inputs. feint attack");
+                    feintAttack();
+                  } else {
+                    charge();
+                  }
+                }
+              }
+            }
+          }
+        }
       } else {
         if (mode === "init") {
           if (input === true) {
+            inputDirection = inputDirections[0];
             if (player[action].direction === "" || player[action].directionType === "") {
+              popup(inputDirection, player[action].direction);
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
             } else {
@@ -13800,6 +14120,7 @@ class App extends Component {
             }
           } else {
             if (player[action].direction === "" || player[action].directionType === "") {
+              popup("none", player[action].direction);
               player[action].direction = "none";
               player[action].directionType = "thrust";
             }
@@ -13808,6 +14129,14 @@ class App extends Component {
         if (mode === "windup") {
           if (player[action].count < directionalInputThresh) {
             if (input === true) {
+              if (inputCount > 1) {
+                inputDirections = inputDirections.filter(
+                  (x) => x !== player[action].direction
+                );
+                inputDirection = inputDirections[0];
+              } else {
+                inputDirection = inputDirections[0];
+              }
               // console.log("y");
               if (inputDirection === player[action].direction) {
                 // charge();
@@ -13817,6 +14146,7 @@ class App extends Component {
                   player[action].direction,
                   inputDirection
                 );
+                popup(inputDirection, player[action].direction);
                 player[action].direction = inputDirection;
                 player[action].directionType = "slash";
               }
@@ -13826,6 +14156,7 @@ class App extends Component {
                 player[action].directionType === ""
               ) {
                 console.log("winding up within input thresh but no input. set to thrust");
+                popup("none", player[action].direction);
                 player[action].direction = "none";
                 player[action].directionType = "thrust";
               }
@@ -13834,6 +14165,16 @@ class App extends Component {
           } else {
             if (input === true) {
               // console.log("input thresh passed.");
+
+              if (inputCount > 1) {
+                inputDirections = inputDirections.filter(
+                  (x) => x !== player[action].direction
+                );
+                inputDirection = inputDirections[0];
+              } else {
+                inputDirection = inputDirections[0];
+              }
+
               if (inputDirection !== player[action].direction) {
                 console.log("input after thresh w/ different direction. feint attack");
                 feintAttack();
@@ -13842,22 +14183,29 @@ class App extends Component {
                 if (player[action].count > player[action].peakCount) {
                   console.log("past peak. no charging");
                 } else {
-                  charge();
+                  if (inputCount > 1) {
+                    console.log("directional attack w/ multiple inputs. feint attack");
+                    feintAttack();
+                  } else {
+                    charge();
+                  }
                 }
               }
             }
           }
         }
       }
-      // console.log("directional input thresh", directionalInputThresh);
+      console.log("directional attack input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
       if (mode === "init") {
         if (input === true) {
+          inputDirection = inputDirections[0];
           if (player[action].direction === "" || player[action].directionType === "") {
             player[action].direction = inputDirection;
             player[action].directionType = "slash";
+            // popup(inputDirection);
           } else {
             // console.log("do nothing");
           }
@@ -13865,6 +14213,7 @@ class App extends Component {
           if (player[action].direction === "" || player[action].directionType === "") {
             player[action].direction = "none";
             player[action].directionType = "thrust";
+            // popup("none");
           }
         }
       }
@@ -13875,53 +14224,61 @@ class App extends Component {
         }
         let defendPeak =
           player.defending.animRef.peak[defendType][player.defending.directionType];
-        let defendDecayLimit = Math.ceil(
-          (player.defending.decay.limit - defendPeak) * 0.55
-        );
+        let defendDecayLimit = player.defending.decay.limit;
         let defendInputThresh = defendDecayLimit + defendPeak - this.defendPeakAllowance;
-        if (input === true) {
-          if (player[action].count <= defendInputThresh) {
-            player[action].direction = inputDirection;
-            player[action].directionType = "slash";
-          }
-          if (player[action].count > defendInputThresh) {
-            if (player[action].direction !== "") {
-              if (player[action].direction !== inputDirection) {
-                console.log(
-                  "too late to change defend direction: count",
-                  player[action].count,
-                  "thresh",
-                  defendInputThresh
-                );
+        if (player[action].count <= defendInputThresh) {
+          if (input === true) {
+            if (inputCount > 1) {
+              // inputDirections = inputDirections.filter(
+              //   (x) => x !== player[action].direction
+              // );
+              if (inputDirections.find((x) => x === player[action].direction)) {
+                inputDirection = player[action].direction;
+              } else {
+                inputDirection = inputDirections[0];
               }
+            } else {
+              inputDirection = inputDirections[0];
             }
 
-            if (player[action].direction === "" || player[action].directionType === "") {
-              player[action].direction = "none";
-              player[action].directionType = "thrust";
+            if (player[action].direction === inputDirection) {
+            } else {
+              console.log(
+                "changing defend direction before thresh. from",
+                player[action].direction,
+                "to",
+                inputDirection
+              );
+              popup(inputDirection, player[action].direction);
+              player[action].direction = inputDirection;
+              player[action].directionType = "slash";
             }
+          } else {
+            if (player[action].direction !== "none") {
+              console.log(
+                "changing defend direction before thresh. from",
+                player[action].direction,
+                "to none"
+              );
+            }
+            popup("none", player[action].direction);
+            player[action].direction = "none";
+            player[action].directionType = "thrust";
           }
         } else {
-          if (player[action].count <= defendInputThresh) {
+          if (input === true) {
+            console.log("too late to change defend direction: count");
+          } else {
             if (player[action].direction === "" || player[action].directionType === "") {
+              popup("none", player[action].direction);
               player[action].direction = "none";
               player[action].directionType = "thrust";
             }
           }
         }
-        // console.log("directional input thresh", defendInputThresh);
+        console.log("directional defend input thresh", defendInputThresh);
       }
     }
-
-    // console.log(
-    //   "set attack defend directional input",
-    //   mode,
-    //   input,
-    //   player[action].direction,
-    //   player[action].directionType,
-    //   directionalInputThresh,
-    //   player[action].count
-    // );
 
     return {
       player: player,
@@ -16846,6 +17203,8 @@ class App extends Component {
       player.elasticCounter.type === player.action
     ) {
       player.elasticCounter.state = false;
+      player.elasticCounter.type = "";
+      player.elasticCounter.subType = "";
     }
 
     switch (player.action) {
@@ -33042,7 +33401,8 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 100 && player.number === 1) {
+    if (this.time === 50 && player.number === 1) {
+      this.toggleCameraCustomView();
       // this.setAutoCamera("test", player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
@@ -33068,10 +33428,23 @@ class App extends Component {
       // }
       // player = this.setElasticCounter("test", "start", true, player);
     }
-    if (this.time === 100 && player.number === 2) {
+    if (this.time === 100 && player.number === 1) {
+      this.testCount.state = true;
+      this.testCount.limit = 15;
+      // this.switchBackgroundImage("sea_clouds_night_1");
+
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
+    }
+    if (this.testCount.state === true && player.number === 1) {
+      if (this.testCount.count < this.testCount.limit) {
+        this.testCount.count++;
+        this.circleArcCrementer(player);
+      }
+      if (this.testCount.count >= this.testCount.limit) {
+        this.testCount.state = false;
+      }
     }
 
     // DYING
@@ -33708,7 +34081,14 @@ class App extends Component {
       }
       // DON'T READ INPUTS. JUST MOVE!!
       if (player.moving.state === true) {
-        // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
+        // console.log(
+        //   "player ",
+        //   player.number,
+        //   " ",
+        //   player.action,
+        //   " : ",
+        //   player.moving.step
+        // );
 
         nextPosition = this.lineCrementer(player);
         player.nextPosition = nextPosition;
@@ -34333,6 +34713,7 @@ class App extends Component {
             }
           }
           if (canFeint === true) {
+            let dir = player.defending.direction;
             player.defending = {
               state: false,
               count: 0,
@@ -34352,12 +34733,25 @@ class App extends Component {
 
             player.stamina.current += this.staminaCostRef.defend.pre;
 
-            if (player.popups.find((x) => x.msg === "defending")) {
-              player.popups.splice(
-                player.popups.findIndex((x) => x.msg === "defending"),
-                1
-              );
+            let popup;
+            let popupsToRemove = [
+              "defending",
+              "noDirection3",
+              "northDirection",
+              "southDirection",
+              "eastDirection",
+              "westDirection",
+            ];
+            for (const pop of popupsToRemove) {
+              popup = player.popups.find((x) => x.msg === pop);
+              if (popup) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === pop),
+                  1
+                );
+              }
             }
+
             if (player.falling.state !== true && player.moving.state !== true) {
               player.action = "idle";
             }
@@ -34368,6 +34762,8 @@ class App extends Component {
               player.elasticCounter.type === "defending"
             ) {
               player.elasticCounter.state = false;
+              player.elasticCounter.type = "";
+              player.elasticCounter.subType = "";
             }
 
             if (this.camera.customView.state !== true && player.ai.state !== true) {
@@ -34379,7 +34775,7 @@ class App extends Component {
             if (player.defending.peak === true) {
               console.log("peak defense. cant feint");
             } else {
-              console.log("too late to feint defense");
+              // console.log("too late to feint defense");
             }
           }
         }
@@ -34439,7 +34835,7 @@ class App extends Component {
               .log
               // "attack windup key release before peak. feinting. refund stamina part"
               ();
-
+            let dir = player.attacking.direction;
             player.action = "idle";
             player.attacking = {
               state: false,
@@ -34468,22 +34864,31 @@ class App extends Component {
               player.elasticCounter.type === "attacking"
             ) {
               player.elasticCounter.state = false;
+              player.elasticCounter.type = "";
+              player.elasticCounter.subType = "";
             }
 
-            let popup = player.popups.find((x) => x.msg === "attacking");
-            if (popup) {
-              player.popups.splice(
-                player.popups.findIndex((x) => x.msg === "attacking"),
-                1
-              );
+            let popup;
+            let popupsToRemove = [
+              "attacking",
+              "charging",
+              "noDirection3",
+              "northDirection",
+              "southDirection",
+              "eastDirection",
+              "westDirection",
+            ];
+            for (const pop of popupsToRemove) {
+              popup = player.popups.find((x) => x.msg === pop);
+              if (popup) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === pop),
+                  1
+                );
+              }
             }
-            popup = player.popups.find((x) => x.msg === "charging");
-            if (popup) {
-              player.popups.splice(
-                player.popups.findIndex((x) => x.msg === "charging"),
-                1
-              );
-            }
+
+            console.log("attack feinted");
 
             if (this.camera.customView.state !== true && player.ai.state !== true) {
               this.setAutoCamera("attackFocusBreak", player);
@@ -34519,6 +34924,8 @@ class App extends Component {
             player.elasticCounter.type === "dodging"
           ) {
             player.elasticCounter.state = false;
+            player.elasticCounter.type = "";
+            player.elasticCounter.subType = "";
           }
 
           if (player.popups.find((x) => x.msg === "dodging")) {
@@ -34561,71 +34968,420 @@ class App extends Component {
             player
           );
           player = directionalActionResult.player;
-          let chargeType = "normal";
-          if (directionalActionResult.charging === true) {
-            chargeType = "charged";
-          }
+          if (player.attacking.state === true) {
+            let chargeType = "normal";
+            if (directionalActionResult.charging === true) {
+              chargeType = "charged";
+            }
 
-          let attackPeak;
-          let stamAtkType = player.currentWeapon.type;
+            let attackPeak;
+            let stamAtkType = player.currentWeapon.type;
 
-          if (player.currentWeapon.type === "") {
-            stamAtkType = "unarmed";
-          }
+            if (player.currentWeapon.type === "") {
+              stamAtkType = "unarmed";
+            }
 
-          let blunt = "normal";
-          if (player.attacking.blunt === true) {
-            blunt = "blunt";
-            // console.log("blunt attack");
-          }
+            let blunt = "normal";
+            if (player.attacking.blunt === true) {
+              blunt = "blunt";
+              // console.log("blunt attack");
+            }
 
-          if (player.attacking.directionType === "") {
-            attackPeak = 0;
-          } else {
-            attackPeak =
-              player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][
-                chargeType
-              ];
-          }
+            if (player.attacking.directionType === "") {
+              attackPeak = 0;
+            } else {
+              attackPeak =
+                player.attacking.animRef.peak[stamAtkType][
+                  player.attacking.directionType
+                ][chargeType];
+            }
 
-          if (
-            player.attacking.peakCount === 0 ||
-            player.attacking.count < player.attacking.peakCount
-            // chargeType === "charged"
-          ) {
-            // console.log(
-            //   "attacking peakCount changed. was",
-            //   player.attacking.peakCount,
-            //   "now",
-            //   attackPeak
-            // );
-            player.attacking.peakCount = attackPeak;
-          }
+            if (
+              player.attacking.peakCount === 0 ||
+              player.attacking.count < player.attacking.peakCount
+              // chargeType === "charged"
+            ) {
+              // console.log(
+              //   "attacking peakCount changed. was",
+              //   player.attacking.peakCount,
+              //   "now",
+              //   attackPeak
+              // );
+              player.attacking.peakCount = attackPeak;
+            }
 
-          if (
-            player.attacking.limit === 0 ||
-            player.attacking.count < player.attacking.peakCount
-            // chargeType === "charged"
-          ) {
-            // console.log(
-            //   "attacking limit changed. was",
-            //   player.attacking.limit,
-            //   "now",
-            //   player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-            //     chargeType
-            //   ]
-            // );
-            player.attacking.limit =
-              player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-                chargeType
-              ];
-          }
+            if (
+              player.attacking.limit === 0 ||
+              player.attacking.count < player.attacking.peakCount
+              // chargeType === "charged"
+            ) {
+              // console.log(
+              //   "attacking limit changed. was",
+              //   player.attacking.limit,
+              //   "now",
+              //   player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
+              //     chargeType
+              //   ]
+              // );
+              player.attacking.limit =
+                player.attacking.animRef.limit[stamAtkType][
+                  player.attacking.directionType
+                ][chargeType];
+            }
 
-          // STEP ATTACKING COUNT
-          if (player.attacking.count < player.attacking.limit) {
-            if (player.attacking.count < player.attacking.peakCount) {
+            // STEP ATTACKING COUNT
+            if (player.attacking.count < player.attacking.limit) {
+              if (player.attacking.count < player.attacking.peakCount) {
+                console.log(
+                  "atk windup:",
+                  player.attacking.direction,
+                  "counts:",
+                  player.attacking.count,
+                  player.attacking.peakCount,
+                  player.attacking.limit,
+                  chargeType === "charged"
+                );
+                player.attacking.peak = false;
+                player.attacking.chargePeak = false;
+              }
+
+              player.action = "attacking";
+              player.attacking.count++;
+
+              // APPLY BLUNT ATTACK
+              if (
+                player.dodging.countState === true ||
+                player.dodging.state === true ||
+                this.keyPressed[player.number - 1].dodge === true
+              ) {
+                // console.log("was attacking then pressed dodging. blunt attack");
+
+                if (player.attacking.blunt !== true) {
+                  player.dodging = {
+                    countState: false,
+                    state: false,
+                    count: 0,
+                    limit: player.dodging.limit,
+                    peak: {
+                      start: player.dodging.peak.start,
+                      end: player.dodging.peak.end,
+                    },
+                    direction: "",
+                  };
+                  this.keyPressed[player.number - 1].dodge = false;
+                  player.attacking.blunt = true;
+
+                  // RESET DODGE ELASTIC COUNTER
+                  if (
+                    player.elasticCounter.state === true &&
+                    player.elasticCounter.type === "dodging"
+                  ) {
+                    player.elasticCounter.state = false;
+                    player.elasticCounter.type = "";
+                    player.elasticCounter.subType = "";
+                  }
+                }
+              }
+
+              // ATTACK START POPUP, GET TARGET, CELLS UNDER ATTACK & AUTO CAM
+              if (player.attacking.count <= 2) {
+                if (!player.popups.find((x) => x.msg === "attackStart")) {
+                  player.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 5,
+                    type: "",
+                    position: "",
+                    msg: "attackStart",
+                    img: "",
+                  });
+                }
+
+                this.getTarget(player);
+
+                // CELLS UNDER PRE ATTACK!
+                let cellUnderPreAttack1 = this.gridInfo.find(
+                  (elem) =>
+                    elem.number.x === player.target.cell1.number.x &&
+                    elem.number.y === player.target.cell1.number.y
+                );
+                let cellUnderPreAttack2;
+                if (player.currentWeapon.type === "spear") {
+                  cellUnderPreAttack2 = this.gridInfo.find(
+                    (elem) =>
+                      elem.number.x === player.target.cell2.number.x &&
+                      elem.number.y === player.target.cell2.number.y
+                  );
+                }
+                if (player.currentWeapon.type === "spear") {
+                  this.cellsUnderPreAttack.push({
+                    number: {
+                      x: player.target.cell1.number.x,
+                      y: player.target.cell1.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  });
+                  this.cellsUnderPreAttack.push({
+                    number: {
+                      x: player.target.cell2.number.x,
+                      y: player.target.cell2.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  });
+                }
+                if (
+                  player.currentWeapon.type === "sword" ||
+                  player.currentWeapon.type === ""
+                ) {
+                  // console.log('sword/unarmed melee target',player.target);
+
+                  this.cellsUnderPreAttack.push({
+                    number: {
+                      x: player.target.cell1.number.x,
+                      y: player.target.cell1.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  });
+                }
+
+                // if (player.currentWeapon.type === 'crossbow' && player.attacking.blunt === true) {
+                if (player.currentWeapon.type === "crossbow") {
+                  // console.log('crossbow melee target',player.target);
+
+                  this.cellsUnderPreAttack.push({
+                    number: {
+                      x: player.target.cell1.number.x,
+                      y: player.target.cell1.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  });
+                }
+
+                // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
+
+                // CAMERA ATTACK FOCUS
+                if (
+                  this.camera.customView.state !== true &&
+                  this.settingAutoCamera === false &&
+                  player.ai.state !== true &&
+                  this.camera.preInstructions.length === 0 &&
+                  this.camera.instructions.length === 0
+                ) {
+                  if (this.players[0].dead.state !== true) {
+                    if (player.number === 1) {
+                      this.setAutoCamera("attackFocus", player);
+                    }
+                  } else if (player.number === 2) {
+                    this.setAutoCamera("attackFocus", player);
+                  }
+                } else {
+                  console.log("no setting auto cam: attackFocus");
+                }
+              }
+
+              // SHOW ATTACKING POPUP
+              if (player.attacking.count > 2) {
+                if (!player.popups.find((x) => x.msg === "attacking")) {
+                  let limit = player.attackinglimit - player.attacking.count;
+                  if (limit === 0) {
+                    limit = 5;
+                  }
+                  if (!player.popups.find((x) => x.msg === "attacking")) {
+                    player.popups.push({
+                      state: false,
+                      count: 0,
+                      limit: limit,
+                      type: "",
+                      position: "",
+                      msg: "attacking",
+                      img: "",
+                    });
+                  }
+                }
+                // else {
+                //   console.log('beep2',player.attacking.animRef.limit[stamAtkType]-player.attacking.count);
+                //   player.popups.find(x => x.msg === "attacking").limit = player.attacking.animRef.limit[stamAtkType]-player.attacking.count
+                // }
+              }
+              let dirInputThresh = Math.ceil(
+                player.attacking.animRef.peak.unarmed.thrust.normal / 2
+              );
+              if (player.attacking.count === dirInputThresh) {
+                if (player.elasticCounter.state !== true) {
+                  player = this.setElasticCounter("attacking", "windup", false, player);
+                }
+              }
+            }
+
+            let executeAttack = false;
+            if (
+              player.elasticCounter.state !== true &&
+              player.elasticCounter.type !== "attacking" &&
+              player.elasticCounter.subType !== "peak"
+            ) {
+              if (
+                chargeType !== "charged" &&
+                player.attacking.charge > 0 &&
+                player.attacking.count >
+                  player.attacking.animRef.peak[stamAtkType][
+                    player.attacking.directionType
+                  ].normal &&
+                player.attacking.count <
+                  player.attacking.animRef.peak[stamAtkType][
+                    player.attacking.directionType
+                  ].charged
+              ) {
+                console.log(
+                  "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
+                );
+                console.log(
+                  "counts",
+                  player.attacking.count,
+                  player.attacking.animRef.peak[stamAtkType][
+                    player.attacking.directionType
+                  ].normal
+                );
+                executeAttack = true;
+                attackPeak =
+                  player.attacking.animRef.peak[stamAtkType][
+                    player.attacking.directionType
+                  ].normal;
+                player.attacking.limit =
+                  player.attacking.animRef.limit[stamAtkType][
+                    player.attacking.directionType
+                  ].charged;
+                player.attacking.peakCount = attackPeak;
+              } else if (player.attacking.count === attackPeak) {
+                executeAttack = true;
+                player.attacking.peakCount = attackPeak;
+                console.log(
+                  "execute ",
+                  chargeType,
+                  " attack at peak normally",
+                  player.attacking.charge,
+                  player.attacking.blunt
+                );
+              }
+            } else {
+              // console.log("attack peak already reached/passed");
+            }
+
+            // TIME TO ATTACK IS NOW!
+            if (executeAttack === true) {
+              // WEAPON STAMINA COST!!
+              if (
+                player.stamina.current -
+                  this.staminaCostRef.attack[stamAtkType][blunt].peak >=
+                0
+              ) {
+                player.stamina.current -=
+                  this.staminaCostRef.attack[stamAtkType][blunt].peak;
+
+                let melee = true;
+
+                console.log(
+                  "atk peak:",
+                  player.attacking.direction,
+                  "counts:",
+                  player.attacking.count,
+                  player.attacking.peakCount,
+                  player.attacking.limit,
+                  chargeType === "charged",
+                  "blunt:",
+                  player.attacking.blunt
+                );
+
+                player = this.setElasticCounter("attacking", "peak", false, player);
+
+                player.attacking.peak = true;
+                if (player.attacking.charge > 0) {
+                  player.attacking.chargePeak = true;
+                }
+
+                // CREATE NEW PROJECTILE
+                if (
+                  player.currentWeapon.type === "crossbow" &&
+                  player.attacking.blunt !== true &&
+                  player.items.ammo > 0
+                ) {
+                  // console.log('firing crossbow');
+                  melee = false;
+
+                  let projectileResult = this.projectileCreator("player", player, "bolt");
+                  player = projectileResult.owner;
+
+                  this.projectiles.push(projectileResult.projectile);
+
+                  this.getBoltTarget(projectileResult.projectile);
+                }
+                // NO PROJECTILE AMMO
+                if (
+                  player.currentWeapon.type === "crossbow" &&
+                  player.attacking.blunt !== true &&
+                  player.items.ammo <= 0
+                ) {
+                  // console.log('no ammo!');
+                  this.players[player.number - 1].statusDisplay = {
+                    state: true,
+                    status: "out of ammo",
+                    count: 1,
+                    limit: this.players[player.number - 1].statusDisplay.limit,
+                  };
+                  player.currentWeapon.effect = "ammo+0";
+
+                  if (!player.popups.find((x) => x.msg === "outOfAmmo")) {
+                    player.popups.push({
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: "",
+                      position: "",
+                      msg: "outOfAmmo",
+                      img: "",
+                    });
+                  }
+                }
+
+                if (
+                  player.currentWeapon.type === "crossbow" &&
+                  player.attacking.blunt === true
+                ) {
+                  melee = true;
+                }
+
+                if (melee === true) {
+                  this.getTarget(player);
+                  this.meleeAttackPeak("player", player);
+                }
+              }
+
+              // OUT OF STAMINA
+              else {
+                player.attacking.count = attackPeak + 1;
+                player.stamina.current = 0;
+                player.statusDisplay = {
+                  state: true,
+                  status: "Out of Stamina",
+                  count: 1,
+                  limit: player.statusDisplay.limit,
+                };
+              }
+            }
+
+            // ATTACK COOLDOWN AND END!
+            if (
+              executeAttack !== true &&
+              player.attacking.count !== 0 &&
+              player.attacking.peakCount !== 0 &&
+              player.attacking.count > player.attacking.peakCount &&
+              player.attacking.count < player.attacking.limit
+            ) {
               console.log(
-                "atk windup:",
+                "atk cooldown:",
                 player.attacking.direction,
                 "counts:",
                 player.attacking.count,
@@ -34635,381 +35391,94 @@ class App extends Component {
               );
               player.attacking.peak = false;
               player.attacking.chargePeak = false;
+              player.attacking.blunt = false;
+
+              // let popup;
+              // let popupsToRemove = [
+              //   "noDirection3",
+              //   "northDirection",
+              //   "southDirection",
+              //   "eastDirection",
+              //   "westDirection",
+              // ];
+              // for (const pop of popupsToRemove) {
+              //   popup = player.popups.find((x) => x.msg === pop);
+              //   if (popup) {
+              //     player.popups.splice(
+              //       player.popups.findIndex((x) => x.msg === pop),
+              //       1
+              //     );
+              //   }
+              // }
             }
 
-            player.action = "attacking";
-            player.attacking.count++;
-
-            // APPLY BLUNT ATTACK
             if (
-              player.dodging.countState === true ||
-              player.dodging.state === true ||
-              this.keyPressed[player.number - 1].dodge === true
+              player.attacking.count >= player.attacking.limit &&
+              player.attacking.count !== 0
             ) {
-              console.log("was attacking then pressed dodging. blunt attack");
-
-              if (player.attacking.blunt !== true) {
-                player.dodging = {
-                  countState: false,
+              player.attacking = {
+                state: false,
+                count: 0,
+                limit: player.attacking.limit,
+                strength: 0,
+                direction: "",
+                directionType: "", //thrust or slash
+                animRef: player.attacking.animRef,
+                peak: false,
+                peakCount: 0,
+                charge: 0,
+                chargePeak: false,
+                blunt: false,
+                clashing: {
                   state: false,
                   count: 0,
-                  limit: player.dodging.limit,
-                  peak: {
-                    start: player.dodging.peak.start,
-                    end: player.dodging.peak.end,
-                  },
-                  direction: "",
-                };
-                this.keyPressed[player.number - 1].dodge = false;
-                player.attacking.blunt = true;
+                  limit: player.attacking.clashing.limit,
+                },
+              };
+              player.action = "idle";
 
-                // RESET DODGE ELASTIC COUNTER
-                if (
-                  player.elasticCounter.state === true &&
-                  player.elasticCounter.type === "dodging"
-                ) {
-                  player.elasticCounter.state = false;
-                }
-              }
-            }
-
-            // ATTACK START POPUP, GET TARGET, CELLS UNDER ATTACK & AUTO CAM
-            if (player.attacking.count <= 2) {
-              if (!player.popups.find((x) => x.msg === "attackStart")) {
-                player.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 5,
-                  type: "",
-                  position: "",
-                  msg: "attackStart",
-                  img: "",
-                });
-              }
-
-              this.getTarget(player);
-
-              // CELLS UNDER PRE ATTACK!
-              let cellUnderPreAttack1 = this.gridInfo.find(
-                (elem) =>
-                  elem.number.x === player.target.cell1.number.x &&
-                  elem.number.y === player.target.cell1.number.y
-              );
-              let cellUnderPreAttack2;
-              if (player.currentWeapon.type === "spear") {
-                cellUnderPreAttack2 = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === player.target.cell2.number.x &&
-                    elem.number.y === player.target.cell2.number.y
-                );
-              }
-              if (player.currentWeapon.type === "spear") {
-                this.cellsUnderPreAttack.push({
-                  number: {
-                    x: player.target.cell1.number.x,
-                    y: player.target.cell1.number.y,
-                  },
-                  count: 1,
-                  limit: 8,
-                });
-                this.cellsUnderPreAttack.push({
-                  number: {
-                    x: player.target.cell2.number.x,
-                    y: player.target.cell2.number.y,
-                  },
-                  count: 1,
-                  limit: 8,
-                });
-              }
-              if (
-                player.currentWeapon.type === "sword" ||
-                player.currentWeapon.type === ""
-              ) {
-                // console.log('sword/unarmed melee target',player.target);
-
-                this.cellsUnderPreAttack.push({
-                  number: {
-                    x: player.target.cell1.number.x,
-                    y: player.target.cell1.number.y,
-                  },
-                  count: 1,
-                  limit: 8,
-                });
-              }
-
-              // if (player.currentWeapon.type === 'crossbow' && player.attacking.blunt === true) {
-              if (player.currentWeapon.type === "crossbow") {
-                // console.log('crossbow melee target',player.target);
-
-                this.cellsUnderPreAttack.push({
-                  number: {
-                    x: player.target.cell1.number.x,
-                    y: player.target.cell1.number.y,
-                  },
-                  count: 1,
-                  limit: 8,
-                });
-              }
-
-              // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
-
-              // CAMERA ATTACK FOCUS
+              // AUTO CAM (ATK FOCUS BREAK)
               if (
                 this.camera.customView.state !== true &&
-                this.settingAutoCamera === false &&
+                // this.settingAutoCamera === false &&
                 player.ai.state !== true &&
                 this.camera.preInstructions.length === 0 &&
                 this.camera.instructions.length === 0
               ) {
-                if (this.players[0].dead.state !== true) {
-                  if (player.number === 1) {
-                    this.setAutoCamera("attackFocus", player);
-                  }
-                } else if (player.number === 2) {
-                  this.setAutoCamera("attackFocus", player);
-                }
+                this.setAutoCamera("attackFocusBreak", player);
               } else {
-                console.log("no setting auto cam: attackFocus");
+                console.log("no setting auto cam: attackFocusBreak");
               }
-            }
 
-            // SHOW ATTACKING POPUP
-            if (player.attacking.count > 2) {
-              if (!player.popups.find((x) => x.msg === "attacking")) {
-                let limit = player.attackinglimit - player.attacking.count;
-                if (limit === 0) {
-                  limit = 5;
-                }
-                if (!player.popups.find((x) => x.msg === "attacking")) {
-                  player.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: limit,
-                    type: "",
-                    position: "",
-                    msg: "attacking",
-                    img: "",
-                  });
+              if (player.popups.find((x) => x.msg === "attacking")) {
+                player.popups.splice(
+                  player.popups.findIndex((x) => x.msg === "attacking"),
+                  1
+                );
+              }
+
+              let popup;
+              let popupsToRemove = [
+                "noDirection3",
+                "northDirection",
+                "southDirection",
+                "eastDirection",
+                "westDirection",
+              ];
+              for (const pop of popupsToRemove) {
+                popup = player.popups.find((x) => x.msg === pop);
+                if (popup) {
+                  player.popups.splice(
+                    player.popups.findIndex((x) => x.msg === pop),
+                    1
+                  );
                 }
               }
-              // else {
-              //   console.log('beep2',player.attacking.animRef.limit[stamAtkType]-player.attacking.count);
-              //   player.popups.find(x => x.msg === "attacking").limit = player.attacking.animRef.limit[stamAtkType]-player.attacking.count
-              // }
-            }
-          }
 
-          let executeAttack = false;
-          if (
-            player.elasticCounter.state !== true &&
-            player.elasticCounter.type !== "attacking"
-          ) {
-            if (
-              chargeType !== "charged" &&
-              player.attacking.charge > 0 &&
-              player.attacking.count >
-                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                  .normal &&
-              player.attacking.count <
-                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                  .charged
-            ) {
-              console.log(
-                "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
-              );
-              console.log(
-                "counts",
-                player.attacking.count,
-                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                  .normal
-              );
-              executeAttack = true;
-              attackPeak =
-                player.attacking.animRef.peak[stamAtkType][player.attacking.directionType]
-                  .normal;
-              player.attacking.limit =
-                player.attacking.animRef.limit[stamAtkType][
-                  player.attacking.directionType
-                ].charged;
-              player.attacking.peakCount = attackPeak;
-            } else if (player.attacking.count === attackPeak) {
-              executeAttack = true;
-              player.attacking.peakCount = attackPeak;
-              console.log(
-                "execute ",
-                chargeType,
-                " attack at peak normally",
-                player.attacking.charge,
-                player.attacking.blunt
-              );
+              console.log("attack end");
             }
           } else {
-            // console.log("attack peak already reached/passed");
-          }
-
-          // TIME TO ATTACK IS NOW!
-          if (executeAttack === true) {
-            // WEAPON STAMINA COST!!
-            if (
-              player.stamina.current -
-                this.staminaCostRef.attack[stamAtkType][blunt].peak >=
-              0
-            ) {
-              player.stamina.current -=
-                this.staminaCostRef.attack[stamAtkType][blunt].peak;
-
-              let melee = true;
-
-              console.log(
-                "atk peak:",
-                player.attacking.direction,
-                "counts:",
-                player.attacking.count,
-                player.attacking.peakCount,
-                player.attacking.limit,
-                chargeType === "charged"
-              );
-
-              player = this.setElasticCounter("attacking", "", false, player);
-
-              player.attacking.peak = true;
-              if (player.attacking.charge > 0) {
-                player.attacking.chargePeak = true;
-              }
-
-              // CREATE NEW PROJECTILE
-              if (
-                player.currentWeapon.type === "crossbow" &&
-                player.attacking.blunt !== true &&
-                player.items.ammo > 0
-              ) {
-                // console.log('firing crossbow');
-                melee = false;
-
-                let projectileResult = this.projectileCreator("player", player, "bolt");
-                player = projectileResult.owner;
-
-                this.projectiles.push(projectileResult.projectile);
-
-                this.getBoltTarget(projectileResult.projectile);
-              }
-              // NO PROJECTILE AMMO
-              if (
-                player.currentWeapon.type === "crossbow" &&
-                player.attacking.blunt !== true &&
-                player.items.ammo <= 0
-              ) {
-                // console.log('no ammo!');
-                this.players[player.number - 1].statusDisplay = {
-                  state: true,
-                  status: "out of ammo",
-                  count: 1,
-                  limit: this.players[player.number - 1].statusDisplay.limit,
-                };
-                player.currentWeapon.effect = "ammo+0";
-
-                if (!player.popups.find((x) => x.msg === "outOfAmmo")) {
-                  player.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: "",
-                    position: "",
-                    msg: "outOfAmmo",
-                    img: "",
-                  });
-                }
-              }
-
-              if (
-                player.currentWeapon.type === "crossbow" &&
-                player.attacking.blunt === true
-              ) {
-                melee = true;
-              }
-
-              if (melee === true) {
-                this.getTarget(player);
-                this.meleeAttackPeak("player", player);
-              }
-            }
-
-            // OUT OF STAMINA
-            else {
-              player.attacking.count = attackPeak + 1;
-              player.stamina.current = 0;
-              player.statusDisplay = {
-                state: true,
-                status: "Out of Stamina",
-                count: 1,
-                limit: player.statusDisplay.limit,
-              };
-            }
-          }
-
-          // ATTACK COOLDOWN AND END!
-          if (
-            executeAttack !== true &&
-            player.attacking.count > player.attacking.peakCount &&
-            player.attacking.count < player.attacking.limit
-          ) {
-            console.log(
-              "atk cooldown:",
-              player.attacking.direction,
-              "counts:",
-              player.attacking.count,
-              player.attacking.peakCount,
-              player.attacking.limit,
-              chargeType === "charged"
-            );
-            player.attacking.peak = false;
-            player.attacking.chargePeak = false;
-            player.attacking.blunt = false;
-          }
-
-          if (player.attacking.count >= player.attacking.limit) {
-            player.attacking = {
-              state: false,
-              count: 0,
-              limit: player.attacking.limit,
-              strength: 0,
-              direction: "",
-              directionType: "", //thrust or slash
-              animRef: player.attacking.animRef,
-              peak: false,
-              peakCount: 0,
-              charge: 0,
-              chargePeak: false,
-              blunt: false,
-              clashing: {
-                state: false,
-                count: 0,
-                limit: player.attacking.clashing.limit,
-              },
-            };
-            player.action = "idle";
-
-            // AUTO CAM (ATK FOCUS BREAK)
-            if (
-              this.camera.customView.state !== true &&
-              // this.settingAutoCamera === false &&
-              player.ai.state !== true &&
-              this.camera.preInstructions.length === 0 &&
-              this.camera.instructions.length === 0
-            ) {
-              this.setAutoCamera("attackFocusBreak", player);
-            } else {
-              console.log("no setting auto cam: attackFocusBreak");
-            }
-
-            if (player.popups.find((x) => x.msg === "attacking")) {
-              player.popups.splice(
-                player.popups.findIndex((x) => x.msg === "attacking"),
-                1
-              );
-            }
-
-            console.log("attack end");
+            console.log("no longer attacking. probably feinted");
           }
         }
         // CLASHING
@@ -35045,6 +35514,8 @@ class App extends Component {
             player
           ).player;
 
+          let defendDecayLimitPercentage = 0.55; // calc & increase this based on defend stats
+
           let defendType = player.currentWeapon.type;
           if (player.currentWeapon.name === "") {
             defendType = "unarmed";
@@ -35052,9 +35523,32 @@ class App extends Component {
 
           let defendPeak =
             player.defending.animRef.peak[defendType][player.defending.directionType];
-          player.defending.peakCount = defendPeak;
-          player.defending.limit =
+
+          let defenseValueDecreased = false;
+          if (
+            player.defending.decay.state !== true &&
+            defendPeak !== player.defending.peakCount
+          ) {
+            if (defendPeak > player.defending.peakCount) {
+              defenseValueDecreased = true;
+            }
+            console.log(
+              "defend peak changed from",
+              player.defending.peakCount,
+              "to",
+              defendPeak
+            );
+            player.defending.peakCount = defendPeak;
+          }
+
+          let limit =
             player.defending.animRef.limit[defendType][player.defending.directionType];
+          if (player.defending.decay.state !== true && limit !== player.defending.limit) {
+            console.log("defend limit changed from", player.defending.limit, "to", limit);
+            player.defending.limit = limit;
+          }
+
+          // WINDUP
           if (
             player.defending.count < defendPeak &&
             player.defending.decay.state !== true
@@ -35099,28 +35593,41 @@ class App extends Component {
                   this.setAutoCamera("defendFocus", player);
                 }
               } else {
-                console.log("no setting auto cam: defendFocus");
+                // console.log("no setting auto cam: defendFocus");
               }
             }
           }
 
-          // PEAK, START DECAY
-          else if (
-            player.defending.count === defendPeak &&
+          if (
+            defenseValueDecreased === true &&
+            player.defending.count > player.defending.peakCount
+          ) {
+            console.log(
+              "defend was directional now non directional & pask peak. Execute defend"
+            );
+            player.defending.peakCount = player.defending.count;
+          }
+
+          let executeDefend = false;
+          if (
+            player.elasticCounter.subType !== "windup" &&
+            player.defending.count === player.defending.peakCount &&
             player.defending.decay.state !== true
           ) {
-            let defendDecayLimitPercentage = 0.55; // calc & increase this based on defend stats
+            executeDefend = true;
+          }
+
+          // PEAK, START DECAY
+          if (executeDefend === true) {
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
               player.action = "defending";
               player.defending.peak = true;
               player.defending.count++;
-              player.defending.decay = {
-                state: true,
-                count: 0,
-                limit: Math.ceil(
-                  (player.defending.limit - defendPeak) * defendDecayLimitPercentage
-                ),
-              };
+              player.defending.decay.state = true;
+              player.defending.decay.count = 0;
+              player.defending.decay.limit = Math.ceil(
+                (player.defending.limit - defendPeak) * defendDecayLimitPercentage
+              );
               player.stamina.current =
                 player.stamina.current - this.staminaCostRef.defend.peak;
 
@@ -35253,6 +35760,23 @@ class App extends Component {
             player.defending.count > defendPeak
           ) {
             if (player.defending.count < player.defending.limit) {
+              // let popup;
+              // let popupsToRemove = [
+              //   "noDirection3",
+              //   "northDirection",
+              //   "southDirection",
+              //   "eastDirection",
+              //   "westDirection",
+              // ];
+              // for (const pop of popupsToRemove) {
+              //   popup = player.popups.find((x) => x.msg === pop);
+              //   if (popup) {
+              //     player.popups.splice(
+              //       player.popups.findIndex((x) => x.msg === pop),
+              //       1
+              //     );
+              //   }
+              // }
               player.defending.count++;
               console.log(
                 "defend cooldown:",
@@ -35281,11 +35805,23 @@ class App extends Component {
                 directionType: "", //thrust or slash
               };
 
-              if (player.popups.find((x) => x.msg === "defending")) {
-                player.popups.splice(
-                  player.popups.findIndex((x) => x.msg === "defending"),
-                  1
-                );
+              let popup;
+              let popupsToRemove = [
+                "defending",
+                "noDirection3",
+                "northDirection",
+                "southDirection",
+                "eastDirection",
+                "westDirection",
+              ];
+              for (const pop of popupsToRemove) {
+                popup = player.popups.find((x) => x.msg === pop);
+                if (popup) {
+                  player.popups.splice(
+                    player.popups.findIndex((x) => x.msg === pop),
+                    1
+                  );
+                }
               }
 
               // AUTO CAM (DEF FOCUS BREAK)
@@ -35299,6 +35835,15 @@ class App extends Component {
                 this.setAutoCamera("defendFocusBreak", player);
               } else {
                 console.log("no setting auto cam: defendFocusBreak");
+              }
+              // RESET ELASTIC COUNTER
+              if (
+                player.elasticCounter.state === true &&
+                player.elasticCounter.type === "defending"
+              ) {
+                player.elasticCounter.state = false;
+                player.elasticCounter.type = "";
+                player.elasticCounter.subType = "";
               }
               console.log("defend end");
             }
@@ -35705,6 +36250,8 @@ class App extends Component {
               // IF PAUSE IS END, TURN OFF ELASTIC COUNT
               if (player.elasticCounter.pause.type === "end") {
                 player.elasticCounter.state = false;
+                player.elasticCounter.type = "";
+                player.elasticCounter.subType = "";
                 // console.log("end pause count finished. turn off elastic count");
               }
 
@@ -35761,6 +36308,7 @@ class App extends Component {
               if (player.elasticCounter.pause.type !== "end") {
                 player.elasticCounter.state = false;
                 player.elasticCounter.type = "";
+                player.elasticCounter.subType = "";
                 // console.log("pause is not end. turn off elastic count");
               }
 
@@ -36097,6 +36645,8 @@ class App extends Component {
             player.elasticCounter.type === "dodging"
           ) {
             player.elasticCounter.state = false;
+            player.elasticCounter.type = "";
+            player.elasticCounter.subType = "";
           }
 
           if (this.players[player.number - 1].popups.find((x) => x.msg === "dodging")) {
@@ -36373,6 +36923,8 @@ class App extends Component {
                   player.elasticCounter.type === "dodging"
                 ) {
                   player.elasticCounter.state = false;
+                  player.elasticCounter.type = "";
+                  player.elasticCounter.subType = "";
                 }
               };
 
@@ -36611,6 +37163,8 @@ class App extends Component {
         if (
           player.attacking.state === false &&
           player.defending.state === false &&
+          player.action !== "attacking" &&
+          player.action !== "defending" &&
           player.defending.count < 1 &&
           player.dodging.state === false &&
           player.dodging.countState === false &&
@@ -36641,7 +37195,6 @@ class App extends Component {
             if (plyrPullPushed === true) {
               breakPulledPushed = true;
             }
-
             if (player.newMoveDelay.state !== true) {
               // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
               if (
@@ -37051,6 +37604,7 @@ class App extends Component {
 
         // CAN READ NON-MOVE INPUTS!!
         if (
+          player.moving.state !== true &&
           player.strafing.state === false &&
           player.turning.state !== true &&
           player.postPull.state !== true &&
@@ -37125,6 +37679,8 @@ class App extends Component {
                       player.elasticCounter.type === "dodging"
                     ) {
                       player.elasticCounter.state = false;
+                      player.elasticCounter.type = "";
+                      player.elasticCounter.subType = "";
                     }
                   }
                   this.keyPressed[player.number - 1].dodge = false;
@@ -37559,6 +38115,8 @@ class App extends Component {
           // IF PAUSE IS END, TURN OFF ELASTIC COUNT
           if (player.elasticCounter.pause.type === "end") {
             player.elasticCounter.state = false;
+            player.elasticCounter.type = "";
+            player.elasticCounter.subType = "";
             // player.action = "idle";
             // console.log('end pause count finished. turn off elastic count');
           }
@@ -37610,6 +38168,8 @@ class App extends Component {
           // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
           if (player.elasticCounter.pause.type !== "end") {
             player.elasticCounter.state = false;
+            player.elasticCounter.type = "";
+            player.elasticCounter.subType = "";
             player.action = "idle";
 
             // reset deflected here?
@@ -38242,68 +38802,68 @@ class App extends Component {
 
     // POPUPS
     // Testing
-    if (this.time === 50 || this.time === 300) {
-      let newArray = [];
-      let x = 0;
-      let y = 0;
-      for (const [key, value] of Object.entries(this.popupImageRef)) {
-        newArray.push(key);
-      }
-      for (var i = 0; i < 1; i++) {
-        // if (
-        //   !player.popups.find((x) => x.msg === newArray[i]) &&
-        //   // player.number === 2 &&
-        //   newArray[i] !== "hpUp" &&
-        //   newArray[i] !== "hpDown"
-        // ) {
-        //   player.popups.push({
-        //     state: false,
-        //     count: 0,
-        //     limit: 30,
-        //     type: "",
-        //     position: "",
-        //     msg: newArray[i],
-        //     img: "",
-        //     cell: this.gridInfo.find(
-        //       (x) =>
-        //         x.number.x === player.currentPosition.cell.number.x &&
-        //         x.number.y === player.currentPosition.cell.number.y
-        //     ),
-        //   });
-        // }
-        // if (
-        //   newArray[i] !==  "hpUp" &&
-        //   newArray[i] !==  "hpDown" &&
-        //   !this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 1 && x.cell.number.y === 5)
-        // ) {
-        //   this.cellPopups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 35,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       img: '',
-        //       cell: this.gridInfo.find(x => x.number.x === 1 && x.number.y === 5)
-        //     }
-        //   )
-        // }
-        // if (!this.cellPopups.find((x) => x.msg === "test" && x.cell.number.x === 4 && x.cell.number.y === 3)) {
-        //   this.cellPopups.push({
-        //     state: false,
-        //     count: 0,
-        //     limit: 35,
-        //     type: "",
-        //     position: "",
-        //     msg: "bgvgv",
-        //     color: "",
-        //     img: "",
-        //     cell: this.gridInfo.find((x) => x.number.x === 4 && x.number.y === 3),
-        //   });
-        // }
-      }
-    }
+    // if (this.time === 250 || this.time === 500) {
+    //   let newArray = [];
+    //   let x = 0;
+    //   let y = 0;
+    //   for (const [key, value] of Object.entries(this.popupImageRef)) {
+    //     newArray.push(key);
+    //   }
+    //   player.popups.push({
+    //     state: false,
+    //     count: 0,
+    //     limit: 30,
+    //     type: "",
+    //     position: "",
+    //     msg: "hpUp" + "_-5",
+    //     img: "",
+    //     cell: this.gridInfo.find(
+    //       (x) =>
+    //         x.number.x === player.currentPosition.cell.number.x &&
+    //         x.number.y === player.currentPosition.cell.number.y
+    //     ),
+    //   });
+    //   for (var i = 0; i < 10; i++) {
+    //     if (
+    //       !player.popups.find((x) => x.msg === newArray[i])
+    //       // player.number === 2 &&
+    //       // newArray[i] !== "hpUp" &&
+    //       // newArray[i] !== "hpDown"
+    //     ) {
+    //       if (newArray[i] === "hpUp" || newArray[i] === "hpDown") {
+    //         player.popups.push({
+    //           state: false,
+    //           count: 0,
+    //           limit: 30,
+    //           type: "",
+    //           position: "",
+    //           msg: newArray[i] + "_-5",
+    //           img: "",
+    //           cell: this.gridInfo.find(
+    //             (x) =>
+    //               x.number.x === player.currentPosition.cell.number.x &&
+    //               x.number.y === player.currentPosition.cell.number.y
+    //           ),
+    //         });
+    //       } else {
+    //         player.popups.push({
+    //           state: false,
+    //           count: 0,
+    //           limit: 30,
+    //           type: "",
+    //           position: "",
+    //           msg: newArray[i],
+    //           img: "",
+    //           cell: this.gridInfo.find(
+    //             (x) =>
+    //               x.number.x === player.currentPosition.cell.number.x &&
+    //               x.number.y === player.currentPosition.cell.number.y
+    //           ),
+    //         });
+    //       }
+    //     }
+    //   }
+    // }
     //PLAYER
     if (player.popups.length > 0) {
       for (const popup of player.popups) {
@@ -41980,6 +42540,7 @@ class App extends Component {
 
               // test logging
               if (x === this.gridWidth && y === this.gridWidth) {
+                // this.testDraw.push({ color: "red", x: finalCoords.x, y: finalCoords.y });
                 if (plyr.elasticCounter.countUp.state === true) {
                   // this.testDraw.push({
                   //   color: "red",
@@ -43009,6 +43570,7 @@ class App extends Component {
                       "southWest",
                     ];
 
+                    // REMOVE 1ST FREE POSITION IF IT'S THE SAME AS PLAYER'S DIRECTION
                     if (plyr.strafing.state === true) {
                       if (positions[0] === plyr.strafing.direction) {
                         const first = positions.shift();
@@ -43032,6 +43594,7 @@ class App extends Component {
                     let dir = undefined;
 
                     // CHECK OTHER PLAYER'S POSITION AND THE POPUPS POSITION
+                    // REMOVE OCCUPIED POSITIONS
                     for (const plyr2 of this.players) {
                       if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                         let myPos = plyr.currentPosition.cell.number;
@@ -43079,6 +43642,7 @@ class App extends Component {
                     }
 
                     // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
+                    // REMOVE OCCUPIED POSITIONS
                     for (const popup2 of this.cellPopups) {
                       dir = undefined;
 
@@ -43112,11 +43676,17 @@ class App extends Component {
                     // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
 
                     if (!positions[0]) {
-                      // console.log('no open positions for new or postponed popup', popup.msg);
+                      console.log(
+                        "no open positions for new or postponed popup",
+                        popup.msg
+                      );
                       popup.state = false;
                       popup.count = 0;
                     } else {
                       popup.position = positions[0];
+                      if (currentPopups.find((x) => x.msg === popup.msg)) {
+                        // console.log("popup already exists", popup.msg);
+                      }
                     }
 
                     let popupProgress = false;
@@ -43301,7 +43871,10 @@ class App extends Component {
                     if (dirs.find((x) => x === popup.position)) {
                       plyr.popups.find((x) => x.msg === popup.msg).position = "";
                       plyr.popups.find((x) => x.msg === popup.msg).state = false;
-                      // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
+                      console.log(
+                        "A new invalid direction === popup's position. reconsidering...",
+                        popup.msg
+                      );
                     } else {
                       let popupProgress = false;
                       let showProgress = false;
@@ -43404,7 +43977,7 @@ class App extends Component {
                           this.popupImgSize * 0.75
                         );
                       } else {
-                        if (player.action === "defending") {
+                        if (player.action === "defending" && popup.msg === "defending") {
                           if (player.defending.peak === true) {
                             popup.img = this.popupImageRef.defending_1;
                           }
@@ -43426,6 +43999,8 @@ class App extends Component {
                             if (prog > 70) {
                               popup.img = this.popupImageRef.defending_1;
                             }
+                          } else {
+                            popup.img = this.popupImageRef.defending;
                           }
                         }
                         context.drawImage(
@@ -44602,6 +45177,14 @@ class App extends Component {
       clashing: this.deflectIndicate2Ref.current,
       timer: this.timerIndicateRef.current,
       charging: this.chargeIndicateRef.current,
+
+      noDirection: this.noDirectionIndicateRef.current,
+      noDirection2: this.noDirectionIndicate2Ref.current,
+      noDirection3: this.noDirectionIndicate3Ref.current,
+      northDirection: this.northDirectionIndicateRef.current,
+      southDirection: this.southDirectionIndicateRef.current,
+      eastDirection: this.eastDirectionIndicateRef.current,
+      westDirection: this.westDirectionIndicateRef.current,
     };
     this.indicatorImgs = {
       preAttack: this.preAttackIndicateRef.current,
@@ -44622,6 +45205,13 @@ class App extends Component {
       attackBreak: this.attackBreakIndicateRef.current,
       defendBreak: this.defendBreakIndicateRef.current,
       dodge: this.dodgeIndicateRef.current,
+      noDirection: this.noDirectionIndicateRef.current,
+      noDirection2: this.noDirectionIndicate2Ref.current,
+      noDirection3: this.noDirectionIndicate3Ref.current,
+      northDirection: this.northDirectionIndicateRef.current,
+      southDirection: this.southDirectionIndicateRef.current,
+      eastDirection: this.eastDirectionIndicateRef.current,
+      westDirection: this.westDirectionIndicateRef.current,
     };
     this.playerImgs = [
       {
@@ -45096,6 +45686,10 @@ class App extends Component {
     let sceneX = this.canvasWidth / 2;
     let sceneY = this.sceneY;
     let tileWidth = this.tileWidth;
+
+    document.getElementsByClassName(
+      this.state.containerInnerClass
+    )[0].style.backgroundImage = `url('${this.backgroundImage}')`;
 
     this.startProcessLevelData(canvas);
     // gridInfo = this.gridInfo;
@@ -45940,6 +46534,7 @@ class App extends Component {
             ref={this.barrierAWestRef}
             alt="logo"
           />
+
           <img
             src={attack1Indicate}
             className="hidden playerImgs"
@@ -46222,6 +46817,7 @@ class App extends Component {
             ref={this.fallingIndicateRef}
             alt="logo"
           />
+
           <img
             src={completeMissionIndicate}
             className="hidden playerImgs"
@@ -46318,6 +46914,7 @@ class App extends Component {
             ref={this.retrieveMissionIndicateRef}
             alt="logo"
           />
+
           <img
             src={drowningIndicate}
             className="hidden playerImgs"
@@ -46583,6 +47180,49 @@ class App extends Component {
             alt="logo"
           />
           <img
+            src={noDirectionIndicate}
+            className="hidden playerImgs"
+            ref={this.noDirectionIndicateRef}
+            alt="logo"
+          />
+          <img
+            src={noDirectionIndicate2}
+            className="hidden playerImgs"
+            ref={this.noDirectionIndicate2Ref}
+            alt="logo"
+          />
+          <img
+            src={noDirectionIndicate3}
+            className="hidden playerImgs"
+            ref={this.noDirectionIndicate3Ref}
+            alt="logo"
+          />
+          <img
+            src={northDirectionIndicate}
+            className="hidden playerImgs"
+            ref={this.northDirectionIndicateRef}
+            alt="logo"
+          />
+          <img
+            src={southDirectionIndicate}
+            className="hidden playerImgs"
+            ref={this.southDirectionIndicateRef}
+            alt="logo"
+          />
+          <img
+            src={eastDirectionIndicate}
+            className="hidden playerImgs"
+            ref={this.eastDirectionIndicateRef}
+            alt="logo"
+          />
+          <img
+            src={westDirectionIndicate}
+            className="hidden playerImgs"
+            ref={this.westDirectionIndicateRef}
+            alt="logo"
+          />
+
+          <img
             src={sword}
             className="hidden playerImgs"
             ref={this.itemSwordRef}
@@ -46655,6 +47295,7 @@ class App extends Component {
             ref={this.itemGreaves1Ref}
             alt="logo"
           />
+
           <img
             src={greaves2}
             className="hidden playerImgs"
@@ -46721,6 +47362,7 @@ class App extends Component {
             ref={this.itemFocusDownRef}
             alt="logo"
           />
+
           <img
             src={playerImgIdleSheet}
             className="hidden playerImgs"
@@ -46883,6 +47525,8 @@ class App extends Component {
             ref={this.deflectedFallingSheetNewRef}
             alt="logo"
           />
+
+          <img src={bg_1} className="hidden playerImgs" ref={this.bg_1Ref} alt="logo" />
         </div>
       </React.Fragment>
     );
