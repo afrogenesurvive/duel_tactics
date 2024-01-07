@@ -1,5 +1,5 @@
 .debugBoxContainer {
-  padding: .5rem 0.2rem;
+  padding: 0.5rem 0.2rem;
 }
 
 .debugBoxList {
@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  margin: .2rem 0;
+  margin: 0.2rem 0;
 }
 
 .debugBoxListItem > * {
@@ -27,7 +27,7 @@
 .debugBoxText {
   color: #000000;
   font-size: 1rem;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   text-align: center;
 }
 .debugBoxTextAlt {
@@ -41,7 +41,7 @@
 
 .debugBoxIcon {
   color: #000000;
-  margin: 0 .5rem 0 0;
+  margin: 0 0.5rem 0 0;
   max-height: 2rem;
 }
 .debugBoxIcon2 {
@@ -58,28 +58,28 @@
   /* height: 2rem; */
   border: 1px solid green;
   border-radius: 5px;
-  padding: .5rem;
-  margin-top: .5rem;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .cellInfoSwitch {
   border: 3px solid blue;
   border-radius: 5px;
-  padding: .5rem;
+  padding: 0.5rem;
   background-color: #ffffff;
   position: absolute;
   bottom: 0;
-  right: .1rem;
+  right: 0.1rem;
   z-index: 3;
 }
 .cellInfoBox {
   border: 3px solid blue;
   border-radius: 5px;
-  padding: .5rem;
-  background-color: #ffffff;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.8);
   position: absolute;
   bottom: 0;
-  right: .1rem;
+  right: 0.1rem;
   z-index: 3;
   max-height: 26rem;
   max-width: 18rem;
@@ -88,10 +88,10 @@
   border: 2px solid blue;
   border-radius: 5px;
   padding: 1rem;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.5);
   position: absolute;
   bottom: 4rem;
-  left: .1rem;
+  left: 0.1rem;
   z-index: 3;
   max-height: 25rem;
   max-width: 18rem;
@@ -114,6 +114,12 @@
   font-size: medium;
 }
 
+.popover {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border: 2px solid blue !important;
+  border-radius: 5px !important;
+}
+
 .popoverHead {
   margin: 0 auto;
   text-decoration: underline;
@@ -121,10 +127,9 @@
 .popoverList {
   padding: 0;
   list-style-type: none;
-
 }
 .popoverList > li > p {
-  margin-bottom: .2rem;
+  margin-bottom: 0.2rem;
 }
 
 .gearPopover {
@@ -147,7 +152,7 @@
   background-color: #ffffff;
 }
 .tooltip-inner {
-  padding: .5rem;
+  padding: 0.5rem;
 }
 
 .carousel-control-prev-icon {
@@ -161,7 +166,7 @@
   text-align: left;
 }
 .aiStatusBoxSwitch {
-  margin: .1rem 0 0 1rem;
+  margin: 0.1rem 0 0 1rem;
 }
 
 .aiStatHeadBox {
@@ -174,7 +179,7 @@
 }
 
 .staminaProgress {
-  margin: 0.5rem .2rem 0 0;
+  margin: 0.5rem 0.2rem 0 0;
   /* margin: .2rem .5rem 0 .5rem; */
   width: 3rem;
   /* display: inline; */
@@ -191,7 +196,6 @@
   color: #000000;
 }
 
-
 .cameraControlBox {
   width: fit-content;
   display: flex;
@@ -206,11 +210,11 @@
 }
 
 .cameraUIIcon {
-  margin: 0 .3rem;
+  margin: 0 0.3rem;
   color: #000000;
 }
 .cameraUIIconAlert {
-  margin: 0 .3rem;
+  margin: 0 0.3rem;
   color: red;
 }
 

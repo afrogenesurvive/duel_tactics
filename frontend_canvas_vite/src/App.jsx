@@ -3877,7 +3877,7 @@ class App extends Component {
 
     this.showPlayerOutlines = true;
 
-    this.backgroundImage = "src/assets/backgrounds/bg_field_1.png";
+    this.backgroundImage = "src/assets/backgrounds/bg_seaCloudsNight_1.png";
     this.backgroundImageRef = {
       sea_clouds_1: "bg_seaClouds_1",
       sea_clouds_2: "bg_seaClouds_1",
@@ -8766,10 +8766,9 @@ class App extends Component {
       "increment",
       this.testCount.count / this.testCount.limit,
       "point1",
-      point1,
-      "point2",
-      point2
+      point1
     );
+    // console.log("point2", point2);
 
     this.testDraw.push(
       {
