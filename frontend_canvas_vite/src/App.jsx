@@ -9643,10 +9643,19 @@ class App extends Component {
           direction = player.direction;
         }
         if (player.elasticCounter.direction !== direction) {
+          let countCalcDown;
+          let countCalcUp = Math.floor(remainder / 2);
+          if (player.elasticCounter.direction === this.getOppositeDirection(direction)) {
+            console.log("opposite direction!!");
+            countCalcUp = Math.floor(remainder * 0.75); //0.66
+            countCalcDown = Math.floor(remainder * 0.25); //0.33
+          } else {
+            countCalcDown = countCalcUp;
+          }
+
           player.elasticCounter.direction = direction;
           player.elasticCounter.subType = subType;
 
-          let countCalcUp = Math.floor(remainder / 2);
           console.log(
             "count",
             player.defending.count,
@@ -9654,11 +9663,14 @@ class App extends Component {
             player.defending.limit,
             "remainder",
             remainder,
-            "calc",
-            countCalcUp
+            "calc up/dwn",
+            countCalcUp,
+            countCalcDown,
+            "dir",
+            player.elasticCounter.direction
           );
           player.elasticCounter.countUp.limit = countCalcUp;
-          player.elasticCounter.countDown.limit = countCalcUp;
+          player.elasticCounter.countDown.limit = countCalcDown;
           player.elasticCounter.countUp.count = 0;
           player.elasticCounter.countDown.count = 0;
           if (player.elasticCounter.countDown.state === true) {
@@ -14113,10 +14125,14 @@ class App extends Component {
         if (player[action].count <= defendInputThresh) {
           if (input === true) {
             if (inputCount > 1) {
-              inputDirections = inputDirections.filter(
-                (x) => x !== player[action].direction
-              );
-              inputDirection = inputDirections[0];
+              // inputDirections = inputDirections.filter(
+              //   (x) => x !== player[action].direction
+              // );
+              if (inputDirections.find((x) => x === player[action].direction)) {
+                inputDirection = player[action].direction;
+              } else {
+                inputDirection = inputDirections[0];
+              }
             } else {
               inputDirection = inputDirections[0];
             }
@@ -34920,7 +34936,7 @@ class App extends Component {
                 player.dodging.state === true ||
                 this.keyPressed[player.number - 1].dodge === true
               ) {
-                console.log("was attacking then pressed dodging. blunt attack");
+                // console.log("was attacking then pressed dodging. blunt attack");
 
                 if (player.attacking.blunt !== true) {
                   player.dodging = {
@@ -35156,7 +35172,9 @@ class App extends Component {
                   player.attacking.count,
                   player.attacking.peakCount,
                   player.attacking.limit,
-                  chargeType === "charged"
+                  chargeType === "charged",
+                  "blunt:",
+                  player.attacking.blunt
                 );
 
                 player = this.setElasticCounter("attacking", "peak", false, player);
