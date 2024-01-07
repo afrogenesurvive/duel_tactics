@@ -219,6 +219,8 @@ import defendSheetNew from "./assets/player/defendSheetNew.png";
 import dodgeSheetNew from "./assets/player/dodgingSheetNew.png";
 import deflectedFallingSheetNew from "./assets/player/deflectedFallingSheetNew.png";
 
+import bg_1 from "./assets/backgrounds/bg_field_1.png";
+
 import "./App.css";
 
 import DebugBox from "./debugBox";
@@ -3875,6 +3877,20 @@ class App extends Component {
 
     this.showPlayerOutlines = true;
 
+    this.backgroundImage = "src/assets/backgrounds/bg_field_1.png";
+    this.backgroundImageRef = {
+      sea_clouds_1: "bg_seaClouds_1",
+      sea_clouds_2: "bg_seaClouds_1",
+      sea_clouds_3: "bg_seaClouds_1",
+      sea_clouds_4: "bg_seaClouds_1",
+      sea_clouds_night_1: "bg_seaCloudsNight_1",
+      sea_coast_1: "bg_seaCoast_1",
+      nothern_lights_1: "bg_northernLights_1",
+      field_1: "bg_field_1",
+      field_2: "bg_field_2",
+      field_3: "bg_field_3",
+    };
+
     // CAMERA
     this.toggleCameraMode = false;
     this.camera = {
@@ -4287,6 +4303,8 @@ class App extends Component {
     this.defendSheetNewRef = React.createRef();
     this.dodgeSheetNewRef = React.createRef();
     this.deflectedFallingSheetNewRef = React.createRef();
+
+    this.bg_1Ref = React.createRef();
   }
 
   componentDidMount() {
@@ -5974,6 +5992,14 @@ class App extends Component {
     if (plyrNo === 2) {
       this.debugBoxStyle2 = "debugDisplay2 closedDebug";
     }
+  };
+  switchBackgroundImage = (args) => {
+    let img = this.backgroundImageRef[args];
+    this.backgroundImage = `src/assets/backgrounds/${img}.png`;
+
+    document.getElementsByClassName(
+      this.state.containerInnerClass
+    )[0].style.backgroundImage = `url('${this.backgroundImage}')`;
   };
 
   getCustomPlyrStartPosList = (args) => {
@@ -33324,6 +33350,8 @@ class App extends Component {
       // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 2) {
+      this.switchBackgroundImage("sea_clouds_night_1");
+
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
@@ -45569,6 +45597,10 @@ class App extends Component {
     let sceneY = this.sceneY;
     let tileWidth = this.tileWidth;
 
+    document.getElementsByClassName(
+      this.state.containerInnerClass
+    )[0].style.backgroundImage = `url('${this.backgroundImage}')`;
+
     this.startProcessLevelData(canvas);
     // gridInfo = this.gridInfo;
 
@@ -47403,6 +47435,8 @@ class App extends Component {
             ref={this.deflectedFallingSheetNewRef}
             alt="logo"
           />
+
+          <img src={bg_1} className="hidden playerImgs" ref={this.bg_1Ref} alt="logo" />
         </div>
       </React.Fragment>
     );
