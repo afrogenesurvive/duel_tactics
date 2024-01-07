@@ -4049,6 +4049,11 @@ class App extends Component {
 
     this.testDraw = [];
     this.testData = "";
+    this.testCount = {
+      state: false,
+      count: 0,
+      limit: 0,
+    };
 
     // ASSETS
     this.testRefNorth = React.createRef();
@@ -8704,6 +8709,80 @@ class App extends Component {
     // this.projectiles[index] = bolt;
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
+  };
+  circleArcCrementer = (player) => {
+    const getPointOnArc = (
+      centerX,
+      centerY,
+      radius,
+      startAngle,
+      arcLength,
+      increment
+    ) => {
+      // Calculate the angle for the given increment
+      const angle = startAngle + arcLength * increment;
+
+      // Calculate the coordinates of the point on the arc
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      return { x, y };
+    };
+
+    const getPointOnArc2 = (originX, originY, radius, angle, fraction) => {
+      const radians = (angle - fraction * 360) * (Math.PI / 180);
+      const x = originX + radius * Math.cos(radians);
+      const y = originY + radius * Math.sin(radians);
+      return { x, y };
+    };
+
+    const centerX = player.currentPosition.cell.center.x;
+    // const centerX = player.nextPosititon.x;
+    const centerY = player.currentPosition.cell.center.y;
+    // const centerY = player.nextPosititon.y;
+    const radius = 100;
+    const startAngle = 0;
+    const arcLength = Math.PI; // Half circle
+
+    const point1 = getPointOnArc(
+      centerX,
+      centerY,
+      radius,
+      startAngle,
+      arcLength,
+      (this.testCount.count / this.testCount.limit) * 100
+    );
+    const point2 = getPointOnArc2(
+      centerX,
+      centerY,
+      radius,
+      startAngle,
+      this.testCount.count / this.testCount.limit
+    );
+
+    // point1 = this.cartesianToIsometric(point1);
+    // point2 = this.cartesianToIsometric(point2);
+    console.log(
+      "increment",
+      this.testCount.count / this.testCount.limit,
+      "point1",
+      point1,
+      "point2",
+      point2
+    );
+
+    this.testDraw.push(
+      {
+        color: "purple",
+        x: point1.x,
+        y: point1.y,
+      }
+      // {
+      //   color: "red",
+      //   x: point2.x,
+      //   y: point2.y,
+      // }
+    );
   };
   arcBoltCrementer = () => {};
   obstacleMoveCrementer = (obstacleCell, destCell) => {
@@ -33349,12 +33428,23 @@ class App extends Component {
       // }
       // player = this.setElasticCounter("test", "start", true, player);
     }
-    if (this.time === 100 && player.number === 2) {
-      this.switchBackgroundImage("sea_clouds_night_1");
+    if (this.time === 100 && player.number === 1) {
+      this.testCount.state = true;
+      this.testCount.limit = 15;
+      // this.switchBackgroundImage("sea_clouds_night_1");
 
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
+    }
+    if (this.testCount.state === true && player.number === 1) {
+      if (this.testCount.count < this.testCount.limit) {
+        this.testCount.count++;
+        this.circleArcCrementer(player);
+      }
+      if (this.testCount.count >= this.testCount.limit) {
+        this.testCount.state = false;
+      }
     }
 
     // DYING
