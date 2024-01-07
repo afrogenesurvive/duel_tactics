@@ -36066,7 +36066,7 @@ class App extends Component {
               }
 
               player.elasticCounter.countUp.count++;
-              console.log("elastic counting up: ", player.elasticCounter.countUp.count);
+              // console.log("elastic counting up: ", player.elasticCounter.countUp.count);
             }
 
             // FINISH COUNT UP
@@ -36158,10 +36158,10 @@ class App extends Component {
               }
 
               player.elasticCounter.countDown.count++;
-              console.log(
-                "elastic counting down: ",
-                player.elasticCounter.countDown.count
-              );
+              // console.log(
+              //   "elastic counting down: ",
+              //   player.elasticCounter.countDown.count
+              // );
             }
 
             // FINISH COUNT DOWN
@@ -42422,7 +42422,7 @@ class App extends Component {
 
               // test logging
               if (x === this.gridWidth && y === this.gridWidth) {
-                this.testDraw.push({ color: "red", x: finalCoords.x, y: finalCoords.y });
+                // this.testDraw.push({ color: "red", x: finalCoords.x, y: finalCoords.y });
                 if (plyr.elasticCounter.countUp.state === true) {
                   // this.testDraw.push({
                   //   color: "red",
