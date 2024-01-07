@@ -9635,7 +9635,9 @@ class App extends Component {
       }
 
       if (subType === "decay") {
-        let remainder = player.defending.limit - player.defending.count;
+        let remainder =
+          player.defending.limit -
+          (player.defending.peakCount + player.defending.decay.count);
 
         if (direction === "none") {
           direction = player.direction;
@@ -9645,6 +9647,16 @@ class App extends Component {
           player.elasticCounter.subType = subType;
 
           let countCalcUp = Math.floor(remainder / 2);
+          console.log(
+            "count",
+            player.defending.count,
+            "limit",
+            player.defending.limit,
+            "remainder",
+            remainder,
+            "calc",
+            countCalcUp
+          );
           player.elasticCounter.countUp.limit = countCalcUp;
           player.elasticCounter.countDown.limit = countCalcUp;
           player.elasticCounter.countUp.count = 0;
