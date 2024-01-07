@@ -9636,6 +9636,7 @@ class App extends Component {
 
       if (subType === "decay") {
         let remainder = player.defending.limit - player.defending.count;
+
         if (direction === "none") {
           direction = player.direction;
         }
@@ -13752,27 +13753,28 @@ class App extends Component {
     let charging = false;
     let input = false;
     let inputDirection = "";
+    let inputDirections = [];
     let directionalInputThresh = 0;
     let directionalDefendThresh = 0;
     let inputCount = 0;
     if (this.keyPressed[player.number - 1].north === true) {
       input = true;
-      inputDirection = "north";
+      inputDirections.push("north");
       inputCount++;
     }
     if (this.keyPressed[player.number - 1].south === true) {
       input = true;
-      inputDirection = "south";
+      inputDirections.push("south");
       inputCount++;
     }
     if (this.keyPressed[player.number - 1].east === true) {
       input = true;
-      inputDirection = "east";
+      inputDirections.push("east");
       inputCount++;
     }
     if (this.keyPressed[player.number - 1].west === true) {
       input = true;
-      inputDirection = "west";
+      inputDirections.push("west");
       inputCount++;
     }
 
@@ -13927,6 +13929,15 @@ class App extends Component {
         if (mode === "windup") {
           if (player[action].count < directionalInputThresh) {
             if (input === true) {
+              if (inputCount > 1) {
+                inputDirections = inputDirections.filter(
+                  (x) => x !== player[action].direction
+                );
+                inputDirection = inputDirections[0];
+              } else {
+                inputDirection = inputDirections[0];
+              }
+
               if (inputDirection === player.direction) {
                 popup(inputDirection, player[action].direction);
                 player[action].direction = inputDirection;
@@ -13940,6 +13951,15 @@ class App extends Component {
           } else {
             if (input === true) {
               // console.log("input thresh passed.");
+              if (inputCount > 1) {
+                inputDirections = inputDirections.filter(
+                  (x) => x !== player[action].direction
+                );
+                inputDirection = inputDirections[0];
+              } else {
+                inputDirection = inputDirections[0];
+              }
+
               if (inputDirection !== player[action].direction) {
                 console.log("input after thresh w/ different direction. feint attack");
                 feintAttack();
@@ -13962,6 +13982,7 @@ class App extends Component {
       } else {
         if (mode === "init") {
           if (input === true) {
+            inputDirection = inputDirections[0];
             if (player[action].direction === "" || player[action].directionType === "") {
               popup(inputDirection, player[action].direction);
               player[action].direction = inputDirection;
@@ -13980,6 +14001,14 @@ class App extends Component {
         if (mode === "windup") {
           if (player[action].count < directionalInputThresh) {
             if (input === true) {
+              if (inputCount > 1) {
+                inputDirections = inputDirections.filter(
+                  (x) => x !== player[action].direction
+                );
+                inputDirection = inputDirections[0];
+              } else {
+                inputDirection = inputDirections[0];
+              }
               // console.log("y");
               if (inputDirection === player[action].direction) {
                 // charge();
@@ -14008,6 +14037,16 @@ class App extends Component {
           } else {
             if (input === true) {
               // console.log("input thresh passed.");
+
+              if (inputCount > 1) {
+                inputDirections = inputDirections.filter(
+                  (x) => x !== player[action].direction
+                );
+                inputDirection = inputDirections[0];
+              } else {
+                inputDirection = inputDirections[0];
+              }
+
               if (inputDirection !== player[action].direction) {
                 console.log("input after thresh w/ different direction. feint attack");
                 feintAttack();
@@ -14034,6 +14073,7 @@ class App extends Component {
     if (action === "defending") {
       if (mode === "init") {
         if (input === true) {
+          inputDirection = inputDirections[0];
           if (player[action].direction === "" || player[action].directionType === "") {
             player[action].direction = inputDirection;
             player[action].directionType = "slash";
@@ -14060,6 +14100,15 @@ class App extends Component {
         let defendInputThresh = defendDecayLimit + defendPeak - this.defendPeakAllowance;
         if (player[action].count <= defendInputThresh) {
           if (input === true) {
+            if (inputCount > 1) {
+              inputDirections = inputDirections.filter(
+                (x) => x !== player[action].direction
+              );
+              inputDirection = inputDirections[0];
+            } else {
+              inputDirection = inputDirections[0];
+            }
+
             if (player[action].direction === inputDirection) {
             } else {
               console.log(
@@ -14073,6 +14122,13 @@ class App extends Component {
               player[action].directionType = "slash";
             }
           } else {
+            if (player[action].direction !== "none") {
+              console.log(
+                "changing defend direction before thresh. from",
+                player[action].direction,
+                "to none"
+              );
+            }
             popup("none", player[action].direction);
             player[action].direction = "none";
             player[action].directionType = "thrust";
@@ -14091,16 +14147,6 @@ class App extends Component {
         console.log("directional defend input thresh", defendInputThresh);
       }
     }
-
-    // console.log(
-    //   "set attack defend directional input",
-    //   mode,
-    //   input,
-    //   player[action].direction,
-    //   player[action].directionType,
-    //   directionalInputThresh,
-    //   player[action].count
-    // );
 
     return {
       player: player,
@@ -35990,7 +36036,7 @@ class App extends Component {
               }
 
               player.elasticCounter.countUp.count++;
-              // console.log("elastic counting up: ", player.elasticCounter.countUp.count);
+              console.log("elastic counting up: ", player.elasticCounter.countUp.count);
             }
 
             // FINISH COUNT UP
@@ -36082,10 +36128,10 @@ class App extends Component {
               }
 
               player.elasticCounter.countDown.count++;
-              // console.log(
-              //   "elastic counting down: ",
-              //   player.elasticCounter.countDown.count
-              // );
+              console.log(
+                "elastic counting down: ",
+                player.elasticCounter.countDown.count
+              );
             }
 
             // FINISH COUNT DOWN
