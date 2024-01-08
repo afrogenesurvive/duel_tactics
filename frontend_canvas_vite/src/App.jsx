@@ -3999,6 +3999,7 @@ class App extends Component {
     this.settingAutoCameraFollowBolt = false;
     this.highlightZoomPanFocusCell = true;
     this.zoomThresh = -0.05;
+    // this.zoomThresh = -0.15;
     this.autoCamPanWaitingForPath = false;
 
     // AI
@@ -5761,8 +5762,8 @@ class App extends Component {
         this.zoomThresh = -0.05;
       }
     } else {
-      // this.zoomThresh = -.05;
-      this.zoomThresh = 0;
+      // this.zoomThresh = -0.15;
+      this.zoomThresh = -0.05;
     }
 
     this.gamepadConfig = [];
@@ -8215,7 +8216,7 @@ class App extends Component {
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
     if (zoom - 1 === this.zoomThresh) {
-      // console.log('at zoomThresh');
+      console.log("at zoomThresh");
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
 
@@ -8233,7 +8234,7 @@ class App extends Component {
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
     if (zoom - 1 < this.zoomThresh) {
-      // console.log('above zoomThresh');
+      console.log("above zoomThresh");
 
       if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
         this.camera.zoomFocusPan.x =
@@ -8296,7 +8297,7 @@ class App extends Component {
 
     // ZOOMING BELOW THRESHOLD
     if (zoom - 1 > this.zoomThresh) {
-      // console.log('below zoomThresh');
+      console.log("below zoomThresh", zoom - 1, this.zoomThresh);
       diff = zoom - 1;
       let diffx;
       let diffy;
@@ -45800,7 +45801,7 @@ class App extends Component {
       //   state: true,
       //   windowWidth: window.innerWidth,
       //   gridWidth: this.gridWidth,
-      // }
+      // };
     }
 
     let diff = 1 - this.camera.zoom.x;
@@ -46149,7 +46150,7 @@ class App extends Component {
               ref={this.canvasRef2}
               className="canvas2"
             />
-            // DEBUB BOX
+            {/* // DEBUB BOX */}
             <div className={this.debugBoxStyle}>
               <DebugBox
                 player={this.players[0]}
@@ -46166,14 +46167,14 @@ class App extends Component {
                 />
               </div>
             )}
-            //BACKGROUND COMPASS
+            {/* //BACKGROUND COMPASS */}
             <img
               src={bgCompass}
               className="bgCompass"
               ref={this.bgCompassRef}
               alt="logo"
             />
-            // SETTINGS BOX
+            {/* // SETTINGS BOX */}
             <div className="settingsSwitch">
               <a className="setSwitchLink" onClick={this.openSettings}>
                 <OverlayTrigger
@@ -46269,7 +46270,7 @@ class App extends Component {
                 </OverlayTrigger>
               </a>
             </div>
-            // CAMERA BOX
+            {/* // CAMERA BOX */}
             {this.camera.state === true && (
               <div className="cameraBox">
                 <CameraControl
@@ -46281,7 +46282,7 @@ class App extends Component {
                 />
               </div>
             )}
-            // CELL INFO
+            {/* // CELL INFO */}
             {this.showCellInfoBox !== true && (
               <div className="cellInfoSwitch">
                 <OverlayTrigger
@@ -46311,7 +46312,7 @@ class App extends Component {
                 cursorCoords={this.cursorCoords}
               />
             )}
-            // AI STATUS BOX
+            {/* // AI STATUS BOX */}
             {this.state.showAiStatus === true && (
               <AiStatus
                 players={this.players}
@@ -47535,8 +47536,6 @@ class App extends Component {
             ref={this.deflectedFallingSheetNewRef}
             alt="logo"
           />
-
-          <img src={bg_1} className="hidden playerImgs" ref={this.bg_1Ref} alt="logo" />
         </div>
       </React.Fragment>
     );

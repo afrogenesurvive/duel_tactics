@@ -1,7 +1,7 @@
 .settingsOverlay {
   height: 100vh;
   width: 100vw;
-  background-color: rgba(0,0,0,.9);
+  background-color: rgba(0, 0, 0, 0.8);
   z-index: 5;
   position: absolute;
   top: 0;
@@ -16,7 +16,7 @@
 .loadingOverlay {
   height: 100vh;
   width: 100vw;
-  background-color: rgba(0,0,0,.99);
+  background-color: rgba(0, 0, 0, 0.99);
   z-index: 6;
   position: absolute;
   top: 0;
@@ -36,7 +36,7 @@
   width: 70%;
   padding: 1rem;
   border-radius: 5px;
-  background-color: rgba(0,0,0,.8);
+  background-color: rgba(0, 0, 0, 0.7);
   overflow: scroll;
   text-align: center;
 }
@@ -46,7 +46,7 @@
 }
 
 .formBtn {
- margin: 0 2rem;
+  margin: 0 2rem;
 }
 
 .formLabel {
@@ -93,14 +93,14 @@
 }
 
 .settingsCanvas {
-  margin: .5rem;
+  margin: 0.5rem;
   border: 1px solid #ffffff;
   border-radius: 5px;
-  padding: .5rem;
+  padding: 0.5rem;
 }
 .icon {
   color: #ffffff;
-  margin: 0 .5rem;
+  margin: 0 0.5rem;
   /* margin: .5rem; */
 }
 .icon:hover {
