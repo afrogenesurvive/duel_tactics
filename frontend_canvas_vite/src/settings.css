@@ -30,13 +30,16 @@
 
 .settingsContainer {
   margin: 0 auto;
-  border: 1px solid #ffffff;
+  /* border: 1px solid #ffffff; */
+  /* border: 3px solid green; */
+  border: 3px solid #582f0e;
   height: 70%;
   /* height: 32rem; */
   width: 70%;
   padding: 1rem;
   border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.7);
+  /* background-color: rgba(0, 0, 0, 0.7); */
+  background-color: rgba(235, 213, 179, 0.8);
   overflow: scroll;
   text-align: center;
 }
@@ -55,6 +58,7 @@
 .settingsHeading {
   text-align: center;
   margin: 3rem 0 0 0;
+  color: #000000;
 }
 
 .loadingImg {
@@ -109,4 +113,17 @@
 
 #settingsCanvas2 {
   /* display: none; */
+}
+
+label {
+  color: #000000;
+}
+
+.formGroup.col {
+  border: 3px solid #582f0e;
+  border-radius: 5px;
+}
+
+.form-check-label {
+  font-size: 19px !important;
 }

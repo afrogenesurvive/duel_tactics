@@ -207,6 +207,7 @@
 .cameraModeHighlighted {
   border: 2px solid purple;
   border-radius: 5px;
+  margin: 0 0.5rem;
 }
 
 .cameraUIIcon {
