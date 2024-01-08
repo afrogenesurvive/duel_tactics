@@ -3559,6 +3559,7 @@ class App extends Component {
       limit: 100,
     };
     this.cellInfoMouseOver = false;
+    this.cursorCoords = {};
 
     //LOOP & ANIMATION
     this.stepper = {
@@ -5014,6 +5015,10 @@ class App extends Component {
       if (pip === true) {
         insideGrid = true;
         // console.log("clicked or moused over a cell", cell.center, "x: " + x + " y: " + y);
+        this.cursorCoords = {
+          x: x,
+          y: y,
+        };
         let player = undefined;
         for (const plyr of this.players) {
           if (
@@ -5099,6 +5104,10 @@ class App extends Component {
       }
     }
     if (insideGrid === false) {
+      this.cursorCoords = {
+        x: x,
+        y: y,
+      };
       // console.log("clicked or moused over the canvas out of bounds", 'x: ',x,'y: ',y);
       // console.log('clicked or mouse moved outside the grid',this.cellInfoMouseOver);
       if (type === "click") {
@@ -5683,7 +5692,7 @@ class App extends Component {
   };
 
   setCellInfoMouseOver = (state, origin) => {
-    // console.log('setCellInfoMouseOver',state,origin);
+    // console.log("setCellInfoMouseOver", state, origin);
 
     this.cellInfoMouseOver = state;
     if (state === true) {
@@ -46297,7 +46306,9 @@ class App extends Component {
                 ref={this.cellInfoBoxRef}
                 clicked={this.clicked}
                 close={this.closeCellInfoBox}
+                cellInfoMouseOver={this.cellInfoMouseOver}
                 setCellInfoMouseOver={this.setCellInfoMouseOver}
+                cursorCoords={this.cursorCoords}
               />
             )}
             // AI STATUS BOX
