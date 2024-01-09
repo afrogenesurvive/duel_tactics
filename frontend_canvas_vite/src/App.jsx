@@ -17210,7 +17210,7 @@ class App extends Component {
 
     if (
       player.elasticCounter.state === true &&
-      player.elasticCounter.type === player.action
+      player.elasticCounter.type !== "deflected"
     ) {
       player.elasticCounter.state = false;
       player.elasticCounter.type = "";
@@ -17485,6 +17485,67 @@ class App extends Component {
       };
     }
 
+    let popup;
+    let popupsToRemove = [
+      "preAction1",
+      "preAction2",
+      "attacking",
+      "attacking1",
+      "attacking2",
+      "missedAttack",
+      "attackingBlunt",
+      "attackingUnarmed",
+      "attackDefended",
+      "attackParried",
+      "defending",
+      "dodgeStart",
+      "pushedBack",
+      "missedAttack2",
+      "prePush",
+      "canPush",
+      "noPush",
+      "pushing",
+      "prePull",
+      "canPull",
+      "noPull",
+      "pulling",
+      "pushedPulled",
+      "dodging2",
+      "attackFeint",
+      "attackFeint2",
+      "attackFeint3",
+      "defendFeint",
+      "defendFeint2",
+      "defendFeint3",
+      "dodgeFeint",
+      "dodgeFeint2",
+      "boltDefend2",
+      "flanking",
+      "noFlanking",
+      "clashing",
+      "defending",
+      "strafe moving",
+      "dodging",
+      "flanking",
+      "jumping",
+      "attacking",
+      "charging",
+      "noDirection3",
+      "northDirection",
+      "southDirection",
+      "eastDirection",
+      "westDirection",
+    ];
+    for (const pop of popupsToRemove) {
+      popup = player.popups.find((x) => x.msg === pop);
+      if (popup) {
+        player.popups.splice(
+          player.popups.findIndex((x) => x.msg === pop),
+          1
+        );
+      }
+    }
+
     if (player.ai.state === true) {
       this.players[player.number - 1].ai.currentInstruction = 0;
       this.players[player.number - 1].ai.instructions = [];
@@ -17504,6 +17565,13 @@ class App extends Component {
         x.number.x === player.currentPosition.cell.number.x &&
         x.number.y === player.currentPosition.cell.number.y
     );
+
+    // RESET ELASTIC COUNTER
+    if (player.elasticCounter.state === true) {
+      player.elasticCounter.state = false;
+      player.elasticCounter.type = "";
+      player.elasticCounter.subType = "";
+    }
 
     player.pushBack.prePushMoveSpeed = player.speed.move;
     player.speed.move = 0.125;
@@ -34958,7 +35026,7 @@ class App extends Component {
         if (player.newMoveDelay.state === true) {
           if (player.newMoveDelay.count < player.newMoveDelay.limit) {
             player.newMoveDelay.count++;
-            // console.log('newMoveDelay.count',player.newMoveDelay.count);
+            console.log("newMoveDelay.count", player.newMoveDelay.count);
           }
           if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
             player.newMoveDelay = {
