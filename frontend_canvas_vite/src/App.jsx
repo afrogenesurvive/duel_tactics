@@ -16502,7 +16502,6 @@ class App extends Component {
     //   bluntAttacked: 25,
     //   defended: 10,
     // parried: 25
-    // knockedOut: 65,
     // };
     this.attackedCancel(player);
 
@@ -17565,13 +17564,6 @@ class App extends Component {
         x.number.x === player.currentPosition.cell.number.x &&
         x.number.y === player.currentPosition.cell.number.y
     );
-
-    // RESET ELASTIC COUNTER
-    if (player.elasticCounter.state === true) {
-      player.elasticCounter.state = false;
-      player.elasticCounter.type = "";
-      player.elasticCounter.subType = "";
-    }
 
     player.pushBack.prePushMoveSpeed = player.speed.move;
     player.speed.move = 0.125;
@@ -19804,8 +19796,10 @@ class App extends Component {
 
             if (shouldDeflect === 1) {
               if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                console.log("1");
                 this.setDeflection(owner, "defended", true);
               } else {
+                console.log("2");
                 this.setDeflection(owner, "defended", false);
               }
 
@@ -33514,6 +33508,12 @@ class App extends Component {
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
+    if (this.time === 150 && player.number === 1) {
+      this.setDeflection(player, "defended", true);
+      // this.setDeflection(player, "attacked", false);
+      // this.pushBack(player, this.getOppositeDirection(player.direction));
+    }
+    // CIRCLE ARC CREMENTER TESTING
     if (this.testCount.state === true && player.number === 1) {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
