@@ -8720,7 +8720,33 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  circleArcCrementer = (player) => {
+  circleArcCrementer = (player, mode) => {
+    // mode is 'isometric' or 'cartesian'
+
+    const cartesianToIsometric = (cartPt, radius) => {
+      const scaleFactorX = 2; // Adjust as needed for your specific case
+      const scaleFactorY = 0.707;
+      const isoPt = {
+        // x: cartPt.x - cartPt.y,
+        // y: (cartPt.x + cartPt.y) / 2,
+
+        // x: (cartPt.x - cartPt.y) * Math.cos(Math.PI / 6),
+        // y: (cartPt.x + cartPt.y) * Math.sin(Math.PI / 6) + cartPt.y * 2, // Adjust for vertical displacemen
+
+        // x: cartPt.x - cartPt.y,
+        // y: (cartPt.x + cartPt.y) / 2,
+
+        // x: cartPt.x - cartPt.y / 2,
+        // y: (cartPt.x + cartPt.y) / 2,
+        // x: (cartPt.x - cartPt.y / 2) * scaleFactorX,
+        // y: (cartPt.x + cartPt.y) * scaleFactorY,
+
+        x: (cartPt.x - cartPt.y) * Math.cos(Math.PI / 4),
+        y: (cartPt.x + cartPt.y) * Math.sin(Math.PI / 4),
+      };
+      return isoPt;
+    };
+
     const getPointOnArc = (
       centerX,
       centerY,
@@ -8768,34 +8794,61 @@ class App extends Component {
       "#EE82EE", // Violet
       "#DA70D6", // Orchid
     ];
-    const centerX = player.currentPosition.cell.center.x;
+    let point = {
+      x: player.currentPosition.cell.center.x,
+      y: player.currentPosition.cell.center.y,
+      // x: player.currentPosition.cell.center.x - this.floorImageHeight / 2,
+      // y: player.currentPosition.cell.center.y - this.floorImageHeight,
+      // x: player.nextPosition.x,
+      // y: player.nextPosition.y,
+      // x: player.nextPosition.x - this.floorImageHeight / 2,
+      // y: player.nextPosition.y - this.floorImageHeight,
+    };
+    // point = this.cartesianToIsometric(point);
+    const centerX = point.x;
     // const centerX = player.nextPosititon.x;
-    const centerY = player.currentPosition.cell.center.y;
+    const centerY = point.y;
     // const centerY = player.nextPosititon.y;
-    const radius = 100;
+    const radius = 50;
     const startAngle = 0;
     const arcLength = Math.PI; // Half circle
     const incr1 = (this.testCount.count / this.testCount.limit) * 100;
     const incr2 = this.testCount.count / this.testCount.limit;
-    const point1 = getPointOnArc(centerX, centerY, radius, startAngle, arcLength, incr1);
-    const point2 = getPointOnArc2(centerX, centerY, radius, startAngle, incr2);
+    let point1 = getPointOnArc(centerX, centerY, radius, startAngle, arcLength, incr1);
+    let point2 = getPointOnArc2(centerX, centerY, radius, startAngle, incr2);
 
-    // point1 = this.cartesianToIsometric(point1);
-    // point2 = this.cartesianToIsometric(point2);
-    console.log("increment1", incr1, "increment2", incr2, "point1", point1);
+    if (mode === "isometric") {
+      // point1 = this.cartesianToIsometric(point1);
+
+      point2 = cartesianToIsometric(point2, radius);
+      console.log("ccc", point.x - point2.x);
+      console.log("ccc2", point.y - point2.y);
+      // point2.x = point2.x + 240;
+      // point2.y = point2.y + 20;
+      // point2.x = point2.x + (point.x - point2.x);
+      // point2.y = point2.y + (point.y - point2.y);
+      // point2.x = point2.y - offset.y / 2 - 2;
+    }
+
+    // console.log("point2", point.x, point2.x);
     // console.log("point2", point2);
 
     this.testDraw.push(
-      {
-        // color: colors[this.testCount.count-1],
-        color: "red",
-        x: point1.x,
-        y: point1.y,
-      },
+      // {
+      //   // color: colors[this.testCount.count-1],
+      //   color: "red",
+      //   x: point1.x,
+      //   y: point1.y,
+      // },
       {
         color: colors[this.testCount.count - 1],
         x: point2.x,
         y: point2.y,
+      },
+      {
+        color: "red",
+        x: point.x,
+        y: point.y,
       }
     );
   };
@@ -33521,7 +33574,8 @@ class App extends Component {
     if (this.testCount.state === true && player.number === 1) {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
-        this.circleArcCrementer(player);
+        this.circleArcCrementer(player, "isometric");
+        // this.circleArcCrementer(player, "cartesian");
       }
       if (this.testCount.count >= this.testCount.limit) {
         this.testCount.state = false;
@@ -41129,7 +41183,7 @@ class App extends Component {
             x: plyr.nextPosition.x,
             y: plyr.nextPosition.y,
           };
-          let newCharDarwPoint = {
+          let newCharDrawPoint = {
             x: plyr.nextPosition.x - this.floorImageHeight / 2,
             y: plyr.nextPosition.y - this.floorImageHeight,
           };
@@ -41963,8 +42017,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41975,8 +42029,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41995,8 +42049,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42007,8 +42061,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42027,8 +42081,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42039,8 +42093,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42059,8 +42113,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42071,8 +42125,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42250,8 +42304,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42288,8 +42342,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42311,8 +42365,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42334,8 +42388,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42357,8 +42411,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42377,8 +42431,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42396,8 +42450,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42579,8 +42633,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42772,8 +42826,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42790,8 +42844,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42805,8 +42859,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42820,8 +42874,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42850,8 +42904,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42870,8 +42924,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42891,8 +42945,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42911,8 +42965,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42930,8 +42984,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42953,8 +43007,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42973,8 +43027,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42993,8 +43047,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -43013,8 +43067,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -43034,8 +43088,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -43053,8 +43107,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -43072,8 +43126,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -43091,8 +43145,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -43110,8 +43164,8 @@ class App extends Component {
                 sy,
                 sWidth,
                 sHeight,
-                newCharDarwPoint.x - 5,
-                newCharDarwPoint.y - 10,
+                newCharDrawPoint.x - 5,
+                newCharDrawPoint.y - 10,
                 this.playerDrawWidth2,
                 this.playerDrawHeight2
               );
@@ -43134,8 +43188,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -46155,7 +46209,7 @@ class App extends Component {
 
             this.getTarget(player);
 
-            let newCharDarwPoint = {
+            let newCharDrawPoint = {
               x: player.nextPosition.x - this.floorImageHeight / 2,
               y: player.nextPosition.y - this.floorImageHeight,
             };
@@ -46166,8 +46220,8 @@ class App extends Component {
               sy,
               sWidth,
               sHeight,
-              newCharDarwPoint.x,
-              newCharDarwPoint.y,
+              newCharDrawPoint.x,
+              newCharDrawPoint.y,
               this.playerDrawWidth2,
               this.playerDrawHeight2
             );
@@ -46207,6 +46261,11 @@ class App extends Component {
         <div className="containerTop">
           <div className="timer">
             <p className="timerText">{this.time}</p>
+            {this.cursorCoords.x && (
+              <p className="timerText">
+                Cursor: {this.cursorCoords.x.toFixed(2)}, {this.cursorCoords.y.toFixed(2)}
+              </p>
+            )}
           </div>
           <Helper players={this.players} />
           <div className={this.state.containerInnerClass}>
