@@ -8746,6 +8746,28 @@ class App extends Component {
       return { x, y };
     };
 
+    const colors = [
+      "#FF5733", // Red-Orange
+      "#33FF57", // Green
+      "#3366FF", // Blue
+      "#FFD700", // Gold
+      "#800080", // Purple
+      "#FF1493", // Deep Pink
+      "#00CED1", // Dark Turquoise
+      "#8B4513", // Saddle Brown
+      "#808080", // Gray
+      "#FF6347", // Tomato
+      "#9932CC", // Dark Orchid
+      "#32CD32", // Lime Green
+      "#4B0082", // Indigo
+      "#FFD700", // Gold
+      "#556B2F", // Dark Olive Green
+      "#800000", // Maroon
+      "#000080", // Navy
+      "#40E0D0", // Turquoise
+      "#EE82EE", // Violet
+      "#DA70D6", // Orchid
+    ];
     const centerX = player.currentPosition.cell.center.x;
     // const centerX = player.nextPosititon.x;
     const centerY = player.currentPosition.cell.center.y;
@@ -8753,44 +8775,28 @@ class App extends Component {
     const radius = 100;
     const startAngle = 0;
     const arcLength = Math.PI; // Half circle
-
-    const point1 = getPointOnArc(
-      centerX,
-      centerY,
-      radius,
-      startAngle,
-      arcLength,
-      (this.testCount.count / this.testCount.limit) * 100
-    );
-    const point2 = getPointOnArc2(
-      centerX,
-      centerY,
-      radius,
-      startAngle,
-      this.testCount.count / this.testCount.limit
-    );
+    const incr1 = (this.testCount.count / this.testCount.limit) * 100;
+    const incr2 = this.testCount.count / this.testCount.limit;
+    const point1 = getPointOnArc(centerX, centerY, radius, startAngle, arcLength, incr1);
+    const point2 = getPointOnArc2(centerX, centerY, radius, startAngle, incr2);
 
     // point1 = this.cartesianToIsometric(point1);
     // point2 = this.cartesianToIsometric(point2);
-    console.log(
-      "increment",
-      this.testCount.count / this.testCount.limit,
-      "point1",
-      point1
-    );
+    console.log("increment1", incr1, "increment2", incr2, "point1", point1);
     // console.log("point2", point2);
 
     this.testDraw.push(
       {
-        color: "purple",
+        // color: colors[this.testCount.count-1],
+        color: "red",
         x: point1.x,
         y: point1.y,
+      },
+      {
+        color: colors[this.testCount.count - 1],
+        x: point2.x,
+        y: point2.y,
       }
-      // {
-      //   color: "red",
-      //   x: point2.x,
-      //   y: point2.y,
-      // }
     );
   };
   arcBoltCrementer = () => {};
@@ -19796,10 +19802,8 @@ class App extends Component {
 
             if (shouldDeflect === 1) {
               if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                console.log("1");
                 this.setDeflection(owner, "defended", true);
               } else {
-                console.log("2");
                 this.setDeflection(owner, "defended", false);
               }
 
@@ -33509,7 +33513,7 @@ class App extends Component {
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
     if (this.time === 150 && player.number === 1) {
-      this.setDeflection(player, "defended", true);
+      // this.setDeflection(player, "defended", true);
       // this.setDeflection(player, "attacked", false);
       // this.pushBack(player, this.getOppositeDirection(player.direction));
     }
@@ -35026,7 +35030,7 @@ class App extends Component {
         if (player.newMoveDelay.state === true) {
           if (player.newMoveDelay.count < player.newMoveDelay.limit) {
             player.newMoveDelay.count++;
-            console.log("newMoveDelay.count", player.newMoveDelay.count);
+            // console.log("newMoveDelay.count", player.newMoveDelay.count);
           }
           if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
             player.newMoveDelay = {
