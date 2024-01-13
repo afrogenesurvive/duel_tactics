@@ -8640,8 +8640,6 @@ class App extends Component {
       // endPt = player.moving.destination;
     }
 
-    let percent = player.moving.step;
-
     function getLineXYatPercent(startPt, endPt, percent) {
       let dx = endPt.x - startPt.x;
       let dy = endPt.y - startPt.y;
@@ -8650,7 +8648,7 @@ class App extends Component {
       // newPosition = {x:X,y:Y}
       newPosition = { x: Math.round(X), y: Math.round(Y) };
     }
-    getLineXYatPercent(startPt, endPt, percent);
+    getLineXYatPercent(startPt, endPt, player.moving.step);
 
     if (player.falling.state === true) {
       player.falling.count++;
@@ -8720,15 +8718,19 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  circleArcCrementer = (player, mode) => {
+  circleArcCrementer = (player, mode, radiusX, deg, startAng, shape) => {
     // mode is 'isometric' or 'cartesian'
 
-    const cartesianToIsometric = (cartPt, radius) => {
+    let degrees = 360;
+    if (deg && deg !== 0) {
+      degrees = deg;
+    }
+    const cartesianToIsometric = (cartPt) => {
       const scaleFactorX = 2; // Adjust as needed for your specific case
       const scaleFactorY = 0.707;
       const isoPt = {
-        // x: cartPt.x - cartPt.y,
-        // y: (cartPt.x + cartPt.y) / 2,
+        x: cartPt.x - cartPt.y,
+        y: (cartPt.x + cartPt.y) / 2,
 
         // x: (cartPt.x - cartPt.y) * Math.cos(Math.PI / 6),
         // y: (cartPt.x + cartPt.y) * Math.sin(Math.PI / 6) + cartPt.y * 2, // Adjust for vertical displacemen
@@ -8741,35 +8743,26 @@ class App extends Component {
         // x: (cartPt.x - cartPt.y / 2) * scaleFactorX,
         // y: (cartPt.x + cartPt.y) * scaleFactorY,
 
-        x: (cartPt.x - cartPt.y) * Math.cos(Math.PI / 4),
-        y: (cartPt.x + cartPt.y) * Math.sin(Math.PI / 4),
+        // x: (cartPt.x - cartPt.y) * Math.cos(Math.PI / 4),
+        // y: (cartPt.x + cartPt.y) * Math.sin(Math.PI / 4),
       };
       return isoPt;
     };
 
-    const getPointOnArc = (
-      centerX,
-      centerY,
-      radius,
-      startAngle,
-      arcLength,
-      increment
-    ) => {
-      // Calculate the angle for the given increment
-      const angle = startAngle + arcLength * increment;
-
-      // Calculate the coordinates of the point on the arc
-      const x = centerX + radius * Math.cos(angle);
-      const y = centerY + radius * Math.sin(angle);
-
-      return { x, y };
-    };
-
-    const getPointOnArc2 = (originX, originY, radius, angle, fraction) => {
-      const radians = (angle - fraction * 360) * (Math.PI / 180);
+    const getPointOnArc = (originX, originY, radius, angle, fraction) => {
+      const radians = (angle - fraction * degrees) * (Math.PI / 180);
       const x = originX + radius * Math.cos(radians);
       const y = originY + radius * Math.sin(radians);
-      return { x, y };
+      return { x: x, y: y };
+    };
+
+    const getLineXYatPercent = (startPt, endPt, percent) => {
+      let dx = endPt.x - startPt.x;
+      let dy = endPt.y - startPt.y;
+      let X = startPt.x + dx * percent;
+      let Y = startPt.y + dy * percent;
+      // newPosition = {x:X,y:Y}
+      return { x: Math.round(X), y: Math.round(Y) };
     };
 
     const colors = [
@@ -8806,40 +8799,78 @@ class App extends Component {
     };
     // point = this.cartesianToIsometric(point);
     const centerX = point.x;
-    // const centerX = player.nextPosititon.x;
     const centerY = point.y;
-    // const centerY = player.nextPosititon.y;
-    const radius = 50;
-    const startAngle = 0;
-    const arcLength = Math.PI; // Half circle
-    const incr1 = (this.testCount.count / this.testCount.limit) * 100;
-    const incr2 = this.testCount.count / this.testCount.limit;
-    let point1 = getPointOnArc(centerX, centerY, radius, startAngle, arcLength, incr1);
-    let point2 = getPointOnArc2(centerX, centerY, radius, startAngle, incr2);
+    const radius = radiusX;
+    const innerRadius = radiusX / 2;
+    const startAngle = startAng;
+    const incr = this.testCount.count / this.testCount.limit;
+
+    let conntectingLineIncr = this.testCount.limit;
+    let point1 = getPointOnArc(centerX, centerY, radius, startAngle, incr);
+    let point2 = getPointOnArc(centerX, centerY, innerRadius, startAngle, incr);
+
+    let connetingLineArray = [];
+
+    if (shape === "sector") {
+      for (let i = 0; i < conntectingLineIncr; i++) {
+        const point3 = getLineXYatPercent(point, point1, i);
+        // connetingLineArray.push(point3);
+        console.log("point3", point, point1, point3);
+        this.testDraw.push({
+          color: colors[this.testCount.count - 1],
+          x: point3.x,
+          y: point3.y,
+        });
+      }
+    }
+
+    if (shape === "ringSection") {
+      const arcStep = (incr * 100).toFixed(0) / 10;
+      if (arcStep < 0.5 || arcStep > 9.5) {
+        for (let i = 0; i < conntectingLineIncr; i++) {
+          const point3 = getLineXYatPercent(point1, point2, i);
+          this.testDraw.push({
+            color: colors[this.testCount.count - 1],
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+      }
+    }
 
     if (mode === "isometric") {
-      // point1 = this.cartesianToIsometric(point1);
+      point1 = cartesianToIsometric(point1);
 
-      point2 = cartesianToIsometric(point2, radius);
-      console.log("ccc", point.x - point2.x);
-      console.log("ccc2", point.y - point2.y);
+      let sceneX = this.canvasWidth / 2;
+      let sceneY = this.sceneY;
+      point1.x += sceneX;
+      point1.y += sceneY;
+
+      // FIX ME!
+      // WHAT IS THE DIFFERENCE BETWEEN THE CENTER POINT AND THE POINTS TO THE LEFT AND RIGHT OF IT
+
+      // console.log("ccc", point.x - point1.x);
+      // console.log("ccc2", point.y - point1.y);
+      // point2.x = point2.x + point.x;
       // point2.x = point2.x + 240;
-      // point2.y = point2.y + 20;
+      // point2.y = point2.y - this.floorImageHeight;
       // point2.x = point2.x + (point.x - point2.x);
       // point2.y = point2.y + (point.y - point2.y);
       // point2.x = point2.y - offset.y / 2 - 2;
     }
 
-    // console.log("point2", point.x, point2.x);
-    // console.log("point2", point2);
+    let pointX = cartesianToIsometric(point1, radius);
+    // console.log("point2", point1.x, point1.y);
+    // console.log("pointX", pointX.x, pointX.y);
+    // console.log("diff 1", point.x - pointX.x, point.y - pointX.y);
+    // console.log("diff 2", pointX.x - point2.x, pointX.y - point2.y);
 
     this.testDraw.push(
-      // {
-      //   // color: colors[this.testCount.count-1],
-      //   color: "red",
-      //   x: point1.x,
-      //   y: point1.y,
-      // },
+      {
+        color: colors[this.testCount.count - 1],
+        x: point1.x,
+        y: point1.y,
+      },
       {
         color: colors[this.testCount.count - 1],
         x: point2.x,
@@ -33558,7 +33589,7 @@ class App extends Component {
     }
     if (this.time === 100 && player.number === 1) {
       this.testCount.state = true;
-      this.testCount.limit = 15;
+      this.testCount.limit = 10;
       // this.switchBackgroundImage("sea_clouds_night_1");
 
       // this.pushBack(player, "east");
@@ -33574,13 +33605,42 @@ class App extends Component {
     if (this.testCount.state === true && player.number === 1) {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
-        this.circleArcCrementer(player, "isometric");
-        // this.circleArcCrementer(player, "cartesian");
+        // this.circleArcCrementer(player, "isometric", 55);
+        // this.circleArcCrementer(player, "cartesian", 50, 90, 0, "arc");
+        this.circleArcCrementer(player, "cartesian", 100, 90, 90, "sector");
+        // this.circleArcCrementer(player, "cartesian", 180, 90, 180, "arc");
       }
       if (this.testCount.count >= this.testCount.limit) {
         this.testCount.state = false;
       }
     }
+
+    // what is the realtionshp between
+    //  the amount of time we want to draw the arc for?
+    // the amount of points we want to draw the arc with?
+
+    // when the time to start drawing arrives
+    //   if the a mathcing entry does not exist,
+    //     create a new id based on array length
+    //       push instruction object to crementerArray w/ state true
+    //         while
+
+    //     if an elements state is true the func will be called from draw player
+
+    //     {
+    //       state:
+    //       pointcount:
+    //       limit //how many points the lines should be made up of
+    //       mode
+    //       radius
+    //       innerRadius
+    //       deg //360 full 180 half etc
+    //       startAngle: 0 == 12oclock, 90 == 3oclock, 180 == 6oclock, 270 == 9oclock
+    //       color
+    //       shape //arc, sector, ring section
+    // ownerType
+    // owner
+    //     }
 
     // DYING
     if (player.dead.state === true) {
