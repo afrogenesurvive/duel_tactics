@@ -8626,7 +8626,7 @@ class App extends Component {
       3
     );
     // player.moving.step = player.moving.step + moveSpeed;
-
+    console.log("mover stepper", player.moving.step);
     let newPosition;
 
     // line: percent is 0-1
@@ -8718,7 +8718,7 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  circleArcCrementer = (player, mode, radiusX, deg, startAng, shape) => {
+  circleArcCrementer = (player, mode, radiusX, deg, startAng, shape, direction) => {
     // mode is 'isometric' or 'cartesian'
 
     let degrees = 360;
@@ -8729,11 +8729,12 @@ class App extends Component {
       const scaleFactorX = 2; // Adjust as needed for your specific case
       const scaleFactorY = 0.707;
       const isoPt = {
-        x: cartPt.x - cartPt.y,
-        y: (cartPt.x + cartPt.y) / 2,
+        // x: cartPt.x - cartPt.y,
+        // y: (cartPt.x + cartPt.y) / 2,
 
-        // x: (cartPt.x - cartPt.y) * Math.cos(Math.PI / 6),
-        // y: (cartPt.x + cartPt.y) * Math.sin(Math.PI / 6) + cartPt.y * 2, // Adjust for vertical displacemen
+        // - X Axis (north/south vertical)
+        x: (cartPt.x - cartPt.y) * Math.cos(Math.PI / 6),
+        y: (cartPt.x + cartPt.y) * Math.sin(Math.PI / 6) + cartPt.y * 2, // Adjust for vertical displacemen
 
         // x: cartPt.x - cartPt.y,
         // y: (cartPt.x + cartPt.y) / 2,
@@ -8750,18 +8751,26 @@ class App extends Component {
     };
 
     const getPointOnArc = (originX, originY, radius, angle, fraction) => {
-      const radians = (angle - fraction * degrees) * (Math.PI / 180);
-      const x = originX + radius * Math.cos(radians);
-      const y = originY + radius * Math.sin(radians);
-      return { x: x, y: y };
+      let radians;
+      if (direction === "clockwise") {
+        radians = (angle + fraction * degrees) * (Math.PI / 180);
+      } else {
+        radians = (angle - fraction * degrees) * (Math.PI / 180);
+      }
+
+      const X = originX + radius * Math.cos(radians);
+      const Y = originY + radius * Math.sin(radians);
+      return { x: X, y: Y };
     };
 
-    const getLineXYatPercent = (startPt, endPt, percent) => {
+    const getLineXYatPercent = (startPt, endPt, num, den) => {
+      const percent = Math.round((num / den) * 10) / 10;
       let dx = endPt.x - startPt.x;
       let dy = endPt.y - startPt.y;
       let X = startPt.x + dx * percent;
       let Y = startPt.y + dy * percent;
       // newPosition = {x:X,y:Y}
+      // return { x: X, y: Y };
       return { x: Math.round(X), y: Math.round(Y) };
     };
 
@@ -8797,6 +8806,11 @@ class App extends Component {
       // x: player.nextPosition.x - this.floorImageHeight / 2,
       // y: player.nextPosition.y - this.floorImageHeight,
     };
+    let pointIso;
+    let point1Iso;
+    let point2Iso;
+    const sceneX = this.canvasWidth / 2;
+    const sceneY = this.sceneY;
     // point = this.cartesianToIsometric(point);
     const centerX = point.x;
     const centerY = point.y;
@@ -8811,40 +8825,22 @@ class App extends Component {
 
     let connetingLineArray = [];
 
-    if (shape === "sector") {
-      for (let i = 0; i < conntectingLineIncr; i++) {
-        const point3 = getLineXYatPercent(point, point1, i);
-        // connetingLineArray.push(point3);
-        console.log("point3", point, point1, point3);
-        this.testDraw.push({
-          color: colors[this.testCount.count - 1],
-          x: point3.x,
-          y: point3.y,
-        });
-      }
-    }
-
-    if (shape === "ringSection") {
-      const arcStep = (incr * 100).toFixed(0) / 10;
-      if (arcStep < 0.5 || arcStep > 9.5) {
-        for (let i = 0; i < conntectingLineIncr; i++) {
-          const point3 = getLineXYatPercent(point1, point2, i);
-          this.testDraw.push({
-            color: colors[this.testCount.count - 1],
-            x: point3.x,
-            y: point3.y,
-          });
-        }
-      }
-    }
+    const arcStep = (incr * 100).toFixed(0);
 
     if (mode === "isometric") {
-      point1 = cartesianToIsometric(point1);
+      point1Iso = cartesianToIsometric(point1);
 
-      let sceneX = this.canvasWidth / 2;
-      let sceneY = this.sceneY;
-      point1.x += sceneX;
-      point1.y += sceneY;
+      point1Iso.x += sceneX;
+      point1Iso.y += sceneY;
+
+      pointIso = cartesianToIsometric(point);
+      pointIso.x += sceneX;
+      pointIso.y += sceneY;
+
+      point2Iso = cartesianToIsometric(point2);
+
+      point2Iso.x += sceneX;
+      point2Iso.y += sceneY;
 
       // FIX ME!
       // WHAT IS THE DIFFERENCE BETWEEN THE CENTER POINT AND THE POINTS TO THE LEFT AND RIGHT OF IT
@@ -8865,6 +8861,46 @@ class App extends Component {
     // console.log("diff 1", point.x - pointX.x, point.y - pointX.y);
     // console.log("diff 2", pointX.x - point2.x, pointX.y - point2.y);
 
+    if (shape === "sector") {
+      for (let i = 0; i < conntectingLineIncr; i++) {
+        let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
+        if (mode === "isometric") {
+          point3 = cartesianToIsometric(point3);
+          point3.x += sceneX;
+          point3.y += sceneY;
+        }
+        this.testDraw.push({
+          color: "red",
+          x: point3.x,
+          y: point3.y,
+        });
+      }
+    }
+
+    if (shape === "ringSection") {
+      if (this.testCount.count === 1 || this.testCount.count === this.testCount.limit) {
+        for (let i = 0; i < conntectingLineIncr; i++) {
+          let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
+          if (mode === "isometric") {
+            point3 = cartesianToIsometric(point3);
+            point3.x += sceneX;
+            point3.y += sceneY;
+          }
+          this.testDraw.push({
+            color: colors[this.testCount.count - 1],
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+      }
+    }
+
+    if (mode === "isometric") {
+      point = pointIso;
+      point1 = point1Iso;
+      point2 = point2Iso;
+    }
+
     this.testDraw.push(
       {
         color: colors[this.testCount.count - 1],
@@ -8872,16 +8908,18 @@ class App extends Component {
         y: point1.y,
       },
       {
-        color: colors[this.testCount.count - 1],
-        x: point2.x,
-        y: point2.y,
-      },
-      {
         color: "red",
         x: point.x,
         y: point.y,
       }
     );
+    if (shape === "ringSection") {
+      this.testDraw.push({
+        color: colors[this.testCount.count - 1],
+        x: point2.x,
+        y: point2.y,
+      });
+    }
   };
   arcBoltCrementer = () => {};
   obstacleMoveCrementer = (obstacleCell, destCell) => {
@@ -33589,7 +33627,7 @@ class App extends Component {
     }
     if (this.time === 100 && player.number === 1) {
       this.testCount.state = true;
-      this.testCount.limit = 10;
+      this.testCount.limit = 60;
       // this.switchBackgroundImage("sea_clouds_night_1");
 
       // this.pushBack(player, "east");
@@ -33606,9 +33644,29 @@ class App extends Component {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
         // this.circleArcCrementer(player, "isometric", 55);
-        // this.circleArcCrementer(player, "cartesian", 50, 90, 0, "arc");
-        this.circleArcCrementer(player, "cartesian", 100, 90, 90, "sector");
-        // this.circleArcCrementer(player, "cartesian", 180, 90, 180, "arc");
+
+        // this.circleArcCrementer(player, "cartesian", 150, 0, 0, "arc", "clockwise");
+        // this.circleArcCrementer(
+        //   player,
+        //   "cartesian",
+        //   100,
+        //   360,
+        //   0,
+        //   "arc",
+        //   "counterClockwise"
+        // );
+        let mode = "isometric";
+        this.circleArcCrementer(player, mode, 200, 180, 0, "arc", "clockwise");
+        this.circleArcCrementer(player, mode, 200, 180, 180, "arc", "clockwise");
+
+        this.circleArcCrementer(player, mode, 150, 180, 0, "arc", "clockwise");
+        this.circleArcCrementer(player, mode, 150, 180, 0, "arc", "counterClockwise");
+
+        this.circleArcCrementer(player, mode, 100, 90, 180, "ringSection", "clockwise");
+        this.circleArcCrementer(player, mode, 100, 90, 0, "ringSection", "clockwise");
+
+        this.circleArcCrementer(player, mode, 50, 90, 0, "sector", "counterClockwise");
+        this.circleArcCrementer(player, mode, 50, 90, 180, "sector", "counterClockwise");
       }
       if (this.testCount.count >= this.testCount.limit) {
         this.testCount.state = false;
@@ -33634,8 +33692,8 @@ class App extends Component {
     //       mode
     //       radius
     //       innerRadius
-    //       deg //360 full 180 half etc
-    //       startAngle: 0 == 12oclock, 90 == 3oclock, 180 == 6oclock, 270 == 9oclock
+    //       deg //360 or 0 full 180 half etc
+    //       startAngle: 0 == 3oclock, 90 == 6oclock, 180 == 9oclock, 270 == 12oclock
     //       color
     //       shape //arc, sector, ring section
     // ownerType
@@ -44553,11 +44611,19 @@ class App extends Component {
         }
 
         // TEST DRAW
+
         for (const point of this.testDraw) {
-          context.fillStyle = point.color;
-          context.beginPath();
-          context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-          context.fill();
+          if (x === this.gridWidth && y === this.gridWidth) {
+            context.fillStyle = point.color;
+            context.beginPath();
+            context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+            context.fill();
+          }
+          // let indx = this.testDraw.findIndex(
+          //   (x) => x.x === point.x && x.y === point.y && x.color === point.color
+          // );
+
+          // this.testDraw.splice(indx, 1);
         }
       }
     }
@@ -46323,7 +46389,8 @@ class App extends Component {
             <p className="timerText">{this.time}</p>
             {this.cursorCoords.x && (
               <p className="timerText">
-                Cursor: {this.cursorCoords.x.toFixed(2)}, {this.cursorCoords.y.toFixed(2)}
+                Cursor: x {this.cursorCoords.x.toFixed(2)}, y{" "}
+                {this.cursorCoords.y.toFixed(2)}
               </p>
             )}
           </div>
