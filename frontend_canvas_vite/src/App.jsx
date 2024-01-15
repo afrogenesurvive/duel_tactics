@@ -8718,7 +8718,7 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  circleArcCrementer = (player, mode, radiusX, deg, startAng, shape, direction) => {
+  circleArcCrementer = (player, mode, radiusA, deg, startAng, shape, direction, face) => {
     // mode is 'isometric' or 'cartesian'
 
     const colors = [
@@ -8743,11 +8743,12 @@ class App extends Component {
       "#EE82EE", // Violet
       "#DA70D6", // Orchid
     ];
+    let color = "green";
     let point = {
       x: player.currentPosition.cell.center.x,
       y: player.currentPosition.cell.center.y,
     };
-    let pointX = point;
+    let pointA = point;
     let pointIso;
     let point1Iso;
     let point2Iso;
@@ -8762,93 +8763,140 @@ class App extends Component {
       degrees = deg;
     }
     const cartesianToIsometric = (cartPt) => {
+      const scale = 0.5;
+      const isoPt = {
+        x: cartPt.x - cartPt.y,
+        y: (cartPt.x + cartPt.y) / 2,
+
+        // x: (cartPt.y + cartPt.x) / 2,
+        // y: cartPt.y - cartPt.x,
+
+        // ****
+        // x: cartPt.x + cartPt.y,
+        // y: 2 * cartPt.y - cartPt.x,
+      };
+
+      return isoPt;
+    };
+    const cartesianToIsometric2 = (cartPt) => {
+      const scale = 0.5;
       const isoPt = {
         // x: cartPt.x - cartPt.y,
         // y: (cartPt.x + cartPt.y) / 2,
-
-        x: cartPt.x + cartPt.y,
-        y: 2 * cartPt.y - cartPt.x,
-
-        // y: 0.5 * ((cartPt.x + cartPt.y) / 2),
-
-        // x: cartPt.x,
-        // y: 0.5 * (cartPt.x + cartPt.y),
-
-        // x: cartPt.x,
-        // y: 0.5 * (cartPt.x + cartPt.y),
-
-        // ---
+        // ****
         // x: cartPt.x + cartPt.y,
-        // y: (cartPt.y - cartPt.x) / 2,
+        // y: 2 * cartPt.y - cartPt.x,
 
-        // x: (cartPt.x + cartPt.y) / 2,
-        // y: cartPt.y - cartPt.x,
-
-        // x: (cartPt.x - cartPt.y) / 2,
-        // y: cartPt.y + cartPt.x,
-
-        // x: cartPt.x + cartPt.y / 2,
-        // y: cartPt.y - cartPt.x / 2,
-
-        // x: cartPt.x + cartPt.y / 2,
-        // y: cartPt.y + cartPt.x / 2,
-
-        // x: cartPt.x - cartPt.y / 2,
-        // y: cartPt.y - cartPt.x / 2,
-        // ---
-
-        // x: cartPt.x + cartPt.y / 2,
-        // y: cartPt.y / 2 - cartPt.x / 2,
-
-        // x: cartPt.x + cartPt.y / 2,
-        // y: cartPt.y / 2 + cartPt.x / 2,
-
-        // --
-
-        // x: cartPt.x - cartPt.y / Math.sqrt(8),
-        // y: (cartPt.x + cartPt.y) / Math.sqrt(8),
-
-        // x: cartPt.x + cartPt.y / Math.sqrt(6),
-        // y: (cartPt.y - cartPt.x) / Math.sqrt(6),
-        // - X Axis (north/south vertical)??
-        // x: (cartPt.x - cartPt.y) * Math.cos(Math.PI / 6),
-        // y: (cartPt.x + cartPt.y) * Math.sin(Math.PI / 6) + cartPt.y * 2, // Adjust for vertical displacemen
+        x: 0.3 * (cartPt.x - cartPt.y),
+        y: (-0.3 * (cartPt.x + cartPt.y)) / 2,
       };
 
-      const angle = 180 * (Math.PI / 180);
-
-      const isoPt2 = {
-        x: cartPt.x * Math.cos(angle) - cartPt.y * Math.sin(angle),
-        y: (cartPt.x * Math.sin(angle) + cartPt.y * Math.cos(angle)) / 2,
-      };
-
-      const isoPt3 = {
-        x: cartPt.x,
-        y: cartPt.y + (cartPt.x > 0 ? -0.5 : 0.5),
-      };
       return isoPt;
     };
 
-    const cartesianToIsometric2 = (cartPt) => {
-      // const isoPt = {
-      //   x: cartPt.x,
-      //   // y: cartPt.y + (cartPt.x > 0 ? -0.5 : 0.5),
-      //   y: cartPt.y + (cartPt.y > 0 ? -0.5 : 0.5),
-      // };
-      // return isoPt;
+    // const transformPoint = (pointInput) => {
+    //   // const scaleFactor = 1; // Adjust this based on the observed scaling factor
+    //   // const rotationAngle = Math.PI / 2; // Adjust this based on the observed rotation angle
 
-      // ---
-      var skewedY = -0.5 * cartPt.y;
+    //   // const x =
+    //   //   inputPoint.x * Math.cos(rotationAngle) - inputPoint.y * Math.sin(rotationAngle);
+    //   // const y =
+    //   //   inputPoint.x * Math.sin(rotationAngle) + inputPoint.y * Math.cos(rotationAngle);
 
-      // Returning the skewed coordinate
-      return { x: cartPt.x, y: skewedY };
-      // ---
-      // var scaleFactor = Math.sqrt(2) / 2;
-      // var isometricX = scaleFactor * cartPt.x;
-      // var isometricY = scaleFactor * cartPt.y;
+    //   // const transformedX = x * scaleFactor;
+    //   // const transformedY = y * scaleFactor;
 
-      // return { x: isometricX, y: isometricY };
-    };
+    //   // return { x: transformedX, y: transformedY };
+
+    //   const rotatedPoints = [];
+    //   const deg = 180;
+    //   const angleInRadians = (deg * Math.PI) / 180;
+    //   // const centerVector = { x: point.x, y: point.y };
+    //   const centerVector = { x: pointA.x, y: pointA.y };
+
+    //   const vector = {
+    //     x: pointInput.x - centerVector.x,
+    //     y: pointInput.y - centerVector.y,
+    //   };
+
+    //   const rotatedX =
+    //     Math.cos(angleInRadians) * vector.x -
+    //     Math.sin(angleInRadians) * vector.y +
+    //     centerVector.x;
+    //   const rotatedY =
+    //     Math.sin(angleInRadians) * vector.x +
+    //     Math.cos(angleInRadians) * vector.y +
+    //     centerVector.y;
+    //   return { x: rotatedX, y: rotatedY };
+    // };
+
+    // const cartesianToIsometric = (cartPt, plane) => {
+    //   let isoPt;
+    //   switch (plane) {
+    //     case "xy":
+    //       isoPt = {
+    //         x: cartPt.x - cartPt.y,
+    //         y: (cartPt.x + cartPt.y) / 2,
+    //       };
+    //       break;
+    //     case "xz":
+    //       isoPt = {
+    //         x: cartPt.x,
+    //         y: 0,
+    //       };
+    //       break;
+    //     case "yz":
+    //       isoPt = {
+    //         x: 0,
+    //         // y: cartPt.y,
+    //         y: cartPt.y - cartPt.z, // Adjusted this line
+    //       };
+    //       break;
+    //     default:
+    //       isoPt = { x: 0, y: 0 };
+    //       break;
+    //   }
+
+    //   return isoPt;
+    // };
+
+    // const getPointOnArc = (originX, originY, radius, angle, fraction, plane) => {
+    //   const radians = (angle - fraction * degrees) * (Math.PI / 180);
+    //   let X, Y;
+
+    //   switch (plane) {
+    //     case "xy":
+    //       X = originX + radius * Math.cos(radians);
+    //       Y = originY + radius * Math.sin(radians);
+    //       break;
+    //     case "xz":
+    //       X = originX + radius * Math.cos(radians);
+    //       Y = originY + radius * Math.sin(radians);
+    //       break;
+    //     case "yz":
+    //       // X = originX + radius * Math.cos(radians);
+    //       X = originX;
+    //       Y = originY + radius * Math.sin(radians);
+    //       break;
+    //     default:
+    //       X = originX;
+    //       Y = originY;
+    //       break;
+    //   }
+
+    //   return { x: X, y: Y };
+    // };
+
+    function rotatePoint(x, y, cx, cy, theta) {
+      // Convert angle to radians
+      var thetaRad = (Math.PI / 180) * theta;
+
+      // Apply rotation transformation
+      var xRotated = (x - cx) * Math.cos(thetaRad) - (y - cy) * Math.sin(thetaRad) + cx;
+      var yRotated = (x - cx) * Math.sin(thetaRad) + (y - cy) * Math.cos(thetaRad) + cy;
+
+      return { x: xRotated, y: yRotated };
+    }
 
     const beforePoints = [
       { x: -1, y: 1 },
@@ -8864,6 +8912,20 @@ class App extends Component {
       { x: -1, y: -0.5 },
     ];
 
+    const beforePoints1 = [
+      { x: -2, y: 0 },
+      { x: 0, y: 1 },
+      { x: 2, y: 0 },
+      { x: 0, y: -1 },
+    ];
+
+    const afterPoints1 = [
+      { x: 1.5, y: -1 },
+      { x: 1, y: 0.5 },
+      { x: 1, y: -1.5 },
+      { x: -1, y: -0.5 },
+    ];
+
     // Calculate average vertical shear
     // const shearY =
     //   (afterPoints.reduce((sum, p) => sum + p.y, 0) / afterPoints.length -
@@ -8872,16 +8934,6 @@ class App extends Component {
     const shearY =
       (afterPoints[1].y - afterPoints[0].y) / (beforePoints[1].x - beforePoints[0].x);
     console.log("shearY", shearY);
-
-    function cartesianToIsometric3(argPoint) {
-      let skew = 0.5;
-      // let skew = shearY
-      // Iterate through each point on the circumference
-      const skewedY = argPoint.y + (argPoint.y > pointX.y ? skew : -skew);
-
-      // Return the new coordinates
-      return { x: argPoint.x, y: skewedY };
-    }
 
     const getPointOnArc = (originX, originY, radius, angle, fraction) => {
       let radians;
@@ -8904,25 +8956,33 @@ class App extends Component {
       let Y = startPt.y + dy * percent;
       return { x: Math.round(X), y: Math.round(Y) };
     };
-
     if (mode === "isometric") {
-      xOffset = offset.x / 2 + 23;
-      yOffset = offset.y / 2 - 2;
+      xOffset = offset.x / 2 + 12;
+      yOffset = offset.y / 2 + 8;
+      // xOffset = offset.x / 2 + 23;
+      // yOffset = offset.y / 2 - 2;
 
-      // pointX = cartesianToIsometric3(pointX);
+      color = "blue";
+      // point = cartesianToIsometric(point, "xy");
       point = cartesianToIsometric(point);
     }
 
-    const centerX = point.x;
-    const centerY = point.y;
-    const radius = radiusX;
-    const innerRadius = radiusX / 2;
-    const startAngle = startAng;
+    const innerRadius = radiusA / 2;
     const incr = this.testCount.count / this.testCount.limit;
 
     let conntectingLineIncr = this.testCount.limit;
-    let point1 = getPointOnArc(centerX, centerY, radius, startAngle, incr);
-    let point2 = getPointOnArc(centerX, centerY, innerRadius, startAngle, incr);
+    // let point1 = getPointOnArc(centerX, centerY, radius, startAngle, incr);
+    let point1 = getPointOnArc(point.x, point.y, radiusA, startAng, incr);
+    let point2 = getPointOnArc(point.x, point.y, innerRadius, startAng, incr);
+    let faceRotation = 0;
+    if (face === "front") {
+      faceRotation = 90;
+      color = "yellow";
+    }
+    if (face === "side") {
+      faceRotation = 120;
+      color = "red";
+    }
 
     let connetingLineArray = [];
 
@@ -8930,68 +8990,11 @@ class App extends Component {
 
     if (mode === "isometric") {
       pointIso = cartesianToIsometric(point);
-      // pointIso = point;
 
       point1Iso = cartesianToIsometric(point1);
 
-      // point1Iso.x += sceneX;
-      // point1Iso.y += sceneY;
-
       point2Iso = cartesianToIsometric(point2);
-
-      // point2Iso.x += sceneX;
-      // point2Iso.y += sceneY;
     }
-
-    const rotate = (isoPt, angleQ) => {
-      const cosTheta = Math.cos(angleQ);
-      const sinTheta = Math.sin(angleQ);
-
-      return {
-        x: isoPt.x * cosTheta - isoPt.y * sinTheta,
-        y: isoPt.x * sinTheta + isoPt.y * cosTheta,
-      };
-    };
-
-    const transformPoint = (transPoint) => {
-      // Translation parameters
-      const tx = 3.5;
-      const ty = -1;
-
-      // Skewing parameters
-      const skewX = 0;
-      const skewY = -1.5;
-
-      // Transformation matrices
-      const translationMatrix = [
-        [1, 0, tx],
-        [0, 1, ty],
-        [0, 0, 1],
-      ];
-
-      const skewingMatrix = [
-        [1, skewX, 0],
-        [skewY, 1, 0],
-        [0, 0, 1],
-      ];
-
-      // Function to multiply two matrices
-      const multiplyMatrices = (mat1, mat2) => {
-        return mat1.map((row, i) =>
-          row.map((val, j) => row.reduce((sum, elm, k) => sum + elm * mat2[k][j], 0))
-        );
-      };
-
-      // Apply the transformation
-      const transformedPoint = multiplyMatrices(
-        translationMatrix,
-        skewingMatrix.concat([[0, 0, 1]]),
-        [[transPoint.x], [transPoint.y], [1]]
-      );
-
-      // Return the transformed point
-      return { x: transformedPoint[0][0], y: transformedPoint[1][0] };
-    };
 
     if (shape === "sector") {
       for (let i = 0; i < conntectingLineIncr; i++) {
@@ -8999,16 +9002,16 @@ class App extends Component {
         if (mode === "isometric") {
           point3 = cartesianToIsometric(point3);
 
-          // point3 = rotateX(point3, 45);
-          // point3 = transformPoint(point3);
+          // point3.x -= sceneX;
+          // point3.y += sceneY;
 
-          point3.x -= sceneX;
+          point3.x += sceneX;
           point3.y += sceneY;
 
-          // point3 = transformPoint(point3);
+          point3.x -= xOffset;
+          point3.y += yOffset;
 
-          // point3.x -= xOffset;
-          // point3.y += yOffset;
+          point3 = rotatePoint(point3.x, point3.y, point.x, point.y, faceRotation);
         }
 
         this.testDraw.push({
@@ -9026,16 +9029,16 @@ class App extends Component {
           if (mode === "isometric") {
             point3 = cartesianToIsometric(point3);
 
-            // point3 = transformPoint(point3);
-            // point3 = rotateX(point3, 45);
+            // point3.x -= sceneX;
+            // point3.y += sceneY;
 
-            point3.x -= sceneX;
+            point3.x += sceneX;
             point3.y += sceneY;
 
-            // point3 = transformPoint(point3);
+            point3.x -= xOffset;
+            point3.y += yOffset;
 
-            // point3.x -= xOffset;
-            // point3.y += yOffset;
+            point3 = rotatePoint(point3.x, point3.y, point.x, point.y, faceRotation);
           }
           this.testDraw.push({
             color: colors[this.testCount.count - 1],
@@ -9053,44 +9056,42 @@ class App extends Component {
 
       point2 = point2Iso;
 
-      // point = rotate(point, 45);
-      // point1 = rotate(point1, 45);
-      // point2 = rotate(point2, 45);
-
-      // point1 = transformPoint(point1);
-      // point2 = transformPoint(point2);
-
-      // point = transformPoint(point);
-      // point1 = transformPoint(point1);
-      // point2 = transformPoint(point2);
-
-      point.x -= sceneX;
+      point.x += sceneX;
       point.y += sceneY;
 
-      point1.x -= sceneX;
+      point1.x += sceneX;
       point1.y += sceneY;
 
-      point2.x -= sceneX;
+      point2.x += sceneX;
       point2.y += sceneY;
 
-      // point.x -= xOffset;
-      // point.y += yOffset;
-      // point1.x -= xOffset;
-      // point1.y += yOffset;
-      // point2.x -= xOffset;
-      // point2.y += yOffset;
+      point.x -= xOffset;
+      point.y += yOffset;
+      point1.x -= xOffset;
+      point1.y += yOffset;
+      point2.x -= xOffset;
+      point2.y += yOffset;
+
+      point1 = rotatePoint(point1.x, point1.y, point.x, point.y, faceRotation);
+      point2 = rotatePoint(point2.x, point2.y, point.x, point.y, faceRotation);
     }
+    console.log("point", point1);
 
     this.testDraw.push(
       {
-        color: colors[this.testCount.count - 1],
+        color: color,
         x: point1.x,
         y: point1.y,
       },
       {
-        color: "red",
+        color: color,
         x: point.x,
         y: point.y,
+      },
+      {
+        color: "red",
+        x: pointA.x,
+        y: pointA.y,
       }
     );
     if (shape === "ringSection") {
@@ -33846,7 +33847,48 @@ class App extends Component {
         // this.circleArcCrementer(player, mode, 100, 90, 0, "ringSection", "clockwise");
 
         // this.circleArcCrementer(player, mode, 50, 90, 0, "sector", "counterClockwise");
-        this.circleArcCrementer(player, mode, 70, 0, 180, "arc", "counterClockwise");
+        // this.circleArcCrementer(player, mode, 70, 0, 180, "arc", "counterClockwise");
+
+        this.circleArcCrementer(
+          player,
+          "cartesian",
+          70,
+          0,
+          180,
+          "arc",
+          "counterClockwise",
+          ""
+        );
+        this.circleArcCrementer(
+          player,
+          "isometric",
+          70,
+          0,
+          180,
+          "ringSection",
+          "counterClockwise",
+          "top"
+        );
+        this.circleArcCrementer(
+          player,
+          "isometric",
+          70,
+          0,
+          180,
+          "ringSection",
+          "counterClockwise",
+          "front"
+        );
+        this.circleArcCrementer(
+          player,
+          "isometric",
+          70,
+          0,
+          180,
+          "ringSection",
+          "counterClockwise",
+          "side"
+        );
       }
       if (this.testCount.count >= this.testCount.limit) {
         this.testCount.state = false;
