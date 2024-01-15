@@ -8778,116 +8778,8 @@ class App extends Component {
 
       return isoPt;
     };
-    const cartesianToIsometric2 = (cartPt) => {
-      const scale = 0.5;
-      const isoPt = {
-        // x: cartPt.x - cartPt.y,
-        // y: (cartPt.x + cartPt.y) / 2,
-        // ****
-        // x: cartPt.x + cartPt.y,
-        // y: 2 * cartPt.y - cartPt.x,
 
-        x: 0.3 * (cartPt.x - cartPt.y),
-        y: (-0.3 * (cartPt.x + cartPt.y)) / 2,
-      };
-
-      return isoPt;
-    };
-
-    // const transformPoint = (pointInput) => {
-    //   // const scaleFactor = 1; // Adjust this based on the observed scaling factor
-    //   // const rotationAngle = Math.PI / 2; // Adjust this based on the observed rotation angle
-
-    //   // const x =
-    //   //   inputPoint.x * Math.cos(rotationAngle) - inputPoint.y * Math.sin(rotationAngle);
-    //   // const y =
-    //   //   inputPoint.x * Math.sin(rotationAngle) + inputPoint.y * Math.cos(rotationAngle);
-
-    //   // const transformedX = x * scaleFactor;
-    //   // const transformedY = y * scaleFactor;
-
-    //   // return { x: transformedX, y: transformedY };
-
-    //   const rotatedPoints = [];
-    //   const deg = 180;
-    //   const angleInRadians = (deg * Math.PI) / 180;
-    //   // const centerVector = { x: point.x, y: point.y };
-    //   const centerVector = { x: pointA.x, y: pointA.y };
-
-    //   const vector = {
-    //     x: pointInput.x - centerVector.x,
-    //     y: pointInput.y - centerVector.y,
-    //   };
-
-    //   const rotatedX =
-    //     Math.cos(angleInRadians) * vector.x -
-    //     Math.sin(angleInRadians) * vector.y +
-    //     centerVector.x;
-    //   const rotatedY =
-    //     Math.sin(angleInRadians) * vector.x +
-    //     Math.cos(angleInRadians) * vector.y +
-    //     centerVector.y;
-    //   return { x: rotatedX, y: rotatedY };
-    // };
-
-    // const cartesianToIsometric = (cartPt, plane) => {
-    //   let isoPt;
-    //   switch (plane) {
-    //     case "xy":
-    //       isoPt = {
-    //         x: cartPt.x - cartPt.y,
-    //         y: (cartPt.x + cartPt.y) / 2,
-    //       };
-    //       break;
-    //     case "xz":
-    //       isoPt = {
-    //         x: cartPt.x,
-    //         y: 0,
-    //       };
-    //       break;
-    //     case "yz":
-    //       isoPt = {
-    //         x: 0,
-    //         // y: cartPt.y,
-    //         y: cartPt.y - cartPt.z, // Adjusted this line
-    //       };
-    //       break;
-    //     default:
-    //       isoPt = { x: 0, y: 0 };
-    //       break;
-    //   }
-
-    //   return isoPt;
-    // };
-
-    // const getPointOnArc = (originX, originY, radius, angle, fraction, plane) => {
-    //   const radians = (angle - fraction * degrees) * (Math.PI / 180);
-    //   let X, Y;
-
-    //   switch (plane) {
-    //     case "xy":
-    //       X = originX + radius * Math.cos(radians);
-    //       Y = originY + radius * Math.sin(radians);
-    //       break;
-    //     case "xz":
-    //       X = originX + radius * Math.cos(radians);
-    //       Y = originY + radius * Math.sin(radians);
-    //       break;
-    //     case "yz":
-    //       // X = originX + radius * Math.cos(radians);
-    //       X = originX;
-    //       Y = originY + radius * Math.sin(radians);
-    //       break;
-    //     default:
-    //       X = originX;
-    //       Y = originY;
-    //       break;
-    //   }
-
-    //   return { x: X, y: Y };
-    // };
-
-    function rotatePoint(x, y, cx, cy, theta) {
+    const rotatePoint = (x, y, cx, cy, theta) => {
       // Convert angle to radians
       var thetaRad = (Math.PI / 180) * theta;
 
@@ -8896,44 +8788,7 @@ class App extends Component {
       var yRotated = (x - cx) * Math.sin(thetaRad) + (y - cy) * Math.cos(thetaRad) + cy;
 
       return { x: xRotated, y: yRotated };
-    }
-
-    const beforePoints = [
-      { x: -1, y: 1 },
-      { x: 1, y: 1 },
-      { x: 1, y: -1 },
-      { x: -1, y: -1 },
-    ];
-
-    const afterPoints = [
-      { x: -1, y: 1.5 },
-      { x: 1, y: 0.5 },
-      { x: 1, y: -1.5 },
-      { x: -1, y: -0.5 },
-    ];
-
-    const beforePoints1 = [
-      { x: -2, y: 0 },
-      { x: 0, y: 1 },
-      { x: 2, y: 0 },
-      { x: 0, y: -1 },
-    ];
-
-    const afterPoints1 = [
-      { x: 1.5, y: -1 },
-      { x: 1, y: 0.5 },
-      { x: 1, y: -1.5 },
-      { x: -1, y: -0.5 },
-    ];
-
-    // Calculate average vertical shear
-    // const shearY =
-    //   (afterPoints.reduce((sum, p) => sum + p.y, 0) / afterPoints.length -
-    //     beforePoints.reduce((sum, p) => sum + p.y, 0) / beforePoints.length) /
-    //   (afterPoints[1].x - afterPoints[0].x);
-    const shearY =
-      (afterPoints[1].y - afterPoints[0].y) / (beforePoints[1].x - beforePoints[0].x);
-    console.log("shearY", shearY);
+    };
 
     const getPointOnArc = (originX, originY, radius, angle, fraction) => {
       let radians;
@@ -8963,7 +8818,6 @@ class App extends Component {
       // yOffset = offset.y / 2 - 2;
 
       color = "blue";
-      // point = cartesianToIsometric(point, "xy");
       point = cartesianToIsometric(point);
     }
 
@@ -8971,7 +8825,6 @@ class App extends Component {
     const incr = this.testCount.count / this.testCount.limit;
 
     let conntectingLineIncr = this.testCount.limit;
-    // let point1 = getPointOnArc(centerX, centerY, radius, startAngle, incr);
     let point1 = getPointOnArc(point.x, point.y, radiusA, startAng, incr);
     let point2 = getPointOnArc(point.x, point.y, innerRadius, startAng, incr);
     let faceRotation = 0;
@@ -8981,7 +8834,7 @@ class App extends Component {
     }
     if (face === "side") {
       faceRotation = 120;
-      color = "red";
+      color = "pink";
     }
 
     let connetingLineArray = [];
@@ -9001,9 +8854,6 @@ class App extends Component {
         let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
         if (mode === "isometric") {
           point3 = cartesianToIsometric(point3);
-
-          // point3.x -= sceneX;
-          // point3.y += sceneY;
 
           point3.x += sceneX;
           point3.y += sceneY;
@@ -9029,9 +8879,6 @@ class App extends Component {
           if (mode === "isometric") {
             point3 = cartesianToIsometric(point3);
 
-            // point3.x -= sceneX;
-            // point3.y += sceneY;
-
             point3.x += sceneX;
             point3.y += sceneY;
 
@@ -9051,9 +8898,7 @@ class App extends Component {
 
     if (mode === "isometric") {
       point = pointIso;
-
       point1 = point1Iso;
-
       point2 = point2Iso;
 
       point.x += sceneX;
@@ -9075,7 +8920,6 @@ class App extends Component {
       point1 = rotatePoint(point1.x, point1.y, point.x, point.y, faceRotation);
       point2 = rotatePoint(point2.x, point2.y, point.x, point.y, faceRotation);
     }
-    console.log("point", point1);
 
     this.testDraw.push(
       {
@@ -33821,74 +33665,99 @@ class App extends Component {
       // this.pushBack(player, this.getOppositeDirection(player.direction));
     }
     // CIRCLE ARC CREMENTER TESTING
-    if (this.testCount.state === true && player.number === 1) {
+    // if (this.testCount.state === true && player.number === 1) {
+    //   if (this.testCount.count < this.testCount.limit) {
+    //     this.testCount.count++;
+
+    //     // this.circleArcCrementer(
+    //     //   player,
+    //     //   "cartesian",
+    //     //   70,
+    //     //   0,
+    //     //   180,
+    //     //   "arc",
+    //     //   "counterClockwise",
+    //     //   ""
+    //     // );
+    //     // this.circleArcCrementer(
+    //     //   player,
+    //     //   "isometric",
+    //     //   70,
+    //     //   0,
+    //     //   180,
+    //     //   "arc",
+    //     //   "counterClockwise",
+    //     //   "top"
+    //     // );
+    //     this.circleArcCrementer(
+    //       player,
+    //       "isometric",
+    //       70,
+    //       0,
+    //       180,
+    //       "arc",
+    //       "counterClockwise",
+    //       "front"
+    //     );
+    //     // this.circleArcCrementer(
+    //     //   player,
+    //     //   "isometric",
+    //     //   70,
+    //     //   0,
+    //     //   180,
+    //     //   "arc",
+    //     //   "counterClockwise",
+    //     //   "side"
+    //     // );
+    //   }
+    //   if (this.testCount.count >= this.testCount.limit) {
+    //     this.testCount.state = false;
+    //   }
+    // }
+    if (this.testCount.state === true && player.number === 2) {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
-        // this.circleArcCrementer(player, "isometric", 55);
 
-        // this.circleArcCrementer(player, "cartesian", 150, 0, 0, "arc", "clockwise");
         // this.circleArcCrementer(
         //   player,
         //   "cartesian",
-        //   100,
-        //   360,
+        //   70,
         //   0,
+        //   180,
         //   "arc",
-        //   "counterClockwise"
+        //   "counterClockwise",
+        //   ""
         // );
-        let mode = "isometric";
-        // this.circleArcCrementer(player, mode, 200, 180, 0, "arc", "clockwise");
-        // this.circleArcCrementer(player, mode, 200, 180, 180, "arc", "clockwise");
-
-        // this.circleArcCrementer(player, mode, 150, 180, 0, "arc", "clockwise");
-        // this.circleArcCrementer(player, mode, 150, 180, 0, "arc", "counterClockwise");
-
-        // this.circleArcCrementer(player, mode, 100, 90, 180, "ringSection", "clockwise");
-        // this.circleArcCrementer(player, mode, 100, 90, 0, "ringSection", "clockwise");
-
-        // this.circleArcCrementer(player, mode, 50, 90, 0, "sector", "counterClockwise");
-        // this.circleArcCrementer(player, mode, 70, 0, 180, "arc", "counterClockwise");
-
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "top"
+        // );
         this.circleArcCrementer(
           player,
-          "cartesian",
+          "isometric",
           70,
           0,
           180,
           "arc",
           "counterClockwise",
-          ""
-        );
-        this.circleArcCrementer(
-          player,
-          "isometric",
-          70,
-          0,
-          180,
-          "ringSection",
-          "counterClockwise",
-          "top"
-        );
-        this.circleArcCrementer(
-          player,
-          "isometric",
-          70,
-          0,
-          180,
-          "ringSection",
-          "counterClockwise",
           "front"
         );
-        this.circleArcCrementer(
-          player,
-          "isometric",
-          70,
-          0,
-          180,
-          "ringSection",
-          "counterClockwise",
-          "side"
-        );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "side"
+        // );
       }
       if (this.testCount.count >= this.testCount.limit) {
         this.testCount.state = false;
