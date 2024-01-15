@@ -2172,8 +2172,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 3,
-              y: 1,
+              x: 0,
+              y: 6,
             },
             center: {
               x: 0,
@@ -8767,13 +8767,6 @@ class App extends Component {
       const isoPt = {
         x: cartPt.x - cartPt.y,
         y: (cartPt.x + cartPt.y) / 2,
-
-        // x: (cartPt.y + cartPt.x) / 2,
-        // y: cartPt.y - cartPt.x,
-
-        // ****
-        // x: cartPt.x + cartPt.y,
-        // y: 2 * cartPt.y - cartPt.x,
       };
 
       return isoPt;
@@ -8901,21 +8894,21 @@ class App extends Component {
       point1 = point1Iso;
       point2 = point2Iso;
 
-      // point.x += sceneX;
-      // point.y += sceneY;
+      point.x += sceneX;
+      point.y += sceneY;
 
-      // point1.x += sceneX;
-      // point1.y += sceneY;
+      point1.x += sceneX;
+      point1.y += sceneY;
 
-      // point2.x += sceneX;
-      // point2.y += sceneY;
+      point2.x += sceneX;
+      point2.y += sceneY;
 
-      // point.x -= xOffset;
-      // point.y += yOffset;
-      // point1.x -= xOffset;
-      // point1.y += yOffset;
-      // point2.x -= xOffset;
-      // point2.y += yOffset;
+      point.x -= xOffset;
+      point.y += yOffset;
+      point1.x -= xOffset;
+      point1.y += yOffset;
+      point2.x -= xOffset;
+      point2.y += yOffset;
 
       if (faceRotation > 0) {
         point1 = rotatePoint(point1.x, point1.y, pointA.x, pointA.y, faceRotation);
@@ -33675,26 +33668,16 @@ class App extends Component {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
 
-        // this.circleArcCrementer(
-        //   player,
-        //   "cartesian",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   ""
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "top"
-        // );
+        this.circleArcCrementer(
+          player,
+          "cartesian",
+          70,
+          0,
+          180,
+          "arc",
+          "counterClockwise",
+          ""
+        );
         this.circleArcCrementer(
           player,
           "isometric",
@@ -33705,6 +33688,16 @@ class App extends Component {
           "counterClockwise",
           "top"
         );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "top"
+        // );
         // this.circleArcCrementer(
         //   player,
         //   "isometric",
