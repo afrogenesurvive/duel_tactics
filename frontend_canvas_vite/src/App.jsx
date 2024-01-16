@@ -33689,46 +33689,46 @@ class App extends Component {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
 
-        this.circleArcCrementer(
-          player,
-          "cartesian",
-          70,
-          0,
-          180,
-          "arc",
-          "counterClockwise",
-          ""
-        );
-        this.circleArcCrementer(
-          player,
-          "isometric",
-          70,
-          0,
-          180,
-          "arc",
-          "counterClockwise",
-          "top"
-        );
+        // this.circleArcCrementer(
+        //   player,
+        //   "cartesian",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   ""
+        // );
         this.circleArcCrementer(
           player,
           "isometric",
-          70,
-          0,
-          180,
-          "arc",
-          "counterClockwise",
-          "front"
-        );
-        this.circleArcCrementer(
-          player,
-          "isometric",
-          70,
+          50,
           0,
           180,
           "arc",
           "counterClockwise",
           "side"
         );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "front"
+        // );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "side"
+        // );
       }
       // if (this.testCount.count >= this.testCount.limit) {
       //   this.testCount.state = false;
@@ -33738,46 +33738,46 @@ class App extends Component {
       if (this.testCount.count < this.testCount.limit) {
         // this.testCount.count++;
 
-        this.circleArcCrementer(
-          player,
-          "cartesian",
-          70,
-          0,
-          180,
-          "arc",
-          "counterClockwise",
-          ""
-        );
-        this.circleArcCrementer(
-          player,
-          "isometric",
-          70,
-          0,
-          180,
-          "arc",
-          "counterClockwise",
-          "top"
-        );
+        // this.circleArcCrementer(
+        //   player,
+        //   "cartesian",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   ""
+        // );
         this.circleArcCrementer(
           player,
           "isometric",
-          70,
-          0,
-          180,
-          "arc",
-          "counterClockwise",
-          "front"
-        );
-        this.circleArcCrementer(
-          player,
-          "isometric",
-          70,
+          50,
           0,
           180,
           "arc",
           "counterClockwise",
           "side"
         );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "front"
+        // );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "side"
+        // );
       }
       if (this.testCount.count >= this.testCount.limit) {
         this.testCount.state = false;
