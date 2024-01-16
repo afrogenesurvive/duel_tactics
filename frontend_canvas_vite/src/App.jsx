@@ -8744,11 +8744,15 @@ class App extends Component {
       "#DA70D6", // Orchid
     ];
     let color = "green";
-    let point = {
+    let pointA = {
       x: player.currentPosition.cell.center.x,
       y: player.currentPosition.cell.center.y,
     };
-    let pointA = point;
+    let point = {
+      x: player.currentPosition.cell.number.x * this.tileWidth,
+      y: player.currentPosition.cell.number.y * this.tileWidth,
+    };
+
     let pointIso;
     let point1Iso;
     let point2Iso;
@@ -8758,12 +8762,16 @@ class App extends Component {
     let xOffset;
     let yOffset;
 
+    let pointB = {
+      x: point.x + sceneX,
+      y: point.y + sceneY,
+    };
+
     let degrees = 360;
     if (deg && deg !== 0) {
       degrees = deg;
     }
     const cartesianToIsometric = (cartPt) => {
-      const scale = 0.5;
       const isoPt = {
         x: cartPt.x - cartPt.y,
         y: (cartPt.x + cartPt.y) / 2,
@@ -8805,13 +8813,15 @@ class App extends Component {
       return { x: Math.round(X), y: Math.round(Y) };
     };
     if (mode === "isometric") {
-      xOffset = offset.x / 2 + 12;
-      yOffset = offset.y / 2 + 8;
-      // xOffset = offset.x / 2 + 23;
-      // yOffset = offset.y / 2 - 2;
+      // xOffset = offset.x / 2 + 12;
+      // yOffset = offset.y / 2 + 8;
+      xOffset = -2;
+      yOffset = offset.y / 2;
 
       color = "blue";
-      // point = cartesianToIsometric(point);
+    }
+    if (mode === "cartesian") {
+      point = pointA;
     }
 
     const innerRadius = radiusA / 2;
@@ -8851,10 +8861,12 @@ class App extends Component {
           point3.x += sceneX;
           point3.y += sceneY;
 
-          point3.x -= xOffset;
-          point3.y += yOffset;
+          point3.x += xOffset;
+          point3.y -= yOffset;
 
-          point3 = rotatePoint(point3.x, point3.y, point.x, point.y, faceRotation);
+          if (faceRotation > 0) {
+            point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
+          }
         }
 
         this.testDraw.push({
@@ -8875,10 +8887,12 @@ class App extends Component {
             point3.x += sceneX;
             point3.y += sceneY;
 
-            point3.x -= xOffset;
-            point3.y += yOffset;
+            point3.x += xOffset;
+            point3.y -= yOffset;
 
-            point3 = rotatePoint(point3.x, point3.y, point.x, point.y, faceRotation);
+            if (faceRotation > 0) {
+              point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
+            }
           }
           this.testDraw.push({
             color: colors[this.testCount.count - 1],
@@ -8903,12 +8917,12 @@ class App extends Component {
       point2.x += sceneX;
       point2.y += sceneY;
 
-      point.x -= xOffset;
-      point.y += yOffset;
-      point1.x -= xOffset;
-      point1.y += yOffset;
-      point2.x -= xOffset;
-      point2.y += yOffset;
+      point.x += xOffset;
+      point.y -= yOffset;
+      point1.x += xOffset;
+      point1.y -= yOffset;
+      point2.x += xOffset;
+      point2.y -= yOffset;
 
       if (faceRotation > 0) {
         point1 = rotatePoint(point1.x, point1.y, pointA.x, pointA.y, faceRotation);
@@ -8916,9 +8930,10 @@ class App extends Component {
       }
     }
 
-    console.log("sceneX", sceneX, "sceneY", sceneY);
-    console.log("pointA", pointA.x.toFixed(2), pointA.y.toFixed(2));
-    console.log("point1", point1.x.toFixed(2), point1.y.toFixed(2));
+    // console.log("sceneX", sceneX, "sceneY", sceneY);
+    // console.log("pointA", pointA.x.toFixed(2), pointA.y.toFixed(2));
+    // console.log("point", point.x.toFixed(2), point.y.toFixed(2));
+    // console.log("point1", point1.x.toFixed(2), point1.y.toFixed(2));
 
     this.testDraw.push(
       {
@@ -8935,11 +8950,16 @@ class App extends Component {
         color: "red",
         x: pointA.x,
         y: pointA.y,
+      },
+      {
+        color: "purple",
+        x: pointB.x,
+        y: pointB.y,
       }
     );
     if (shape === "ringSection") {
       this.testDraw.push({
-        color: colors[this.testCount.count - 1],
+        color: "purple",
         x: point2.x,
         y: point2.y,
       });
@@ -33668,16 +33688,16 @@ class App extends Component {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
 
-        this.circleArcCrementer(
-          player,
-          "cartesian",
-          70,
-          0,
-          180,
-          "arc",
-          "counterClockwise",
-          ""
-        );
+        // this.circleArcCrementer(
+        //   player,
+        //   "cartesian",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   ""
+        // );
         this.circleArcCrementer(
           player,
           "isometric",
@@ -40715,6 +40735,20 @@ class App extends Component {
         p.x = x * tileWidth;
         p.y = y * tileWidth;
         let iso = this.cartesianToIsometric(p);
+
+        context.font = "15px Arial";
+        context.fillStyle = "yellow";
+        context.beginPath();
+        context.arc(iso.x + sceneX, iso.y + sceneY, 3, 0, 2 * Math.PI);
+        context.fill();
+        context.fillText("" + x + "," + y + "", iso.x + sceneX - 25, iso.y + sceneY - 5);
+
+        context.fillStyle = "white";
+        context.beginPath();
+        context.arc(p.x + sceneX, p.y + sceneY, 3, 0, 2 * Math.PI);
+        context.fill();
+        context.fillText("" + x + "," + y + "", p.x + sceneX, p.y + sceneY - 5);
+
         let offset = { x: floorImageWidth / 2, y: floorImageHeight };
         iso.x += sceneX;
         iso.y += sceneY;
@@ -40844,9 +40878,9 @@ class App extends Component {
         }
 
         // FLOOR
-        if (drawFloor === true) {
-          context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-        }
+        // if (drawFloor === true) {
+        //   context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+        // }
 
         // RUBBLE
         if (gridInfoCell.rubble === true) {
@@ -40854,14 +40888,15 @@ class App extends Component {
         }
 
         // CELL COORD LABEL
-        context.fillStyle = "black";
-        context.fillText(
-          "" + x + "," + y + "",
-          iso.x - offset.x / 2 + 18,
-          iso.y - offset.y / 2 + 12
-        );
-        context.fillStyle = "black";
-        context.fillRect(center.x, center.y, 5, 5);
+        // context.fillStyle = "black";
+        // context.fillText(
+        //   "" + x + "," + y + "",
+        //   iso.x - offset.x / 2 + 18,
+        //   iso.y - offset.y / 2 + 12
+        // );
+
+        // context.fillStyle = "black";
+        // context.fillRect(center.x, center.y, 5, 5);
 
         // CELL VERTEX POINTS
         let vertices = [
@@ -40870,52 +40905,52 @@ class App extends Component {
           { x: center.x, y: center.y - tileWidth / 2 },
           { x: center.x - tileWidth, y: center.y },
         ];
-        for (const vertex of vertices) {
-          context.fillStyle = "yellow";
-          context.fillRect(vertex.x - 2.5, vertex.y - 2.5, 5, 5);
-        }
+        // for (const vertex of vertices) {
+        //   context.fillStyle = "yellow";
+        //   context.fillRect(vertex.x - 2.5, vertex.y - 2.5, 5, 5);
+        // }
         gridInfoCell.vertices = vertices;
 
         // TARGET HIGHLIGHT!!
         let floorHighlight;
-        for (const plyr3 of this.players) {
-          if (x === plyr3.target.cell1.number.x && y === plyr3.target.cell1.number.y) {
-            if (
-              plyr3.ai.state !== true &&
-              plyr3.dead.state !== true &&
-              plyr3.falling.state !== true &&
-              plyr3.drowning !== true
-            ) {
-              switch (plyr3.number) {
-                case 1:
-                  floorHighlight = "purple";
-                  break;
-                case 2:
-                  floorHighlight = "red";
-                  break;
-              }
-            }
-            if (
-              plyr3.ai.state === true &&
-              plyr3.dead.state !== true &&
-              plyr3.falling.state !== true &&
-              plyr3.drowning !== true
-            ) {
-              floorHighlight = "brown";
-            }
-            if (plyr3.dead.state !== true) {
-              context.lineWidth = 5;
-              context.beginPath();
-              for (const vertex of vertices) {
-                context.strokeStyle = floorHighlight;
+        // for (const plyr3 of this.players) {
+        //   if (x === plyr3.target.cell1.number.x && y === plyr3.target.cell1.number.y) {
+        //     if (
+        //       plyr3.ai.state !== true &&
+        //       plyr3.dead.state !== true &&
+        //       plyr3.falling.state !== true &&
+        //       plyr3.drowning !== true
+        //     ) {
+        //       switch (plyr3.number) {
+        //         case 1:
+        //           floorHighlight = "purple";
+        //           break;
+        //         case 2:
+        //           floorHighlight = "red";
+        //           break;
+        //       }
+        //     }
+        //     if (
+        //       plyr3.ai.state === true &&
+        //       plyr3.dead.state !== true &&
+        //       plyr3.falling.state !== true &&
+        //       plyr3.drowning !== true
+        //     ) {
+        //       floorHighlight = "brown";
+        //     }
+        //     if (plyr3.dead.state !== true) {
+        //       context.lineWidth = 5;
+        //       context.beginPath();
+        //       for (const vertex of vertices) {
+        //         context.strokeStyle = floorHighlight;
 
-                context.lineTo(vertex.x, vertex.y);
-              }
-              context.closePath();
-              context.stroke();
-            }
-          }
-        }
+        //         context.lineTo(vertex.x, vertex.y);
+        //       }
+        //       context.closePath();
+        //       context.stroke();
+        //     }
+        //   }
+        // }
 
         // MOUSED OVER CELL
         if (
@@ -41387,2983 +41422,2983 @@ class App extends Component {
           // console.log("this.playerDrawHeight", thisplayerDrawHeight);
         };
 
-        for (let plyr of this.players) {
-          let point = {
-            x: plyr.nextPosition.x,
-            y: plyr.nextPosition.y,
-          };
-          let newCharDrawPoint = {
-            x: plyr.nextPosition.x - this.floorImageHeight / 2,
-            y: plyr.nextPosition.y - this.floorImageHeight,
-          };
-
-          let weapon = plyr.currentWeapon.type;
-          if (plyr.currentWeapon.type === "" || !plyr.currentWeapon.type) {
-            weapon = "unarmed";
-          }
-
-          let finalAnimIndex;
-
-          if (plyr.attacking.state === true && plyr.success.deflected.state !== true) {
-            plyr.action = "attacking";
-          }
-          let frameIndexBase;
-          let increment;
-          let frameTypeIndex;
-          let remainder;
-          let newIndex;
-          // SET ANIMATION INDEX USED FOR SPRITE SHEET STEPPING BASED ON ACTION
-          // FOR TESTING BY CALLING ONLY @ 1 CELL
-          if (
-            plyr.currentPosition.cell.number.x === x &&
-            plyr.currentPosition.cell.number.y === y &&
-            plyr.number === 1
-          ) {
-            switch (plyr.action) {
-              case "moving":
-                let moveSpeed = plyr.speed.move;
-                if (plyr.terrainMoveSpeed.state === true) {
-                  moveSpeed = plyr.terrainMoveSpeed.speed;
-                }
-                if (plyr.pushing.state === true) {
-                  moveSpeed = plyr.pushing.moveSpeed;
-                }
-                if (plyr.pulling.state === true) {
-                  moveSpeed = plyr.pulling.moveSpeed;
-                }
-                if (plyr.pushed.state === true) {
-                  moveSpeed = plyr.pushed.moveSpeed;
-                }
-                if (plyr.pulled.state === true) {
-                  moveSpeed = plyr.pulled.moveSpeed;
-                }
-                let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
-                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(
-                  plyr.moving.step
-                );
-                finalAnimIndex = moveAnimIndex + 1;
-                // console.log(
-                //   "anim testing mv spd",
-                //   plyr.speed.move,
-                //   "step",
-                //   plyr.moving.step,
-                //   "plyr",
-                //   plyr.number,
-                //   "index",
-                //   finalAnimIndex
-                // );
-                if (plyr.target.cell1.void == true) {
-                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                }
-                break;
-              case "jumping":
-                let rangeIndex4 = plyr.speed.range.indexOf(0.1);
-                let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(
-                  plyr.moving.step
-                );
-                finalAnimIndex = moveAnimIndex4;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                break;
-              case "strafe moving":
-                if (plyr.pushBack.state === true) {
-                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
-                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(
-                    plyr.moving.step
-                  );
-                  finalAnimIndex = moveAnimIndex3;
-                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                } else {
-                  let moveSpeed = plyr.speed.move;
-                  // if (plyr.pushing.state === true) {
-                  //   moveSpeed = plyr.pushing.moveSpeed;
-                  // }
-                  if (plyr.pulling.state === true) {
-                    moveSpeed = plyr.pulling.moveSpeed;
-                  }
-                  if (plyr.pushed.state === true) {
-                    moveSpeed = plyr.pushed.moveSpeed;
-                  }
-                  if (plyr.pulled.state === true) {
-                    moveSpeed = plyr.pulled.moveSpeed;
-                  }
-                  let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
-                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(
-                    plyr.moving.step
-                  );
-                  finalAnimIndex = moveAnimIndex2;
-                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                }
-                break;
-              case "flanking":
-                let rangeIndex6 = plyr.speed.range.indexOf(0.2);
-                let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(
-                  plyr.moving.step
-                );
-                finalAnimIndex = moveAnimIndex6;
-                // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                break;
-              case "attacking":
-                // let animIndex = plyr.attacking.count -1;
-                let animIndex;
-                // if (
-                //   plyr.elasticCounter.state === true &&
-                //   plyr.elasticCounter.type === "attacking"
-                // ) {
-                //   if (plyr.elasticCounter.countUp.state === true) {
-                //     animIndex = plyr.elasticCounter.countUp.count - 1;
-                //   }
-                //   if (plyr.elasticCounter.pause.state === true) {
-                //     if (plyr.elasticCounter.pause.count < 11) {
-                //       animIndex = plyr.elasticCounter.pause.count - 1;
-                //     } else {
-                //       if (plyr.elasticCounter.pause.count % 10 === 0) {
-                //         animIndex = 9;
-                //         // animIndex5 = 10;
-                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                //       } else {
-                //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                //         animIndex = plyr.elasticCounter.pause.count - mod - 1;
-                //       }
-                //     }
-                //   }
-                //   if (plyr.elasticCounter.countDown.state === true) {
-                //     animIndex = plyr.elasticCounter.countDown.count - 1;
-                //   }
-                // } else {
-                //   animIndex = plyr.attacking.count - 1;
-                // }
-                animIndex = plyr.attacking.count - 1;
-
-                frameIndexBase =
-                  this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
-                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
-                increment = Math.ceil(
-                  plyr[plyr.action].limit /
-                    this.actionAnimFrameTypeCountRef[plyr.action].typeCount
-                );
-                frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
-                remainder = plyr[plyr.action].count % increment;
-                newIndex = frameIndexBase * frameTypeIndex + remainder;
-
-                finalAnimIndex = newIndex;
-                // finalAnimIndex = animIndex;
-                // console.log(
-                //   "anim testing atk",
-                //   plyr.attacking.count,
-                //   plyr.attacking.limit,
-                //   finalAnimIndex
-                // );
-                break;
-              case "defending":
-                let animIndex2 = plyr.defending.count - 1;
-                // if (plyr.defending.decay.state !== true) {
-                //   if (plyr.defending.count > 0) {
-                //     finalAnimIndex = animIndex2;
-                //     // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-                //   }
-                //   if (plyr.defending.count === 0) {
-                //     let animIndex2a = 5;
-                //     finalAnimIndex = animIndex2a;
-                //     // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-                //   }
-                // }
-                // if (plyr.defending.decay.state === true) {
-                //   if (plyr.defending.decay.count < 11) {
-                //     animIndex2 = plyr.defending.decay.count - 1;
-                //   } else {
-                //     if (plyr.defending.decay.count % 10 === 0) {
-                //       animIndex2 = 9;
-                //     } else {
-                //       let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
-                //       animIndex2 = plyr.defending.decay.count - mod - 1;
-                //     }
-                //   }
-                //   finalAnimIndex = animIndex2;
-                // }
-                frameIndexBase =
-                  this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
-                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
-                increment = Math.ceil(
-                  plyr[plyr.action].limit /
-                    this.actionAnimFrameTypeCountRef[plyr.action].typeCount
-                );
-                frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
-                remainder = plyr[plyr.action].count % increment;
-                newIndex = frameIndexBase * frameTypeIndex + remainder;
-
-                finalAnimIndex = newIndex;
-
-                break;
-              case "idle":
-                if (plyr.number === 1) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                if (plyr.number === 2) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                let animIndex3 = plyr.idleAnim.count + 1;
-                finalAnimIndex = animIndex3;
-                // finalAnimIndex = 1;
-                break;
-              case "falling":
-                let animIndex4 = plyr.falling.count - 1;
-                finalAnimIndex = animIndex4;
-                // console.log("anim testing fall", plyr.falling.count, "plyr", plyr.number);
-                break;
-              case "deflected":
-                let animIndex5 = plyr.success.deflected.count - 1;
-                // if (
-                //   plyr.elasticCounter.state === true &&
-                //   plyr.elasticCounter.type === "deflected"
-                // ) {
-                //   if (plyr.elasticCounter.countUp.state === true) {
-                //     animIndex5 = plyr.elasticCounter.countUp.count - 1;
-                //   }
-                //   if (plyr.elasticCounter.pause.state === true) {
-                //     if (plyr.elasticCounter.pause.count < 11) {
-                //       animIndex5 = plyr.elasticCounter.pause.count - 1;
-                //     } else {
-                //       if (plyr.elasticCounter.pause.count % 10 === 0) {
-                //         animIndex5 = 9;
-                //         // animIndex5 = 10;
-                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                //       } else {
-                //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                //         animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
-                //       }
-                //     }
-                //   }
-                //   if (plyr.elasticCounter.countDown.state === true) {
-                //     animIndex5 = plyr.elasticCounter.countDown.count - 1;
-                //   }
-                // }
-
-                if (plyr.halfPushBack.state === true) {
-                  if (plyr.halfPushBack.countUp.state === true) {
-                    animIndex5 = plyr.halfPushBack.countUp.count - 1;
-                  }
-                  if (plyr.halfPushBack.countDown.state === true) {
-                    animIndex5 = plyr.halfPushBack.countDown.count - 1;
-                  }
-                }
-                finalAnimIndex = animIndex5;
-                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-                break;
-              case "dodging":
-                let animIndex7 = plyr.dodging.count - 1;
-                // if (
-                //   plyr.elasticCounter.state === true &&
-                //   plyr.elasticCounter.type === "dodging"
-                // ) {
-                //   if (plyr.elasticCounter.countUp.state === true) {
-                //     // animIndex7 = plyr.elasticCounter.countUp.count-1;
-                //     if (plyr.elasticCounter.countUp.count < 11) {
-                //       animIndex7 = plyr.elasticCounter.countUp.count - 1;
-                //     } else {
-                //       if (plyr.elasticCounter.countUp.count % 10 === 0) {
-                //         animIndex7 = 9;
-                //         // animIndex5 = 10;
-                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                //       } else {
-                //         let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
-                //         animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
-                //       }
-                //     }
-                //   }
-                //   if (plyr.elasticCounter.pause.state === true) {
-                //     if (plyr.elasticCounter.pause.count < 11) {
-                //       animIndex7 = plyr.elasticCounter.pause.count - 1;
-                //     } else {
-                //       if (plyr.elasticCounter.pause.count % 10 === 0) {
-                //         animIndex7 = 9;
-                //         // animIndex5 = 10;
-                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                //       } else {
-                //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-                //         animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
-                //       }
-                //     }
-                //   }
-                //   if (plyr.elasticCounter.countDown.state === true) {
-                //     // animIndex7 = plyr.elasticCounter.countDown.count-1;
-                //     if (plyr.elasticCounter.countDown.count < 11) {
-                //       animIndex7 = plyr.elasticCounter.countDown.count - 1;
-                //     } else {
-                //       if (plyr.elasticCounter.countDown.count % 10 === 0) {
-                //         animIndex7 = 9;
-                //         // animIndex5 = 10;
-                //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-                //       } else {
-                //         let mod =
-                //           Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
-                //         animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
-                //       }
-                //     }
-                //   }
-                // }
-                finalAnimIndex = animIndex7;
-                // console.log(
-                //   "anim testing dodge",
-                //   plyr.dodging.count,
-                //   "plyr",
-                //   plyr.number
-                // );
-                break;
-            }
-          }
-          // FOR TESTING BY CALLING ONLY @ 1 CELL
-
-          // REAL DEAL
-          switch (plyr.action) {
-            case "moving":
-              let moveSpeed = plyr.speed.move;
-              if (plyr.terrainMoveSpeed.state === true) {
-                moveSpeed = plyr.terrainMoveSpeed.speed;
-              }
-              if (plyr.pushing.state === true) {
-                moveSpeed = plyr.pushing.moveSpeed;
-              }
-              if (plyr.pulling.state === true) {
-                moveSpeed = plyr.pulling.moveSpeed;
-              }
-              if (plyr.pushed.state === true) {
-                moveSpeed = plyr.pushed.moveSpeed;
-              }
-              if (plyr.pulled.state === true) {
-                moveSpeed = plyr.pulled.moveSpeed;
-              }
-              let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
-              let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
-              finalAnimIndex = moveAnimIndex + 1;
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              if (plyr.target.cell1.void == true) {
-                // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              }
-              break;
-            case "jumping":
-              let rangeIndex4 = plyr.speed.range.indexOf(0.1);
-              let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(
-                plyr.moving.step
-              );
-              finalAnimIndex = moveAnimIndex4;
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-            case "strafe moving":
-              if (plyr.pushBack.state === true) {
-                let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
-                let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(
-                  plyr.moving.step
-                );
-                finalAnimIndex = moveAnimIndex3;
-                // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-              } else {
-                let moveSpeed = plyr.speed.move;
-                // if (plyr.pushing.state === true) {
-                //   moveSpeed = plyr.pushing.moveSpeed;
-                // }
-                if (plyr.pulling.state === true) {
-                  moveSpeed = plyr.pulling.moveSpeed;
-                }
-                if (plyr.pushed.state === true) {
-                  moveSpeed = plyr.pushed.moveSpeed;
-                }
-                if (plyr.pulled.state === true) {
-                  moveSpeed = plyr.pulled.moveSpeed;
-                }
-                let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
-                let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(
-                  plyr.moving.step
-                );
-                finalAnimIndex = moveAnimIndex2;
-                // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-              }
-              break;
-            case "flanking":
-              let rangeIndex6 = plyr.speed.range.indexOf(0.2);
-              let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(
-                plyr.moving.step
-              );
-              finalAnimIndex = moveAnimIndex6;
-              // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-            case "attacking":
-              // let animIndex = plyr.attacking.count -1;
-              let animIndex;
-
-              // if (
-              //   plyr.elasticCounter.state === true &&
-              //   plyr.elasticCounter.type === "attacking"
-              // ) {
-              //   if (plyr.elasticCounter.countUp.state === true) {
-              //     animIndex = plyr.elasticCounter.countUp.count - 1;
-              //   }
-              //   if (plyr.elasticCounter.pause.state === true) {
-              //     if (plyr.elasticCounter.pause.count < 11) {
-              //       animIndex = plyr.elasticCounter.pause.count - 1;
-              //     } else {
-              //       if (plyr.elasticCounter.pause.count % 10 === 0) {
-              //         animIndex = 9;
-              //         // animIndex5 = 10;
-              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-              //       } else {
-              //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-              //         animIndex = plyr.elasticCounter.pause.count - mod - 1;
-              //       }
-              //     }
-              //   }
-              //   if (plyr.elasticCounter.countDown.state === true) {
-              //     animIndex = plyr.elasticCounter.countDown.count - 1;
-              //   }
-              // } else {
-              //   animIndex = plyr.attacking.count - 1;
-              // }
-
-              // animIndex = plyr.attacking.count - 1;
-              // finalAnimIndex = animIndex;
-              frameIndexBase =
-                this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
-                this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
-              increment = Math.ceil(
-                plyr[plyr.action].limit /
-                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount
-              );
-              frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
-              remainder = plyr[plyr.action].count % increment;
-              newIndex = frameIndexBase * frameTypeIndex + remainder;
-
-              finalAnimIndex = newIndex;
-              // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-              break;
-            case "defending":
-              let animIndex2 = plyr.defending.count - 1;
-
-              // if (plyr.defending.decay.state !== true) {
-              //   if (plyr.defending.count > 0) {
-              //     finalAnimIndex = animIndex2;
-              //     // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-              //   }
-              //   if (plyr.defending.count === 0) {
-              //     let animIndex2a = 5;
-              //     finalAnimIndex = animIndex2a;
-              //     // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-              //   }
-              // }
-              // if (plyr.defending.decay.state === true) {
-              //   if (plyr.defending.decay.count < 11) {
-              //     animIndex2 = plyr.defending.decay.count - 1;
-              //   } else {
-              //     if (plyr.defending.decay.count % 10 === 0) {
-              //       animIndex2 = 9;
-              //     } else {
-              //       let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
-              //       animIndex2 = plyr.defending.decay.count - mod - 1;
-              //     }
-              //   }
-              //   finalAnimIndex = animIndex2;
-              // }
-              frameIndexBase =
-                this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
-                this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
-              increment = Math.ceil(
-                plyr[plyr.action].limit /
-                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount
-              );
-              frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
-              remainder = plyr[plyr.action].count % increment;
-              newIndex = frameIndexBase * frameTypeIndex + remainder;
-
-              finalAnimIndex = newIndex;
-
-              break;
-            case "idle":
-              if (plyr.number === 1) {
-                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-              }
-              if (plyr.number === 2) {
-                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-              }
-              let animIndex3 = plyr.idleAnim.count + 1;
-              finalAnimIndex = animIndex3;
-              // finalAnimIndex = 1;
-              break;
-            case "falling":
-              let animIndex4 = plyr.falling.count - 1;
-              finalAnimIndex = animIndex4;
-              // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-              break;
-            case "deflected":
-              let animIndex5 = plyr.success.deflected.count - 1;
-
-              // if (
-              //   plyr.elasticCounter.state === true &&
-              //   plyr.elasticCounter.type === "deflected"
-              // ) {
-              //   if (plyr.elasticCounter.countUp.state === true) {
-              //     animIndex5 = plyr.elasticCounter.countUp.count - 1;
-              //   }
-              //   if (plyr.elasticCounter.pause.state === true) {
-              //     if (plyr.elasticCounter.pause.count < 11) {
-              //       animIndex5 = plyr.elasticCounter.pause.count - 1;
-              //     } else {
-              //       if (plyr.elasticCounter.pause.count % 10 === 0) {
-              //         animIndex5 = 9;
-              //         // animIndex5 = 10;
-              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-              //       } else {
-              //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-              //         animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
-              //       }
-              //     }
-              //   }
-              //   if (plyr.elasticCounter.countDown.state === true) {
-              //     animIndex5 = plyr.elasticCounter.countDown.count - 1;
-              //   }
-              // }
-              if (plyr.halfPushBack.state === true) {
-                if (plyr.halfPushBack.countUp.state === true) {
-                  animIndex5 = plyr.halfPushBack.countUp.count - 1;
-                }
-                if (plyr.halfPushBack.countDown.state === true) {
-                  animIndex5 = plyr.halfPushBack.countDown.count - 1;
-                }
-              }
-              finalAnimIndex = animIndex5;
-              // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-              break;
-            case "dodging":
-              let animIndex7 = plyr.dodging.count - 1;
-
-              // if (
-              //   plyr.elasticCounter.state === true &&
-              //   plyr.elasticCounter.type === "dodging"
-              // ) {
-              //   if (plyr.elasticCounter.countUp.state === true) {
-              //     // animIndex7 = plyr.elasticCounter.countUp.count-1;
-
-              //     if (plyr.elasticCounter.countUp.count < 11) {
-              //       animIndex7 = plyr.elasticCounter.countUp.count - 1;
-              //     } else {
-              //       if (plyr.elasticCounter.countUp.count % 10 === 0) {
-              //         animIndex7 = 9;
-              //         // animIndex5 = 10;
-              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-              //       } else {
-              //         let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
-              //         animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
-              //       }
-              //     }
-              //   }
-              //   if (plyr.elasticCounter.pause.state === true) {
-              //     if (plyr.elasticCounter.pause.count < 11) {
-              //       animIndex7 = plyr.elasticCounter.pause.count - 1;
-              //     } else {
-              //       if (plyr.elasticCounter.pause.count % 10 === 0) {
-              //         animIndex7 = 9;
-              //         // animIndex5 = 10;
-              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-              //       } else {
-              //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
-              //         animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
-              //       }
-              //     }
-              //   }
-              //   if (plyr.elasticCounter.countDown.state === true) {
-              //     // animIndex7 = plyr.elasticCounter.countDown.count-1;
-
-              //     if (plyr.elasticCounter.countDown.count < 11) {
-              //       animIndex7 = plyr.elasticCounter.countDown.count - 1;
-              //     } else {
-              //       if (plyr.elasticCounter.countDown.count % 10 === 0) {
-              //         animIndex7 = 9;
-              //         // animIndex5 = 10;
-              //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
-              //       } else {
-              //         let mod = Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
-              //         animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
-              //       }
-              //     }
-              //   }
-              // }
-
-              finalAnimIndex = animIndex7;
-              // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-              break;
-          }
-
-          // SPRITE SHEET CHAR AVATAR & ACTION SWITCH!
-          if (plyr.ai.state === false) {
-            switch (plyr.action) {
-              case "idle":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].idle[weapon];
-                break;
-              case "moving":
-                if (plyr.pushing.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pushing[weapon];
-                }
-                if (plyr.pulled.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pulled[weapon];
-                }
-                if (plyr.pushed.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pushed[weapon];
-                } else {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].walking[weapon];
-                }
-
-                break;
-              case "jumping":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].jumping[weapon];
-                break;
-              case "flanking":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].flanking[weapon];
-                break;
-              case "strafe moving":
-                if (plyr.pushBack.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pushBack[weapon];
-                }
-                if (plyr.pulling.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pulling[weapon];
-                }
-                if (plyr.pulled.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pulled[weapon];
-                }
-                if (plyr.pushed.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pushed[weapon];
-                } else {
-                  updatedPlayerImg = this.playerImgs[plyr.number - 1].strafing[weapon];
-                }
-                break;
-              case "falling":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].falling[weapon];
-                break;
-              case "attacking":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].attacking[weapon];
-                break;
-              case "defending":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].defending[weapon];
-                break;
-              case "deflected":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].deflected[weapon];
-                break;
-              case "dodging":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].dodging[weapon];
-                break;
-              case "dead":
-                updatedPlayerImg = this.playerImgs[plyr.number - 1].idle[weapon];
-                break;
-            }
-          }
-          if (plyr.ai.state === true) {
-            let plyrImgIndex;
-            if (plyr.ai.imgType === "A") {
-              plyrImgIndex = 2;
-            } else if (plyr.ai.imgType === "B") {
-              plyrImgIndex = 3;
-            }
-
-            switch (plyr.action) {
-              case "idle":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
-                break;
-              case "moving":
-                if (plyr.pushing.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushing[weapon];
-                }
-                if (plyr.pulled.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
-                }
-                if (plyr.pushed.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
-                } else {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].walking[weapon];
-                }
-                break;
-              case "jumping":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].jumping[weapon];
-                break;
-              case "flanking":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].flanking[weapon];
-                break;
-              case "strafe moving":
-                if (plyr.pushBack.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushBack[weapon];
-                }
-                if (plyr.pulling.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulling[weapon];
-                }
-                if (plyr.pulled.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
-                }
-                if (plyr.pushed.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
-                } else {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].strafing[weapon];
-                }
-                break;
-              case "falling":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].falling[weapon];
-                break;
-              case "attacking":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].attacking[weapon];
-                break;
-              case "defending":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].defending[weapon];
-                break;
-              case "deflected":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].deflected[weapon];
-                break;
-              case "dodging":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].dodging[weapon];
-                break;
-              case "dead":
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
-                break;
-            }
-          }
-
-          // SET SPRITE SHEET CLIP LOCATION!
-          let dirs = ["north", "south", "east", "west"];
-          let dirIndex = dirs.indexOf(plyr.direction);
-          let sHeight = this.charSpriteHeight;
-          let sWidth = this.charSpriteWidth;
-          let sy = dirIndex * sHeight;
-          let sx = (finalAnimIndex - 1) * sWidth;
-
-          // PLAYER OUTLINES
-          if (this.showPlayerOutlines === true) {
-            // PLAYER OUTLINES
-            let popupCoordObject = {
-              north: this.popupDrawCalc(
-                "north",
-                { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-                plyr.number
-              ),
-              west: this.popupDrawCalc(
-                "west",
-                { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-                plyr.number
-              ),
-              south: this.popupDrawCalc(
-                "south",
-                { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-                plyr.number
-              ),
-            };
-            let origin = popupCoordObject.west;
-            let width = popupCoordObject.north.pt4.x - origin.pt3.x;
-            let height = popupCoordObject.south.pt2.y - origin.pt3.y;
-            context.strokeStyle = "red";
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(origin.pt3.x, origin.pt3.y, width, height, 2);
-            context.stroke();
-
-            let origin2 = {
-              x: plyr.nextPosition.x - this.floorImageHeight / 2,
-              y: plyr.nextPosition.y - this.floorImageHeight,
-            };
-            let height2 =
-              plyr.nextPosition.y +
-              this.floorImageHeight / 2 +
-              2 -
-              (plyr.nextPosition.y - this.floorImageHeight);
-            let width2 = this.playerDrawWidth + 2;
-            context.strokeStyle = "blue";
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(
-              origin2.x,
-              origin2.y,
-              width2 + 2,
-              this.playerDrawHeight * 1.5,
-              2
-            );
-            // context.roundRect(origin2.x, origin2.y, width2, height2, 2);
-            // context.roundRect(
-            //   origin2.x,
-            //   origin2.y,
-            //   this.playerDrawWidth,
-            //   this.playerDrawHeight * 1.5,
-            //   2
-            // );
-            // context.roundRect(
-            //   origin2.x,
-            //   origin2.y,
-            //   this.playerDrawWidth + 2,
-            //   this.floorImageHeight * 1.5,
-            //   2
-            // );
-            context.stroke();
-          }
-
-          //PLAYER DEPTH SORTING!!
-          let elasticCountCalcResult;
-
-          // IN-GRID MOVING & MID STRAFE KEY RELEASE
-          if (
-            plyr.target.cell1.void === false &&
-            plyr.moving.state === true &&
-            plyr.falling.state !== true &&
-            plyr.jumping.state !== true
-          ) {
-            let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
-
-            let direction = plyr.direction;
-
-            if (plyr.strafing.direction !== "") {
-              direction = plyr.strafing.direction;
-            }
-            if (direction === "north") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                if (plyr.jumping.state === true) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                } else {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-            if (direction === "west") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                if (plyr.jumping.state === true) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                } else {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-            if (direction === "east") {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
-                if (plyr.jumping.state === true) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                } else {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-            if (direction === "south") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
-                if (plyr.jumping.state === true) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                } else {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-
-            if (plyr.pushBack.state === true) {
-              // context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
-            }
-          }
-          // STATIONARY & HALFPUSH BACK
-          else if (
-            plyr.moving.state === false &&
-            plyr.ghost.state !== true &&
-            plyr.dodging.state !== true &&
-            plyr.elasticCounter.state !== true &&
-            plyr.action !== "attacking"
-          ) {
-            if (
-              plyr.halfPushBack.state === true &&
-              plyr.success.deflected.state !== true
-            ) {
-              elasticCountCalcResult = this.calcElasticCountCoords(
-                "halfPushBack",
-                "player",
-                plyr
-              );
-              let finalCoords = this.calcElasticCountCoords(
-                "halfPushBack",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "halfPushBack",
-                "player",
-                plyr
-              ).drawCell;
-              plyr = this.calcElasticCountCoords("halfPushBack", "player", plyr).player;
-
-              if (x === 0 && y === 0) {
-                // this.testDraw.push({
-                //   color: "purple",
-                //   x: finalCoords.x,
-                //   y: finalCoords.y,
-                //   direction: plyr.direction,
-                // });
-              }
-
-              finalCoords.x -= 5;
-              finalCoords.y -= 10;
-
-              // if (x === drawCell.x && y === drawCell.y) {
-              //
-              //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-              //
-              // }
-
-              if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.halfPushBack.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.halfPushBack.direction
-                      ).y
-                )
-              ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-              }
-            } else {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y &&
-                plyr.success.deflected.state === false
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-          }
-          // VOID/EDGE MOVE
-          else if (
-            plyr.target.cell1.void === true &&
-            plyr.moving.state === true &&
-            plyr.falling.state !== true &&
-            plyr.jumping.state !== true
-          ) {
-            // console.log('heading for thevoid @ draw step');
-            // if (
-            //   x === plyr.currentPosition.cell.number.x &&
-            //   y === plyr.currentPosition.cell.number.y
-            // ) {
-            //   console.log('heading for thevoid @ draw step',plyr.target.cell1.number);
-            // }
-
-            if (
-              plyr.moving.origin.number.x === this.gridWidth &&
-              plyr.moving.origin.number.y !== 0 &&
-              plyr.moving.origin.number.y !== this.gridWidth
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            if (
-              plyr.moving.origin.number.x === this.gridWidth &&
-              plyr.moving.origin.number.y === 0
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            if (
-              plyr.moving.origin.number.x === this.gridWidth &&
-              plyr.moving.origin.number.y === this.gridWidth
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            if (
-              plyr.moving.origin.number.x === 0 &&
-              plyr.moving.origin.number.y === this.gridWidth
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 0) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            } else {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-          }
-
-          // ELASTIC COUNTER ATTACKING
-          if (
-            (plyr.attacking.state === true || plyr.action === "attacking") &&
-            plyr.moving.state === false &&
-            plyr.ghost.state !== true &&
-            plyr.dodging.state !== true
-          ) {
-            if (
-              plyr.elasticCounter.state === true &&
-              plyr.elasticCounter.type === "attacking"
-            ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "attacking",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "attacking",
-                "player",
-                plyr
-              ).drawCell;
-              plyr = this.calcElasticCountCoords("attacking", "player", plyr).player;
-              finalCoords.x -= 5;
-              finalCoords.y -= 10;
-
-              // test logging
-              if (x === this.gridWidth && y === this.gridWidth) {
-                if (plyr.elasticCounter.countUp.state === true) {
-                  // this.testDraw.push({
-                  //   color: "red",
-                  //   x: finalCoords.x,
-                  //   y: finalCoords.y,
-                  // });
-                  // console.log('attacking elastic count coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
-                }
-                if (plyr.elasticCounter.countDown.state === true) {
-                  // this.testDraw.push({
-                  //   color: "blue",
-                  //   x: finalCoords.x,
-                  //   y: finalCoords.y,
-                  // });
-                  // console.log('attacking elastic count coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
-                }
-                if (plyr.elasticCounter.pause.state === true) {
-                  // this.testDraw.push({
-                  //   color: "blue",
-                  //   x: finalCoords.x,
-                  //   y: finalCoords.y,
-                  // });
-                  // console.log('attacking elastic count coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
-                }
-              }
-
-              if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).y
-                )
-              ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.elasticCounter.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-              }
-            } else {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y &&
-                plyr.success.deflected.state === false
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-
-            // if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
-            //
-            //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-            //
-            // }
-          }
-          // ELASTIC COUNTER DEFENDING
-          if (
-            (plyr.defending.state === true || plyr.action === "defending") &&
-            plyr.moving.state === false &&
-            plyr.ghost.state !== true &&
-            plyr.dodging.state !== true
-          ) {
-            if (
-              plyr.elasticCounter.state === true &&
-              plyr.elasticCounter.type === "defending"
-            ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "defending",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "defending",
-                "player",
-                plyr
-              ).drawCell;
-              plyr = this.calcElasticCountCoords("defending", "player", plyr).player;
-
-              finalCoords.x -= 5;
-              finalCoords.y -= 10;
-
-              // test logging
-              if (x === this.gridWidth && y === this.gridWidth) {
-                // this.testDraw.push({ color: "red", x: finalCoords.x, y: finalCoords.y });
-                if (plyr.elasticCounter.countUp.state === true) {
-                  // this.testDraw.push({
-                  //   color: "red",
-                  //   x: finalCoords.x,
-                  //   y: finalCoords.y,
-                  // });
-                  // console.log('attacking elastic count coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
-                }
-                if (plyr.elasticCounter.countDown.state === true) {
-                  // this.testDraw.push({
-                  //   color: "blue",
-                  //   x: finalCoords.x,
-                  //   y: finalCoords.y,
-                  // });
-                  // console.log('attacking elastic count coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
-                }
-                if (plyr.elasticCounter.pause.state === true) {
-                  // this.testDraw.push({
-                  //   color: "blue",
-                  //   x: finalCoords.x,
-                  //   y: finalCoords.y,
-                  // });
-                  // console.log('attacking elastic count coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
-                }
-              }
-
-              if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).y
-                )
-              ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.elasticCounter.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-              }
-            }
-          }
-
-          if (plyr.jumping.state === true) {
-            let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
-
-            if (plyr.direction === "north") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.direction === "west") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.direction === "east") {
-              if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.direction === "south") {
-              if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-          }
-          // STRAFE MOVEMENT
-          if (
-            plyr.strafing.state === true &&
-            plyr.falling.state !== true &&
-            plyr.jumping.state !== true
-          ) {
-            if (
-              plyr.strafing.direction === "north" ||
-              plyr.strafing.direction === "northWest" ||
-              plyr.strafing.direction === "west"
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.strafing.direction === "east" || plyr.direction === "east") {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
-                // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.strafing.direction === "south" || plyr.direction === "south") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
-                // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
-                // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-
-            if (plyr.strafing.direction === "northEast") {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.strafing.direction === "southWest") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-          }
-          // FLANKING
-          if (plyr.flanking.state === true && plyr.falling.state !== true) {
-            if (plyr.flanking.step === 1) {
-              if (plyr.flanking.direction === "north") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  // console.log('draw flank north',);
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-
-              if (plyr.flanking.direction === "west") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  // console.log('draw flank west',);
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-
-              if (plyr.flanking.direction === "east") {
-                if (
-                  x === plyr.moving.origin.number.x + 1 &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  // console.log('draw flank east',);
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-
-              if (plyr.flanking.direction === "south") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y + 1
-                ) {
-                  // console.log('draw flank south',);
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-
-            if (plyr.flanking.step === 2) {
-              if (plyr.direction === "north") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-
-              if (plyr.direction === "west") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-
-              if (plyr.direction === "east") {
-                if (
-                  x === plyr.moving.origin.number.x + 1 &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-
-              if (plyr.direction === "south") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y + 1
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-          }
-          // FALLING
-          if (plyr.falling.state === true) {
-            // IN BOUNDS
-            if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-              context.drawImage(
-                updatedPlayerImg,
-                sx,
-                sy,
-                sWidth,
-                sHeight,
-                newCharDrawPoint.x - 5,
-                newCharDrawPoint.y - 10,
-                this.playerDrawWidth2,
-                this.playerDrawHeight2
-              );
-            }
-
-            // OUT OF BOUNDS
-            if (
-              plyr.target.cell1.number.x < 0 ||
-              plyr.target.cell1.number.y < 0 ||
-              plyr.target.cell1.number.x > this.gridWidth ||
-              plyr.target.cell1.number.y > this.gridWidth
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-          }
-          // DEFLECTED
-          if (plyr.success.deflected.state === true) {
-            if (
-              plyr.elasticCounter.state === true &&
-              plyr.elasticCounter.type === "deflected"
-            ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "deflected",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "deflected",
-                "player",
-                plyr
-              ).drawCell;
-              plyr = this.calcElasticCountCoords("deflected", "player", plyr).player;
-              finalCoords.x -= 5;
-              finalCoords.y -= 10;
-
-              if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).y
-                )
-              ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.elasticCounter.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-              }
-            }
-            if (
-              plyr.elasticCounter.state !== true &&
-              plyr.elasticCounter.type === "deflected" &&
-              x === this.gridWidth &&
-              y === this.gridWidth
-            ) {
-              // console.log('deflected elastic counter overflow?',plyr.success.deflected.count);
-            }
-          }
-          // DODGING
-          if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
-            if (
-              plyr.elasticCounter.state === true &&
-              plyr.elasticCounter.type === "dodging"
-            ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "dodging",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "dodging",
-                "player",
-                plyr
-              ).drawCell;
-
-              plyr = this.calcElasticCountCoords("dodging", "player", plyr).player;
-              finalCoords.x -= 5;
-              finalCoords.y -= 10;
-
-              // test logging
-              if (x === this.gridWidth && y === this.gridWidth) {
-                if (plyr.elasticCounter.countUp.state === true) {
-                  // this.testDraw.push({color: 'red',x:finalCoords.x,y:finalCoords.y })
-                  // console.log('dodging elastic coount coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
-                }
-                if (plyr.elasticCounter.countDown.state === true) {
-                  // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
-                  // console.log('dodging elastic coount coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
-                }
-                if (plyr.elasticCounter.pause.state === true) {
-                  // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
-                  // console.log('dodging elastic coount coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
-                }
-              }
-
-              if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).y
-                )
-              ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.elasticCounter.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-              }
-            }
-          }
-
-          // DEPTH SORTING END!!
-
-          // RESPAWN
-          if (plyr.respawn === true) {
-            if (
-              x === plyr.startPosition.cell.number.x &&
-              y === plyr.startPosition.cell.number.y
-            ) {
-              // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
-
-              let canRespawn = false;
-              let positionOccupied = false;
-              let respawnPosCellRef = this.gridInfo.find(
-                (x) =>
-                  x.number.x === plyr.startPosition.cell.number.x &&
-                  x.number.y === plyr.startPosition.cell.number.y
-              );
-              let respawnCellNo;
-              let respawnCellCenter;
-
-              for (const plyrx of this.players) {
-                if (
-                  plyrx.currentPosition.cell.number.x ===
-                    plyr.startPosition.cell.number.x &&
-                  plyrx.currentPosition.cell.number.y === plyr.startPosition.cell.number.y
-                ) {
-                  positionOccupied = true;
-                }
-              }
-              if (
-                respawnPosCellRef.obstacle.state === true ||
-                respawnPosCellRef.terrain.type === "deep" ||
-                respawnPosCellRef.void === true
-              ) {
-                positionOccupied = true;
-              }
-
-              if (positionOccupied === true) {
-                respawnCellNo = this.getRandomFreeCell();
-                respawnPosCellRef = this.gridInfo.find(
-                  (x) =>
-                    x.number.x === respawnCellNo.number.x &&
-                    x.number.y === respawnCellNo.number.y
-                );
-
-                if (respawnCellNo) {
-                  canRespawn = true;
-                } else {
-                  console.log(
-                    "no cells for respawn. Unlikely but true. Reassign obstacle cell"
-                  );
-                  if (this.gridInfo.filter((x) => x.obstacle.state === true)[0]) {
-                    this.gridInfo.filter(
-                      (x) => x.obstacle.state === true
-                    )[0].obstacle.state = false;
-                    respawnPosCellRef = this.gridInfo.find(
-                      (x) =>
-                        x.number.x === respawnCellNo.number.x &&
-                        x.number.y === respawnCellNo.number.y
-                    );
-                    let oldLvlData = this.gridInfo
-                      .filter((x) => x.obstacle.state === true)[0]
-                      .levelData.split("_");
-                    oldLvlData[1] = "*";
-                    this.gridInfo.filter((x) => x.obstacle.state === true)[0].levelData =
-                      oldLvlData.join("_");
-                    canRespawn = true;
-                  } else {
-                    console.log(
-                      "no free cells for respawn and no obstacle cell to comandeer. Highly unlikley"
-                    );
-
-                    if (this.gridInfo.filter((x) => x.void.state === true)[0]) {
-                      this.gridInfo.filter(
-                        (x) => x.void.state === true
-                      )[0].void.state = false;
-                      respawnPosCellRef = this.gridInfo.find(
-                        (x) =>
-                          x.number.x === respawnCellNo.number.x &&
-                          x.number.y === respawnCellNo.number.y
-                      );
-                      let oldLvlData = this.gridInfo
-                        .filter((x) => x.void.state === true)[0]
-                        .levelData.split("_");
-                      oldLvlData[3] = "a";
-                      this.gridInfo.filter((x) => x.void.state === true)[0].levelData =
-                        oldLvlData.join("_");
-                      canRespawn = true;
-                    }
-                  }
-                }
-              } else if ((canRespawn = true && respawnPosCellRef)) {
-                canRespawn = true;
-              }
-
-              if (canRespawn === true) {
-                // console.log('can respawn');
-                let respawnPoint = respawnPosCellRef;
-                plyr.dead.state = false;
-                plyr.currentPosition.cell.number = respawnPoint.number;
-                plyr.currentPosition.cell.center = respawnPoint.center;
-                plyr.nextPosition = respawnPoint.center;
-                this.getTarget(plyr);
-                plyr.moving = {
-                  state: false,
-                  step: 0,
-                  course: "",
-                  origin: {
-                    number: {
-                      x: respawnPoint.number.x,
-                      y: respawnPoint.number.y,
-                    },
-                    center: {
-                      x: respawnPoint.center.x,
-                      y: respawnPoint.center.y,
-                    },
-                  },
-                  destination: {
-                    x: this.players[plyr.number - 1].target.cell1.center.x,
-                    y: this.players[plyr.number - 1].target.cell1.center.y,
-                  },
-                };
-                let origin2 = {
-                  x: plyr.nextPosition.x - this.floorImageHeight / 2,
-                  y: plyr.nextPosition.y - this.floorImageHeight,
-                };
-
-                plyr.direction = "north";
-                plyr.respawn = false;
-                this.players[plyr.number - 1] = plyr;
-
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  // respawnPoint.center.x - 25,
-                  // respawnPoint.center.y - 50,
-                  origin2.x - 5,
-                  origin2.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-
-                if (
-                  this.camera.customView.state !== true &&
-                  this.settingAutoCamera === false &&
-                  plyr.ai.state !== true &&
-                  this.camera.preInstructions.length === 0 &&
-                  this.camera.instructions.length === 0
-                ) {
-                  this.setAutoCamera("playerSpawnFocus", plyr);
-                } else {
-                  console.log("no setting auto cam: playerSpawnFocus");
-                }
-              }
-            }
-          }
-          // DEAD
-          if (
-            plyr.dead.state === true &&
-            player.dead.count > 0 &&
-            plyr.dead.count < plyr.dead.limit
-          ) {
-            if (
-              x === plyr.ghost.position.cell.number.x &&
-              y === plyr.ghost.position.cell.number.y
-            ) {
-              // console.log('player',plyr.number,'dying',player.dead.count);
-              context.drawImage(
-                this.indicatorImgs.death,
-                plyr.ghost.position.cell.center.x - 15,
-                plyr.ghost.position.cell.center.y - 15,
-                25,
-                25
-              );
-            }
-          }
-          // GHOST
-          if (plyr.ghost.state === true && player.dead.count === 0) {
-            if (
-              x === plyr.ghost.position.cell.number.x &&
-              y === plyr.ghost.position.cell.number.y
-            ) {
-              // console.log(
-              //   "player ",
-              //   plyr.number,
-              //   "ghost @",
-              //   plyr.ghost.position.cell.number,
-              //   plyr.ghost.position.cell.center
-              // );
-              context.drawImage(
-                this.indicatorImgs.ghost,
-                plyr.ghost.position.cell.center.x - 20,
-                plyr.ghost.position.cell.center.y - 20,
-                25,
-                25
-              );
-            }
-          }
-
-          // PLAYER POPUPS
-          if (x === this.gridWidth && y === this.gridWidth) {
-            let popupBorderColor = this.playerColourRef["player" + plyr.number + ""];
-
-            if (plyr.dead.state !== true && plyr.popups.length > 0) {
-              for (const popup of plyr.popups) {
-                if (popup.state === true) {
-                  // console.log('drawing a popup');
-                  let popupDrawCoords;
-                  if (popup.position === "" || !popup.position) {
-                    let currentPopups = plyr.popups.filter((x) => x.state === true);
-                    // let positions = ['north','east','south','west','northEast','southEast','southWest']
-                    let positions = [
-                      "north",
-                      "east",
-                      "south",
-                      "west",
-                      "northEast",
-                      "northWest",
-                      "southEast",
-                      "southWest",
-                    ];
-
-                    // REMOVE 1ST FREE POSITION IF IT'S THE SAME AS PLAYER'S DIRECTION
-                    if (plyr.strafing.state === true) {
-                      if (positions[0] === plyr.strafing.direction) {
-                        const first = positions.shift();
-                        positions.push(first);
-                      }
-                    } else {
-                      if (positions[0] === plyr.direction) {
-                        const first = positions.shift();
-                        positions.push(first);
-                      }
-                    }
-
-                    // REMOVE POSITIONS ALREADY TAKEN BY PLAYERS' OTHER POPUPS
-                    for (const popup2 of currentPopups) {
-                      if (popup2.position && popup2.position !== "") {
-                        let indx = positions.indexOf(popup2.position);
-                        positions.splice(indx, 1);
-                      }
-                    }
-
-                    let dir = undefined;
-
-                    // CHECK OTHER PLAYER'S POSITION AND THE POPUPS POSITION
-                    // REMOVE OCCUPIED POSITIONS
-                    for (const plyr2 of this.players) {
-                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
-                        let myPos = plyr.currentPosition.cell.number;
-                        let invalidPos =
-                          this.players[plyr2.number - 1].currentPosition.cell.number;
-
-                        dir = undefined;
-                        // let invalidPositions = [invalidPos];
-
-                        // GET DIRECTION OF OTHER PLAYER CELL RELATIVE TO ME
-                        dir = this.getDirectionFromCells(myPos, invalidPos);
-
-                        if (dir && positions.includes(dir) === true) {
-                          positions.splice(positions.indexOf(dir), 1);
-                          // console.log('player popups (unset): human player position is close to player',plyr.number,' @ ',invalidPos,'dir',dir);
-                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        }
-
-                        // GET DIRECTION OF ALL OTHER PLAYERS' POPUPS OCCUPY, RELATIVE TO ME
-                        for (const pop of plyr2.popups) {
-                          dir = undefined;
-
-                          if (pop.state === true) {
-                            let invalidPos2 = {
-                              x: undefined,
-                              y: undefined,
-                            };
-
-                            invalidPos2 = this.getCellFromDirection(
-                              1,
-                              invalidPos,
-                              pop.position
-                            );
-
-                            dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                            if (dir && positions.includes(dir) === true) {
-                              positions.splice(positions.indexOf(dir), 1);
-                              // console.log('player popups (unset): human player popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
-                              // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                            }
-                          }
-                        }
-                      }
-                    }
-
-                    // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
-                    // REMOVE OCCUPIED POSITIONS
-                    for (const popup2 of this.cellPopups) {
-                      dir = undefined;
-
-                      if (popup2.state === true) {
-                        let myPos = plyr.currentPosition.cell.number;
-                        let cellPos = popup2.cell.number;
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        };
-
-                        invalidPos2 = this.getCellFromDirection(
-                          1,
-                          cellPos,
-                          popup2.position
-                        );
-
-                        dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                        if (dir && positions.includes(dir) === true) {
-                          positions.splice(positions.indexOf(dir), 1);
-                          // console.log('player popups (unset): cell popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
-                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        }
-
-                        // let indx = positions.indexOf(popup2.position);
-                        // positions.splice(indx,1)
-                      }
-                    }
-
-                    // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
-
-                    if (!positions[0]) {
-                      console.log(
-                        "no open positions for new or postponed popup",
-                        popup.msg
-                      );
-                      popup.state = false;
-                      popup.count = 0;
-                    } else {
-                      popup.position = positions[0];
-                      if (currentPopups.find((x) => x.msg === popup.msg)) {
-                        // console.log("popup already exists", popup.msg);
-                      }
-                    }
-
-                    let popupProgress = false;
-                    let showProgress = false;
-                    let writeValue = false;
-                    if (
-                      plyr.prePush.state === true ||
-                      plyr.prePull.state === true ||
-                      plyr.dodging.state === true ||
-                      plyr.action === "dodging" ||
-                      plyr.action === "defending" ||
-                      plyr.action === "attacking" ||
-                      plyr.attacking.state === true
-                    ) {
-                      showProgress = true;
-                    }
-                    if (
-                      popup.msg === "attacking1" ||
-                      popup.msg === "attacking2" ||
-                      popup.msg === "defending" ||
-                      popup.msg === "prePush" ||
-                      popup.msg === "prePull" ||
-                      popup.msg === "dodging" ||
-                      popup.msg === "charging"
-                    ) {
-                      popupProgress = true;
-                    }
-
-                    if (popup.img === "") {
-                      popup.img = this.popupImageRef[popup.msg];
-                    }
-
-                    if (popup.msg.split("_")) {
-                      if (
-                        popup.msg.split("_")[0] === "hpUp" ||
-                        popup.msg.split("_")[0] === "hpDown"
-                      ) {
-                        writeValue = true;
-                        popup.img = this.popupImageRef[popup.msg.split("_")[0]];
-                      }
-                    }
-
-                    popupDrawCoords = this.popupDrawCalc(
-                      popup.position,
-                      { x: point.x - 25, y: point.y - 25 },
-                      plyr.number
-                    );
-
-                    this.drawPopupBubble(
-                      context,
-                      popupDrawCoords.origin.x,
-                      popupDrawCoords.origin.y,
-                      this.popupSize,
-                      this.popupSize,
-                      5,
-                      popupDrawCoords.anchor.x,
-                      popupDrawCoords.anchor.y,
-                      popupBorderColor
-                    );
-                    let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-
-                    if (showProgress === true && popupProgress === true) {
-                      let perc = this.playerPopupProgressCalc(plyr, popup);
-                      context.fillStyle = this.popupProgressImgGradColor2;
-                      context.beginPath();
-                      // context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                      // context.stroke();
-                      context.fillStyle = this.popupProgressImgGradColor1;
-                      context.roundRect(
-                        popupDrawCoords.origin.x,
-                        popupDrawCoords.origin.y + this.popupSize,
-                        10,
-                        this.popupSize * perc,
-                        5
-                      );
-                      context.fill();
-                      // console.log("playerPopupProgress init", perc);
-                    }
-
-                    if (writeValue === true) {
-                      context.font = "15px Arial";
-                      context.fillStyle = "black";
-                      context.fillText(
-                        popup.msg.split("_")[1],
-                        popupDrawCoords.origin.x +
-                          (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
-                        popupDrawCoords.origin.y + 15
-                      );
-
-                      centerPopupOffset = (this.popupSize - this.popupImgSize * 0.75) / 2;
-                      context.drawImage(
-                        popup.img,
-                        popupDrawCoords.origin.x + centerPopupOffset,
-                        popupDrawCoords.origin.y + (centerPopupOffset + 5),
-                        this.popupImgSize * 0.75,
-                        this.popupImgSize * 0.75
-                      );
-                    } else {
-                      context.drawImage(
-                        popup.img,
-                        popupDrawCoords.origin.x + centerPopupOffset,
-                        popupDrawCoords.origin.y + centerPopupOffset,
-                        this.popupImgSize,
-                        this.popupImgSize
-                      );
-                    }
-                  } else if (popup.position !== "northWest") {
-                    let dir = undefined;
-                    let dirs = [];
-
-                    let currentPopups = this.cellPopups.filter((x) => x.state === true);
-
-                    // HAVE ANY OTHER PLAYERS OR OTHER PLAYERS' POPUPS MOVED TO INVALID POSITIONS SINCE POPUP'S 1ST DRAW
-                    for (const plyr2 of this.players) {
-                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
-                        let myPos = plyr.currentPosition.cell.number;
-                        let invalidPos =
-                          this.players[plyr2.number - 1].currentPosition.cell.number;
-
-                        dir = this.getDirectionFromCells(myPos, invalidPos);
-
-                        if (dir) {
-                          // console.log('player popups (set): human player position is close to player',plyr.number,' @ ',invalidPos,' dir ',dir);
-                          dirs.push(dir);
-                        }
-
-                        for (const pop of plyr2.popups) {
-                          dir = undefined;
-                          let invalidPos2 = {
-                            x: undefined,
-                            y: undefined,
-                          };
-
-                          invalidPos2 = this.getCellFromDirection(
-                            1,
-                            invalidPos,
-                            pop.position
-                          );
-
-                          dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                          // if (dir && positions.includes(dir) === true) {
-                          //   positions.splice(positions.indexOf(dir),1);
-                          //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                          // }
-                          if (dir) {
-                            // console.log('player popups (set): human player popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
-                            dirs.push(dir);
-                          }
-                        }
-                      }
-                    }
-
-                    // HAVE ANY CELL POPUPS MOVED TO A NEARBY CELL TO ME
-                    for (const popup2 of currentPopups) {
-                      dir = undefined;
-
-                      let myPos = plyr.currentPosition.cell.number;
-
-                      let cellPos = popup2.cell.number;
-                      let invalidPos2 = {
-                        x: undefined,
-                        y: undefined,
-                      };
-
-                      invalidPos2 = this.getCellFromDirection(
-                        1,
-                        cellPos,
-                        popup2.position
-                      );
-
-                      dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                      if (dir) {
-                        // console.log('player popups (set): cell popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
-                        dirs.push(dir);
-                      }
-                    }
-
-                    // console.log('dirs',dirs,'popup.position',popup.position);
-                    // if (popup.position === dir ) {
-                    if (dirs.find((x) => x === popup.position)) {
-                      plyr.popups.find((x) => x.msg === popup.msg).position = "";
-                      plyr.popups.find((x) => x.msg === popup.msg).state = false;
-                      console.log(
-                        "A new invalid direction === popup's position. reconsidering...",
-                        popup.msg
-                      );
-                    } else {
-                      let popupProgress = false;
-                      let showProgress = false;
-                      let writeValue = false;
-                      if (
-                        plyr.prePush.state === true ||
-                        plyr.prePull.state === true ||
-                        plyr.dodging.state === true ||
-                        plyr.action === "dodging" ||
-                        plyr.action === "defending" ||
-                        plyr.action === "attacking" ||
-                        plyr.attacking.state === true
-                      ) {
-                        showProgress = true;
-                      }
-                      if (
-                        popup.msg === "attacking" ||
-                        popup.msg === "attacking1" ||
-                        popup.msg === "attacking2" ||
-                        popup.msg === "defending" ||
-                        popup.msg === "prePush" ||
-                        popup.msg === "prePull" ||
-                        popup.msg === "dodging" ||
-                        popup.msg === "charging"
-                      ) {
-                        popupProgress = true;
-                      }
-
-                      if (popup.img === "") {
-                        popup.img = this.popupImageRef[popup.msg];
-                      }
-
-                      if (popup.msg.split("_")) {
-                        if (
-                          popup.msg.split("_")[0] === "hpUp" ||
-                          popup.msg.split("_")[0] === "hpDown"
-                        ) {
-                          writeValue = true;
-                          popup.img = this.popupImageRef[popup.msg.split("_")[0]];
-                        }
-                      }
-
-                      popupDrawCoords = this.popupDrawCalc(
-                        popup.position,
-                        { x: point.x - 25, y: point.y - 25 },
-                        plyr.number
-                      );
-                      this.drawPopupBubble(
-                        context,
-                        popupDrawCoords.origin.x,
-                        popupDrawCoords.origin.y,
-                        this.popupSize,
-                        this.popupSize,
-                        5,
-                        popupDrawCoords.anchor.x,
-                        popupDrawCoords.anchor.y,
-                        popupBorderColor
-                      );
-                      let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-
-                      if (showProgress === true && popupProgress === true) {
-                        let perc = this.playerPopupProgressCalc(plyr, popup);
-                        context.fillStyle = this.popupProgressImgGradColor2;
-                        context.beginPath();
-                        // context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                        // context.stroke();
-                        context.fillStyle = this.popupProgressImgGradColor1;
-                        context.roundRect(
-                          popupDrawCoords.origin.x,
-                          popupDrawCoords.origin.y + this.popupSize,
-                          10,
-                          this.popupSize * perc,
-                          5
-                        );
-                        context.fill();
-                        // console.log(
-                        //   "playerPopupProgress continue",
-                        //   perc,
-                        //   this.popupSize * perc
-                        // );
-                      }
-
-                      if (writeValue === true) {
-                        context.font = "15px Arial";
-                        context.fillStyle = "black";
-                        context.fillText(
-                          popup.msg.split("_")[1],
-                          popupDrawCoords.origin.x +
-                            (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
-                          popupDrawCoords.origin.y + 15
-                        );
-
-                        centerPopupOffset =
-                          (this.popupSize - this.popupImgSize * 0.75) / 2;
-                        context.drawImage(
-                          popup.img,
-                          popupDrawCoords.origin.x + centerPopupOffset,
-                          popupDrawCoords.origin.y + (centerPopupOffset + 5),
-                          this.popupImgSize * 0.75,
-                          this.popupImgSize * 0.75
-                        );
-                      } else {
-                        if (player.action === "defending" && popup.msg === "defending") {
-                          if (player.defending.peak === true) {
-                            popup.img = this.popupImageRef.defending_1;
-                          }
-                          if (player.defending.decay.state === true) {
-                            let prog =
-                              100 -
-                              (player.defending.decay.count /
-                                player.defending.decay.limit) *
-                                100;
-                            if (prog > 10) {
-                              popup.img = this.popupImageRef.defending_4;
-                            }
-                            if (prog > 30) {
-                              popup.img = this.popupImageRef.defending_3;
-                            }
-                            if (prog > 50) {
-                              popup.img = this.popupImageRef.defending_2;
-                            }
-                            if (prog > 70) {
-                              popup.img = this.popupImageRef.defending_1;
-                            }
-                          } else {
-                            popup.img = this.popupImageRef.defending;
-                          }
-                        }
-                        context.drawImage(
-                          popup.img,
-                          popupDrawCoords.origin.x + centerPopupOffset,
-                          popupDrawCoords.origin.y + centerPopupOffset,
-                          this.popupImgSize,
-                          this.popupImgSize
-                        );
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          this.players[plyr.number - 1] = plyr;
-        }
+        // for (let plyr of this.players) {
+        //   let point = {
+        //     x: plyr.nextPosition.x,
+        //     y: plyr.nextPosition.y,
+        //   };
+        //   let newCharDrawPoint = {
+        //     x: plyr.nextPosition.x - this.floorImageHeight / 2,
+        //     y: plyr.nextPosition.y - this.floorImageHeight,
+        //   };
+
+        //   let weapon = plyr.currentWeapon.type;
+        //   if (plyr.currentWeapon.type === "" || !plyr.currentWeapon.type) {
+        //     weapon = "unarmed";
+        //   }
+
+        //   let finalAnimIndex;
+
+        //   if (plyr.attacking.state === true && plyr.success.deflected.state !== true) {
+        //     plyr.action = "attacking";
+        //   }
+        //   let frameIndexBase;
+        //   let increment;
+        //   let frameTypeIndex;
+        //   let remainder;
+        //   let newIndex;
+        //   // SET ANIMATION INDEX USED FOR SPRITE SHEET STEPPING BASED ON ACTION
+        //   // FOR TESTING BY CALLING ONLY @ 1 CELL
+        //   if (
+        //     plyr.currentPosition.cell.number.x === x &&
+        //     plyr.currentPosition.cell.number.y === y &&
+        //     plyr.number === 1
+        //   ) {
+        //     switch (plyr.action) {
+        //       case "moving":
+        //         let moveSpeed = plyr.speed.move;
+        //         if (plyr.terrainMoveSpeed.state === true) {
+        //           moveSpeed = plyr.terrainMoveSpeed.speed;
+        //         }
+        //         if (plyr.pushing.state === true) {
+        //           moveSpeed = plyr.pushing.moveSpeed;
+        //         }
+        //         if (plyr.pulling.state === true) {
+        //           moveSpeed = plyr.pulling.moveSpeed;
+        //         }
+        //         if (plyr.pushed.state === true) {
+        //           moveSpeed = plyr.pushed.moveSpeed;
+        //         }
+        //         if (plyr.pulled.state === true) {
+        //           moveSpeed = plyr.pulled.moveSpeed;
+        //         }
+        //         let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
+        //         let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(
+        //           plyr.moving.step
+        //         );
+        //         finalAnimIndex = moveAnimIndex + 1;
+        //         // console.log(
+        //         //   "anim testing mv spd",
+        //         //   plyr.speed.move,
+        //         //   "step",
+        //         //   plyr.moving.step,
+        //         //   "plyr",
+        //         //   plyr.number,
+        //         //   "index",
+        //         //   finalAnimIndex
+        //         // );
+        //         if (plyr.target.cell1.void == true) {
+        //           // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+        //         }
+        //         break;
+        //       case "jumping":
+        //         let rangeIndex4 = plyr.speed.range.indexOf(0.1);
+        //         let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(
+        //           plyr.moving.step
+        //         );
+        //         finalAnimIndex = moveAnimIndex4;
+        //         // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+        //         break;
+        //       case "strafe moving":
+        //         if (plyr.pushBack.state === true) {
+        //           let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
+        //           let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(
+        //             plyr.moving.step
+        //           );
+        //           finalAnimIndex = moveAnimIndex3;
+        //           // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+        //         } else {
+        //           let moveSpeed = plyr.speed.move;
+        //           // if (plyr.pushing.state === true) {
+        //           //   moveSpeed = plyr.pushing.moveSpeed;
+        //           // }
+        //           if (plyr.pulling.state === true) {
+        //             moveSpeed = plyr.pulling.moveSpeed;
+        //           }
+        //           if (plyr.pushed.state === true) {
+        //             moveSpeed = plyr.pushed.moveSpeed;
+        //           }
+        //           if (plyr.pulled.state === true) {
+        //             moveSpeed = plyr.pulled.moveSpeed;
+        //           }
+        //           let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
+        //           let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(
+        //             plyr.moving.step
+        //           );
+        //           finalAnimIndex = moveAnimIndex2;
+        //           // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+        //         }
+        //         break;
+        //       case "flanking":
+        //         let rangeIndex6 = plyr.speed.range.indexOf(0.2);
+        //         let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(
+        //           plyr.moving.step
+        //         );
+        //         finalAnimIndex = moveAnimIndex6;
+        //         // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+        //         // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+        //         break;
+        //       case "attacking":
+        //         // let animIndex = plyr.attacking.count -1;
+        //         let animIndex;
+        //         // if (
+        //         //   plyr.elasticCounter.state === true &&
+        //         //   plyr.elasticCounter.type === "attacking"
+        //         // ) {
+        //         //   if (plyr.elasticCounter.countUp.state === true) {
+        //         //     animIndex = plyr.elasticCounter.countUp.count - 1;
+        //         //   }
+        //         //   if (plyr.elasticCounter.pause.state === true) {
+        //         //     if (plyr.elasticCounter.pause.count < 11) {
+        //         //       animIndex = plyr.elasticCounter.pause.count - 1;
+        //         //     } else {
+        //         //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+        //         //         animIndex = 9;
+        //         //         // animIndex5 = 10;
+        //         //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //         //       } else {
+        //         //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+        //         //         animIndex = plyr.elasticCounter.pause.count - mod - 1;
+        //         //       }
+        //         //     }
+        //         //   }
+        //         //   if (plyr.elasticCounter.countDown.state === true) {
+        //         //     animIndex = plyr.elasticCounter.countDown.count - 1;
+        //         //   }
+        //         // } else {
+        //         //   animIndex = plyr.attacking.count - 1;
+        //         // }
+        //         animIndex = plyr.attacking.count - 1;
+
+        //         frameIndexBase =
+        //           this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
+        //           this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+        //         increment = Math.ceil(
+        //           plyr[plyr.action].limit /
+        //             this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+        //         );
+        //         frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
+        //         remainder = plyr[plyr.action].count % increment;
+        //         newIndex = frameIndexBase * frameTypeIndex + remainder;
+
+        //         finalAnimIndex = newIndex;
+        //         // finalAnimIndex = animIndex;
+        //         // console.log(
+        //         //   "anim testing atk",
+        //         //   plyr.attacking.count,
+        //         //   plyr.attacking.limit,
+        //         //   finalAnimIndex
+        //         // );
+        //         break;
+        //       case "defending":
+        //         let animIndex2 = plyr.defending.count - 1;
+        //         // if (plyr.defending.decay.state !== true) {
+        //         //   if (plyr.defending.count > 0) {
+        //         //     finalAnimIndex = animIndex2;
+        //         //     // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+        //         //   }
+        //         //   if (plyr.defending.count === 0) {
+        //         //     let animIndex2a = 5;
+        //         //     finalAnimIndex = animIndex2a;
+        //         //     // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+        //         //   }
+        //         // }
+        //         // if (plyr.defending.decay.state === true) {
+        //         //   if (plyr.defending.decay.count < 11) {
+        //         //     animIndex2 = plyr.defending.decay.count - 1;
+        //         //   } else {
+        //         //     if (plyr.defending.decay.count % 10 === 0) {
+        //         //       animIndex2 = 9;
+        //         //     } else {
+        //         //       let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
+        //         //       animIndex2 = plyr.defending.decay.count - mod - 1;
+        //         //     }
+        //         //   }
+        //         //   finalAnimIndex = animIndex2;
+        //         // }
+        //         frameIndexBase =
+        //           this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
+        //           this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+        //         increment = Math.ceil(
+        //           plyr[plyr.action].limit /
+        //             this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+        //         );
+        //         frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
+        //         remainder = plyr[plyr.action].count % increment;
+        //         newIndex = frameIndexBase * frameTypeIndex + remainder;
+
+        //         finalAnimIndex = newIndex;
+
+        //         break;
+        //       case "idle":
+        //         if (plyr.number === 1) {
+        //           // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+        //         }
+        //         if (plyr.number === 2) {
+        //           // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+        //         }
+        //         let animIndex3 = plyr.idleAnim.count + 1;
+        //         finalAnimIndex = animIndex3;
+        //         // finalAnimIndex = 1;
+        //         break;
+        //       case "falling":
+        //         let animIndex4 = plyr.falling.count - 1;
+        //         finalAnimIndex = animIndex4;
+        //         // console.log("anim testing fall", plyr.falling.count, "plyr", plyr.number);
+        //         break;
+        //       case "deflected":
+        //         let animIndex5 = plyr.success.deflected.count - 1;
+        //         // if (
+        //         //   plyr.elasticCounter.state === true &&
+        //         //   plyr.elasticCounter.type === "deflected"
+        //         // ) {
+        //         //   if (plyr.elasticCounter.countUp.state === true) {
+        //         //     animIndex5 = plyr.elasticCounter.countUp.count - 1;
+        //         //   }
+        //         //   if (plyr.elasticCounter.pause.state === true) {
+        //         //     if (plyr.elasticCounter.pause.count < 11) {
+        //         //       animIndex5 = plyr.elasticCounter.pause.count - 1;
+        //         //     } else {
+        //         //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+        //         //         animIndex5 = 9;
+        //         //         // animIndex5 = 10;
+        //         //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //         //       } else {
+        //         //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+        //         //         animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
+        //         //       }
+        //         //     }
+        //         //   }
+        //         //   if (plyr.elasticCounter.countDown.state === true) {
+        //         //     animIndex5 = plyr.elasticCounter.countDown.count - 1;
+        //         //   }
+        //         // }
+
+        //         if (plyr.halfPushBack.state === true) {
+        //           if (plyr.halfPushBack.countUp.state === true) {
+        //             animIndex5 = plyr.halfPushBack.countUp.count - 1;
+        //           }
+        //           if (plyr.halfPushBack.countDown.state === true) {
+        //             animIndex5 = plyr.halfPushBack.countDown.count - 1;
+        //           }
+        //         }
+        //         finalAnimIndex = animIndex5;
+        //         // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+        //         break;
+        //       case "dodging":
+        //         let animIndex7 = plyr.dodging.count - 1;
+        //         // if (
+        //         //   plyr.elasticCounter.state === true &&
+        //         //   plyr.elasticCounter.type === "dodging"
+        //         // ) {
+        //         //   if (plyr.elasticCounter.countUp.state === true) {
+        //         //     // animIndex7 = plyr.elasticCounter.countUp.count-1;
+        //         //     if (plyr.elasticCounter.countUp.count < 11) {
+        //         //       animIndex7 = plyr.elasticCounter.countUp.count - 1;
+        //         //     } else {
+        //         //       if (plyr.elasticCounter.countUp.count % 10 === 0) {
+        //         //         animIndex7 = 9;
+        //         //         // animIndex5 = 10;
+        //         //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //         //       } else {
+        //         //         let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
+        //         //         animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
+        //         //       }
+        //         //     }
+        //         //   }
+        //         //   if (plyr.elasticCounter.pause.state === true) {
+        //         //     if (plyr.elasticCounter.pause.count < 11) {
+        //         //       animIndex7 = plyr.elasticCounter.pause.count - 1;
+        //         //     } else {
+        //         //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+        //         //         animIndex7 = 9;
+        //         //         // animIndex5 = 10;
+        //         //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //         //       } else {
+        //         //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+        //         //         animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
+        //         //       }
+        //         //     }
+        //         //   }
+        //         //   if (plyr.elasticCounter.countDown.state === true) {
+        //         //     // animIndex7 = plyr.elasticCounter.countDown.count-1;
+        //         //     if (plyr.elasticCounter.countDown.count < 11) {
+        //         //       animIndex7 = plyr.elasticCounter.countDown.count - 1;
+        //         //     } else {
+        //         //       if (plyr.elasticCounter.countDown.count % 10 === 0) {
+        //         //         animIndex7 = 9;
+        //         //         // animIndex5 = 10;
+        //         //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //         //       } else {
+        //         //         let mod =
+        //         //           Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
+        //         //         animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
+        //         //       }
+        //         //     }
+        //         //   }
+        //         // }
+        //         finalAnimIndex = animIndex7;
+        //         // console.log(
+        //         //   "anim testing dodge",
+        //         //   plyr.dodging.count,
+        //         //   "plyr",
+        //         //   plyr.number
+        //         // );
+        //         break;
+        //     }
+        //   }
+        //   // FOR TESTING BY CALLING ONLY @ 1 CELL
+
+        //   // REAL DEAL
+        //   switch (plyr.action) {
+        //     case "moving":
+        //       let moveSpeed = plyr.speed.move;
+        //       if (plyr.terrainMoveSpeed.state === true) {
+        //         moveSpeed = plyr.terrainMoveSpeed.speed;
+        //       }
+        //       if (plyr.pushing.state === true) {
+        //         moveSpeed = plyr.pushing.moveSpeed;
+        //       }
+        //       if (plyr.pulling.state === true) {
+        //         moveSpeed = plyr.pulling.moveSpeed;
+        //       }
+        //       if (plyr.pushed.state === true) {
+        //         moveSpeed = plyr.pushed.moveSpeed;
+        //       }
+        //       if (plyr.pulled.state === true) {
+        //         moveSpeed = plyr.pulled.moveSpeed;
+        //       }
+        //       let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
+        //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
+        //       finalAnimIndex = moveAnimIndex + 1;
+        //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+        //       if (plyr.target.cell1.void == true) {
+        //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+        //       }
+        //       break;
+        //     case "jumping":
+        //       let rangeIndex4 = plyr.speed.range.indexOf(0.1);
+        //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(
+        //         plyr.moving.step
+        //       );
+        //       finalAnimIndex = moveAnimIndex4;
+        //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+        //       break;
+        //     case "strafe moving":
+        //       if (plyr.pushBack.state === true) {
+        //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
+        //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(
+        //           plyr.moving.step
+        //         );
+        //         finalAnimIndex = moveAnimIndex3;
+        //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+        //       } else {
+        //         let moveSpeed = plyr.speed.move;
+        //         // if (plyr.pushing.state === true) {
+        //         //   moveSpeed = plyr.pushing.moveSpeed;
+        //         // }
+        //         if (plyr.pulling.state === true) {
+        //           moveSpeed = plyr.pulling.moveSpeed;
+        //         }
+        //         if (plyr.pushed.state === true) {
+        //           moveSpeed = plyr.pushed.moveSpeed;
+        //         }
+        //         if (plyr.pulled.state === true) {
+        //           moveSpeed = plyr.pulled.moveSpeed;
+        //         }
+        //         let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
+        //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(
+        //           plyr.moving.step
+        //         );
+        //         finalAnimIndex = moveAnimIndex2;
+        //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+        //       }
+        //       break;
+        //     case "flanking":
+        //       let rangeIndex6 = plyr.speed.range.indexOf(0.2);
+        //       let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(
+        //         plyr.moving.step
+        //       );
+        //       finalAnimIndex = moveAnimIndex6;
+        //       // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+        //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+        //       break;
+        //     case "attacking":
+        //       // let animIndex = plyr.attacking.count -1;
+        //       let animIndex;
+
+        //       // if (
+        //       //   plyr.elasticCounter.state === true &&
+        //       //   plyr.elasticCounter.type === "attacking"
+        //       // ) {
+        //       //   if (plyr.elasticCounter.countUp.state === true) {
+        //       //     animIndex = plyr.elasticCounter.countUp.count - 1;
+        //       //   }
+        //       //   if (plyr.elasticCounter.pause.state === true) {
+        //       //     if (plyr.elasticCounter.pause.count < 11) {
+        //       //       animIndex = plyr.elasticCounter.pause.count - 1;
+        //       //     } else {
+        //       //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+        //       //         animIndex = 9;
+        //       //         // animIndex5 = 10;
+        //       //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //       //       } else {
+        //       //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+        //       //         animIndex = plyr.elasticCounter.pause.count - mod - 1;
+        //       //       }
+        //       //     }
+        //       //   }
+        //       //   if (plyr.elasticCounter.countDown.state === true) {
+        //       //     animIndex = plyr.elasticCounter.countDown.count - 1;
+        //       //   }
+        //       // } else {
+        //       //   animIndex = plyr.attacking.count - 1;
+        //       // }
+
+        //       // animIndex = plyr.attacking.count - 1;
+        //       // finalAnimIndex = animIndex;
+        //       frameIndexBase =
+        //         this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
+        //         this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+        //       increment = Math.ceil(
+        //         plyr[plyr.action].limit /
+        //           this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+        //       );
+        //       frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
+        //       remainder = plyr[plyr.action].count % increment;
+        //       newIndex = frameIndexBase * frameTypeIndex + remainder;
+
+        //       finalAnimIndex = newIndex;
+        //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+        //       break;
+        //     case "defending":
+        //       let animIndex2 = plyr.defending.count - 1;
+
+        //       // if (plyr.defending.decay.state !== true) {
+        //       //   if (plyr.defending.count > 0) {
+        //       //     finalAnimIndex = animIndex2;
+        //       //     // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+        //       //   }
+        //       //   if (plyr.defending.count === 0) {
+        //       //     let animIndex2a = 5;
+        //       //     finalAnimIndex = animIndex2a;
+        //       //     // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+        //       //   }
+        //       // }
+        //       // if (plyr.defending.decay.state === true) {
+        //       //   if (plyr.defending.decay.count < 11) {
+        //       //     animIndex2 = plyr.defending.decay.count - 1;
+        //       //   } else {
+        //       //     if (plyr.defending.decay.count % 10 === 0) {
+        //       //       animIndex2 = 9;
+        //       //     } else {
+        //       //       let mod = Math.floor(plyr.defending.decay.count / 10) * 10;
+        //       //       animIndex2 = plyr.defending.decay.count - mod - 1;
+        //       //     }
+        //       //   }
+        //       //   finalAnimIndex = animIndex2;
+        //       // }
+        //       frameIndexBase =
+        //         this.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
+        //         this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+        //       increment = Math.ceil(
+        //         plyr[plyr.action].limit /
+        //           this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+        //       );
+        //       frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
+        //       remainder = plyr[plyr.action].count % increment;
+        //       newIndex = frameIndexBase * frameTypeIndex + remainder;
+
+        //       finalAnimIndex = newIndex;
+
+        //       break;
+        //     case "idle":
+        //       if (plyr.number === 1) {
+        //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+        //       }
+        //       if (plyr.number === 2) {
+        //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+        //       }
+        //       let animIndex3 = plyr.idleAnim.count + 1;
+        //       finalAnimIndex = animIndex3;
+        //       // finalAnimIndex = 1;
+        //       break;
+        //     case "falling":
+        //       let animIndex4 = plyr.falling.count - 1;
+        //       finalAnimIndex = animIndex4;
+        //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+        //       break;
+        //     case "deflected":
+        //       let animIndex5 = plyr.success.deflected.count - 1;
+
+        //       // if (
+        //       //   plyr.elasticCounter.state === true &&
+        //       //   plyr.elasticCounter.type === "deflected"
+        //       // ) {
+        //       //   if (plyr.elasticCounter.countUp.state === true) {
+        //       //     animIndex5 = plyr.elasticCounter.countUp.count - 1;
+        //       //   }
+        //       //   if (plyr.elasticCounter.pause.state === true) {
+        //       //     if (plyr.elasticCounter.pause.count < 11) {
+        //       //       animIndex5 = plyr.elasticCounter.pause.count - 1;
+        //       //     } else {
+        //       //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+        //       //         animIndex5 = 9;
+        //       //         // animIndex5 = 10;
+        //       //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //       //       } else {
+        //       //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+        //       //         animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
+        //       //       }
+        //       //     }
+        //       //   }
+        //       //   if (plyr.elasticCounter.countDown.state === true) {
+        //       //     animIndex5 = plyr.elasticCounter.countDown.count - 1;
+        //       //   }
+        //       // }
+        //       if (plyr.halfPushBack.state === true) {
+        //         if (plyr.halfPushBack.countUp.state === true) {
+        //           animIndex5 = plyr.halfPushBack.countUp.count - 1;
+        //         }
+        //         if (plyr.halfPushBack.countDown.state === true) {
+        //           animIndex5 = plyr.halfPushBack.countDown.count - 1;
+        //         }
+        //       }
+        //       finalAnimIndex = animIndex5;
+        //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+        //       break;
+        //     case "dodging":
+        //       let animIndex7 = plyr.dodging.count - 1;
+
+        //       // if (
+        //       //   plyr.elasticCounter.state === true &&
+        //       //   plyr.elasticCounter.type === "dodging"
+        //       // ) {
+        //       //   if (plyr.elasticCounter.countUp.state === true) {
+        //       //     // animIndex7 = plyr.elasticCounter.countUp.count-1;
+
+        //       //     if (plyr.elasticCounter.countUp.count < 11) {
+        //       //       animIndex7 = plyr.elasticCounter.countUp.count - 1;
+        //       //     } else {
+        //       //       if (plyr.elasticCounter.countUp.count % 10 === 0) {
+        //       //         animIndex7 = 9;
+        //       //         // animIndex5 = 10;
+        //       //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //       //       } else {
+        //       //         let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
+        //       //         animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
+        //       //       }
+        //       //     }
+        //       //   }
+        //       //   if (plyr.elasticCounter.pause.state === true) {
+        //       //     if (plyr.elasticCounter.pause.count < 11) {
+        //       //       animIndex7 = plyr.elasticCounter.pause.count - 1;
+        //       //     } else {
+        //       //       if (plyr.elasticCounter.pause.count % 10 === 0) {
+        //       //         animIndex7 = 9;
+        //       //         // animIndex5 = 10;
+        //       //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //       //       } else {
+        //       //         let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+        //       //         animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
+        //       //       }
+        //       //     }
+        //       //   }
+        //       //   if (plyr.elasticCounter.countDown.state === true) {
+        //       //     // animIndex7 = plyr.elasticCounter.countDown.count-1;
+
+        //       //     if (plyr.elasticCounter.countDown.count < 11) {
+        //       //       animIndex7 = plyr.elasticCounter.countDown.count - 1;
+        //       //     } else {
+        //       //       if (plyr.elasticCounter.countDown.count % 10 === 0) {
+        //       //         animIndex7 = 9;
+        //       //         // animIndex5 = 10;
+        //       //         // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+        //       //       } else {
+        //       //         let mod = Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
+        //       //         animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
+        //       //       }
+        //       //     }
+        //       //   }
+        //       // }
+
+        //       finalAnimIndex = animIndex7;
+        //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+        //       break;
+        //   }
+
+        //   // SPRITE SHEET CHAR AVATAR & ACTION SWITCH!
+        //   if (plyr.ai.state === false) {
+        //     switch (plyr.action) {
+        //       case "idle":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].idle[weapon];
+        //         break;
+        //       case "moving":
+        //         if (plyr.pushing.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].pushing[weapon];
+        //         }
+        //         if (plyr.pulled.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].pulled[weapon];
+        //         }
+        //         if (plyr.pushed.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].pushed[weapon];
+        //         } else {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].walking[weapon];
+        //         }
+
+        //         break;
+        //       case "jumping":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].jumping[weapon];
+        //         break;
+        //       case "flanking":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].flanking[weapon];
+        //         break;
+        //       case "strafe moving":
+        //         if (plyr.pushBack.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].pushBack[weapon];
+        //         }
+        //         if (plyr.pulling.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].pulling[weapon];
+        //         }
+        //         if (plyr.pulled.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].pulled[weapon];
+        //         }
+        //         if (plyr.pushed.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].pushed[weapon];
+        //         } else {
+        //           updatedPlayerImg = this.playerImgs[plyr.number - 1].strafing[weapon];
+        //         }
+        //         break;
+        //       case "falling":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].falling[weapon];
+        //         break;
+        //       case "attacking":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].attacking[weapon];
+        //         break;
+        //       case "defending":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].defending[weapon];
+        //         break;
+        //       case "deflected":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].deflected[weapon];
+        //         break;
+        //       case "dodging":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].dodging[weapon];
+        //         break;
+        //       case "dead":
+        //         updatedPlayerImg = this.playerImgs[plyr.number - 1].idle[weapon];
+        //         break;
+        //     }
+        //   }
+        //   if (plyr.ai.state === true) {
+        //     let plyrImgIndex;
+        //     if (plyr.ai.imgType === "A") {
+        //       plyrImgIndex = 2;
+        //     } else if (plyr.ai.imgType === "B") {
+        //       plyrImgIndex = 3;
+        //     }
+
+        //     switch (plyr.action) {
+        //       case "idle":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
+        //         break;
+        //       case "moving":
+        //         if (plyr.pushing.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].pushing[weapon];
+        //         }
+        //         if (plyr.pulled.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
+        //         }
+        //         if (plyr.pushed.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
+        //         } else {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].walking[weapon];
+        //         }
+        //         break;
+        //       case "jumping":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].jumping[weapon];
+        //         break;
+        //       case "flanking":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].flanking[weapon];
+        //         break;
+        //       case "strafe moving":
+        //         if (plyr.pushBack.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].pushBack[weapon];
+        //         }
+        //         if (plyr.pulling.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].pulling[weapon];
+        //         }
+        //         if (plyr.pulled.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
+        //         }
+        //         if (plyr.pushed.state === true) {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
+        //         } else {
+        //           updatedPlayerImg = this.playerImgs[plyrImgIndex].strafing[weapon];
+        //         }
+        //         break;
+        //       case "falling":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].falling[weapon];
+        //         break;
+        //       case "attacking":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].attacking[weapon];
+        //         break;
+        //       case "defending":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].defending[weapon];
+        //         break;
+        //       case "deflected":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].deflected[weapon];
+        //         break;
+        //       case "dodging":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].dodging[weapon];
+        //         break;
+        //       case "dead":
+        //         updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
+        //         break;
+        //     }
+        //   }
+
+        //   // SET SPRITE SHEET CLIP LOCATION!
+        //   let dirs = ["north", "south", "east", "west"];
+        //   let dirIndex = dirs.indexOf(plyr.direction);
+        //   let sHeight = this.charSpriteHeight;
+        //   let sWidth = this.charSpriteWidth;
+        //   let sy = dirIndex * sHeight;
+        //   let sx = (finalAnimIndex - 1) * sWidth;
+
+        //   // PLAYER OUTLINES
+        //   if (this.showPlayerOutlines === true) {
+        //     // PLAYER OUTLINES
+        //     let popupCoordObject = {
+        //       north: this.popupDrawCalc(
+        //         "north",
+        //         { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
+        //         plyr.number
+        //       ),
+        //       west: this.popupDrawCalc(
+        //         "west",
+        //         { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
+        //         plyr.number
+        //       ),
+        //       south: this.popupDrawCalc(
+        //         "south",
+        //         { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
+        //         plyr.number
+        //       ),
+        //     };
+        //     let origin = popupCoordObject.west;
+        //     let width = popupCoordObject.north.pt4.x - origin.pt3.x;
+        //     let height = popupCoordObject.south.pt2.y - origin.pt3.y;
+        //     context.strokeStyle = "red";
+        //     context.lineWidth = 2;
+        //     context.beginPath();
+        //     context.roundRect(origin.pt3.x, origin.pt3.y, width, height, 2);
+        //     context.stroke();
+
+        //     let origin2 = {
+        //       x: plyr.nextPosition.x - this.floorImageHeight / 2,
+        //       y: plyr.nextPosition.y - this.floorImageHeight,
+        //     };
+        //     let height2 =
+        //       plyr.nextPosition.y +
+        //       this.floorImageHeight / 2 +
+        //       2 -
+        //       (plyr.nextPosition.y - this.floorImageHeight);
+        //     let width2 = this.playerDrawWidth + 2;
+        //     context.strokeStyle = "blue";
+        //     context.lineWidth = 2;
+        //     context.beginPath();
+        //     context.roundRect(
+        //       origin2.x,
+        //       origin2.y,
+        //       width2 + 2,
+        //       this.playerDrawHeight * 1.5,
+        //       2
+        //     );
+        //     // context.roundRect(origin2.x, origin2.y, width2, height2, 2);
+        //     // context.roundRect(
+        //     //   origin2.x,
+        //     //   origin2.y,
+        //     //   this.playerDrawWidth,
+        //     //   this.playerDrawHeight * 1.5,
+        //     //   2
+        //     // );
+        //     // context.roundRect(
+        //     //   origin2.x,
+        //     //   origin2.y,
+        //     //   this.playerDrawWidth + 2,
+        //     //   this.floorImageHeight * 1.5,
+        //     //   2
+        //     // );
+        //     context.stroke();
+        //   }
+
+        //   //PLAYER DEPTH SORTING!!
+        //   let elasticCountCalcResult;
+
+        //   // IN-GRID MOVING & MID STRAFE KEY RELEASE
+        //   if (
+        //     plyr.target.cell1.void === false &&
+        //     plyr.moving.state === true &&
+        //     plyr.falling.state !== true &&
+        //     plyr.jumping.state !== true
+        //   ) {
+        //     let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
+
+        //     let direction = plyr.direction;
+
+        //     if (plyr.strafing.direction !== "") {
+        //       direction = plyr.strafing.direction;
+        //     }
+        //     if (direction === "north") {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         if (plyr.jumping.state === true) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10 - jumpYCalc * 3,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         } else {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+        //     }
+        //     if (direction === "west") {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         if (plyr.jumping.state === true) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10 - jumpYCalc * 3,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         } else {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+        //     }
+        //     if (direction === "east") {
+        //       if (
+        //         x === plyr.moving.origin.number.x + 1 &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         if (plyr.jumping.state === true) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10 - jumpYCalc * 3,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         } else {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+        //     }
+        //     if (direction === "south") {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y + 1
+        //       ) {
+        //         if (plyr.jumping.state === true) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10 - jumpYCalc * 3,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         } else {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+        //     }
+
+        //     if (plyr.pushBack.state === true) {
+        //       // context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
+        //     }
+        //   }
+        //   // STATIONARY & HALFPUSH BACK
+        //   else if (
+        //     plyr.moving.state === false &&
+        //     plyr.ghost.state !== true &&
+        //     plyr.dodging.state !== true &&
+        //     plyr.elasticCounter.state !== true &&
+        //     plyr.action !== "attacking"
+        //   ) {
+        //     if (
+        //       plyr.halfPushBack.state === true &&
+        //       plyr.success.deflected.state !== true
+        //     ) {
+        //       elasticCountCalcResult = this.calcElasticCountCoords(
+        //         "halfPushBack",
+        //         "player",
+        //         plyr
+        //       );
+        //       let finalCoords = this.calcElasticCountCoords(
+        //         "halfPushBack",
+        //         "player",
+        //         plyr
+        //       ).coords;
+        //       let drawCell = this.calcElasticCountCoords(
+        //         "halfPushBack",
+        //         "player",
+        //         plyr
+        //       ).drawCell;
+        //       plyr = this.calcElasticCountCoords("halfPushBack", "player", plyr).player;
+
+        //       if (x === 0 && y === 0) {
+        //         // this.testDraw.push({
+        //         //   color: "purple",
+        //         //   x: finalCoords.x,
+        //         //   y: finalCoords.y,
+        //         //   direction: plyr.direction,
+        //         // });
+        //       }
+
+        //       finalCoords.x -= 5;
+        //       finalCoords.y -= 10;
+
+        //       // if (x === drawCell.x && y === drawCell.y) {
+        //       //
+        //       //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+        //       //
+        //       // }
+
+        //       if (
+        //         !this.gridInfo.find(
+        //           (x) =>
+        //             x.number.x ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.halfPushBack.direction
+        //               ).x &&
+        //             x.number.y ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.halfPushBack.direction
+        //               ).y
+        //         )
+        //       ) {
+        //         if (
+        //           x === plyr.currentPosition.cell.number.x &&
+        //           y === plyr.currentPosition.cell.number.y
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             finalCoords.x,
+        //             finalCoords.y,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       } else {
+        //         if (plyr.direction === "north") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y + 1
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.direction === "east") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.direction === "west") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x + 1 &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.direction === "south") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x + 1 &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //       }
+        //     } else {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y &&
+        //         plyr.success.deflected.state === false
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //   }
+        //   // VOID/EDGE MOVE
+        //   else if (
+        //     plyr.target.cell1.void === true &&
+        //     plyr.moving.state === true &&
+        //     plyr.falling.state !== true &&
+        //     plyr.jumping.state !== true
+        //   ) {
+        //     // console.log('heading for thevoid @ draw step');
+        //     // if (
+        //     //   x === plyr.currentPosition.cell.number.x &&
+        //     //   y === plyr.currentPosition.cell.number.y
+        //     // ) {
+        //     //   console.log('heading for thevoid @ draw step',plyr.target.cell1.number);
+        //     // }
+
+        //     if (
+        //       plyr.moving.origin.number.x === this.gridWidth &&
+        //       plyr.moving.origin.number.y !== 0 &&
+        //       plyr.moving.origin.number.y !== this.gridWidth
+        //     ) {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y + 1
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //         // context.fillStyle = "black";
+        //         // context.fillRect(point.x, point.y,5,5);
+        //       }
+        //     }
+        //     if (
+        //       plyr.moving.origin.number.x === this.gridWidth &&
+        //       plyr.moving.origin.number.y === 0
+        //     ) {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //         // context.fillStyle = "black";
+        //         // context.fillRect(point.x, point.y,5,5);
+        //       }
+        //     }
+        //     if (
+        //       plyr.moving.origin.number.x === this.gridWidth &&
+        //       plyr.moving.origin.number.y === this.gridWidth
+        //     ) {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //         // context.fillStyle = "black";
+        //         // context.fillRect(point.x, point.y,5,5);
+        //       }
+        //     }
+        //     if (
+        //       plyr.moving.origin.number.x === 0 &&
+        //       plyr.moving.origin.number.y === this.gridWidth
+        //     ) {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //         // context.fillStyle = "black";
+        //         // context.fillRect(point.x, point.y,5,5);
+        //       }
+        //     }
+        //     if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 0) {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //         // context.fillStyle = "black";
+        //         // context.fillRect(point.x, point.y,5,5);
+        //       }
+        //     } else {
+        //       if (
+        //         x === plyr.moving.origin.number.x + 1 &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //         // context.fillStyle = "black";
+        //         // context.fillRect(point.x, point.y,5,5);
+        //       }
+        //     }
+        //   }
+
+        //   // ELASTIC COUNTER ATTACKING
+        //   if (
+        //     (plyr.attacking.state === true || plyr.action === "attacking") &&
+        //     plyr.moving.state === false &&
+        //     plyr.ghost.state !== true &&
+        //     plyr.dodging.state !== true
+        //   ) {
+        //     if (
+        //       plyr.elasticCounter.state === true &&
+        //       plyr.elasticCounter.type === "attacking"
+        //     ) {
+        //       let finalCoords = this.calcElasticCountCoords(
+        //         "attacking",
+        //         "player",
+        //         plyr
+        //       ).coords;
+        //       let drawCell = this.calcElasticCountCoords(
+        //         "attacking",
+        //         "player",
+        //         plyr
+        //       ).drawCell;
+        //       plyr = this.calcElasticCountCoords("attacking", "player", plyr).player;
+        //       finalCoords.x -= 5;
+        //       finalCoords.y -= 10;
+
+        //       // test logging
+        //       if (x === this.gridWidth && y === this.gridWidth) {
+        //         if (plyr.elasticCounter.countUp.state === true) {
+        //           // this.testDraw.push({
+        //           //   color: "red",
+        //           //   x: finalCoords.x,
+        //           //   y: finalCoords.y,
+        //           // });
+        //           // console.log('attacking elastic count coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //         if (plyr.elasticCounter.countDown.state === true) {
+        //           // this.testDraw.push({
+        //           //   color: "blue",
+        //           //   x: finalCoords.x,
+        //           //   y: finalCoords.y,
+        //           // });
+        //           // console.log('attacking elastic count coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //         if (plyr.elasticCounter.pause.state === true) {
+        //           // this.testDraw.push({
+        //           //   color: "blue",
+        //           //   x: finalCoords.x,
+        //           //   y: finalCoords.y,
+        //           // });
+        //           // console.log('attacking elastic count coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //       }
+
+        //       if (
+        //         !this.gridInfo.find(
+        //           (x) =>
+        //             x.number.x ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.elasticCounter.direction
+        //               ).x &&
+        //             x.number.y ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.elasticCounter.direction
+        //               ).y
+        //         )
+        //       ) {
+        //         if (
+        //           x === plyr.currentPosition.cell.number.x &&
+        //           y === plyr.currentPosition.cell.number.y
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             finalCoords.x,
+        //             finalCoords.y,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       } else {
+        //         if (plyr.elasticCounter.direction === "north") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "east") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x + 1 &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "west") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "south") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y + 1
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //       }
+        //     } else {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y &&
+        //         plyr.success.deflected.state === false
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+
+        //     // if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
+        //     //
+        //     //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+        //     //
+        //     // }
+        //   }
+        //   // ELASTIC COUNTER DEFENDING
+        //   if (
+        //     (plyr.defending.state === true || plyr.action === "defending") &&
+        //     plyr.moving.state === false &&
+        //     plyr.ghost.state !== true &&
+        //     plyr.dodging.state !== true
+        //   ) {
+        //     if (
+        //       plyr.elasticCounter.state === true &&
+        //       plyr.elasticCounter.type === "defending"
+        //     ) {
+        //       let finalCoords = this.calcElasticCountCoords(
+        //         "defending",
+        //         "player",
+        //         plyr
+        //       ).coords;
+        //       let drawCell = this.calcElasticCountCoords(
+        //         "defending",
+        //         "player",
+        //         plyr
+        //       ).drawCell;
+        //       plyr = this.calcElasticCountCoords("defending", "player", plyr).player;
+
+        //       finalCoords.x -= 5;
+        //       finalCoords.y -= 10;
+
+        //       // test logging
+        //       if (x === this.gridWidth && y === this.gridWidth) {
+        //         // this.testDraw.push({ color: "red", x: finalCoords.x, y: finalCoords.y });
+        //         if (plyr.elasticCounter.countUp.state === true) {
+        //           // this.testDraw.push({
+        //           //   color: "red",
+        //           //   x: finalCoords.x,
+        //           //   y: finalCoords.y,
+        //           // });
+        //           // console.log('attacking elastic count coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //         if (plyr.elasticCounter.countDown.state === true) {
+        //           // this.testDraw.push({
+        //           //   color: "blue",
+        //           //   x: finalCoords.x,
+        //           //   y: finalCoords.y,
+        //           // });
+        //           // console.log('attacking elastic count coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //         if (plyr.elasticCounter.pause.state === true) {
+        //           // this.testDraw.push({
+        //           //   color: "blue",
+        //           //   x: finalCoords.x,
+        //           //   y: finalCoords.y,
+        //           // });
+        //           // console.log('attacking elastic count coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //       }
+
+        //       if (
+        //         !this.gridInfo.find(
+        //           (x) =>
+        //             x.number.x ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.elasticCounter.direction
+        //               ).x &&
+        //             x.number.y ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.elasticCounter.direction
+        //               ).y
+        //         )
+        //       ) {
+        //         if (
+        //           x === plyr.currentPosition.cell.number.x &&
+        //           y === plyr.currentPosition.cell.number.y
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             finalCoords.x,
+        //             finalCoords.y,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       } else {
+        //         if (plyr.elasticCounter.direction === "north") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "east") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x + 1 &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "west") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "south") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y + 1
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+
+        //   if (plyr.jumping.state === true) {
+        //     let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
+
+        //     if (plyr.direction === "north") {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10 - jumpYCalc * 3,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //     if (plyr.direction === "west") {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10 - jumpYCalc * 3,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //     if (plyr.direction === "east") {
+        //       if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10 - jumpYCalc * 3,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //     if (plyr.direction === "south") {
+        //       if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10 - jumpYCalc * 3,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //   }
+        //   // STRAFE MOVEMENT
+        //   if (
+        //     plyr.strafing.state === true &&
+        //     plyr.falling.state !== true &&
+        //     plyr.jumping.state !== true
+        //   ) {
+        //     if (
+        //       plyr.strafing.direction === "north" ||
+        //       plyr.strafing.direction === "northWest" ||
+        //       plyr.strafing.direction === "west"
+        //     ) {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //     if (plyr.strafing.direction === "east" || plyr.direction === "east") {
+        //       if (
+        //         x === plyr.moving.origin.number.x + 1 &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
+        //         // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //     if (plyr.strafing.direction === "south" || plyr.direction === "south") {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y + 1
+        //       ) {
+        //         // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
+        //         // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
+        //         // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+
+        //     if (plyr.strafing.direction === "northEast") {
+        //       if (
+        //         x === plyr.moving.origin.number.x + 1 &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //     if (plyr.strafing.direction === "southWest") {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y + 1
+        //       ) {
+        //         // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //   }
+        //   // FLANKING
+        //   if (plyr.flanking.state === true && plyr.falling.state !== true) {
+        //     if (plyr.flanking.step === 1) {
+        //       if (plyr.flanking.direction === "north") {
+        //         if (
+        //           x === plyr.moving.origin.number.x &&
+        //           y === plyr.moving.origin.number.y
+        //         ) {
+        //           // console.log('draw flank north',);
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+
+        //       if (plyr.flanking.direction === "west") {
+        //         if (
+        //           x === plyr.moving.origin.number.x &&
+        //           y === plyr.moving.origin.number.y
+        //         ) {
+        //           // console.log('draw flank west',);
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+
+        //       if (plyr.flanking.direction === "east") {
+        //         if (
+        //           x === plyr.moving.origin.number.x + 1 &&
+        //           y === plyr.moving.origin.number.y
+        //         ) {
+        //           // console.log('draw flank east',);
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+
+        //       if (plyr.flanking.direction === "south") {
+        //         if (
+        //           x === plyr.moving.origin.number.x &&
+        //           y === plyr.moving.origin.number.y + 1
+        //         ) {
+        //           // console.log('draw flank south',);
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+        //     }
+
+        //     if (plyr.flanking.step === 2) {
+        //       if (plyr.direction === "north") {
+        //         if (
+        //           x === plyr.moving.origin.number.x &&
+        //           y === plyr.moving.origin.number.y
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+
+        //       if (plyr.direction === "west") {
+        //         if (
+        //           x === plyr.moving.origin.number.x &&
+        //           y === plyr.moving.origin.number.y
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+
+        //       if (plyr.direction === "east") {
+        //         if (
+        //           x === plyr.moving.origin.number.x + 1 &&
+        //           y === plyr.moving.origin.number.y
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+
+        //       if (plyr.direction === "south") {
+        //         if (
+        //           x === plyr.moving.origin.number.x &&
+        //           y === plyr.moving.origin.number.y + 1
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             newCharDrawPoint.x - 5,
+        //             newCharDrawPoint.y - 10,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       }
+        //     }
+        //   }
+        //   // FALLING
+        //   if (plyr.falling.state === true) {
+        //     // IN BOUNDS
+        //     if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
+        //       context.drawImage(
+        //         updatedPlayerImg,
+        //         sx,
+        //         sy,
+        //         sWidth,
+        //         sHeight,
+        //         newCharDrawPoint.x - 5,
+        //         newCharDrawPoint.y - 10,
+        //         this.playerDrawWidth2,
+        //         this.playerDrawHeight2
+        //       );
+        //     }
+
+        //     // OUT OF BOUNDS
+        //     if (
+        //       plyr.target.cell1.number.x < 0 ||
+        //       plyr.target.cell1.number.y < 0 ||
+        //       plyr.target.cell1.number.x > this.gridWidth ||
+        //       plyr.target.cell1.number.y > this.gridWidth
+        //     ) {
+        //       if (
+        //         x === plyr.moving.origin.number.x &&
+        //         y === plyr.moving.origin.number.y
+        //       ) {
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           newCharDrawPoint.x - 5,
+        //           newCharDrawPoint.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+        //       }
+        //     }
+        //   }
+        //   // DEFLECTED
+        //   if (plyr.success.deflected.state === true) {
+        //     if (
+        //       plyr.elasticCounter.state === true &&
+        //       plyr.elasticCounter.type === "deflected"
+        //     ) {
+        //       let finalCoords = this.calcElasticCountCoords(
+        //         "deflected",
+        //         "player",
+        //         plyr
+        //       ).coords;
+        //       let drawCell = this.calcElasticCountCoords(
+        //         "deflected",
+        //         "player",
+        //         plyr
+        //       ).drawCell;
+        //       plyr = this.calcElasticCountCoords("deflected", "player", plyr).player;
+        //       finalCoords.x -= 5;
+        //       finalCoords.y -= 10;
+
+        //       if (
+        //         !this.gridInfo.find(
+        //           (x) =>
+        //             x.number.x ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.elasticCounter.direction
+        //               ).x &&
+        //             x.number.y ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.elasticCounter.direction
+        //               ).y
+        //         )
+        //       ) {
+        //         if (
+        //           x === plyr.currentPosition.cell.number.x &&
+        //           y === plyr.currentPosition.cell.number.y
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             finalCoords.x,
+        //             finalCoords.y,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       } else {
+        //         if (plyr.elasticCounter.direction === "south") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y + 1
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "west") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "east") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x + 1 &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "north") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x + 1 &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //       }
+        //     }
+        //     if (
+        //       plyr.elasticCounter.state !== true &&
+        //       plyr.elasticCounter.type === "deflected" &&
+        //       x === this.gridWidth &&
+        //       y === this.gridWidth
+        //     ) {
+        //       // console.log('deflected elastic counter overflow?',plyr.success.deflected.count);
+        //     }
+        //   }
+        //   // DODGING
+        //   if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
+        //     if (
+        //       plyr.elasticCounter.state === true &&
+        //       plyr.elasticCounter.type === "dodging"
+        //     ) {
+        //       let finalCoords = this.calcElasticCountCoords(
+        //         "dodging",
+        //         "player",
+        //         plyr
+        //       ).coords;
+        //       let drawCell = this.calcElasticCountCoords(
+        //         "dodging",
+        //         "player",
+        //         plyr
+        //       ).drawCell;
+
+        //       plyr = this.calcElasticCountCoords("dodging", "player", plyr).player;
+        //       finalCoords.x -= 5;
+        //       finalCoords.y -= 10;
+
+        //       // test logging
+        //       if (x === this.gridWidth && y === this.gridWidth) {
+        //         if (plyr.elasticCounter.countUp.state === true) {
+        //           // this.testDraw.push({color: 'red',x:finalCoords.x,y:finalCoords.y })
+        //           // console.log('dodging elastic coount coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //         if (plyr.elasticCounter.countDown.state === true) {
+        //           // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
+        //           // console.log('dodging elastic coount coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //         if (plyr.elasticCounter.pause.state === true) {
+        //           // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
+        //           // console.log('dodging elastic coount coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
+        //         }
+        //       }
+
+        //       if (
+        //         !this.gridInfo.find(
+        //           (x) =>
+        //             x.number.x ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.elasticCounter.direction
+        //               ).x &&
+        //             x.number.y ===
+        //               this.getCellFromDirection(
+        //                 1,
+        //                 plyr.currentPosition.cell.number,
+        //                 plyr.elasticCounter.direction
+        //               ).y
+        //         )
+        //       ) {
+        //         if (
+        //           x === plyr.currentPosition.cell.number.x &&
+        //           y === plyr.currentPosition.cell.number.y
+        //         ) {
+        //           context.drawImage(
+        //             updatedPlayerImg,
+        //             sx,
+        //             sy,
+        //             sWidth,
+        //             sHeight,
+        //             finalCoords.x,
+        //             finalCoords.y,
+        //             this.playerDrawWidth2,
+        //             this.playerDrawHeight2
+        //           );
+        //         }
+        //       } else {
+        //         if (plyr.elasticCounter.direction === "north") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "east") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x + 1 &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "west") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //         if (plyr.elasticCounter.direction === "south") {
+        //           if (
+        //             x === plyr.currentPosition.cell.number.x &&
+        //             y === plyr.currentPosition.cell.number.y + 1
+        //           ) {
+        //             context.drawImage(
+        //               updatedPlayerImg,
+        //               sx,
+        //               sy,
+        //               sWidth,
+        //               sHeight,
+        //               finalCoords.x,
+        //               finalCoords.y,
+        //               this.playerDrawWidth2,
+        //               this.playerDrawHeight2
+        //             );
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+
+        //   // DEPTH SORTING END!!
+
+        //   // RESPAWN
+        //   if (plyr.respawn === true) {
+        //     if (
+        //       x === plyr.startPosition.cell.number.x &&
+        //       y === plyr.startPosition.cell.number.y
+        //     ) {
+        //       // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
+
+        //       let canRespawn = false;
+        //       let positionOccupied = false;
+        //       let respawnPosCellRef = this.gridInfo.find(
+        //         (x) =>
+        //           x.number.x === plyr.startPosition.cell.number.x &&
+        //           x.number.y === plyr.startPosition.cell.number.y
+        //       );
+        //       let respawnCellNo;
+        //       let respawnCellCenter;
+
+        //       for (const plyrx of this.players) {
+        //         if (
+        //           plyrx.currentPosition.cell.number.x ===
+        //             plyr.startPosition.cell.number.x &&
+        //           plyrx.currentPosition.cell.number.y === plyr.startPosition.cell.number.y
+        //         ) {
+        //           positionOccupied = true;
+        //         }
+        //       }
+        //       if (
+        //         respawnPosCellRef.obstacle.state === true ||
+        //         respawnPosCellRef.terrain.type === "deep" ||
+        //         respawnPosCellRef.void === true
+        //       ) {
+        //         positionOccupied = true;
+        //       }
+
+        //       if (positionOccupied === true) {
+        //         respawnCellNo = this.getRandomFreeCell();
+        //         respawnPosCellRef = this.gridInfo.find(
+        //           (x) =>
+        //             x.number.x === respawnCellNo.number.x &&
+        //             x.number.y === respawnCellNo.number.y
+        //         );
+
+        //         if (respawnCellNo) {
+        //           canRespawn = true;
+        //         } else {
+        //           console.log(
+        //             "no cells for respawn. Unlikely but true. Reassign obstacle cell"
+        //           );
+        //           if (this.gridInfo.filter((x) => x.obstacle.state === true)[0]) {
+        //             this.gridInfo.filter(
+        //               (x) => x.obstacle.state === true
+        //             )[0].obstacle.state = false;
+        //             respawnPosCellRef = this.gridInfo.find(
+        //               (x) =>
+        //                 x.number.x === respawnCellNo.number.x &&
+        //                 x.number.y === respawnCellNo.number.y
+        //             );
+        //             let oldLvlData = this.gridInfo
+        //               .filter((x) => x.obstacle.state === true)[0]
+        //               .levelData.split("_");
+        //             oldLvlData[1] = "*";
+        //             this.gridInfo.filter((x) => x.obstacle.state === true)[0].levelData =
+        //               oldLvlData.join("_");
+        //             canRespawn = true;
+        //           } else {
+        //             console.log(
+        //               "no free cells for respawn and no obstacle cell to comandeer. Highly unlikley"
+        //             );
+
+        //             if (this.gridInfo.filter((x) => x.void.state === true)[0]) {
+        //               this.gridInfo.filter(
+        //                 (x) => x.void.state === true
+        //               )[0].void.state = false;
+        //               respawnPosCellRef = this.gridInfo.find(
+        //                 (x) =>
+        //                   x.number.x === respawnCellNo.number.x &&
+        //                   x.number.y === respawnCellNo.number.y
+        //               );
+        //               let oldLvlData = this.gridInfo
+        //                 .filter((x) => x.void.state === true)[0]
+        //                 .levelData.split("_");
+        //               oldLvlData[3] = "a";
+        //               this.gridInfo.filter((x) => x.void.state === true)[0].levelData =
+        //                 oldLvlData.join("_");
+        //               canRespawn = true;
+        //             }
+        //           }
+        //         }
+        //       } else if ((canRespawn = true && respawnPosCellRef)) {
+        //         canRespawn = true;
+        //       }
+
+        //       if (canRespawn === true) {
+        //         // console.log('can respawn');
+        //         let respawnPoint = respawnPosCellRef;
+        //         plyr.dead.state = false;
+        //         plyr.currentPosition.cell.number = respawnPoint.number;
+        //         plyr.currentPosition.cell.center = respawnPoint.center;
+        //         plyr.nextPosition = respawnPoint.center;
+        //         this.getTarget(plyr);
+        //         plyr.moving = {
+        //           state: false,
+        //           step: 0,
+        //           course: "",
+        //           origin: {
+        //             number: {
+        //               x: respawnPoint.number.x,
+        //               y: respawnPoint.number.y,
+        //             },
+        //             center: {
+        //               x: respawnPoint.center.x,
+        //               y: respawnPoint.center.y,
+        //             },
+        //           },
+        //           destination: {
+        //             x: this.players[plyr.number - 1].target.cell1.center.x,
+        //             y: this.players[plyr.number - 1].target.cell1.center.y,
+        //           },
+        //         };
+        //         let origin2 = {
+        //           x: plyr.nextPosition.x - this.floorImageHeight / 2,
+        //           y: plyr.nextPosition.y - this.floorImageHeight,
+        //         };
+
+        //         plyr.direction = "north";
+        //         plyr.respawn = false;
+        //         this.players[plyr.number - 1] = plyr;
+
+        //         context.drawImage(
+        //           updatedPlayerImg,
+        //           sx,
+        //           sy,
+        //           sWidth,
+        //           sHeight,
+        //           // respawnPoint.center.x - 25,
+        //           // respawnPoint.center.y - 50,
+        //           origin2.x - 5,
+        //           origin2.y - 10,
+        //           this.playerDrawWidth2,
+        //           this.playerDrawHeight2
+        //         );
+
+        //         if (
+        //           this.camera.customView.state !== true &&
+        //           this.settingAutoCamera === false &&
+        //           plyr.ai.state !== true &&
+        //           this.camera.preInstructions.length === 0 &&
+        //           this.camera.instructions.length === 0
+        //         ) {
+        //           this.setAutoCamera("playerSpawnFocus", plyr);
+        //         } else {
+        //           console.log("no setting auto cam: playerSpawnFocus");
+        //         }
+        //       }
+        //     }
+        //   }
+        //   // DEAD
+        //   if (
+        //     plyr.dead.state === true &&
+        //     player.dead.count > 0 &&
+        //     plyr.dead.count < plyr.dead.limit
+        //   ) {
+        //     if (
+        //       x === plyr.ghost.position.cell.number.x &&
+        //       y === plyr.ghost.position.cell.number.y
+        //     ) {
+        //       // console.log('player',plyr.number,'dying',player.dead.count);
+        //       context.drawImage(
+        //         this.indicatorImgs.death,
+        //         plyr.ghost.position.cell.center.x - 15,
+        //         plyr.ghost.position.cell.center.y - 15,
+        //         25,
+        //         25
+        //       );
+        //     }
+        //   }
+        //   // GHOST
+        //   if (plyr.ghost.state === true && player.dead.count === 0) {
+        //     if (
+        //       x === plyr.ghost.position.cell.number.x &&
+        //       y === plyr.ghost.position.cell.number.y
+        //     ) {
+        //       // console.log(
+        //       //   "player ",
+        //       //   plyr.number,
+        //       //   "ghost @",
+        //       //   plyr.ghost.position.cell.number,
+        //       //   plyr.ghost.position.cell.center
+        //       // );
+        //       context.drawImage(
+        //         this.indicatorImgs.ghost,
+        //         plyr.ghost.position.cell.center.x - 20,
+        //         plyr.ghost.position.cell.center.y - 20,
+        //         25,
+        //         25
+        //       );
+        //     }
+        //   }
+
+        //   // PLAYER POPUPS
+        //   if (x === this.gridWidth && y === this.gridWidth) {
+        //     let popupBorderColor = this.playerColourRef["player" + plyr.number + ""];
+
+        //     if (plyr.dead.state !== true && plyr.popups.length > 0) {
+        //       for (const popup of plyr.popups) {
+        //         if (popup.state === true) {
+        //           // console.log('drawing a popup');
+        //           let popupDrawCoords;
+        //           if (popup.position === "" || !popup.position) {
+        //             let currentPopups = plyr.popups.filter((x) => x.state === true);
+        //             // let positions = ['north','east','south','west','northEast','southEast','southWest']
+        //             let positions = [
+        //               "north",
+        //               "east",
+        //               "south",
+        //               "west",
+        //               "northEast",
+        //               "northWest",
+        //               "southEast",
+        //               "southWest",
+        //             ];
+
+        //             // REMOVE 1ST FREE POSITION IF IT'S THE SAME AS PLAYER'S DIRECTION
+        //             if (plyr.strafing.state === true) {
+        //               if (positions[0] === plyr.strafing.direction) {
+        //                 const first = positions.shift();
+        //                 positions.push(first);
+        //               }
+        //             } else {
+        //               if (positions[0] === plyr.direction) {
+        //                 const first = positions.shift();
+        //                 positions.push(first);
+        //               }
+        //             }
+
+        //             // REMOVE POSITIONS ALREADY TAKEN BY PLAYERS' OTHER POPUPS
+        //             for (const popup2 of currentPopups) {
+        //               if (popup2.position && popup2.position !== "") {
+        //                 let indx = positions.indexOf(popup2.position);
+        //                 positions.splice(indx, 1);
+        //               }
+        //             }
+
+        //             let dir = undefined;
+
+        //             // CHECK OTHER PLAYER'S POSITION AND THE POPUPS POSITION
+        //             // REMOVE OCCUPIED POSITIONS
+        //             for (const plyr2 of this.players) {
+        //               if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
+        //                 let myPos = plyr.currentPosition.cell.number;
+        //                 let invalidPos =
+        //                   this.players[plyr2.number - 1].currentPosition.cell.number;
+
+        //                 dir = undefined;
+        //                 // let invalidPositions = [invalidPos];
+
+        //                 // GET DIRECTION OF OTHER PLAYER CELL RELATIVE TO ME
+        //                 dir = this.getDirectionFromCells(myPos, invalidPos);
+
+        //                 if (dir && positions.includes(dir) === true) {
+        //                   positions.splice(positions.indexOf(dir), 1);
+        //                   // console.log('player popups (unset): human player position is close to player',plyr.number,' @ ',invalidPos,'dir',dir);
+        //                   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+        //                 }
+
+        //                 // GET DIRECTION OF ALL OTHER PLAYERS' POPUPS OCCUPY, RELATIVE TO ME
+        //                 for (const pop of plyr2.popups) {
+        //                   dir = undefined;
+
+        //                   if (pop.state === true) {
+        //                     let invalidPos2 = {
+        //                       x: undefined,
+        //                       y: undefined,
+        //                     };
+
+        //                     invalidPos2 = this.getCellFromDirection(
+        //                       1,
+        //                       invalidPos,
+        //                       pop.position
+        //                     );
+
+        //                     dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+        //                     if (dir && positions.includes(dir) === true) {
+        //                       positions.splice(positions.indexOf(dir), 1);
+        //                       // console.log('player popups (unset): human player popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
+        //                       // console.log('dont draw over player @',dir,'choose frome these position',positions);
+        //                     }
+        //                   }
+        //                 }
+        //               }
+        //             }
+
+        //             // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
+        //             // REMOVE OCCUPIED POSITIONS
+        //             for (const popup2 of this.cellPopups) {
+        //               dir = undefined;
+
+        //               if (popup2.state === true) {
+        //                 let myPos = plyr.currentPosition.cell.number;
+        //                 let cellPos = popup2.cell.number;
+        //                 let invalidPos2 = {
+        //                   x: undefined,
+        //                   y: undefined,
+        //                 };
+
+        //                 invalidPos2 = this.getCellFromDirection(
+        //                   1,
+        //                   cellPos,
+        //                   popup2.position
+        //                 );
+
+        //                 dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+        //                 if (dir && positions.includes(dir) === true) {
+        //                   positions.splice(positions.indexOf(dir), 1);
+        //                   // console.log('player popups (unset): cell popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
+        //                   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+        //                 }
+
+        //                 // let indx = positions.indexOf(popup2.position);
+        //                 // positions.splice(indx,1)
+        //               }
+        //             }
+
+        //             // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
+
+        //             if (!positions[0]) {
+        //               console.log(
+        //                 "no open positions for new or postponed popup",
+        //                 popup.msg
+        //               );
+        //               popup.state = false;
+        //               popup.count = 0;
+        //             } else {
+        //               popup.position = positions[0];
+        //               if (currentPopups.find((x) => x.msg === popup.msg)) {
+        //                 // console.log("popup already exists", popup.msg);
+        //               }
+        //             }
+
+        //             let popupProgress = false;
+        //             let showProgress = false;
+        //             let writeValue = false;
+        //             if (
+        //               plyr.prePush.state === true ||
+        //               plyr.prePull.state === true ||
+        //               plyr.dodging.state === true ||
+        //               plyr.action === "dodging" ||
+        //               plyr.action === "defending" ||
+        //               plyr.action === "attacking" ||
+        //               plyr.attacking.state === true
+        //             ) {
+        //               showProgress = true;
+        //             }
+        //             if (
+        //               popup.msg === "attacking1" ||
+        //               popup.msg === "attacking2" ||
+        //               popup.msg === "defending" ||
+        //               popup.msg === "prePush" ||
+        //               popup.msg === "prePull" ||
+        //               popup.msg === "dodging" ||
+        //               popup.msg === "charging"
+        //             ) {
+        //               popupProgress = true;
+        //             }
+
+        //             if (popup.img === "") {
+        //               popup.img = this.popupImageRef[popup.msg];
+        //             }
+
+        //             if (popup.msg.split("_")) {
+        //               if (
+        //                 popup.msg.split("_")[0] === "hpUp" ||
+        //                 popup.msg.split("_")[0] === "hpDown"
+        //               ) {
+        //                 writeValue = true;
+        //                 popup.img = this.popupImageRef[popup.msg.split("_")[0]];
+        //               }
+        //             }
+
+        //             popupDrawCoords = this.popupDrawCalc(
+        //               popup.position,
+        //               { x: point.x - 25, y: point.y - 25 },
+        //               plyr.number
+        //             );
+
+        //             this.drawPopupBubble(
+        //               context,
+        //               popupDrawCoords.origin.x,
+        //               popupDrawCoords.origin.y,
+        //               this.popupSize,
+        //               this.popupSize,
+        //               5,
+        //               popupDrawCoords.anchor.x,
+        //               popupDrawCoords.anchor.y,
+        //               popupBorderColor
+        //             );
+        //             let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+
+        //             if (showProgress === true && popupProgress === true) {
+        //               let perc = this.playerPopupProgressCalc(plyr, popup);
+        //               context.fillStyle = this.popupProgressImgGradColor2;
+        //               context.beginPath();
+        //               // context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+        //               // context.stroke();
+        //               context.fillStyle = this.popupProgressImgGradColor1;
+        //               context.roundRect(
+        //                 popupDrawCoords.origin.x,
+        //                 popupDrawCoords.origin.y + this.popupSize,
+        //                 10,
+        //                 this.popupSize * perc,
+        //                 5
+        //               );
+        //               context.fill();
+        //               // console.log("playerPopupProgress init", perc);
+        //             }
+
+        //             if (writeValue === true) {
+        //               context.font = "15px Arial";
+        //               context.fillStyle = "black";
+        //               context.fillText(
+        //                 popup.msg.split("_")[1],
+        //                 popupDrawCoords.origin.x +
+        //                   (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
+        //                 popupDrawCoords.origin.y + 15
+        //               );
+
+        //               centerPopupOffset = (this.popupSize - this.popupImgSize * 0.75) / 2;
+        //               context.drawImage(
+        //                 popup.img,
+        //                 popupDrawCoords.origin.x + centerPopupOffset,
+        //                 popupDrawCoords.origin.y + (centerPopupOffset + 5),
+        //                 this.popupImgSize * 0.75,
+        //                 this.popupImgSize * 0.75
+        //               );
+        //             } else {
+        //               context.drawImage(
+        //                 popup.img,
+        //                 popupDrawCoords.origin.x + centerPopupOffset,
+        //                 popupDrawCoords.origin.y + centerPopupOffset,
+        //                 this.popupImgSize,
+        //                 this.popupImgSize
+        //               );
+        //             }
+        //           } else if (popup.position !== "northWest") {
+        //             let dir = undefined;
+        //             let dirs = [];
+
+        //             let currentPopups = this.cellPopups.filter((x) => x.state === true);
+
+        //             // HAVE ANY OTHER PLAYERS OR OTHER PLAYERS' POPUPS MOVED TO INVALID POSITIONS SINCE POPUP'S 1ST DRAW
+        //             for (const plyr2 of this.players) {
+        //               if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
+        //                 let myPos = plyr.currentPosition.cell.number;
+        //                 let invalidPos =
+        //                   this.players[plyr2.number - 1].currentPosition.cell.number;
+
+        //                 dir = this.getDirectionFromCells(myPos, invalidPos);
+
+        //                 if (dir) {
+        //                   // console.log('player popups (set): human player position is close to player',plyr.number,' @ ',invalidPos,' dir ',dir);
+        //                   dirs.push(dir);
+        //                 }
+
+        //                 for (const pop of plyr2.popups) {
+        //                   dir = undefined;
+        //                   let invalidPos2 = {
+        //                     x: undefined,
+        //                     y: undefined,
+        //                   };
+
+        //                   invalidPos2 = this.getCellFromDirection(
+        //                     1,
+        //                     invalidPos,
+        //                     pop.position
+        //                   );
+
+        //                   dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+        //                   // if (dir && positions.includes(dir) === true) {
+        //                   //   positions.splice(positions.indexOf(dir),1);
+        //                   //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+        //                   // }
+        //                   if (dir) {
+        //                     // console.log('player popups (set): human player popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
+        //                     dirs.push(dir);
+        //                   }
+        //                 }
+        //               }
+        //             }
+
+        //             // HAVE ANY CELL POPUPS MOVED TO A NEARBY CELL TO ME
+        //             for (const popup2 of currentPopups) {
+        //               dir = undefined;
+
+        //               let myPos = plyr.currentPosition.cell.number;
+
+        //               let cellPos = popup2.cell.number;
+        //               let invalidPos2 = {
+        //                 x: undefined,
+        //                 y: undefined,
+        //               };
+
+        //               invalidPos2 = this.getCellFromDirection(
+        //                 1,
+        //                 cellPos,
+        //                 popup2.position
+        //               );
+
+        //               dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+        //               if (dir) {
+        //                 // console.log('player popups (set): cell popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
+        //                 dirs.push(dir);
+        //               }
+        //             }
+
+        //             // console.log('dirs',dirs,'popup.position',popup.position);
+        //             // if (popup.position === dir ) {
+        //             if (dirs.find((x) => x === popup.position)) {
+        //               plyr.popups.find((x) => x.msg === popup.msg).position = "";
+        //               plyr.popups.find((x) => x.msg === popup.msg).state = false;
+        //               console.log(
+        //                 "A new invalid direction === popup's position. reconsidering...",
+        //                 popup.msg
+        //               );
+        //             } else {
+        //               let popupProgress = false;
+        //               let showProgress = false;
+        //               let writeValue = false;
+        //               if (
+        //                 plyr.prePush.state === true ||
+        //                 plyr.prePull.state === true ||
+        //                 plyr.dodging.state === true ||
+        //                 plyr.action === "dodging" ||
+        //                 plyr.action === "defending" ||
+        //                 plyr.action === "attacking" ||
+        //                 plyr.attacking.state === true
+        //               ) {
+        //                 showProgress = true;
+        //               }
+        //               if (
+        //                 popup.msg === "attacking" ||
+        //                 popup.msg === "attacking1" ||
+        //                 popup.msg === "attacking2" ||
+        //                 popup.msg === "defending" ||
+        //                 popup.msg === "prePush" ||
+        //                 popup.msg === "prePull" ||
+        //                 popup.msg === "dodging" ||
+        //                 popup.msg === "charging"
+        //               ) {
+        //                 popupProgress = true;
+        //               }
+
+        //               if (popup.img === "") {
+        //                 popup.img = this.popupImageRef[popup.msg];
+        //               }
+
+        //               if (popup.msg.split("_")) {
+        //                 if (
+        //                   popup.msg.split("_")[0] === "hpUp" ||
+        //                   popup.msg.split("_")[0] === "hpDown"
+        //                 ) {
+        //                   writeValue = true;
+        //                   popup.img = this.popupImageRef[popup.msg.split("_")[0]];
+        //                 }
+        //               }
+
+        //               popupDrawCoords = this.popupDrawCalc(
+        //                 popup.position,
+        //                 { x: point.x - 25, y: point.y - 25 },
+        //                 plyr.number
+        //               );
+        //               this.drawPopupBubble(
+        //                 context,
+        //                 popupDrawCoords.origin.x,
+        //                 popupDrawCoords.origin.y,
+        //                 this.popupSize,
+        //                 this.popupSize,
+        //                 5,
+        //                 popupDrawCoords.anchor.x,
+        //                 popupDrawCoords.anchor.y,
+        //                 popupBorderColor
+        //               );
+        //               let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+
+        //               if (showProgress === true && popupProgress === true) {
+        //                 let perc = this.playerPopupProgressCalc(plyr, popup);
+        //                 context.fillStyle = this.popupProgressImgGradColor2;
+        //                 context.beginPath();
+        //                 // context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+        //                 // context.stroke();
+        //                 context.fillStyle = this.popupProgressImgGradColor1;
+        //                 context.roundRect(
+        //                   popupDrawCoords.origin.x,
+        //                   popupDrawCoords.origin.y + this.popupSize,
+        //                   10,
+        //                   this.popupSize * perc,
+        //                   5
+        //                 );
+        //                 context.fill();
+        //                 // console.log(
+        //                 //   "playerPopupProgress continue",
+        //                 //   perc,
+        //                 //   this.popupSize * perc
+        //                 // );
+        //               }
+
+        //               if (writeValue === true) {
+        //                 context.font = "15px Arial";
+        //                 context.fillStyle = "black";
+        //                 context.fillText(
+        //                   popup.msg.split("_")[1],
+        //                   popupDrawCoords.origin.x +
+        //                     (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
+        //                   popupDrawCoords.origin.y + 15
+        //                 );
+
+        //                 centerPopupOffset =
+        //                   (this.popupSize - this.popupImgSize * 0.75) / 2;
+        //                 context.drawImage(
+        //                   popup.img,
+        //                   popupDrawCoords.origin.x + centerPopupOffset,
+        //                   popupDrawCoords.origin.y + (centerPopupOffset + 5),
+        //                   this.popupImgSize * 0.75,
+        //                   this.popupImgSize * 0.75
+        //                 );
+        //               } else {
+        //                 if (player.action === "defending" && popup.msg === "defending") {
+        //                   if (player.defending.peak === true) {
+        //                     popup.img = this.popupImageRef.defending_1;
+        //                   }
+        //                   if (player.defending.decay.state === true) {
+        //                     let prog =
+        //                       100 -
+        //                       (player.defending.decay.count /
+        //                         player.defending.decay.limit) *
+        //                         100;
+        //                     if (prog > 10) {
+        //                       popup.img = this.popupImageRef.defending_4;
+        //                     }
+        //                     if (prog > 30) {
+        //                       popup.img = this.popupImageRef.defending_3;
+        //                     }
+        //                     if (prog > 50) {
+        //                       popup.img = this.popupImageRef.defending_2;
+        //                     }
+        //                     if (prog > 70) {
+        //                       popup.img = this.popupImageRef.defending_1;
+        //                     }
+        //                   } else {
+        //                     popup.img = this.popupImageRef.defending;
+        //                   }
+        //                 }
+        //                 context.drawImage(
+        //                   popup.img,
+        //                   popupDrawCoords.origin.x + centerPopupOffset,
+        //                   popupDrawCoords.origin.y + centerPopupOffset,
+        //                   this.popupImgSize,
+        //                   this.popupImgSize
+        //                 );
+        //               }
+        //             }
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+
+        //   this.players[plyr.number - 1] = plyr;
+        // }
 
         // OBSTACLES & BARRIERS
         // FALLING
@@ -44407,59 +44442,59 @@ class App extends Component {
         }
 
         // STATIONARY
-        if (
-          gridInfoCell.obstacle.state === true &&
-          gridInfoCell.void.state !== true &&
-          gridInfoCell.terrain.type !== "deep" &&
-          gridInfoCell.obstacle.moving.falling.state !== true
-        ) {
-          let hide = false;
+        // if (
+        //   gridInfoCell.obstacle.state === true &&
+        //   gridInfoCell.void.state !== true &&
+        //   gridInfoCell.terrain.type !== "deep" &&
+        //   gridInfoCell.obstacle.moving.falling.state !== true
+        // ) {
+        //   let hide = false;
 
-          if (this.obstacleBarrierToDestroy.length > 0) {
-            for (const cell of this.obstacleBarrierToDestroy) {
-              if (
-                cell.type === "obstacle" &&
-                gridInfoCell.number.x === cell.cell.number.x &&
-                gridInfoCell.number.y === cell.cell.number.y &&
-                gridInfoCell.obstacle.name === cell.cell.obstacle.name
-              ) {
-                hide = true;
-              }
-            }
-          }
+        //   if (this.obstacleBarrierToDestroy.length > 0) {
+        //     for (const cell of this.obstacleBarrierToDestroy) {
+        //       if (
+        //         cell.type === "obstacle" &&
+        //         gridInfoCell.number.x === cell.cell.number.x &&
+        //         gridInfoCell.number.y === cell.cell.number.y &&
+        //         gridInfoCell.obstacle.name === cell.cell.obstacle.name
+        //       ) {
+        //         hide = true;
+        //       }
+        //     }
+        //   }
 
-          if (this.halfPushBackObstacles.length > 0) {
-            let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type];
+        //   if (this.halfPushBackObstacles.length > 0) {
+        //     let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type];
 
-            for (const obs of this.halfPushBackObstacles) {
-              if (
-                obs.myCellNo.x === gridInfoCell.number.x &&
-                obs.myCellNo.y === gridInfoCell.number.y
-              ) {
-                if (obs.state === true) {
-                  if (obs.countUp.state === true) {
-                    hide = true;
-                  }
-                }
-              }
-            }
-          }
+        //     for (const obs of this.halfPushBackObstacles) {
+        //       if (
+        //         obs.myCellNo.x === gridInfoCell.number.x &&
+        //         obs.myCellNo.y === gridInfoCell.number.y
+        //       ) {
+        //         if (obs.state === true) {
+        //           if (obs.countUp.state === true) {
+        //             hide = true;
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
 
-          if (hide !== true) {
-            let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type];
+        //   if (hide !== true) {
+        //     let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type];
 
-            if (gridInfoCell.obstacle.moving.state !== true) {
-              context.drawImage(
-                obstacleImg,
-                iso.x - offset.x,
-                iso.y - obstacleImg.height
-              );
-            } else {
-              // console.log('x/y',x,y);
-              // context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
-            }
-          }
-        }
+        //     if (gridInfoCell.obstacle.moving.state !== true) {
+        //       context.drawImage(
+        //         obstacleImg,
+        //         iso.x - offset.x,
+        //         iso.y - obstacleImg.height
+        //       );
+        //     } else {
+        //       // console.log('x/y',x,y);
+        //       // context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
+        //     }
+        //   }
+        // }
 
         // MOVING
         for (const cell of this.gridInfo) {
@@ -44626,34 +44661,34 @@ class App extends Component {
         }
 
         // STATIONARY BARRIERS
-        if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
-          let hide = false;
+        // if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
+        //   let hide = false;
 
-          if (this.obstacleBarrierToDestroy.length > 0) {
-            for (const cell of this.obstacleBarrierToDestroy) {
-              if (
-                cell.type === "barrier" &&
-                gridInfoCell.number.x === cell.cell.number.x &&
-                gridInfoCell.number.y === cell.cell.number.y &&
-                gridInfoCell.barrier.name === cell.cell.barrier.name
-              ) {
-                hide = true;
-              }
-            }
-          }
+        //   if (this.obstacleBarrierToDestroy.length > 0) {
+        //     for (const cell of this.obstacleBarrierToDestroy) {
+        //       if (
+        //         cell.type === "barrier" &&
+        //         gridInfoCell.number.x === cell.cell.number.x &&
+        //         gridInfoCell.number.y === cell.cell.number.y &&
+        //         gridInfoCell.barrier.name === cell.cell.barrier.name
+        //       ) {
+        //         hide = true;
+        //       }
+        //     }
+        //   }
 
-          if (hide !== true) {
-            let barrierImg =
-              this.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
-            context.drawImage(
-              barrierImg,
-              iso.x - offset.x,
-              iso.y - barrierImg.height,
-              barrierImg.width,
-              barrierImg.height
-            );
-          }
-        }
+        //   if (hide !== true) {
+        //     let barrierImg =
+        //       this.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
+        //     context.drawImage(
+        //       barrierImg,
+        //       iso.x - offset.x,
+        //       iso.y - barrierImg.height,
+        //       barrierImg.width,
+        //       barrierImg.height
+        //     );
+        //   }
+        // }
 
         // PROJECTILES
         for (const bolt of this.projectiles) {
@@ -44694,11 +44729,11 @@ class App extends Component {
         // CAMERA FOCUS POINT
         if (x === this.gridWidth && y === this.gridWidth) {
           // console.log('Camera centered');
-          context.fillStyle = "yellow";
-          context.beginPath();
-          context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
-          // context.arc(this.camera.zoomFocusPan.x, this.camera.zoomFocusPan.y, 10, 0, 2 * Math.PI);
-          context.fill();
+          // context.fillStyle = "yellow";
+          // context.beginPath();
+          // context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
+          // // context.arc(this.camera.zoomFocusPan.x, this.camera.zoomFocusPan.y, 10, 0, 2 * Math.PI);
+          // context.fill();
         }
 
         // TEST DRAW
@@ -46039,9 +46074,9 @@ class App extends Component {
     let sceneY = this.sceneY;
     let tileWidth = this.tileWidth;
 
-    document.getElementsByClassName(
-      this.state.containerInnerClass
-    )[0].style.backgroundImage = `url('${this.backgroundImage}')`;
+    // document.getElementsByClassName(
+    //   this.state.containerInnerClass
+    // )[0].style.backgroundImage = `url('${this.backgroundImage}')`;
 
     this.startProcessLevelData(canvas);
     // gridInfo = this.gridInfo;
@@ -46500,7 +46535,7 @@ class App extends Component {
               className="canvas2"
             />
             {/* // DEBUB BOX */}
-            <div className={this.debugBoxStyle}>
+            {/* <div className={this.debugBoxStyle}>
               <DebugBox
                 player={this.players[0]}
                 expand={this.expandDebugBox}
@@ -46515,7 +46550,7 @@ class App extends Component {
                   minimize={this.minimizeDebugBox}
                 />
               </div>
-            )}
+            )} */}
             {/* //BACKGROUND COMPASS */}
             <img
               src={bgCompass}
