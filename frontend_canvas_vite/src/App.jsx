@@ -8774,6 +8774,7 @@ class App extends Component {
       let yMod = 2;
       if (face === "top") {
         yMod = 1.75;
+        // yMod = 1.25;
       }
       if (face === "side" || face === "front") {
         yMod = 1.25;
@@ -8930,12 +8931,16 @@ class App extends Component {
       point2.x += xOffset;
       point2.y -= yOffset;
 
-      if (face === "front" || face === "side") {
-        let yDiff = point.y - pointA.y;
-        point.y -= yDiff;
-        point1.y -= yDiff;
-        point2.y -= yDiff;
-      }
+      let yDiff = point.y - pointA.y;
+      point.y -= yDiff;
+      point1.y -= yDiff;
+      point2.y -= yDiff;
+      // if (face === "front" || face === "side") {
+      //   let yDiff = point.y - pointA.y;
+      //   point.y -= yDiff;
+      //   point1.y -= yDiff;
+      //   point2.y -= yDiff;
+      // }
 
       if (faceRotation > 0) {
         point1 = rotatePoint(point1.x, point1.y, point.x, point.y, faceRotation);
@@ -33721,6 +33726,16 @@ class App extends Component {
         //   "counterClockwise",
         //   "top"
         // );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   50,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "front"
+        // );
         this.circleArcCrementer(
           player,
           "isometric",
@@ -33729,18 +33744,8 @@ class App extends Component {
           180,
           "arc",
           "counterClockwise",
-          "side"
+          "top"
         );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "side"
-        // );
       }
       // if (this.testCount.count >= this.testCount.limit) {
       //   this.testCount.state = false;
