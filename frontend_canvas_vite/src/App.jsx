@@ -8760,6 +8760,7 @@ class App extends Component {
     let offset = { x: this.floorImageWidth / 2, y: this.floorImageHeight };
     let xOffset;
     let yOffset;
+    let faceRotation = 0;
 
     let pointB = {
       x: point.x + sceneX,
@@ -8773,8 +8774,10 @@ class App extends Component {
     const cartesianToIsometric = (cartPt) => {
       let yMod = 2;
       if (face === "top") {
+        // yMod = 1.5;
         yMod = 1.75;
         // yMod = 1.25;
+        // faceRotation = 15;
       }
       if (face === "side" || face === "front") {
         yMod = 1.25;
@@ -8837,7 +8840,7 @@ class App extends Component {
     let conntectingLineIncr = this.testCount.limit;
     let point1 = getPointOnArc(point.x, point.y, radiusA, startAng, incr);
     let point2 = getPointOnArc(point.x, point.y, innerRadius, startAng, incr);
-    let faceRotation = 0;
+
     if (face === "front") {
       faceRotation = 60;
       color = "yellow";
@@ -8935,12 +8938,6 @@ class App extends Component {
       point.y -= yDiff;
       point1.y -= yDiff;
       point2.y -= yDiff;
-      // if (face === "front" || face === "side") {
-      //   let yDiff = point.y - pointA.y;
-      //   point.y -= yDiff;
-      //   point1.y -= yDiff;
-      //   point2.y -= yDiff;
-      // }
 
       if (faceRotation > 0) {
         point1 = rotatePoint(point1.x, point1.y, point.x, point.y, faceRotation);
