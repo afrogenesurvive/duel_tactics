@@ -1,7 +1,7 @@
 .settingsOverlay {
   height: 100vh;
   width: 100vw;
-  background-color: rgba(0,0,0,.9);
+  background-color: rgba(0, 0, 0, 0.8);
   z-index: 5;
   position: absolute;
   top: 0;
@@ -16,7 +16,7 @@
 .loadingOverlay {
   height: 100vh;
   width: 100vw;
-  background-color: rgba(0,0,0,.99);
+  background-color: rgba(0, 0, 0, 0.99);
   z-index: 6;
   position: absolute;
   top: 0;
@@ -30,13 +30,16 @@
 
 .settingsContainer {
   margin: 0 auto;
-  border: 1px solid #ffffff;
+  /* border: 1px solid #ffffff; */
+  /* border: 3px solid green; */
+  border: 3px solid #582f0e;
   height: 70%;
   /* height: 32rem; */
   width: 70%;
   padding: 1rem;
   border-radius: 5px;
-  background-color: rgba(0,0,0,.8);
+  /* background-color: rgba(0, 0, 0, 0.7); */
+  background-color: rgba(235, 213, 179, 0.8);
   overflow: scroll;
   text-align: center;
 }
@@ -46,7 +49,7 @@
 }
 
 .formBtn {
- margin: 0 2rem;
+  margin: 0 2rem;
 }
 
 .formLabel {
@@ -55,6 +58,7 @@
 .settingsHeading {
   text-align: center;
   margin: 3rem 0 0 0;
+  color: #000000;
 }
 
 .loadingImg {
@@ -93,14 +97,14 @@
 }
 
 .settingsCanvas {
-  margin: .5rem;
+  margin: 0.5rem;
   border: 1px solid #ffffff;
   border-radius: 5px;
-  padding: .5rem;
+  padding: 0.5rem;
 }
 .icon {
   color: #ffffff;
-  margin: 0 .5rem;
+  margin: 0 0.5rem;
   /* margin: .5rem; */
 }
 .icon:hover {
@@ -109,4 +113,17 @@
 
 #settingsCanvas2 {
   /* display: none; */
+}
+
+label {
+  color: #000000;
+}
+
+.formGroup.col {
+  border: 3px solid #582f0e;
+  border-radius: 5px;
+}
+
+.form-check-label {
+  font-size: 19px !important;
 }

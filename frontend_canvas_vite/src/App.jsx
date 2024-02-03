@@ -3559,6 +3559,7 @@ class App extends Component {
       limit: 100,
     };
     this.cellInfoMouseOver = false;
+    this.cursorCoords = {};
 
     //LOOP & ANIMATION
     this.stepper = {
@@ -3876,6 +3877,7 @@ class App extends Component {
     this.halfPushBackChainingMoveAll = true;
 
     this.showPlayerOutlines = true;
+    this.showGridIsoGuide = false;
 
     this.backgroundImage = "src/assets/backgrounds/bg_seaCloudsNight_1.png";
     this.backgroundImageRef = {
@@ -3998,6 +4000,7 @@ class App extends Component {
     this.settingAutoCameraFollowBolt = false;
     this.highlightZoomPanFocusCell = true;
     this.zoomThresh = -0.05;
+    // this.zoomThresh = -0.15;
     this.autoCamPanWaitingForPath = false;
 
     // AI
@@ -5014,6 +5017,10 @@ class App extends Component {
       if (pip === true) {
         insideGrid = true;
         // console.log("clicked or moused over a cell", cell.center, "x: " + x + " y: " + y);
+        this.cursorCoords = {
+          x: x,
+          y: y,
+        };
         let player = undefined;
         for (const plyr of this.players) {
           if (
@@ -5099,6 +5106,10 @@ class App extends Component {
       }
     }
     if (insideGrid === false) {
+      this.cursorCoords = {
+        x: x,
+        y: y,
+      };
       // console.log("clicked or moused over the canvas out of bounds", 'x: ',x,'y: ',y);
       // console.log('clicked or mouse moved outside the grid',this.cellInfoMouseOver);
       if (type === "click") {
@@ -5683,7 +5694,7 @@ class App extends Component {
   };
 
   setCellInfoMouseOver = (state, origin) => {
-    // console.log('setCellInfoMouseOver',state,origin);
+    // console.log("setCellInfoMouseOver", state, origin);
 
     this.cellInfoMouseOver = state;
     if (state === true) {
@@ -5752,8 +5763,8 @@ class App extends Component {
         this.zoomThresh = -0.05;
       }
     } else {
-      // this.zoomThresh = -.05;
-      this.zoomThresh = 0;
+      // this.zoomThresh = -0.15;
+      this.zoomThresh = -0.05;
     }
 
     this.gamepadConfig = [];
@@ -8206,7 +8217,7 @@ class App extends Component {
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
     if (zoom - 1 === this.zoomThresh) {
-      // console.log('at zoomThresh');
+      console.log("at zoomThresh");
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
 
@@ -8224,7 +8235,7 @@ class App extends Component {
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
     if (zoom - 1 < this.zoomThresh) {
-      // console.log('above zoomThresh');
+      console.log("above zoomThresh");
 
       if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
         this.camera.zoomFocusPan.x =
@@ -8287,7 +8298,7 @@ class App extends Component {
 
     // ZOOMING BELOW THRESHOLD
     if (zoom - 1 > this.zoomThresh) {
-      // console.log('below zoomThresh');
+      console.log("below zoomThresh", zoom - 1, this.zoomThresh);
       diff = zoom - 1;
       let diffx;
       let diffy;
@@ -8616,7 +8627,7 @@ class App extends Component {
       3
     );
     // player.moving.step = player.moving.step + moveSpeed;
-
+    // console.log("mover stepper", player.moving.step);
     let newPosition;
 
     // line: percent is 0-1
@@ -8630,8 +8641,6 @@ class App extends Component {
       // endPt = player.moving.destination;
     }
 
-    let percent = player.moving.step;
-
     function getLineXYatPercent(startPt, endPt, percent) {
       let dx = endPt.x - startPt.x;
       let dy = endPt.y - startPt.y;
@@ -8640,7 +8649,7 @@ class App extends Component {
       // newPosition = {x:X,y:Y}
       newPosition = { x: Math.round(X), y: Math.round(Y) };
     }
-    getLineXYatPercent(startPt, endPt, percent);
+    getLineXYatPercent(startPt, endPt, player.moving.step);
 
     if (player.falling.state === true) {
       player.falling.count++;
@@ -8710,78 +8719,266 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  circleArcCrementer = (player) => {
-    const getPointOnArc = (
-      centerX,
-      centerY,
-      radius,
-      startAngle,
-      arcLength,
-      increment
-    ) => {
-      // Calculate the angle for the given increment
-      const angle = startAngle + arcLength * increment;
-
-      // Calculate the coordinates of the point on the arc
-      const x = centerX + radius * Math.cos(angle);
-      const y = centerY + radius * Math.sin(angle);
-
-      return { x, y };
+  circleArcCrementer = (player, mode, radiusA, deg, startAng, shape, direction, face) => {
+    const colors = [
+      "#FF5733", // Red-Orange
+      "#33FF57", // Green
+      "#3366FF", // Blue
+      "#FFD700", // Gold
+      "#800080", // Purple
+      "#FF1493", // Deep Pink
+      "#00CED1", // Dark Turquoise
+      "#8B4513", // Saddle Brown
+      "#808080", // Gray
+      "#FF6347", // Tomato
+      "#9932CC", // Dark Orchid
+      "#32CD32", // Lime Green
+      "#4B0082", // Indigo
+      "#FFD700", // Gold
+      "#556B2F", // Dark Olive Green
+      "#800000", // Maroon
+      "#000080", // Navy
+      "#40E0D0", // Turquoise
+      "#EE82EE", // Violet
+      "#DA70D6", // Orchid
+    ];
+    let color = "green";
+    let pointA = {
+      x: player.currentPosition.cell.center.x,
+      y: player.currentPosition.cell.center.y,
+    };
+    let point = {
+      x: player.currentPosition.cell.number.x * this.tileWidth,
+      y: player.currentPosition.cell.number.y * this.tileWidth,
     };
 
-    const getPointOnArc2 = (originX, originY, radius, angle, fraction) => {
-      const radians = (angle - fraction * 360) * (Math.PI / 180);
-      const x = originX + radius * Math.cos(radians);
-      const y = originY + radius * Math.sin(radians);
-      return { x, y };
+    let pointIso;
+    let point1Iso;
+    let point2Iso;
+    const sceneX = this.canvasWidth / 2;
+    const sceneY = this.sceneY;
+    let offset = { x: this.floorImageWidth / 2, y: this.floorImageHeight };
+    let xOffset;
+    let yOffset;
+    let faceRotation = 0;
+
+    let pointB = {
+      x: point.x + sceneX,
+      y: point.y + sceneY,
     };
 
-    const centerX = player.currentPosition.cell.center.x;
-    // const centerX = player.nextPosititon.x;
-    const centerY = player.currentPosition.cell.center.y;
-    // const centerY = player.nextPosititon.y;
-    const radius = 100;
-    const startAngle = 0;
-    const arcLength = Math.PI; // Half circle
+    let degrees = 360;
+    if (deg && deg !== 0) {
+      degrees = deg;
+    }
+    const cartesianToIsometric = (cartPt) => {
+      let yMod = 2;
+      if (face === "top") {
+        // yMod = 1.5;
+        yMod = 1.75;
+        // yMod = 1.25;
+        // faceRotation = 15;
+      }
+      if (face === "side" || face === "front") {
+        yMod = 1.25;
+      }
+      const isoPt = {
+        x: cartPt.x - cartPt.y,
+        y: (cartPt.x + cartPt.y) / yMod,
+      };
 
-    const point1 = getPointOnArc(
-      centerX,
-      centerY,
-      radius,
-      startAngle,
-      arcLength,
-      (this.testCount.count / this.testCount.limit) * 100
-    );
-    const point2 = getPointOnArc2(
-      centerX,
-      centerY,
-      radius,
-      startAngle,
-      this.testCount.count / this.testCount.limit
-    );
+      return isoPt;
+    };
 
-    // point1 = this.cartesianToIsometric(point1);
-    // point2 = this.cartesianToIsometric(point2);
-    console.log(
-      "increment",
-      this.testCount.count / this.testCount.limit,
-      "point1",
-      point1
-    );
-    // console.log("point2", point2);
+    const rotatePoint = (x, y, cx, cy, theta) => {
+      // Convert angle to radians
+      var thetaRad = (Math.PI / 180) * theta;
+
+      // Apply rotation transformation
+      var xRotated = (x - cx) * Math.cos(thetaRad) - (y - cy) * Math.sin(thetaRad) + cx;
+      var yRotated = (x - cx) * Math.sin(thetaRad) + (y - cy) * Math.cos(thetaRad) + cy;
+
+      return { x: xRotated, y: yRotated };
+    };
+
+    const getPointOnArc = (originX, originY, radius, angle, fraction) => {
+      let radians;
+      if (direction === "clockwise") {
+        radians = (angle + fraction * degrees) * (Math.PI / 180);
+      } else {
+        radians = (angle - fraction * degrees) * (Math.PI / 180);
+      }
+
+      const X = originX + radius * Math.cos(radians);
+      const Y = originY + radius * Math.sin(radians);
+      return { x: X, y: Y };
+    };
+
+    const getLineXYatPercent = (startPt, endPt, num, den) => {
+      const percent = Math.round((num / den) * 10) / 10;
+      let dx = endPt.x - startPt.x;
+      let dy = endPt.y - startPt.y;
+      let X = startPt.x + dx * percent;
+      let Y = startPt.y + dy * percent;
+      return { x: Math.round(X), y: Math.round(Y) };
+    };
+    if (mode === "isometric") {
+      // xOffset = offset.x / 2 + 12;
+      // yOffset = offset.y / 2 + 8;
+      xOffset = -2;
+      yOffset = offset.y / 2;
+
+      color = "blue";
+    }
+    if (mode === "cartesian") {
+      point = pointA;
+    }
+
+    const innerRadius = radiusA / 2;
+    const incr = this.testCount.count / this.testCount.limit;
+
+    let conntectingLineIncr = this.testCount.limit;
+    let point1 = getPointOnArc(point.x, point.y, radiusA, startAng, incr);
+    let point2 = getPointOnArc(point.x, point.y, innerRadius, startAng, incr);
+
+    if (face === "front") {
+      faceRotation = 60;
+      color = "yellow";
+    }
+    if (face === "side") {
+      faceRotation = 120;
+      color = "pink";
+    }
+
+    let connetingLineArray = [];
+
+    const arcStep = (incr * 100).toFixed(0);
+
+    if (mode === "isometric") {
+      pointIso = cartesianToIsometric(point);
+
+      point1Iso = cartesianToIsometric(point1);
+
+      point2Iso = cartesianToIsometric(point2);
+    }
+
+    if (shape === "sector") {
+      for (let i = 0; i < conntectingLineIncr; i++) {
+        let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
+        if (mode === "isometric") {
+          point3 = cartesianToIsometric(point3);
+
+          point3.x += sceneX;
+          point3.y += sceneY;
+
+          point3.x += xOffset;
+          point3.y -= yOffset;
+
+          if (faceRotation > 0) {
+            point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
+          }
+        }
+
+        this.testDraw.push({
+          color: "red",
+          x: point3.x,
+          y: point3.y,
+        });
+      }
+    }
+
+    if (shape === "ringSection") {
+      if (this.testCount.count === 1 || this.testCount.count === this.testCount.limit) {
+        for (let i = 0; i < conntectingLineIncr; i++) {
+          let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
+          if (mode === "isometric") {
+            point3 = cartesianToIsometric(point3);
+
+            point3.x += sceneX;
+            point3.y += sceneY;
+
+            point3.x += xOffset;
+            point3.y -= yOffset;
+
+            if (faceRotation > 0) {
+              point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
+            }
+          }
+          this.testDraw.push({
+            color: colors[this.testCount.count - 1],
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+      }
+    }
+
+    if (mode === "isometric") {
+      point = pointIso;
+      point1 = point1Iso;
+      point2 = point2Iso;
+
+      point.x += sceneX;
+      point.y += sceneY;
+
+      point1.x += sceneX;
+      point1.y += sceneY;
+
+      point2.x += sceneX;
+      point2.y += sceneY;
+
+      point.x += xOffset;
+      point.y -= yOffset;
+      point1.x += xOffset;
+      point1.y -= yOffset;
+      point2.x += xOffset;
+      point2.y -= yOffset;
+
+      let yDiff = point.y - pointA.y;
+      point.y -= yDiff;
+      point1.y -= yDiff;
+      point2.y -= yDiff;
+
+      if (faceRotation > 0) {
+        point1 = rotatePoint(point1.x, point1.y, point.x, point.y, faceRotation);
+        point2 = rotatePoint(point2.x, point2.y, point.x, point.y, faceRotation);
+      }
+    }
+
+    // console.log("sceneX", sceneX, "sceneY", sceneY);
+    // console.log("pointA", pointA.x.toFixed(2), pointA.y.toFixed(2));
+    // console.log("point", point.x.toFixed(2), point.y.toFixed(2));
+    // console.log("point1", point1.x.toFixed(2), point1.y.toFixed(2));
 
     this.testDraw.push(
       {
-        color: "purple",
+        color: color,
         x: point1.x,
         y: point1.y,
+      },
+      {
+        color: color,
+        x: point.x,
+        y: point.y,
+      },
+      {
+        color: "red",
+        x: pointA.x,
+        y: pointA.y,
+      },
+      {
+        color: "purple",
+        x: pointB.x,
+        y: pointB.y,
       }
-      // {
-      //   color: "red",
-      //   x: point2.x,
-      //   y: point2.y,
-      // }
     );
+    if (shape === "ringSection") {
+      this.testDraw.push({
+        color: "purple",
+        x: point2.x,
+        y: point2.y,
+      });
+    }
   };
   arcBoltCrementer = () => {};
   obstacleMoveCrementer = (obstacleCell, destCell) => {
@@ -16492,7 +16689,6 @@ class App extends Component {
     //   bluntAttacked: 25,
     //   defended: 10,
     // parried: 25
-    // knockedOut: 65,
     // };
     this.attackedCancel(player);
 
@@ -17200,7 +17396,7 @@ class App extends Component {
 
     if (
       player.elasticCounter.state === true &&
-      player.elasticCounter.type === player.action
+      player.elasticCounter.type !== "deflected"
     ) {
       player.elasticCounter.state = false;
       player.elasticCounter.type = "";
@@ -17473,6 +17669,67 @@ class App extends Component {
         direction: "",
         puller: undefined,
       };
+    }
+
+    let popup;
+    let popupsToRemove = [
+      "preAction1",
+      "preAction2",
+      "attacking",
+      "attacking1",
+      "attacking2",
+      "missedAttack",
+      "attackingBlunt",
+      "attackingUnarmed",
+      "attackDefended",
+      "attackParried",
+      "defending",
+      "dodgeStart",
+      "pushedBack",
+      "missedAttack2",
+      "prePush",
+      "canPush",
+      "noPush",
+      "pushing",
+      "prePull",
+      "canPull",
+      "noPull",
+      "pulling",
+      "pushedPulled",
+      "dodging2",
+      "attackFeint",
+      "attackFeint2",
+      "attackFeint3",
+      "defendFeint",
+      "defendFeint2",
+      "defendFeint3",
+      "dodgeFeint",
+      "dodgeFeint2",
+      "boltDefend2",
+      "flanking",
+      "noFlanking",
+      "clashing",
+      "defending",
+      "strafe moving",
+      "dodging",
+      "flanking",
+      "jumping",
+      "attacking",
+      "charging",
+      "noDirection3",
+      "northDirection",
+      "southDirection",
+      "eastDirection",
+      "westDirection",
+    ];
+    for (const pop of popupsToRemove) {
+      popup = player.popups.find((x) => x.msg === pop);
+      if (popup) {
+        player.popups.splice(
+          player.popups.findIndex((x) => x.msg === pop),
+          1
+        );
+      }
     }
 
     if (player.ai.state === true) {
@@ -33401,7 +33658,7 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 50 && player.number === 1) {
+    if (this.time === 10 && player.number === 1) {
       this.toggleCameraCustomView();
       // this.setAutoCamera("test", player);
       // this.setAutoCamera('attackFocus',player);
@@ -33429,23 +33686,193 @@ class App extends Component {
       // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 1) {
-      this.testCount.state = true;
-      this.testCount.limit = 15;
+      // this.testCount.state = true;
+      // this.testCount.limit = 60;
       // this.switchBackgroundImage("sea_clouds_night_1");
-
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
+    if (this.time === 150 && player.number === 1) {
+      // this.setDeflection(player, "defended", true);
+      // this.setDeflection(player, "attacked", false);
+      // this.pushBack(player, this.getOppositeDirection(player.direction));
+    }
+    // CIRCLE ARC CREMENTER TESTING
     if (this.testCount.state === true && player.number === 1) {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
-        this.circleArcCrementer(player);
+
+        // this.circleArcCrementer(
+        //   player,
+        //   "cartesian",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   ""
+        // );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   50,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "top"
+        // );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   50,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "front"
+        // );
+        this.circleArcCrementer(
+          player,
+          "isometric",
+          50,
+          0,
+          180,
+          "arc",
+          "counterClockwise",
+          "side"
+        );
+      }
+      // if (this.testCount.count >= this.testCount.limit) {
+      //   this.testCount.state = false;
+      // }
+    }
+    if (this.testCount.state === true && player.number === 2) {
+      if (this.testCount.count < this.testCount.limit) {
+        // this.testCount.count++;
+        // this.circleArcCrementer(
+        //   player,
+        //   "cartesian",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   ""
+        // );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   50,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "front"
+        // );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "front"
+        // );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   70,
+        //   0,
+        //   180,
+        //   "arc",
+        //   "counterClockwise",
+        //   "side"
+        // );
       }
       if (this.testCount.count >= this.testCount.limit) {
         this.testCount.state = false;
       }
     }
+    // if (this.testCount.state === true && player.number === 2) {
+    //   if (this.testCount.count < this.testCount.limit) {
+    //     this.testCount.count++;
+
+    //     // this.circleArcCrementer(
+    //     //   player,
+    //     //   "cartesian",
+    //     //   70,
+    //     //   0,
+    //     //   180,
+    //     //   "arc",
+    //     //   "counterClockwise",
+    //     //   ""
+    //     // );
+    //     // this.circleArcCrementer(
+    //     //   player,
+    //     //   "isometric",
+    //     //   70,
+    //     //   0,
+    //     //   180,
+    //     //   "arc",
+    //     //   "counterClockwise",
+    //     //   "top"
+    //     // );
+    //     this.circleArcCrementer(
+    //       player,
+    //       "isometric",
+    //       70,
+    //       0,
+    //       180,
+    //       "arc",
+    //       "counterClockwise",
+    //       "front"
+    //     );
+    //     // this.circleArcCrementer(
+    //     //   player,
+    //     //   "isometric",
+    //     //   70,
+    //     //   0,
+    //     //   180,
+    //     //   "arc",
+    //     //   "counterClockwise",
+    //     //   "side"
+    //     // );
+    //   }
+    //   if (this.testCount.count >= this.testCount.limit) {
+    //     this.testCount.state = false;
+    //   }
+    // }
+
+    // FIX ME 2ND
+    // what is the realtionshp between
+    //  the amount of time we want to draw the arc for?
+    // the amount of points we want to draw the arc with?
+
+    // when the time to start drawing arrives
+    //   if the a mathcing entry does not exist,
+    //     create a new id based on array length
+    //       push instruction object to crementerArray w/ state true
+    //         while
+
+    //     if an elements state is true the func will be called from draw player
+
+    //     {
+    //       state:
+    //       pointcount:
+    //       limit //how many points the lines should be made up of
+    //       mode
+    //       radius
+    //       innerRadius
+    //       deg //360 or 0 full 180 half etc
+    //       startAngle: 0 == 3oclock, 90 == 6oclock, 180 == 9oclock, 270 == 12oclock
+    //       color
+    //       shape //arc, sector, ring section
+    // ownerType
+    // owner
+    //     }
 
     // DYING
     if (player.dead.state === true) {
@@ -34949,7 +35376,7 @@ class App extends Component {
         if (player.newMoveDelay.state === true) {
           if (player.newMoveDelay.count < player.newMoveDelay.limit) {
             player.newMoveDelay.count++;
-            // console.log('newMoveDelay.count',player.newMoveDelay.count);
+            // console.log("newMoveDelay.count", player.newMoveDelay.count);
           }
           if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
             player.newMoveDelay = {
@@ -40371,6 +40798,26 @@ class App extends Component {
         p.x = x * tileWidth;
         p.y = y * tileWidth;
         let iso = this.cartesianToIsometric(p);
+
+        if (this.showGridIsoGuide === true) {
+          context.font = "15px Arial";
+          context.fillStyle = "yellow";
+          context.beginPath();
+          context.arc(iso.x + sceneX, iso.y + sceneY, 3, 0, 2 * Math.PI);
+          context.fill();
+          context.fillText(
+            "" + x + "," + y + "",
+            iso.x + sceneX - 25,
+            iso.y + sceneY - 5
+          );
+
+          context.fillStyle = "white";
+          context.beginPath();
+          context.arc(p.x + sceneX, p.y + sceneY, 3, 0, 2 * Math.PI);
+          context.fill();
+          context.fillText("" + x + "," + y + "", p.x + sceneX, p.y + sceneY - 5);
+        }
+
         let offset = { x: floorImageWidth / 2, y: floorImageHeight };
         iso.x += sceneX;
         iso.y += sceneY;
@@ -40510,12 +40957,14 @@ class App extends Component {
         }
 
         // CELL COORD LABEL
+        context.font = "10px Arial";
         context.fillStyle = "black";
         context.fillText(
           "" + x + "," + y + "",
           iso.x - offset.x / 2 + 18,
           iso.y - offset.y / 2 + 12
         );
+
         context.fillStyle = "black";
         context.fillRect(center.x, center.y, 5, 5);
 
@@ -41048,7 +41497,7 @@ class App extends Component {
             x: plyr.nextPosition.x,
             y: plyr.nextPosition.y,
           };
-          let newCharDarwPoint = {
+          let newCharDrawPoint = {
             x: plyr.nextPosition.x - this.floorImageHeight / 2,
             y: plyr.nextPosition.y - this.floorImageHeight,
           };
@@ -41882,8 +42331,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41894,8 +42343,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41914,8 +42363,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41926,8 +42375,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41946,8 +42395,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41958,8 +42407,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41978,8 +42427,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -41990,8 +42439,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42169,8 +42618,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42207,8 +42656,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42230,8 +42679,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42253,8 +42702,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42276,8 +42725,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42296,8 +42745,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42315,8 +42764,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42498,8 +42947,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42691,8 +43140,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42709,8 +43158,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42724,8 +43173,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42739,8 +43188,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10 - jumpYCalc * 3,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42769,8 +43218,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42789,8 +43238,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42810,8 +43259,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42830,8 +43279,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42849,8 +43298,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -42872,8 +43321,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42892,8 +43341,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42912,8 +43361,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42932,8 +43381,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42953,8 +43402,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42972,8 +43421,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -42991,8 +43440,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -43010,8 +43459,8 @@ class App extends Component {
                     sy,
                     sWidth,
                     sHeight,
-                    newCharDarwPoint.x - 5,
-                    newCharDarwPoint.y - 10,
+                    newCharDrawPoint.x - 5,
+                    newCharDrawPoint.y - 10,
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
@@ -43029,8 +43478,8 @@ class App extends Component {
                 sy,
                 sWidth,
                 sHeight,
-                newCharDarwPoint.x - 5,
-                newCharDarwPoint.y - 10,
+                newCharDrawPoint.x - 5,
+                newCharDrawPoint.y - 10,
                 this.playerDrawWidth2,
                 this.playerDrawHeight2
               );
@@ -43053,8 +43502,8 @@ class App extends Component {
                   sy,
                   sWidth,
                   sHeight,
-                  newCharDarwPoint.x - 5,
-                  newCharDarwPoint.y - 10,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
@@ -44349,7 +44798,7 @@ class App extends Component {
 
         // CAMERA FOCUS POINT
         if (x === this.gridWidth && y === this.gridWidth) {
-          // console.log('Camera centered');
+          // console.log("Camera centered");
           context.fillStyle = "yellow";
           context.beginPath();
           context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
@@ -44358,11 +44807,19 @@ class App extends Component {
         }
 
         // TEST DRAW
+
         for (const point of this.testDraw) {
-          context.fillStyle = point.color;
-          context.beginPath();
-          context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-          context.fill();
+          if (x === this.gridWidth && y === this.gridWidth) {
+            context.fillStyle = point.color;
+            context.beginPath();
+            context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+            context.fill();
+          }
+          // let indx = this.testDraw.findIndex(
+          //   (x) => x.x === point.x && x.y === point.y && x.color === point.color
+          // );
+
+          // this.testDraw.splice(indx, 1);
         }
       }
     }
@@ -45792,7 +46249,7 @@ class App extends Component {
       //   state: true,
       //   windowWidth: window.innerWidth,
       //   gridWidth: this.gridWidth,
-      // }
+      // };
     }
 
     let diff = 1 - this.camera.zoom.x;
@@ -46074,7 +46531,7 @@ class App extends Component {
 
             this.getTarget(player);
 
-            let newCharDarwPoint = {
+            let newCharDrawPoint = {
               x: player.nextPosition.x - this.floorImageHeight / 2,
               y: player.nextPosition.y - this.floorImageHeight,
             };
@@ -46085,8 +46542,8 @@ class App extends Component {
               sy,
               sWidth,
               sHeight,
-              newCharDarwPoint.x,
-              newCharDarwPoint.y,
+              newCharDrawPoint.x,
+              newCharDrawPoint.y,
               this.playerDrawWidth2,
               this.playerDrawHeight2
             );
@@ -46126,6 +46583,12 @@ class App extends Component {
         <div className="containerTop">
           <div className="timer">
             <p className="timerText">{this.time}</p>
+            {this.cursorCoords.x && (
+              <p className="timerText">
+                Cursor: x {this.cursorCoords.x.toFixed(2)}, y{" "}
+                {this.cursorCoords.y.toFixed(2)}
+              </p>
+            )}
           </div>
           <Helper players={this.players} />
           <div className={this.state.containerInnerClass}>
@@ -46141,7 +46604,7 @@ class App extends Component {
               ref={this.canvasRef2}
               className="canvas2"
             />
-            // DEBUB BOX
+            {/* // DEBUB BOX */}
             <div className={this.debugBoxStyle}>
               <DebugBox
                 player={this.players[0]}
@@ -46158,14 +46621,14 @@ class App extends Component {
                 />
               </div>
             )}
-            //BACKGROUND COMPASS
+            {/* //BACKGROUND COMPASS */}
             <img
               src={bgCompass}
               className="bgCompass"
               ref={this.bgCompassRef}
               alt="logo"
             />
-            // SETTINGS BOX
+            {/* // SETTINGS BOX */}
             <div className="settingsSwitch">
               <a className="setSwitchLink" onClick={this.openSettings}>
                 <OverlayTrigger
@@ -46261,7 +46724,7 @@ class App extends Component {
                 </OverlayTrigger>
               </a>
             </div>
-            // CAMERA BOX
+            {/* // CAMERA BOX */}
             {this.camera.state === true && (
               <div className="cameraBox">
                 <CameraControl
@@ -46273,7 +46736,7 @@ class App extends Component {
                 />
               </div>
             )}
-            // CELL INFO
+            {/* // CELL INFO */}
             {this.showCellInfoBox !== true && (
               <div className="cellInfoSwitch">
                 <OverlayTrigger
@@ -46298,10 +46761,12 @@ class App extends Component {
                 ref={this.cellInfoBoxRef}
                 clicked={this.clicked}
                 close={this.closeCellInfoBox}
+                cellInfoMouseOver={this.cellInfoMouseOver}
                 setCellInfoMouseOver={this.setCellInfoMouseOver}
+                cursorCoords={this.cursorCoords}
               />
             )}
-            // AI STATUS BOX
+            {/* // AI STATUS BOX */}
             {this.state.showAiStatus === true && (
               <AiStatus
                 players={this.players}
@@ -47525,8 +47990,6 @@ class App extends Component {
             ref={this.deflectedFallingSheetNewRef}
             alt="logo"
           />
-
-          <img src={bg_1} className="hidden playerImgs" ref={this.bg_1Ref} alt="logo" />
         </div>
       </React.Fragment>
     );

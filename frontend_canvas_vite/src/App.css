@@ -76,6 +76,7 @@
   /* background-color: #ffffff; */
   /* background-image: url("./assets/backgrounds/bg_1.png"); */
   background-size: 1310px 790px;
+  /* background-size: 1810px 1290px; */
 
   display: flex;
   flex-direction: column;
@@ -92,7 +93,8 @@
   /* background-color: #ffffff; */
   /* background-image: url("./assets/backgrounds/bg_1.png"); */
   /* background-size: 1010px 600px; */
-  background-size: 1515px 900px;
+  /* background-size: 1515px 900px; */
+  background-size: 2020px 1200px;
   background-position: center;
 
   display: flex;
@@ -196,7 +198,7 @@
   border: 2px solid green;
   border-radius: 5px;
   padding: 0.5rem;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.6);
   position: absolute;
   bottom: 0;
   left: 0.1rem;
@@ -233,7 +235,7 @@
   border: 2px solid red;
   border-radius: 5px;
   padding: 0.5rem;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.6);
   position: absolute;
   bottom: 0;
   left: 8rem;

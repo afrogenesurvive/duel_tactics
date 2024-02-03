@@ -28,6 +28,14 @@ const CellInfo = (props) => {
       />
 
       <ul className="cellInfoList">
+        {/* {props.cellInfoMouseOver === false && (
+          <li className="cellInfoListItem">
+            <p className="cellInfoText">
+              Cursor: {props.cursorCoords.x.toFixed(2)}, {props.cursorCoords.y.toFixed(2)}
+            </p>
+          </li>
+        )} */}
+
         <li className="cellInfoListItem">
           <p className="cellInfoText">
             X,Y: {props.clicked.cell.center.x.toFixed(2)},{" "}
