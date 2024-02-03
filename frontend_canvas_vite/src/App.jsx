@@ -33657,7 +33657,7 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 50 && player.number === 1) {
+    if (this.time === 10 && player.number === 1) {
       this.toggleCameraCustomView();
       // this.setAutoCamera("test", player);
       // this.setAutoCamera('attackFocus',player);
@@ -33685,10 +33685,9 @@ class App extends Component {
       // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 1) {
-      this.testCount.state = true;
-      this.testCount.limit = 60;
+      // this.testCount.state = true;
+      // this.testCount.limit = 60;
       // this.switchBackgroundImage("sea_clouds_night_1");
-
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
@@ -33741,7 +33740,7 @@ class App extends Component {
           180,
           "arc",
           "counterClockwise",
-          "top"
+          "side"
         );
       }
       // if (this.testCount.count >= this.testCount.limit) {
