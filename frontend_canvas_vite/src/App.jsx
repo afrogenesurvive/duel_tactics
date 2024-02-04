@@ -22,6 +22,17 @@ import {
 import logo from "./logo.svg";
 import bgCompass from "./assets/bgCompass.png";
 
+import backgroundField1 from "./assets/backgrounds/bg_field_1.png";
+import backgroundField2 from "./assets/backgrounds/bg_field_2.png";
+import backgroundField3 from "./assets/backgrounds/bg_field_3.png";
+import backgroundNorthernLights1 from "./assets/backgrounds/bg_northernLights_1.png";
+import backgroundSeaClouds1 from "./assets/backgrounds/bg_seaClouds_1.png";
+import backgroundSeaClouds2 from "./assets/backgrounds/bg_seaClouds_2.png";
+import backgroundSeaClouds3 from "./assets/backgrounds/bg_seaClouds_3.png";
+import backgroundSeaClouds4 from "./assets/backgrounds/bg_seaClouds_4.png";
+import backgroundSeaCloudsNight1 from "./assets/backgrounds/bg_seaCloudsNight_1.png";
+import backgroundSeaCoast1 from "./assets/backgrounds/bg_seaCoast_1.png";
+
 import floorDirt from "./assets/terrain/floorDirt.png";
 import floorGrass from "./assets/terrain/floorGrass.png";
 import floorIce from "./assets/terrain/floorIce.png";
@@ -3879,19 +3890,7 @@ class App extends Component {
     this.showPlayerOutlines = true;
     this.showGridIsoGuide = false;
 
-    this.backgroundImage = "src/assets/backgrounds/bg_seaCloudsNight_1.png";
-    this.backgroundImageRef = {
-      sea_clouds_1: "bg_seaClouds_1",
-      sea_clouds_2: "bg_seaClouds_1",
-      sea_clouds_3: "bg_seaClouds_1",
-      sea_clouds_4: "bg_seaClouds_1",
-      sea_clouds_night_1: "bg_seaCloudsNight_1",
-      sea_coast_1: "bg_seaCoast_1",
-      nothern_lights_1: "bg_northernLights_1",
-      field_1: "bg_field_1",
-      field_2: "bg_field_2",
-      field_3: "bg_field_3",
-    };
+    this.backgroundImageRef = {};
 
     // CAMERA
     this.toggleCameraMode = false;
@@ -4065,6 +4064,17 @@ class App extends Component {
     this.testRefWest = React.createRef();
 
     this.bgCompassRef = React.createRef();
+
+    this.backgroundField1Ref = React.createRef();
+    this.backgroundField2Ref = React.createRef();
+    this.backgroundField3Ref = React.createRef();
+    this.backgroundNorthernLights1Ref = React.createRef();
+    this.backgroundSeaClouds1Ref = React.createRef();
+    this.backgroundSeaClouds2Ref = React.createRef();
+    this.backgroundSeaClouds3Ref = React.createRef();
+    this.backgroundSeaClouds4Ref = React.createRef();
+    this.backgroundSeaCloudsNight1Ref = React.createRef();
+    this.backgroundSeaCoast1Ref = React.createRef();
 
     this.popupProgressImgRef = React.createRef();
     this.popupProgressSvgRef = React.createRef();
@@ -4311,8 +4321,6 @@ class App extends Component {
     this.defendSheetNewRef = React.createRef();
     this.dodgeSheetNewRef = React.createRef();
     this.deflectedFallingSheetNewRef = React.createRef();
-
-    this.bg_1Ref = React.createRef();
   }
 
   componentDidMount() {
@@ -6010,12 +6018,9 @@ class App extends Component {
     }
   };
   switchBackgroundImage = (args) => {
-    let img = this.backgroundImageRef[args];
-    this.backgroundImage = `src/assets/backgrounds/${img}.png`;
-
     document.getElementsByClassName(
       this.state.containerInnerClass
-    )[0].style.backgroundImage = `url('${this.backgroundImage}')`;
+    )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
   };
 
   getCustomPlyrStartPosList = (args) => {
@@ -6695,6 +6700,11 @@ class App extends Component {
     });
   };
 
+  setBackgroundImage = (args) => {
+    document.getElementsByClassName(
+      this.state.containerInnerClass
+    )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
+  };
   findFocusCell = (inputType, inputSubType, focus, canvas, context, speed) => {
     let cell = {
       x: undefined,
@@ -33686,6 +33696,7 @@ class App extends Component {
       // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 1) {
+      this.setBackgroundImage("sea_clouds_1");
       // this.testCount.state = true;
       // this.testCount.limit = 60;
       // this.switchBackgroundImage("sea_clouds_night_1");
@@ -46119,6 +46130,18 @@ class App extends Component {
         west: this.barrierAWestRef.current,
       },
     };
+    this.backgroundImageRef = {
+      sea_clouds_1: this.backgroundSeaClouds1Ref.current,
+      sea_clouds_2: this.backgroundSeaClouds2Ref.current,
+      sea_clouds_3: this.backgroundSeaClouds3Ref.current,
+      sea_clouds_4: this.backgroundSeaClouds4Ref.current,
+      sea_clouds_night_1: this.backgroundSeaCloudsNight1Ref.current,
+      sea_coast_1: this.backgroundSeaCoast1Ref.current,
+      nothern_lights_1: this.backgroundNorthernLights1Ref.current,
+      field_1: this.backgroundField1Ref.current,
+      field_2: this.backgroundField2Ref.current,
+      field_3: this.backgroundField3Ref.current,
+    };
 
     // LOAD CROSSBOW AMMO
     for (const plyr of this.players) {
@@ -46144,9 +46167,7 @@ class App extends Component {
     let sceneY = this.sceneY;
     let tileWidth = this.tileWidth;
 
-    document.getElementsByClassName(
-      this.state.containerInnerClass
-    )[0].style.backgroundImage = `url('${this.backgroundImage}')`;
+    this.setBackgroundImage("sea_clouds_night_1");
 
     this.startProcessLevelData(canvas);
     // gridInfo = this.gridInfo;
@@ -46855,6 +46876,67 @@ class App extends Component {
             src={bgCompass}
             className="hidden bgCompass"
             ref={this.bgCompassRef}
+            alt="logo"
+          />
+
+          <img
+            src={backgroundField1}
+            className="hidden"
+            ref={this.backgroundField1Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundField2}
+            className="hidden"
+            ref={this.backgroundField2Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundField3}
+            className="hidden"
+            ref={this.backgroundField3Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundNorthernLights1}
+            className="hidden"
+            ref={this.backgroundNorthernLights1Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundSeaClouds1}
+            className="hidden"
+            ref={this.backgroundSeaClouds1Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundSeaClouds2}
+            className="hidden"
+            ref={this.backgroundSeaClouds2Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundSeaClouds3}
+            className="hidden"
+            ref={this.backgroundSeaClouds3Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundSeaClouds4}
+            className="hidden"
+            ref={this.backgroundSeaClouds4Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundSeaCloudsNight1}
+            className="hidden"
+            ref={this.backgroundSeaCloudsNight1Ref}
+            alt="logo"
+          />
+          <img
+            src={backgroundSeaCoast1}
+            className="hidden"
+            ref={this.backgroundSeaCoast1Ref}
             alt="logo"
           />
 
