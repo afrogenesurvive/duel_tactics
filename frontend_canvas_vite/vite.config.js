@@ -23,7 +23,6 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    exclude: ["fsevents"],
     include: ["react", "react-dom"],
     esbuildOptions: {
       loader: {

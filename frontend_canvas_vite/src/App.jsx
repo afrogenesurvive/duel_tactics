@@ -243,7 +243,6 @@ import CameraControl from "./cameraControl";
 import Helper from "./helper";
 
 import pointInPolygon from "point-in-polygon";
-import { reset } from "nodemon";
 
 class App extends Component {
   state = {
@@ -6020,7 +6019,7 @@ class App extends Component {
       this.debugBoxStyle2 = "debugDisplay2 closedDebug";
     }
   };
-  switchBackgroundImage = (args) => {
+  setBackgroundImage = (args) => {
     document.getElementsByClassName(
       this.state.containerInnerClass
     )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
@@ -6703,11 +6702,6 @@ class App extends Component {
     });
   };
 
-  setBackgroundImage = (args) => {
-    document.getElementsByClassName(
-      this.state.containerInnerClass
-    )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
-  };
   findFocusCell = (inputType, inputSubType, focus, canvas, context, speed) => {
     let cell = {
       x: undefined,
@@ -8732,7 +8726,26 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  circleArcCrementer = (player, mode, radiusA, deg, startAng, shape, direction, face) => {
+  directionalActionAnimLineCrementer(startPt, endPt, percent) {
+    let dx = endPt.x - startPt.x;
+    let dy = endPt.y - startPt.y;
+    let X = startPt.x + dx * percent;
+    let Y = startPt.y + dy * percent;
+    // newPosition = {x:X,y:Y}
+    return { x: Math.round(X), y: Math.round(Y) };
+  }
+  circleArcCrementer = (
+    type,
+    player,
+    mode,
+    radiusA,
+    deg,
+    startAng,
+    shape,
+    direction,
+    face,
+    elemId
+  ) => {
     const colors = [
       "#FF5733", // Red-Orange
       "#33FF57", // Green
@@ -8765,8 +8778,13 @@ class App extends Component {
       y: player.currentPosition.cell.number.y * this.tileWidth,
     };
     // starAngles:
-    // top face: 0 = eastpoint, 90 = southpoint, 180 = westpoint, 270 = northpoint
+    // top face: 0 = east, 90 = south, 180 = west, 270 = north
+    // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
+    // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
+    // type args: 'testing'/'playerDirectionalAction'
+
+    let arrayElem = player.actionDirectionAnimationArray.find((x) => x.id === elemId);
     let pointIso;
     let point1Iso;
     let point2Iso;
@@ -8850,9 +8868,23 @@ class App extends Component {
     }
 
     const innerRadius = radiusA / 2;
-    const incr = this.testCount.count / this.testCount.limit;
+    let incr = 0;
+    let conntectingLineIncr = 0;
 
-    let conntectingLineIncr = this.testCount.limit;
+    let count = 0;
+    let limit = 0;
+    if (type === "testing") {
+      count = this.testCount.count;
+      limit = this.testCount.limit;
+    }
+    if (type === "playerDirectionalAction") {
+      count = arrayElem.counter.count;
+      limit = arrayElem.counter.limit;
+    }
+
+    incr = count / limit;
+    conntectingLineIncr = limit;
+
     let point1 = getPointOnArc(point.x, point.y, radiusA, startAng, incr);
     let point2 = getPointOnArc(point.x, point.y, innerRadius, startAng, incr);
 
@@ -8863,6 +8895,9 @@ class App extends Component {
     if (face === "side") {
       faceRotation = 120;
       color = "pink";
+    }
+    if (type === "playerDirectionalAction") {
+      color = arrayElem.color;
     }
 
     let connetingLineArray = [];
@@ -8894,16 +8929,25 @@ class App extends Component {
           }
         }
 
-        this.testDraw.push({
-          color: "red",
-          x: point3.x,
-          y: point3.y,
-        });
+        if (type === "testing") {
+          this.testDraw.push({
+            color: "red",
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+        if (type === "playerDirectionalAction") {
+          arrayElem.points.push({
+            color: color,
+            x: point3.x,
+            y: point3.y,
+          });
+        }
       }
     }
 
     if (shape === "ringSection") {
-      if (this.testCount.count === 1 || this.testCount.count === this.testCount.limit) {
+      if (count === 1 || count === limit) {
         for (let i = 0; i < conntectingLineIncr; i++) {
           let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
           if (mode === "isometric") {
@@ -8919,11 +8963,21 @@ class App extends Component {
               point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
             }
           }
-          this.testDraw.push({
-            color: colors[this.testCount.count - 1],
-            x: point3.x,
-            y: point3.y,
-          });
+
+          if (type === "testing") {
+            this.testDraw.push({
+              color: colors[this.testCount.count - 1],
+              x: point3.x,
+              y: point3.y,
+            });
+          }
+          if (type === "playerDirectionalAction") {
+            arrayElem.points.push({
+              color: color,
+              x: point3.x,
+              y: point3.y,
+            });
+          }
         }
       }
     }
@@ -8965,35 +9019,75 @@ class App extends Component {
     // console.log("point", point.x.toFixed(2), point.y.toFixed(2));
     // console.log("point1", point1.x.toFixed(2), point1.y.toFixed(2));
 
-    this.testDraw.push(
-      {
-        color: color,
-        x: point1.x,
-        y: point1.y,
-      },
-      {
-        color: color,
-        x: point.x,
-        y: point.y,
-      },
-      {
-        color: "red",
-        x: pointA.x,
-        y: pointA.y,
-      },
-      {
-        color: "purple",
-        x: pointB.x,
-        y: pointB.y,
+    if (type === "testing") {
+      this.testDraw.push(
+        {
+          color: color,
+          x: point1.x,
+          y: point1.y,
+        },
+        {
+          color: color,
+          x: point.x,
+          y: point.y,
+        },
+        {
+          color: "red",
+          x: pointA.x,
+          y: pointA.y,
+        },
+        {
+          color: "purple",
+          x: pointB.x,
+          y: pointB.y,
+        }
+      );
+
+      if (shape === "ringSection") {
+        this.testDraw.push({
+          color: "purple",
+          x: point2.x,
+          y: point2.y,
+        });
       }
-    );
-    if (shape === "ringSection") {
-      this.testDraw.push({
-        color: "purple",
-        x: point2.x,
-        y: point2.y,
-      });
     }
+    if (type === "playerDirectionalAction") {
+      arrayElem.points.push(
+        {
+          color: color,
+          x: point1.x,
+          y: point1.y,
+        },
+        {
+          color: color,
+          x: point.x,
+          y: point.y,
+        },
+        {
+          color: color,
+          x: pointA.x,
+          y: pointA.y,
+        },
+        {
+          color: color,
+          x: pointB.x,
+          y: pointB.y,
+        }
+      );
+      if (shape === "ringSection") {
+        arrayElem.points.push({
+          color: color,
+          x: point2.x,
+          y: point2.y,
+        });
+      }
+    }
+
+    let el = player.actionDirectionAnimationArray.find((x) => x.id === elemId);
+    // player.actionDirectionAnimationArray[indx] = arrayElem;
+    el = arrayElem;
+
+    return player;
   };
   arcBoltCrementer = () => {};
   obstacleMoveCrementer = (obstacleCell, destCell) => {
@@ -14505,7 +14599,7 @@ class App extends Component {
     //   attacking, defending
     // phase:
     // pullback, release
-    let dierctionType = player[action].directionType;
+    let directionType = player[action].directionType;
     let id = arrayElemId;
     let arcAngle = 0;
     let startAngle = 0;
@@ -14517,10 +14611,15 @@ class App extends Component {
       color = "blue";
     }
 
-    let countLimit = 60;
+    let countLimit = 30;
+    let delay = 20;
     // count should be based on phase & action count based on direction
 
     if (directionType === "thrust") {
+      // let percent = (elem.counter.count / elem.counter.limit) * 100;
+      //             let startPoint = player.currentPosition.cell.center;
+      //             let endPoint = player.target.cell1.center;
+      //             elem.points.push(point);
     } else {
       if (phase === "pullback") {
         arcAngle = 90;
@@ -14733,16 +14832,21 @@ class App extends Component {
         player.actionDirectionAnimationArray.push({
           id: id,
           actionDirectionType: directionType,
+          phase: phase,
           radius: radius,
           angle: arcAngle,
-          startAngle: startAng,
+          startAngle: startAngle,
           direction: direction,
           face: face,
           color: color,
           counter: {
-            state: false,
             count: 0,
             limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
           },
           points: [],
         });
@@ -33958,11 +34062,20 @@ class App extends Component {
       // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 1) {
-      this.setBackgroundImage("sea_clouds_1");
-      this.testCount.state = true;
-      this.testCount.limit = 60;
+      // this.setBackgroundImage("sea_clouds_1");
+      // this.testCount.state = true;
+      // this.testCount.limit = 60;
 
-      // this.switchBackgroundImage("sea_clouds_night_1");
+      player.attacking.direction = "north";
+      player.attacking.directionType = "slash";
+      player = this.handlePlayerDirectionalActionAnimation(
+        "init",
+        "attacking",
+        "pullback",
+        player,
+        null
+      );
+
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
@@ -33997,16 +34110,18 @@ class App extends Component {
         //   "counterClockwise",
         //   "top"
         // );
-        this.circleArcCrementer(
-          player,
-          "isometric",
-          50,
-          360,
-          0,
-          "arc",
-          "counterClockwise",
-          "front"
-        );
+        // this.circleArcCrementer(
+        //   "testing",
+        //   player,
+        //   "isometric",
+        //   50,
+        //   360,
+        //   0,
+        //   "arc",
+        //   "counterClockwise",
+        //   "front",
+        //   0
+        // );
         // this.circleArcCrementer(
         //   player,
         //   "isometric",
@@ -34022,139 +34137,6 @@ class App extends Component {
       //   this.testCount.state = false;
       // }
     }
-    if (this.testCount.state === true && player.number === 2) {
-      if (this.testCount.count < this.testCount.limit) {
-        // this.testCount.count++;
-        // this.circleArcCrementer(
-        //   player,
-        //   "cartesian",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   ""
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   50,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "front"
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "front"
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "side"
-        // );
-      }
-      if (this.testCount.count >= this.testCount.limit) {
-        this.testCount.state = false;
-      }
-    }
-    // if (this.testCount.state === true && player.number === 2) {
-    //   if (this.testCount.count < this.testCount.limit) {
-    //     this.testCount.count++;
-
-    //     // this.circleArcCrementer(
-    //     //   player,
-    //     //   "cartesian",
-    //     //   70,
-    //     //   0,
-    //     //   180,
-    //     //   "arc",
-    //     //   "counterClockwise",
-    //     //   ""
-    //     // );
-    //     // this.circleArcCrementer(
-    //     //   player,
-    //     //   "isometric",
-    //     //   70,
-    //     //   0,
-    //     //   180,
-    //     //   "arc",
-    //     //   "counterClockwise",
-    //     //   "top"
-    //     // );
-    //     this.circleArcCrementer(
-    //       player,
-    //       "isometric",
-    //       70,
-    //       0,
-    //       180,
-    //       "arc",
-    //       "counterClockwise",
-    //       "front"
-    //     );
-    //     // this.circleArcCrementer(
-    //     //   player,
-    //     //   "isometric",
-    //     //   70,
-    //     //   0,
-    //     //   180,
-    //     //   "arc",
-    //     //   "counterClockwise",
-    //     //   "side"
-    //     // );
-    //   }
-    //   if (this.testCount.count >= this.testCount.limit) {
-    //     this.testCount.state = false;
-    //   }
-    // }
-
-    // FIX ME
-
-    // when the time to start drawing arrives
-    //   if the a mathcing entry does not exist,
-    //     create a new id based on array length
-    //       push instruction object to crementerArray w/ state true
-    //         while
-
-    //     if an elements state is true the func will be called from draw player
-
-    //     {
-    //       state:
-    //       pointcount:
-    //       limit //how many points the lines should be made up of
-    //       mode
-    //       radius
-    //       innerRadius
-    //       deg //360 or 0 full 180 half etc
-    //       startAngle: 0 == 3oclock, 90 == 6oclock, 180 == 9oclock, 270 == 12oclock
-    //       color
-    //       shape //arc, sector, ring section
-    // ownerType
-    // owner
-    //     }
-
-    // for  each player.actionDirectionAnimationArray
-    // if dirtype is slash
-    //   step elem count
-    //     call this.circleArcCrementer w/ args from elem (all isomentric & arc)
-    //   remove at limit
-
-    // if dirtype is thrust
-    //   call special anim line crementer
-
-    // add drawplayer section
 
     // DYING
     if (player.dead.state === true) {
@@ -35371,6 +35353,70 @@ class App extends Component {
         } else if (player.action !== "idle") {
           // player.idleAnim.state = false;
           player.idleAnim.count = 0;
+        }
+
+        // DIRECTIONAL ACTION ANIM
+        if (player.actionDirectionAnimationArray.length > 0) {
+          for (const elem of player.actionDirectionAnimationArray) {
+            if (elem.actionDirectionType === "slash") {
+              if (elem.delay.state !== true) {
+                if (elem.counter.count < elem.counter.limit) {
+                  elem.counter.count++;
+                  this.circleArcCrementer(
+                    "playerDirectionalAction",
+                    player,
+                    "isometric",
+                    elem.radius,
+                    elem.angle,
+                    elem.startAngle,
+                    "arc",
+                    elem.direction,
+                    elem.face,
+                    elem.id
+                  );
+                }
+                if (elem.counter.count >= elem.counter.limit) {
+                  elem.delay.state = true;
+                }
+              } else {
+                if (elem.delay.count < elem.delay.limit) {
+                  elem.delay.count++;
+                }
+                if (elem.delay.count >= elem.delay.limit) {
+                  let index = player.actionDirectionAnimationArray.findIndex((x) => {
+                    return x.id === elem.id;
+                  });
+                  player.actionDirectionAnimationArray.splice(index, 1);
+                }
+              }
+            }
+            if (elem.actionDirectionType === "thrust") {
+              if (elem.delay.state !== true) {
+                if (elem.counter.count < elem.counter.limit) {
+                  elem.counter.count++;
+
+                  // let point = this.directionalActionAnimLineCrementer(
+                  //   startPoint,
+                  //   endPoint,
+                  //   percent
+                  // );
+                }
+                if (elem.counter.count >= elem.counter.limit) {
+                  elem.delay.state = true;
+                }
+              } else {
+                if (elem.delay.count < elem.delay.limit) {
+                  elem.delay.count++;
+                }
+                if (elem.delay.count >= elem.delay.limit) {
+                  let index = player.actionDirectionAnimationArray.findIndex((x) => {
+                    return x.id === elem.id;
+                  });
+                  player.actionDirectionAnimationArray.splice(index, 1);
+                }
+              }
+            }
+          }
         }
 
         // TURNER!!
@@ -43403,6 +43449,20 @@ class App extends Component {
                       this.playerDrawHeight2
                     );
                   }
+                }
+              }
+            }
+          }
+
+          // DIRECTIONAL ACTION INDICATION
+          if (plyr.actionDirectionAnimationArray.length > 0) {
+            for (const animAction of plyr.actionDirectionAnimationArray) {
+              for (const point of animAction.points) {
+                if (x === this.gridWidth && y === this.gridWidth) {
+                  context.fillStyle = point.color;
+                  context.beginPath();
+                  context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                  context.fill();
                 }
               }
             }
