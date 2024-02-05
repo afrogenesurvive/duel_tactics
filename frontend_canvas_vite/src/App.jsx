@@ -243,6 +243,7 @@ import CameraControl from "./cameraControl";
 import Helper from "./helper";
 
 import pointInPolygon from "point-in-polygon";
+import { reset } from "nodemon";
 
 class App extends Component {
   state = {
@@ -14496,28 +14497,257 @@ class App extends Component {
       charging: charging,
     };
   };
-  handlePlayerDirectionalActionAnimation = (mode, player) => {
+  handlePlayerDirectionalActionAnimation = (mode, action, phase, player, arrayElemId) => {
     // modes:
     //   init, update, reset, cancel
+    //    id used for update, reset, cancel
+    // action:
+    //   attacking, defending
+    // phase:
+    // pullback, release
+    let dierctionType = player[action].directionType;
+    let id = arrayElemId;
     let arcAngle = 0;
     let startAngle = 0;
     let direction = "counterClockwise"; // 'clockwise' or 'counterClockwise'
-    // if pull back arcAngle = 90, release = 180
+    let face = "top"; // top,front,side
+    let radius = 50;
+    let color = "red";
+    if (action === "defending") {
+      color = "blue";
+    }
 
-    // set/update/reaset/clear player.actionDirectionAnimationArray
-    // {
-    //   size: 50, //radius
-    //   angle: arcAngle,
-    //   startAngle: startAng,
-    //   direction: direction,
-    //   face: face,
-    //   color: color,
-    //   counter: {
-    //     state: false,
-    //     count: 0,
-    //     limit: 0,
-    //   }
-    // }
+    let countLimit = 60;
+    // count should be based on phase & action count based on direction
+
+    if (directionType === "thrust") {
+    } else {
+      if (phase === "pullback") {
+        arcAngle = 90;
+      }
+      if (phase === "release") {
+        arcAngle = 180;
+      }
+
+      if (player.direction === "north") {
+        if (player[action].direction === "north") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+        }
+      }
+
+      if (player.direction === "south") {
+        if (player[action].direction === "north") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+        }
+      }
+      // ----------------
+      if (player.direction === "east") {
+        if (player[action].direction === "east") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "ccounterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "west") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      // ----------------
+      if (player.direction === "west") {
+        if (player[action].direction === "east") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "west") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 200;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      // ----------------
+      if (player.direction === "east") {
+        if (player[action].direction === "north") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      if (player.direction === "west") {
+        if (player[action].direction === "north") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+        }
+      }
+      // ----------------
+      if (player.direction === "north") {
+        if (player[action].direction === "east") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+        }
+        if (player[action].direction === "west") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+        }
+      }
+      if (player.direction === "south") {
+        if (player[action].direction === "east") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "west") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+        }
+      }
+
+      if (mode === "init") {
+        id = player.actionDirectionAnimationArray.length + 1;
+
+        player.actionDirectionAnimationArray.push({
+          id: id,
+          actionDirectionType: directionType,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAng,
+          direction: direction,
+          face: face,
+          color: color,
+          counter: {
+            state: false,
+            count: 0,
+            limit: countLimit,
+          },
+          points: [],
+        });
+      }
+    }
 
     return player;
   };
@@ -33731,6 +33961,7 @@ class App extends Component {
       this.setBackgroundImage("sea_clouds_1");
       this.testCount.state = true;
       this.testCount.limit = 60;
+
       // this.switchBackgroundImage("sea_clouds_night_1");
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
@@ -33760,32 +33991,32 @@ class App extends Component {
         //   player,
         //   "isometric",
         //   50,
-        //   180,
-        //   90,
+        //   360,
+        //   0,
         //   "arc",
         //   "counterClockwise",
         //   "top"
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   50,
-        //   180,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "front"
         // );
         this.circleArcCrementer(
           player,
           "isometric",
           50,
-          180,
-          270,
+          360,
+          0,
           "arc",
           "counterClockwise",
-          "side"
+          "front"
         );
+        // this.circleArcCrementer(
+        //   player,
+        //   "isometric",
+        //   50,
+        //   360,
+        //   0,
+        //   "arc",
+        //   "counterClockwise",
+        //   "side"
+        // );
       }
       // if (this.testCount.count >= this.testCount.limit) {
       //   this.testCount.state = false;
@@ -33889,10 +34120,7 @@ class App extends Component {
     //   }
     // }
 
-    // FIX ME 2ND
-    // what is the realtionshp between
-    //  the amount of time we want to draw the arc for?
-    // the amount of points we want to draw the arc with?
+    // FIX ME
 
     // when the time to start drawing arrives
     //   if the a mathcing entry does not exist,
@@ -33918,9 +34146,15 @@ class App extends Component {
     //     }
 
     // for  each player.actionDirectionAnimationArray
+    // if dirtype is slash
     //   step elem count
     //     call this.circleArcCrementer w/ args from elem (all isomentric & arc)
     //   remove at limit
+
+    // if dirtype is thrust
+    //   call special anim line crementer
+
+    // add drawplayer section
 
     // DYING
     if (player.dead.state === true) {
