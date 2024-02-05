@@ -2515,6 +2515,7 @@ class App extends Component {
           count: 0,
           limit: 6,
         },
+        actionDirectionAnimationArray: [],
         ai: {
           state: false,
           imgType: "",
@@ -3023,6 +3024,7 @@ class App extends Component {
           count: 0,
           limit: 6,
         },
+        actionDirectionAnimationArray: [],
         ai: {
           state: false,
           imgType: "",
@@ -8761,6 +8763,8 @@ class App extends Component {
       x: player.currentPosition.cell.number.x * this.tileWidth,
       y: player.currentPosition.cell.number.y * this.tileWidth,
     };
+    // starAngles:
+    // top face: 0 = eastpoint, 90 = southpoint, 180 = westpoint, 270 = northpoint
 
     let pointIso;
     let point1Iso;
@@ -14491,6 +14495,31 @@ class App extends Component {
       player: player,
       charging: charging,
     };
+  };
+  handlePlayerDirectionalActionAnimation = (mode, player) => {
+    // modes:
+    //   init, update, reset, cancel
+    let arcAngle = 0;
+    let startAngle = 0;
+    let direction = "counterClockwise"; // 'clockwise' or 'counterClockwise'
+    // if pull back arcAngle = 90, release = 180
+
+    // set/update/reaset/clear player.actionDirectionAnimationArray
+    // {
+    //   size: 50, //radius
+    //   angle: arcAngle,
+    //   startAngle: startAng,
+    //   direction: direction,
+    //   face: face,
+    //   color: color,
+    //   counter: {
+    //     state: false,
+    //     count: 0,
+    //     limit: 0,
+    //   }
+    // }
+
+    return player;
   };
   meleeAttackPeak = (ownerType, owner) => {
     // console.log("meleeAttackPeak");
@@ -25295,6 +25324,7 @@ class App extends Component {
         count: 0,
         limit: 8,
       };
+      player.actionDirectionAnimationArray = [];
       player.ai = {
         state: false,
         imgType: "",
@@ -25774,6 +25804,7 @@ class App extends Component {
         crossbow: 5,
       },
     };
+    player.actionDirectionAnimationArray = [];
     player.stamina = {
       current: 20,
       max: 20,
@@ -26356,6 +26387,7 @@ class App extends Component {
           count: 0,
           limit: 8,
         };
+        player.actionDirectionAnimationArray = [];
         player.ai = {
           state: false,
           imgType: "",
@@ -27099,6 +27131,7 @@ class App extends Component {
             count: 0,
             limit: 5,
           },
+          actionDirectionAnimationArray: [],
           ai: {
             state: true,
             imgType: imgType,
@@ -33696,8 +33729,8 @@ class App extends Component {
     }
     if (this.time === 100 && player.number === 1) {
       this.setBackgroundImage("sea_clouds_1");
-      // this.testCount.state = true;
-      // this.testCount.limit = 60;
+      this.testCount.state = true;
+      this.testCount.limit = 60;
       // this.switchBackgroundImage("sea_clouds_night_1");
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
@@ -33727,8 +33760,8 @@ class App extends Component {
         //   player,
         //   "isometric",
         //   50,
-        //   0,
         //   180,
+        //   90,
         //   "arc",
         //   "counterClockwise",
         //   "top"
@@ -33737,7 +33770,7 @@ class App extends Component {
         //   player,
         //   "isometric",
         //   50,
-        //   0,
+        //   180,
         //   180,
         //   "arc",
         //   "counterClockwise",
@@ -33747,8 +33780,8 @@ class App extends Component {
           player,
           "isometric",
           50,
-          0,
           180,
+          270,
           "arc",
           "counterClockwise",
           "side"
@@ -33883,6 +33916,11 @@ class App extends Component {
     // ownerType
     // owner
     //     }
+
+    // for  each player.actionDirectionAnimationArray
+    //   step elem count
+    //     call this.circleArcCrementer w/ args from elem (all isomentric & arc)
+    //   remove at limit
 
     // DYING
     if (player.dead.state === true) {
