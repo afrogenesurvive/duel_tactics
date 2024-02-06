@@ -8768,7 +8768,7 @@ class App extends Component {
     let dy = endPt.y - startPt.y;
     let X = startPt.x + dx * percent;
     let Y = startPt.y + dy * percent;
-    let result = { x: Math.round(X), y: Math.round(Y) };
+    let result = { color: elem.color, x: Math.round(X), y: Math.round(Y) };
 
     elem.points.push(result);
     let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
@@ -8908,7 +8908,7 @@ class App extends Component {
       point = pointA;
     }
 
-    const innerRadius = radiusA - 20;
+    const innerRadius = radiusA - 5;
     let incr = 0;
     let conntectingLineIncr = 0;
 
@@ -9070,22 +9070,22 @@ class App extends Component {
           color: color,
           x: point1.x,
           y: point1.y,
-        },
-        {
-          color: color,
-          x: point.x,
-          y: point.y,
-        },
-        {
-          color: color,
-          x: pointA.x,
-          y: pointA.y,
-        },
-        {
-          color: color,
-          x: pointB.x,
-          y: pointB.y,
         }
+        // {
+        //   color: colors[2],
+        //   x: point.x,
+        //   y: point.y,
+        // }
+        // {
+        //   color: colors[3],
+        //   x: pointA.x,
+        //   y: pointA.y,
+        // }
+        // {
+        //   color: colors[4],
+        //   x: pointB.x,
+        //   y: pointB.y,
+        // }
       );
       if (shape === "ringSection") {
         elem.points.push({
@@ -14577,6 +14577,7 @@ class App extends Component {
                 "to",
                 inputDirection
               );
+              directionChanged = true;
               popup(inputDirection, player[action].direction);
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
@@ -14588,6 +14589,7 @@ class App extends Component {
                 player[action].direction,
                 "to none"
               );
+              directionChanged = true;
             }
             popup("none", player[action].direction);
             player[action].direction = "none";
@@ -14661,6 +14663,7 @@ class App extends Component {
 
         player.actionDirectionAnimationArray.push({
           id: id,
+          action: action,
           actionDirectionType: "thrust",
           phase: phase,
           radius: radius,
@@ -14897,6 +14900,7 @@ class App extends Component {
 
         player.actionDirectionAnimationArray.push({
           id: id,
+          action: action,
           actionDirectionType: directionType,
           phase: phase,
           radius: radius,
@@ -18173,6 +18177,7 @@ class App extends Component {
         );
       }
     }
+    player.actionDirectionAnimationArray = [];
 
     if (player.ai.state === true) {
       this.players[player.number - 1].ai.currentInstruction = 0;
@@ -34103,6 +34108,7 @@ class App extends Component {
 
     let nextPosition;
 
+    // TESTING
     if (this.time === 10 && player.number === 1) {
       this.toggleCameraCustomView();
       // this.setAutoCamera("test", player);
@@ -34133,41 +34139,41 @@ class App extends Component {
     if (this.time === 100 && player.number === 1) {
       // this.setBackgroundImage("sea_clouds_1");
       // this.testCount.state = true;
-      // this.testCount.limit = 60;
+      // this.testCount.limit = 20;
       // player.attacking.direction = "none";
       // player.attacking.directionType = "thrust";
-      player.attacking.direction = "east";
-      player.attacking.directionType = "slash";
-      player = this.handlePlayerDirectionalActionAnimation(
-        "init",
-        "attacking",
-        "pullback",
-        player,
-        null
-      );
+      // player.attacking.direction = "south";
+      // player.attacking.directionType = "slash";
+      // player = this.handlePlayerDirectionalActionAnimation(
+      //   "init",
+      //   "attacking",
+      //   "pullback",
+      //   player,
+      //   null
+      // );
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
     if (this.time === 120 && player.number === 2) {
-      player.defending.direction = "east";
-      player.defending.directionType = "slash";
-      player = this.handlePlayerDirectionalActionAnimation(
-        "init",
-        "defending",
-        "release",
-        player,
-        null
-      );
+      // player.defending.direction = "east";
+      // player.defending.directionType = "slash";
+      // player = this.handlePlayerDirectionalActionAnimation(
+      //   "init",
+      //   "defending",
+      //   "release",
+      //   player,
+      //   null
+      // );
     }
     if (this.time === 120 && player.number === 1) {
-      player = this.handlePlayerDirectionalActionAnimation(
-        "init",
-        "attacking",
-        "release",
-        player,
-        null
-      );
+      // player = this.handlePlayerDirectionalActionAnimation(
+      //   "init",
+      //   "attacking",
+      //   "release",
+      //   player,
+      //   null
+      // );
       // this.setDeflection(player, "defended", true);
       // this.setDeflection(player, "attacked", false);
       // this.pushBack(player, this.getOppositeDirection(player.direction));
@@ -34200,9 +34206,9 @@ class App extends Component {
         this.circleArcCrementer(
           "testing",
           player,
-          "isometric",
+          "cartesian",
           50,
-          180,
+          360,
           0,
           "ringSection",
           "counterClockwise",
@@ -34222,6 +34228,69 @@ class App extends Component {
       }
       // if (this.testCount.count >= this.testCount.limit) {
       //   this.testCount.state = false;
+      // }
+    }
+    // POPUP TESTING
+    if (this.time === 250 || this.time === 500) {
+      // let newArray = [];
+      // let x = 0;
+      // let y = 0;
+      // for (const [key, value] of Object.entries(this.popupImageRef)) {
+      //   newArray.push(key);
+      // }
+      // player.popups.push({
+      //   state: false,
+      //   count: 0,
+      //   limit: 30,
+      //   type: "",
+      //   position: "",
+      //   msg: "hpUp" + "_-5",
+      //   img: "",
+      //   cell: this.gridInfo.find(
+      //     (x) =>
+      //       x.number.x === player.currentPosition.cell.number.x &&
+      //       x.number.y === player.currentPosition.cell.number.y
+      //   ),
+      // });
+      // for (var i = 0; i < 10; i++) {
+      //   if (
+      //     !player.popups.find((x) => x.msg === newArray[i])
+      //     // player.number === 2 &&
+      //     // newArray[i] !== "hpUp" &&
+      //     // newArray[i] !== "hpDown"
+      //   ) {
+      //     if (newArray[i] === "hpUp" || newArray[i] === "hpDown") {
+      //       player.popups.push({
+      //         state: false,
+      //         count: 0,
+      //         limit: 30,
+      //         type: "",
+      //         position: "",
+      //         msg: newArray[i] + "_-5",
+      //         img: "",
+      //         cell: this.gridInfo.find(
+      //           (x) =>
+      //             x.number.x === player.currentPosition.cell.number.x &&
+      //             x.number.y === player.currentPosition.cell.number.y
+      //         ),
+      //       });
+      //     } else {
+      //       player.popups.push({
+      //         state: false,
+      //         count: 0,
+      //         limit: 30,
+      //         type: "",
+      //         position: "",
+      //         msg: newArray[i],
+      //         img: "",
+      //         cell: this.gridInfo.find(
+      //           (x) =>
+      //             x.number.x === player.currentPosition.cell.number.x &&
+      //             x.number.y === player.currentPosition.cell.number.y
+      //         ),
+      //       });
+      //     }
+      //   }
       // }
     }
 
@@ -35442,7 +35511,7 @@ class App extends Component {
           player.idleAnim.count = 0;
         }
 
-        // DIRECTIONAL ACTION ANIM
+        // DIRECTIONAL ATTACK/DEFEND ANIM
         if (player.actionDirectionAnimationArray.length > 0) {
           for (const elem of player.actionDirectionAnimationArray) {
             if (elem.actionDirectionType === "slash") {
@@ -35800,28 +35869,6 @@ class App extends Component {
           }
         }
 
-        // FIX ME!
-        // if attacking
-        // xtime = time from count to peak + X
-        // if attacking
-        //   if count === inputthresh
-        //     set anim
-        //     split xtime in half & set w/ pullback
-
-        // if count > inputthresh && atk peak
-        // xtime = input thresh to peak + x
-        // if count === inputthresh+(xtime/2)
-        //   reset & set w/ release
-        // compare xtime to 15
-
-        // if defending
-        //   if count === inputthresh
-        //     set anim w/ xtime & release
-
-        //   if direction changed && count > inputthresh && count < peak
-        //    xtime = time from count to peak + X
-        //     reset, then set anim if enough time (10 or more?)
-
         // ATTACKING!
         if (player.attacking.state === true) {
           let directionalActionResult = this.checkSetAttackDefendDirectionalInput(
@@ -36077,6 +36124,39 @@ class App extends Component {
                   player = this.setElasticCounter("attacking", "windup", false, player);
                 }
               }
+            }
+
+            // SET DIRECTIONAL ATTACK ANIMATIONS
+            let dirAnimSetCalcMod = 5;
+            let xTime =
+              player.attacking.peakCount +
+              dirAnimSetCalcMod -
+              directionalActionResult.inputThresh;
+            if (directionalActionResult.inputThresh === player.attacking.count) {
+              console.log("xTime", xTime / 2);
+              player = this.handlePlayerDirectionalActionAnimation(
+                "init",
+                "attacking",
+                "pullback",
+                player,
+                null
+              );
+            }
+            // if (player.attacking.count < player.attacking.peakCount && player.attacking.count === (directionalActionResult.inputThresh+15)) {
+            if (
+              player.attacking.count < player.attacking.peakCount &&
+              player.attacking.count ===
+                directionalActionResult.inputThresh + Math.ceil(xTime / 2)
+            ) {
+              console.log("xTime2", xTime / 2, player.attacking.count);
+              player.actionDirectionAnimationArray = [];
+              player = this.handlePlayerDirectionalActionAnimation(
+                "init",
+                "attacking",
+                "release",
+                player,
+                null
+              );
             }
 
             let executeAttack = false;
@@ -36371,11 +36451,12 @@ class App extends Component {
 
         // DEFENDING!!
         if (player.defending.state === true) {
-          player = this.checkSetAttackDefendDirectionalInput(
+          let directionalActionResult = this.checkSetAttackDefendDirectionalInput(
             "windup",
             "defending",
             player
-          ).player;
+          );
+          player = directionalActionResult.player;
 
           let defendDecayLimitPercentage = 0.55; // calc & increase this based on defend stats
 
@@ -36469,6 +36550,45 @@ class App extends Component {
               "defend was directional now non directional & pask peak. Execute defend"
             );
             player.defending.peakCount = player.defending.count;
+          }
+
+          // SET DIRECTIONAL DEFEND ANIMATIONS
+          let dirAnimSetCalcMod = 5;
+          let xTime =
+            player.defending.peakCount +
+            dirAnimSetCalcMod -
+            directionalActionResult.inputThresh;
+          let existingDefendAnim = player.actionDirectionAnimationArray.find(
+            (x) => x.action === "defending"
+          );
+          // if (player.defending.count === directionalActionResult.inputThresh) {
+          if (!existingDefendAnim) {
+            console.log("xTime", Math.ceil(xTime / 2));
+            player = this.handlePlayerDirectionalActionAnimation(
+              "init",
+              "defending",
+              "release",
+              player,
+              null
+            );
+          }
+          if (directionalActionResult.directionChanged === true) {
+            player.actionDirectionAnimationArray = [];
+            if (player.defending.decay.state !== true) {
+              console.log("yTime", player.defending.peakCount - player.defending.count);
+            } else {
+              console.log(
+                "yTime",
+                player.defending.decay.limit - player.defending.decay.count
+              );
+            }
+            player = this.handlePlayerDirectionalActionAnimation(
+              "init",
+              "defending",
+              "release",
+              player,
+              null
+            );
           }
 
           let executeDefend = false;
@@ -39665,69 +39785,7 @@ class App extends Component {
     }
 
     // POPUPS
-    // Testing
-    // if (this.time === 250 || this.time === 500) {
-    //   let newArray = [];
-    //   let x = 0;
-    //   let y = 0;
-    //   for (const [key, value] of Object.entries(this.popupImageRef)) {
-    //     newArray.push(key);
-    //   }
-    //   player.popups.push({
-    //     state: false,
-    //     count: 0,
-    //     limit: 30,
-    //     type: "",
-    //     position: "",
-    //     msg: "hpUp" + "_-5",
-    //     img: "",
-    //     cell: this.gridInfo.find(
-    //       (x) =>
-    //         x.number.x === player.currentPosition.cell.number.x &&
-    //         x.number.y === player.currentPosition.cell.number.y
-    //     ),
-    //   });
-    //   for (var i = 0; i < 10; i++) {
-    //     if (
-    //       !player.popups.find((x) => x.msg === newArray[i])
-    //       // player.number === 2 &&
-    //       // newArray[i] !== "hpUp" &&
-    //       // newArray[i] !== "hpDown"
-    //     ) {
-    //       if (newArray[i] === "hpUp" || newArray[i] === "hpDown") {
-    //         player.popups.push({
-    //           state: false,
-    //           count: 0,
-    //           limit: 30,
-    //           type: "",
-    //           position: "",
-    //           msg: newArray[i] + "_-5",
-    //           img: "",
-    //           cell: this.gridInfo.find(
-    //             (x) =>
-    //               x.number.x === player.currentPosition.cell.number.x &&
-    //               x.number.y === player.currentPosition.cell.number.y
-    //           ),
-    //         });
-    //       } else {
-    //         player.popups.push({
-    //           state: false,
-    //           count: 0,
-    //           limit: 30,
-    //           type: "",
-    //           position: "",
-    //           msg: newArray[i],
-    //           img: "",
-    //           cell: this.gridInfo.find(
-    //             (x) =>
-    //               x.number.x === player.currentPosition.cell.number.x &&
-    //               x.number.y === player.currentPosition.cell.number.y
-    //           ),
-    //         });
-    //       }
-    //     }
-    //   }
-    // }
+
     //PLAYER
     if (player.popups.length > 0) {
       for (const popup of player.popups) {
