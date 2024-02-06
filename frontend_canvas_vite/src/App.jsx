@@ -8908,7 +8908,7 @@ class App extends Component {
       point = pointA;
     }
 
-    const innerRadius = radiusA / 2;
+    const innerRadius = radiusA - 20;
     let incr = 0;
     let conntectingLineIncr = 0;
 
@@ -14629,14 +14629,18 @@ class App extends Component {
     let startAngle = 0;
     let direction = "counterClockwise"; // 'clockwise' or 'counterClockwise'
     let face = "top"; // top,front,side
-    let radius = 50;
+    let radius = 40;
     let color = "red";
     if (action === "defending") {
       color = "blue";
     }
+    // starAngles:
+    // top face: 0 = east, 90 = south, 180 = west, 270 = north
+    // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
+    // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
     let countLimit = 15;
-    let delay = 0;
+    let delay = 300;
 
     // maybe put FIX ME code here
     // check action count
@@ -14686,7 +14690,8 @@ class App extends Component {
         color = "blue";
       }
       if (action === "defending") {
-        arcAngle = 90;
+        // arcAngle = 90;
+        phase = "release";
       }
 
       if (player.direction === "north") {
@@ -14718,23 +14723,23 @@ class App extends Component {
         if (player[action].direction === "north") {
           face = "side";
           if (phase === "pullback") {
-            startAngle = 90;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 180;
-            direction = "counterClockwise";
-          }
-        }
-        if (player[action].direction === "south") {
-          face = "side";
-          if (phase === "pullback") {
             startAngle = 270;
             direction = "counterClockwise";
           }
           if (phase === "release") {
             startAngle = 180;
             direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "counterClockwise";
           }
         }
       }
@@ -34131,6 +34136,20 @@ class App extends Component {
       // this.testCount.limit = 60;
       // player.attacking.direction = "none";
       // player.attacking.directionType = "thrust";
+      player.attacking.direction = "east";
+      player.attacking.directionType = "slash";
+      player = this.handlePlayerDirectionalActionAnimation(
+        "init",
+        "attacking",
+        "pullback",
+        player,
+        null
+      );
+      // this.pushBack(player, "east");
+      // this.setDeflection(player, "parried", false);
+      // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
+    }
+    if (this.time === 120 && player.number === 2) {
       player.defending.direction = "east";
       player.defending.directionType = "slash";
       player = this.handlePlayerDirectionalActionAnimation(
@@ -34140,9 +34159,6 @@ class App extends Component {
         player,
         null
       );
-      // this.pushBack(player, "east");
-      // this.setDeflection(player, "parried", false);
-      // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
     if (this.time === 120 && player.number === 1) {
       player = this.handlePlayerDirectionalActionAnimation(
@@ -35440,7 +35456,7 @@ class App extends Component {
                     elem.radius,
                     elem.angle,
                     elem.startAngle,
-                    "ringSection",
+                    "arc",
                     elem.direction,
                     elem.face,
                     elem
@@ -35785,6 +35801,7 @@ class App extends Component {
         }
 
         // FIX ME!
+        // if attacking
         // xtime = time from count to peak + X
         // if attacking
         //   if count === inputthresh
