@@ -3892,7 +3892,7 @@ class App extends Component {
     this.showPlayerOutlines = false;
     this.showGridIsoGuide = false;
     this.showDirectionalActionAnimation = true;
-    this.hideAllPopups = true;
+    this.hideAllPopups = false;
 
     this.backgroundImageRef = {};
 
@@ -14599,7 +14599,7 @@ class App extends Component {
           }
         } else {
           if (input === true) {
-            console.log("too late to change defend direction: count");
+            // console.log("too late to change defend direction: count");
           } else {
             if (player[action].direction === "" || player[action].directionType === "") {
               popup("none", player[action].direction);
@@ -14644,7 +14644,7 @@ class App extends Component {
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
     let countLimit = 15;
-    let delay = 0;
+    let delay = 20;
 
     // maybe put FIX ME code here
     // check action count
@@ -35944,15 +35944,15 @@ class App extends Component {
             // STEP ATTACKING COUNT
             if (player.attacking.count < player.attacking.limit) {
               if (player.attacking.count < player.attacking.peakCount) {
-                console.log(
-                  "atk windup:",
-                  player.attacking.direction,
-                  "counts:",
-                  player.attacking.count,
-                  player.attacking.peakCount,
-                  player.attacking.limit,
-                  chargeType === "charged"
-                );
+                // console.log(
+                //   "atk windup:",
+                //   player.attacking.direction,
+                //   "counts:",
+                //   player.attacking.count,
+                //   player.attacking.peakCount,
+                //   player.attacking.limit,
+                //   chargeType === "charged"
+                // );
                 player.attacking.peak = false;
                 player.attacking.chargePeak = false;
               }
