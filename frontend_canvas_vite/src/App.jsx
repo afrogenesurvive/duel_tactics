@@ -14202,6 +14202,7 @@ class App extends Component {
     let inputDirections = [];
     let directionalInputThresh = 0;
     let directionalDefendThresh = 0;
+    let directionChanged = false;
     let inputCount = 0;
     if (this.keyPressed[player.number - 1].north === true) {
       input = true;
@@ -14321,6 +14322,8 @@ class App extends Component {
           this.setAutoCamera("attackFocusBreak", player);
         }
       }
+
+      player.actionDirectionAnimationArray = [];
     };
 
     const popup = (dir, prevDir) => {
@@ -14392,6 +14395,7 @@ class App extends Component {
                 console.log(
                   "crossbow directional atk & charge can only be in player direction"
                 );
+                feintAttack();
               }
             }
           } else {
@@ -14549,8 +14553,8 @@ class App extends Component {
         let defendPeak =
           player.defending.animRef.peak[defendType][player.defending.directionType];
         let defendDecayLimit = player.defending.decay.limit;
-        let defendInputThresh = defendDecayLimit + defendPeak - this.defendPeakAllowance;
-        if (player[action].count <= defendInputThresh) {
+        directionalInputThresh = defendDecayLimit + defendPeak - this.defendPeakAllowance;
+        if (player[action].count <= directionalInputThresh) {
           if (input === true) {
             if (inputCount > 1) {
               // inputDirections = inputDirections.filter(
@@ -14600,13 +14604,15 @@ class App extends Component {
             }
           }
         }
-        console.log("directional defend input thresh", defendInputThresh);
+        console.log("directional defend input thresh", directionalInputThresh);
       }
     }
 
     return {
       player: player,
       charging: charging,
+      inputThresh: directionalInputThresh,
+      directionChanged: directionChanged,
     };
   };
   handlePlayerDirectionalActionAnimation = (mode, action, phase, player, arrayElemId) => {
@@ -14631,6 +14637,8 @@ class App extends Component {
 
     let countLimit = 15;
     let delay = 0;
+
+    // maybe put FIX ME code here
     // check action count
     // count should be based on phase & action count based on direction & phase
 
@@ -14676,6 +14684,9 @@ class App extends Component {
       if (phase === "release") {
         arcAngle = 180;
         color = "blue";
+      }
+      if (action === "defending") {
+        arcAngle = 90;
       }
 
       if (player.direction === "north") {
@@ -34120,12 +34131,12 @@ class App extends Component {
       // this.testCount.limit = 60;
       // player.attacking.direction = "none";
       // player.attacking.directionType = "thrust";
-      player.attacking.direction = "east";
-      player.attacking.directionType = "slash";
+      player.defending.direction = "east";
+      player.defending.directionType = "slash";
       player = this.handlePlayerDirectionalActionAnimation(
         "init",
-        "attacking",
-        "pullback",
+        "defending",
+        "release",
         player,
         null
       );
@@ -35580,6 +35591,7 @@ class App extends Component {
               this.setAutoCamera("defendFocusBreak", player);
             }
 
+            player.actionDirectionAnimationArray = [];
             console.log("defend feinted");
           } else {
             if (player.defending.peak === true) {
@@ -35703,6 +35715,8 @@ class App extends Component {
             if (this.camera.customView.state !== true && player.ai.state !== true) {
               this.setAutoCamera("attackFocusBreak", player);
             }
+
+            player.actionDirectionAnimationArray = [];
           } else {
             // console.log("too late to feint attack");
           }
@@ -35769,6 +35783,27 @@ class App extends Component {
             };
           }
         }
+
+        // FIX ME!
+        // xtime = time from count to peak + X
+        // if attacking
+        //   if count === inputthresh
+        //     set anim
+        //     split xtime in half & set w/ pullback
+
+        // if count > inputthresh && atk peak
+        // xtime = input thresh to peak + x
+        // if count === inputthresh+(xtime/2)
+        //   reset & set w/ release
+        // compare xtime to 15
+
+        // if defending
+        //   if count === inputthresh
+        //     set anim w/ xtime & release
+
+        //   if direction changed && count > inputthresh && count < peak
+        //    xtime = time from count to peak + X
+        //     reset, then set anim if enough time (10 or more?)
 
         // ATTACKING!
         if (player.attacking.state === true) {
@@ -36284,6 +36319,7 @@ class App extends Component {
                   );
                 }
               }
+              player.actionDirectionAnimationArray = [];
 
               console.log("attack end");
             }
@@ -36655,6 +36691,7 @@ class App extends Component {
                 player.elasticCounter.type = "";
                 player.elasticCounter.subType = "";
               }
+              player.actionDirectionAnimationArray = [];
               console.log("defend end");
             }
           }
