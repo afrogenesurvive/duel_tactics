@@ -14423,6 +14423,12 @@ class App extends Component {
                 }
               }
             }
+            if (player[action].direction === "none") {
+              console.log(
+                "crossbow attack requires direction === player direction. feint attack"
+              );
+              feintAttack();
+            }
           }
         }
       } else {
@@ -14624,10 +14630,14 @@ class App extends Component {
     }
 
     let countLimit = 15;
-    let delay = 500;
+    let delay = 0;
+    // check action count
     // count should be based on phase & action count based on direction & phase
 
-    if (directionType === "thrust") {
+    if (
+      directionType === "thrust" ||
+      (action === "attacking" && player.currentWeapon.type === "crossbow")
+    ) {
       countLimit = 10;
 
       if (phase === "release") {
@@ -14639,7 +14649,7 @@ class App extends Component {
 
         player.actionDirectionAnimationArray.push({
           id: id,
-          actionDirectionType: directionType,
+          actionDirectionType: "thrust",
           phase: phase,
           radius: radius,
           angle: arcAngle,
@@ -14869,10 +14879,6 @@ class App extends Component {
       if (mode === "init") {
         id = player.actionDirectionAnimationArray.length + 1;
 
-        startAngle = startAngle + 0;
-        arcAngle = arcAngle + 0;
-        // startAngle = startAngle + 10;
-        // arcAngle = arcAngle + 10;
         player.actionDirectionAnimationArray.push({
           id: id,
           actionDirectionType: directionType,
@@ -14897,6 +14903,9 @@ class App extends Component {
       }
     }
 
+    if (mode === "clear") {
+      player.actionDirectionAnimationArray = [];
+    }
     return player;
   };
   meleeAttackPeak = (ownerType, owner) => {
@@ -34111,7 +34120,7 @@ class App extends Component {
       // this.testCount.limit = 60;
       // player.attacking.direction = "none";
       // player.attacking.directionType = "thrust";
-      player.attacking.direction = "south";
+      player.attacking.direction = "east";
       player.attacking.directionType = "slash";
       player = this.handlePlayerDirectionalActionAnimation(
         "init",
@@ -34125,13 +34134,13 @@ class App extends Component {
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
     if (this.time === 120 && player.number === 1) {
-      // player = this.handlePlayerDirectionalActionAnimation(
-      //   "init",
-      //   "attacking",
-      //   "release",
-      //   player,
-      //   null
-      // );
+      player = this.handlePlayerDirectionalActionAnimation(
+        "init",
+        "attacking",
+        "release",
+        player,
+        null
+      );
       // this.setDeflection(player, "defended", true);
       // this.setDeflection(player, "attacked", false);
       // this.pushBack(player, this.getOppositeDirection(player.direction));
