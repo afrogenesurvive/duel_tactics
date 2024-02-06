@@ -2515,6 +2515,7 @@ class App extends Component {
           count: 0,
           limit: 6,
         },
+        actionDirectionAnimationArray: [],
         ai: {
           state: false,
           imgType: "",
@@ -3023,6 +3024,7 @@ class App extends Component {
           count: 0,
           limit: 6,
         },
+        actionDirectionAnimationArray: [],
         ai: {
           state: false,
           imgType: "",
@@ -6017,7 +6019,7 @@ class App extends Component {
       this.debugBoxStyle2 = "debugDisplay2 closedDebug";
     }
   };
-  switchBackgroundImage = (args) => {
+  setBackgroundImage = (args) => {
     document.getElementsByClassName(
       this.state.containerInnerClass
     )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
@@ -6700,11 +6702,6 @@ class App extends Component {
     });
   };
 
-  setBackgroundImage = (args) => {
-    document.getElementsByClassName(
-      this.state.containerInnerClass
-    )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
-  };
   findFocusCell = (inputType, inputSubType, focus, canvas, context, speed) => {
     let cell = {
       x: undefined,
@@ -8729,7 +8726,68 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  circleArcCrementer = (player, mode, radiusA, deg, startAng, shape, direction, face) => {
+  directionalActionAnimLineCrementer = (player, elem) => {
+    let percent = elem.counter.count / elem.counter.limit;
+    let startPt;
+    let endPt;
+    let rearCellNo = this.getCellFromDirection(
+      1,
+      player.currentPosition.cell,
+      this.getOppositeDirection(player.direction)
+    );
+
+    if (elem.phase === "pullback") {
+      startPt = player.currentPosition.cell.center;
+      if (rearCellNo.x && rearCellNo.y) {
+        endPt = this.gridInfo.find(
+          (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
+        )?.center;
+      } else {
+        endPt = this.getVoidCenter(
+          1,
+          this.getOppositeDirection(player.direction),
+          player.currentPosition.cell.center
+        );
+      }
+    }
+    if (elem.phase === "release") {
+      if (rearCellNo.x && rearCellNo.y) {
+        startPt = this.gridInfo.find(
+          (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
+        )?.center;
+      } else {
+        startPt = this.getVoidCenter(
+          1,
+          this.getOppositeDirection(player.direction),
+          player.currentPosition.cell.center
+        );
+      }
+      endPt = player.target.cell1.center;
+    }
+    let dx = endPt.x - startPt.x;
+    let dy = endPt.y - startPt.y;
+    let X = startPt.x + dx * percent;
+    let Y = startPt.y + dy * percent;
+    let result = { x: Math.round(X), y: Math.round(Y) };
+
+    elem.points.push(result);
+    let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+    el = elem;
+
+    return player;
+  };
+  circleArcCrementer = (
+    type,
+    player,
+    mode,
+    radiusA,
+    deg,
+    startAng,
+    shape,
+    direction,
+    face,
+    elem
+  ) => {
     const colors = [
       "#FF5733", // Red-Orange
       "#33FF57", // Green
@@ -8761,6 +8819,12 @@ class App extends Component {
       x: player.currentPosition.cell.number.x * this.tileWidth,
       y: player.currentPosition.cell.number.y * this.tileWidth,
     };
+    // starAngles:
+    // top face: 0 = east, 90 = south, 180 = west, 270 = north
+    // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
+    // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
+
+    // type args: 'testing'/'playerDirectionalAction'
 
     let pointIso;
     let point1Iso;
@@ -8844,10 +8908,24 @@ class App extends Component {
       point = pointA;
     }
 
-    const innerRadius = radiusA / 2;
-    const incr = this.testCount.count / this.testCount.limit;
+    const innerRadius = radiusA - 20;
+    let incr = 0;
+    let conntectingLineIncr = 0;
 
-    let conntectingLineIncr = this.testCount.limit;
+    let count = 0;
+    let limit = 0;
+    if (type === "testing") {
+      count = this.testCount.count;
+      limit = this.testCount.limit;
+    }
+    if (type === "playerDirectionalAction") {
+      count = elem.counter.count;
+      limit = elem.counter.limit;
+    }
+
+    incr = count / limit;
+    conntectingLineIncr = limit;
+
     let point1 = getPointOnArc(point.x, point.y, radiusA, startAng, incr);
     let point2 = getPointOnArc(point.x, point.y, innerRadius, startAng, incr);
 
@@ -8858,6 +8936,9 @@ class App extends Component {
     if (face === "side") {
       faceRotation = 120;
       color = "pink";
+    }
+    if (type === "playerDirectionalAction") {
+      color = elem.color;
     }
 
     let connetingLineArray = [];
@@ -8870,60 +8951,7 @@ class App extends Component {
       point1Iso = cartesianToIsometric(point1);
 
       point2Iso = cartesianToIsometric(point2);
-    }
 
-    if (shape === "sector") {
-      for (let i = 0; i < conntectingLineIncr; i++) {
-        let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
-        if (mode === "isometric") {
-          point3 = cartesianToIsometric(point3);
-
-          point3.x += sceneX;
-          point3.y += sceneY;
-
-          point3.x += xOffset;
-          point3.y -= yOffset;
-
-          if (faceRotation > 0) {
-            point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
-          }
-        }
-
-        this.testDraw.push({
-          color: "red",
-          x: point3.x,
-          y: point3.y,
-        });
-      }
-    }
-
-    if (shape === "ringSection") {
-      if (this.testCount.count === 1 || this.testCount.count === this.testCount.limit) {
-        for (let i = 0; i < conntectingLineIncr; i++) {
-          let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
-          if (mode === "isometric") {
-            point3 = cartesianToIsometric(point3);
-
-            point3.x += sceneX;
-            point3.y += sceneY;
-
-            point3.x += xOffset;
-            point3.y -= yOffset;
-
-            if (faceRotation > 0) {
-              point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
-            }
-          }
-          this.testDraw.push({
-            color: colors[this.testCount.count - 1],
-            x: point3.x,
-            y: point3.y,
-          });
-        }
-      }
-    }
-
-    if (mode === "isometric") {
       point = pointIso;
       point1 = point1Iso;
       point2 = point2Iso;
@@ -8955,40 +8983,123 @@ class App extends Component {
       }
     }
 
+    if (shape === "ringSection") {
+      // if (count === 1 || count === limit) {
+      for (let i = 0; i < conntectingLineIncr; i++) {
+        let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
+
+        if (type === "testing") {
+          this.testDraw.push({
+            color: colors[this.testCount.count - 1],
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+        if (type === "playerDirectionalAction") {
+          elem.points.push({
+            color: color,
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+      }
+      // }
+    }
+
+    if (shape === "sector") {
+      for (let i = 0; i < conntectingLineIncr; i++) {
+        let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
+
+        if (type === "testing") {
+          this.testDraw.push({
+            color: "red",
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+        if (type === "playerDirectionalAction") {
+          elem.points.push({
+            color: color,
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+      }
+    }
+
     // console.log("sceneX", sceneX, "sceneY", sceneY);
     // console.log("pointA", pointA.x.toFixed(2), pointA.y.toFixed(2));
     // console.log("point", point.x.toFixed(2), point.y.toFixed(2));
     // console.log("point1", point1.x.toFixed(2), point1.y.toFixed(2));
 
-    this.testDraw.push(
-      {
-        color: color,
-        x: point1.x,
-        y: point1.y,
-      },
-      {
-        color: color,
-        x: point.x,
-        y: point.y,
-      },
-      {
-        color: "red",
-        x: pointA.x,
-        y: pointA.y,
-      },
-      {
-        color: "purple",
-        x: pointB.x,
-        y: pointB.y,
+    if (type === "testing") {
+      this.testDraw.push(
+        {
+          color: color,
+          x: point1.x,
+          y: point1.y,
+        },
+        {
+          color: color,
+          x: point.x,
+          y: point.y,
+        },
+        {
+          color: "red",
+          x: pointA.x,
+          y: pointA.y,
+        },
+        {
+          color: "purple",
+          x: pointB.x,
+          y: pointB.y,
+        }
+      );
+
+      if (shape === "ringSection") {
+        this.testDraw.push({
+          color: "purple",
+          x: point2.x,
+          y: point2.y,
+        });
       }
-    );
-    if (shape === "ringSection") {
-      this.testDraw.push({
-        color: "purple",
-        x: point2.x,
-        y: point2.y,
-      });
     }
+    if (type === "playerDirectionalAction") {
+      elem.points.push(
+        {
+          color: color,
+          x: point1.x,
+          y: point1.y,
+        },
+        {
+          color: color,
+          x: point.x,
+          y: point.y,
+        },
+        {
+          color: color,
+          x: pointA.x,
+          y: pointA.y,
+        },
+        {
+          color: color,
+          x: pointB.x,
+          y: pointB.y,
+        }
+      );
+      if (shape === "ringSection") {
+        elem.points.push({
+          color: color,
+          x: point2.x,
+          y: point2.y,
+        });
+      }
+    }
+
+    let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+    el = elem;
+
+    return player;
   };
   arcBoltCrementer = () => {};
   obstacleMoveCrementer = (obstacleCell, destCell) => {
@@ -14091,6 +14202,7 @@ class App extends Component {
     let inputDirections = [];
     let directionalInputThresh = 0;
     let directionalDefendThresh = 0;
+    let directionChanged = false;
     let inputCount = 0;
     if (this.keyPressed[player.number - 1].north === true) {
       input = true;
@@ -14210,6 +14322,8 @@ class App extends Component {
           this.setAutoCamera("attackFocusBreak", player);
         }
       }
+
+      player.actionDirectionAnimationArray = [];
     };
 
     const popup = (dir, prevDir) => {
@@ -14281,6 +14395,7 @@ class App extends Component {
                 console.log(
                   "crossbow directional atk & charge can only be in player direction"
                 );
+                feintAttack();
               }
             }
           } else {
@@ -14311,6 +14426,12 @@ class App extends Component {
                   }
                 }
               }
+            }
+            if (player[action].direction === "none") {
+              console.log(
+                "crossbow attack requires direction === player direction. feint attack"
+              );
+              feintAttack();
             }
           }
         }
@@ -14432,8 +14553,8 @@ class App extends Component {
         let defendPeak =
           player.defending.animRef.peak[defendType][player.defending.directionType];
         let defendDecayLimit = player.defending.decay.limit;
-        let defendInputThresh = defendDecayLimit + defendPeak - this.defendPeakAllowance;
-        if (player[action].count <= defendInputThresh) {
+        directionalInputThresh = defendDecayLimit + defendPeak - this.defendPeakAllowance;
+        if (player[action].count <= directionalInputThresh) {
           if (input === true) {
             if (inputCount > 1) {
               // inputDirections = inputDirections.filter(
@@ -14483,14 +14604,325 @@ class App extends Component {
             }
           }
         }
-        console.log("directional defend input thresh", defendInputThresh);
+        console.log("directional defend input thresh", directionalInputThresh);
       }
     }
 
     return {
       player: player,
       charging: charging,
+      inputThresh: directionalInputThresh,
+      directionChanged: directionChanged,
     };
+  };
+  handlePlayerDirectionalActionAnimation = (mode, action, phase, player, arrayElemId) => {
+    // modes:
+    //   init, update, reset, cancel
+    //    id used for update, reset, cancel
+    // action:
+    //   attacking, defending
+    // phase:
+    // pullback, release
+    let directionType = player[action].directionType;
+    let id = arrayElemId;
+    let arcAngle = 0;
+    let startAngle = 0;
+    let direction = "counterClockwise"; // 'clockwise' or 'counterClockwise'
+    let face = "top"; // top,front,side
+    let radius = 40;
+    let color = "red";
+    if (action === "defending") {
+      color = "blue";
+    }
+    // starAngles:
+    // top face: 0 = east, 90 = south, 180 = west, 270 = north
+    // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
+    // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
+
+    let countLimit = 15;
+    let delay = 300;
+
+    // maybe put FIX ME code here
+    // check action count
+    // count should be based on phase & action count based on direction & phase
+
+    if (
+      directionType === "thrust" ||
+      (action === "attacking" && player.currentWeapon.type === "crossbow")
+    ) {
+      countLimit = 10;
+
+      if (phase === "release") {
+        countLimit = 15;
+      }
+
+      if (mode === "init") {
+        id = player.actionDirectionAnimationArray.length + 1;
+
+        player.actionDirectionAnimationArray.push({
+          id: id,
+          actionDirectionType: "thrust",
+          phase: phase,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAngle,
+          direction: direction,
+          face: face,
+          color: color,
+          counter: {
+            count: 0,
+            limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
+          },
+          points: [],
+        });
+      }
+    } else {
+      if (phase === "pullback") {
+        arcAngle = 90;
+      }
+      if (phase === "release") {
+        arcAngle = 180;
+        color = "blue";
+      }
+      if (action === "defending") {
+        // arcAngle = 90;
+        phase = "release";
+      }
+
+      if (player.direction === "north") {
+        if (player[action].direction === "north") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+        }
+      }
+
+      if (player.direction === "south") {
+        if (player[action].direction === "north") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      // ----------------
+      if (player.direction === "east") {
+        if (player[action].direction === "east") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "ccounterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "west") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      // ----------------
+      if (player.direction === "west") {
+        if (player[action].direction === "east") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "west") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 200;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      // ----------------
+      if (player.direction === "east") {
+        if (player[action].direction === "north") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      if (player.direction === "west") {
+        if (player[action].direction === "north") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+        }
+        if (player[action].direction === "south") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+        }
+      }
+      // ----------------
+      if (player.direction === "north") {
+        if (player[action].direction === "east") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+        }
+        if (player[action].direction === "west") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+        }
+      }
+      if (player.direction === "south") {
+        if (player[action].direction === "east") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+        }
+        if (player[action].direction === "west") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+        }
+      }
+
+      if (mode === "init") {
+        id = player.actionDirectionAnimationArray.length + 1;
+
+        player.actionDirectionAnimationArray.push({
+          id: id,
+          actionDirectionType: directionType,
+          phase: phase,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAngle,
+          direction: direction,
+          face: face,
+          color: color,
+          counter: {
+            count: 0,
+            limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
+          },
+          points: [],
+        });
+      }
+    }
+
+    if (mode === "clear") {
+      player.actionDirectionAnimationArray = [];
+    }
+    return player;
   };
   meleeAttackPeak = (ownerType, owner) => {
     // console.log("meleeAttackPeak");
@@ -25295,6 +25727,7 @@ class App extends Component {
         count: 0,
         limit: 8,
       };
+      player.actionDirectionAnimationArray = [];
       player.ai = {
         state: false,
         imgType: "",
@@ -25774,6 +26207,7 @@ class App extends Component {
         crossbow: 5,
       },
     };
+    player.actionDirectionAnimationArray = [];
     player.stamina = {
       current: 20,
       max: 20,
@@ -26356,6 +26790,7 @@ class App extends Component {
           count: 0,
           limit: 8,
         };
+        player.actionDirectionAnimationArray = [];
         player.ai = {
           state: false,
           imgType: "",
@@ -27099,6 +27534,7 @@ class App extends Component {
             count: 0,
             limit: 5,
           },
+          actionDirectionAnimationArray: [],
           ai: {
             state: true,
             imgType: imgType,
@@ -33696,15 +34132,43 @@ class App extends Component {
       // player = this.setElasticCounter("test", "start", true, player);
     }
     if (this.time === 100 && player.number === 1) {
-      this.setBackgroundImage("sea_clouds_1");
+      // this.setBackgroundImage("sea_clouds_1");
       // this.testCount.state = true;
       // this.testCount.limit = 60;
-      // this.switchBackgroundImage("sea_clouds_night_1");
+      // player.attacking.direction = "none";
+      // player.attacking.directionType = "thrust";
+      player.attacking.direction = "east";
+      player.attacking.directionType = "slash";
+      player = this.handlePlayerDirectionalActionAnimation(
+        "init",
+        "attacking",
+        "pullback",
+        player,
+        null
+      );
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
-    if (this.time === 150 && player.number === 1) {
+    if (this.time === 120 && player.number === 2) {
+      player.defending.direction = "east";
+      player.defending.directionType = "slash";
+      player = this.handlePlayerDirectionalActionAnimation(
+        "init",
+        "defending",
+        "release",
+        player,
+        null
+      );
+    }
+    if (this.time === 120 && player.number === 1) {
+      player = this.handlePlayerDirectionalActionAnimation(
+        "init",
+        "attacking",
+        "release",
+        player,
+        null
+      );
       // this.setDeflection(player, "defended", true);
       // this.setDeflection(player, "attacked", false);
       // this.pushBack(player, this.getOppositeDirection(player.direction));
@@ -33728,162 +34192,39 @@ class App extends Component {
         //   player,
         //   "isometric",
         //   50,
+        //   360,
         //   0,
-        //   180,
         //   "arc",
         //   "counterClockwise",
         //   "top"
         // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   50,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "front"
-        // );
         this.circleArcCrementer(
+          "testing",
           player,
           "isometric",
           50,
-          0,
           180,
-          "arc",
+          0,
+          "ringSection",
           "counterClockwise",
-          "side"
+          "front",
+          null
         );
-      }
-      // if (this.testCount.count >= this.testCount.limit) {
-      //   this.testCount.state = false;
-      // }
-    }
-    if (this.testCount.state === true && player.number === 2) {
-      if (this.testCount.count < this.testCount.limit) {
-        // this.testCount.count++;
-        // this.circleArcCrementer(
-        //   player,
-        //   "cartesian",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   ""
-        // );
         // this.circleArcCrementer(
         //   player,
         //   "isometric",
         //   50,
+        //   360,
         //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "front"
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   "front"
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   70,
-        //   0,
-        //   180,
         //   "arc",
         //   "counterClockwise",
         //   "side"
         // );
       }
-      if (this.testCount.count >= this.testCount.limit) {
-        this.testCount.state = false;
-      }
+      // if (this.testCount.count >= this.testCount.limit) {
+      //   this.testCount.state = false;
+      // }
     }
-    // if (this.testCount.state === true && player.number === 2) {
-    //   if (this.testCount.count < this.testCount.limit) {
-    //     this.testCount.count++;
-
-    //     // this.circleArcCrementer(
-    //     //   player,
-    //     //   "cartesian",
-    //     //   70,
-    //     //   0,
-    //     //   180,
-    //     //   "arc",
-    //     //   "counterClockwise",
-    //     //   ""
-    //     // );
-    //     // this.circleArcCrementer(
-    //     //   player,
-    //     //   "isometric",
-    //     //   70,
-    //     //   0,
-    //     //   180,
-    //     //   "arc",
-    //     //   "counterClockwise",
-    //     //   "top"
-    //     // );
-    //     this.circleArcCrementer(
-    //       player,
-    //       "isometric",
-    //       70,
-    //       0,
-    //       180,
-    //       "arc",
-    //       "counterClockwise",
-    //       "front"
-    //     );
-    //     // this.circleArcCrementer(
-    //     //   player,
-    //     //   "isometric",
-    //     //   70,
-    //     //   0,
-    //     //   180,
-    //     //   "arc",
-    //     //   "counterClockwise",
-    //     //   "side"
-    //     // );
-    //   }
-    //   if (this.testCount.count >= this.testCount.limit) {
-    //     this.testCount.state = false;
-    //   }
-    // }
-
-    // FIX ME 2ND
-    // what is the realtionshp between
-    //  the amount of time we want to draw the arc for?
-    // the amount of points we want to draw the arc with?
-
-    // when the time to start drawing arrives
-    //   if the a mathcing entry does not exist,
-    //     create a new id based on array length
-    //       push instruction object to crementerArray w/ state true
-    //         while
-
-    //     if an elements state is true the func will be called from draw player
-
-    //     {
-    //       state:
-    //       pointcount:
-    //       limit //how many points the lines should be made up of
-    //       mode
-    //       radius
-    //       innerRadius
-    //       deg //360 or 0 full 180 half etc
-    //       startAngle: 0 == 3oclock, 90 == 6oclock, 180 == 9oclock, 270 == 12oclock
-    //       color
-    //       shape //arc, sector, ring section
-    // ownerType
-    // owner
-    //     }
 
     // DYING
     if (player.dead.state === true) {
@@ -35102,6 +35443,65 @@ class App extends Component {
           player.idleAnim.count = 0;
         }
 
+        // DIRECTIONAL ACTION ANIM
+        if (player.actionDirectionAnimationArray.length > 0) {
+          for (const elem of player.actionDirectionAnimationArray) {
+            if (elem.actionDirectionType === "slash") {
+              if (elem.delay.state !== true) {
+                if (elem.counter.count < elem.counter.limit) {
+                  elem.counter.count++;
+                  player = this.circleArcCrementer(
+                    "playerDirectionalAction",
+                    player,
+                    "isometric",
+                    elem.radius,
+                    elem.angle,
+                    elem.startAngle,
+                    "arc",
+                    elem.direction,
+                    elem.face,
+                    elem
+                  );
+                }
+                if (elem.counter.count >= elem.counter.limit) {
+                  elem.delay.state = true;
+                }
+              } else {
+                if (elem.delay.count < elem.delay.limit) {
+                  elem.delay.count++;
+                }
+                if (elem.delay.count >= elem.delay.limit) {
+                  let index = player.actionDirectionAnimationArray.findIndex((x) => {
+                    return x.id === elem.id;
+                  });
+                  player.actionDirectionAnimationArray.splice(index, 1);
+                }
+              }
+            }
+            if (elem.actionDirectionType === "thrust") {
+              if (elem.delay.state !== true) {
+                if (elem.counter.count < elem.counter.limit) {
+                  elem.counter.count++;
+                  player = this.directionalActionAnimLineCrementer(player, elem);
+                }
+                if (elem.counter.count >= elem.counter.limit) {
+                  elem.delay.state = true;
+                }
+              } else {
+                if (elem.delay.count < elem.delay.limit) {
+                  elem.delay.count++;
+                }
+                if (elem.delay.count >= elem.delay.limit) {
+                  let index = player.actionDirectionAnimationArray.findIndex((x) => {
+                    return x.id === elem.id;
+                  });
+                  player.actionDirectionAnimationArray.splice(index, 1);
+                }
+              }
+            }
+          }
+        }
+
         // TURNER!!
         if (player.turning.state === true && player.flanking.state !== true) {
           if (player.turning.delayCount < player.turning.limit) {
@@ -35208,6 +35608,7 @@ class App extends Component {
               this.setAutoCamera("defendFocusBreak", player);
             }
 
+            player.actionDirectionAnimationArray = [];
             console.log("defend feinted");
           } else {
             if (player.defending.peak === true) {
@@ -35331,6 +35732,8 @@ class App extends Component {
             if (this.camera.customView.state !== true && player.ai.state !== true) {
               this.setAutoCamera("attackFocusBreak", player);
             }
+
+            player.actionDirectionAnimationArray = [];
           } else {
             // console.log("too late to feint attack");
           }
@@ -35397,6 +35800,28 @@ class App extends Component {
             };
           }
         }
+
+        // FIX ME!
+        // if attacking
+        // xtime = time from count to peak + X
+        // if attacking
+        //   if count === inputthresh
+        //     set anim
+        //     split xtime in half & set w/ pullback
+
+        // if count > inputthresh && atk peak
+        // xtime = input thresh to peak + x
+        // if count === inputthresh+(xtime/2)
+        //   reset & set w/ release
+        // compare xtime to 15
+
+        // if defending
+        //   if count === inputthresh
+        //     set anim w/ xtime & release
+
+        //   if direction changed && count > inputthresh && count < peak
+        //    xtime = time from count to peak + X
+        //     reset, then set anim if enough time (10 or more?)
 
         // ATTACKING!
         if (player.attacking.state === true) {
@@ -35912,6 +36337,7 @@ class App extends Component {
                   );
                 }
               }
+              player.actionDirectionAnimationArray = [];
 
               console.log("attack end");
             }
@@ -36283,6 +36709,7 @@ class App extends Component {
                 player.elasticCounter.type = "";
                 player.elasticCounter.subType = "";
               }
+              player.actionDirectionAnimationArray = [];
               console.log("defend end");
             }
           }
@@ -43132,6 +43559,20 @@ class App extends Component {
                       this.playerDrawHeight2
                     );
                   }
+                }
+              }
+            }
+          }
+
+          // DIRECTIONAL ACTION INDICATION
+          if (plyr.actionDirectionAnimationArray.length > 0) {
+            for (const animAction of plyr.actionDirectionAnimationArray) {
+              for (const point of animAction.points) {
+                if (x === this.gridWidth && y === this.gridWidth) {
+                  context.fillStyle = point.color;
+                  context.beginPath();
+                  context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                  context.fill();
                 }
               }
             }
