@@ -3889,8 +3889,10 @@ class App extends Component {
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
-    this.showPlayerOutlines = true;
+    this.showPlayerOutlines = false;
     this.showGridIsoGuide = false;
+    this.showDirectionalActionAnimation = true;
+    this.hideAllPopups = true;
 
     this.backgroundImageRef = {};
 
@@ -11160,7 +11162,7 @@ class App extends Component {
       // }
       this.setAutoCamera(`followBolt_${result.projectile.id}`, "");
     } else {
-      console.log("no setting auto cam: followBolt");
+      // console.log("no setting auto cam: followBolt");
     }
   };
   projectileCreator = (ownerType, owner, projectileType) => {
@@ -14523,7 +14525,7 @@ class App extends Component {
           }
         }
       }
-      console.log("directional attack input thresh", directionalInputThresh);
+      // console.log("directional attack input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
@@ -14606,7 +14608,7 @@ class App extends Component {
             }
           }
         }
-        console.log("directional defend input thresh", directionalInputThresh);
+        // console.log("directional defend input thresh", directionalInputThresh);
       }
     }
 
@@ -14631,10 +14633,10 @@ class App extends Component {
     let startAngle = 0;
     let direction = "counterClockwise"; // 'clockwise' or 'counterClockwise'
     let face = "top"; // top,front,side
-    let radius = 40;
+    let radius = 50;
     let color = "red";
     if (action === "defending") {
-      color = "blue";
+      color = "yellow";
     }
     // starAngles:
     // top face: 0 = east, 90 = south, 180 = west, 270 = north
@@ -14642,7 +14644,7 @@ class App extends Component {
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
     let countLimit = 15;
-    let delay = 300;
+    let delay = 0;
 
     // maybe put FIX ME code here
     // check action count
@@ -14685,16 +14687,17 @@ class App extends Component {
         });
       }
     } else {
+      if (action === "defending") {
+        // arcAngle = 90;
+        phase = "release";
+      }
+
       if (phase === "pullback") {
         arcAngle = 90;
       }
       if (phase === "release") {
         arcAngle = 180;
-        color = "blue";
-      }
-      if (action === "defending") {
-        // arcAngle = 90;
-        phase = "release";
+        // color = "blue";
       }
 
       if (player.direction === "north") {
@@ -27782,7 +27785,7 @@ class App extends Component {
         ) {
           // this.setAutoCamera('aiSpawnFocus',newPlayer)
         } else {
-          console.log("no setting auto cam: aiSpawnFocus");
+          // console.log("no setting auto cam: aiSpawnFocus");
         }
       }
     } else if (this.addAiCount.state === true) {
@@ -34139,7 +34142,7 @@ class App extends Component {
     if (this.time === 100 && player.number === 1) {
       // this.setBackgroundImage("sea_clouds_1");
       // this.testCount.state = true;
-      // this.testCount.limit = 20;
+      // this.testCount.limit = 30;
       // player.attacking.direction = "none";
       // player.attacking.directionType = "thrust";
       // player.attacking.direction = "south";
@@ -34206,13 +34209,13 @@ class App extends Component {
         this.circleArcCrementer(
           "testing",
           player,
-          "cartesian",
+          "isometric",
           50,
           360,
           0,
-          "ringSection",
+          "arc",
           "counterClockwise",
-          "front",
+          "top",
           null
         );
         // this.circleArcCrementer(
@@ -36088,7 +36091,7 @@ class App extends Component {
                     this.setAutoCamera("attackFocus", player);
                   }
                 } else {
-                  console.log("no setting auto cam: attackFocus");
+                  // console.log("no setting auto cam: attackFocus");
                 }
               }
 
@@ -36127,36 +36130,38 @@ class App extends Component {
             }
 
             // SET DIRECTIONAL ATTACK ANIMATIONS
-            let dirAnimSetCalcMod = 5;
-            let xTime =
-              player.attacking.peakCount +
-              dirAnimSetCalcMod -
-              directionalActionResult.inputThresh;
-            if (directionalActionResult.inputThresh === player.attacking.count) {
-              console.log("xTime", xTime / 2);
-              player = this.handlePlayerDirectionalActionAnimation(
-                "init",
-                "attacking",
-                "pullback",
-                player,
-                null
-              );
-            }
-            // if (player.attacking.count < player.attacking.peakCount && player.attacking.count === (directionalActionResult.inputThresh+15)) {
-            if (
-              player.attacking.count < player.attacking.peakCount &&
-              player.attacking.count ===
-                directionalActionResult.inputThresh + Math.ceil(xTime / 2)
-            ) {
-              console.log("xTime2", xTime / 2, player.attacking.count);
-              player.actionDirectionAnimationArray = [];
-              player = this.handlePlayerDirectionalActionAnimation(
-                "init",
-                "attacking",
-                "release",
-                player,
-                null
-              );
+            if (this.showDirectionalActionAnimation === true) {
+              let dirAnimSetCalcMod = 5;
+              let xTime =
+                player.attacking.peakCount +
+                dirAnimSetCalcMod -
+                directionalActionResult.inputThresh;
+              if (directionalActionResult.inputThresh === player.attacking.count) {
+                console.log("xTime", xTime / 2);
+                player = this.handlePlayerDirectionalActionAnimation(
+                  "init",
+                  "attacking",
+                  "pullback",
+                  player,
+                  null
+                );
+              }
+              // if (player.attacking.count < player.attacking.peakCount && player.attacking.count === (directionalActionResult.inputThresh+15)) {
+              if (
+                player.attacking.count < player.attacking.peakCount &&
+                player.attacking.count ===
+                  directionalActionResult.inputThresh + Math.ceil(xTime / 2)
+              ) {
+                console.log("xTime2", xTime / 2, player.attacking.count);
+                player.actionDirectionAnimationArray = [];
+                player = this.handlePlayerDirectionalActionAnimation(
+                  "init",
+                  "attacking",
+                  "release",
+                  player,
+                  null
+                );
+              }
             }
 
             let executeAttack = false;
@@ -36177,16 +36182,16 @@ class App extends Component {
                     player.attacking.directionType
                   ].charged
               ) {
-                console.log(
-                  "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
-                );
-                console.log(
-                  "counts",
-                  player.attacking.count,
-                  player.attacking.animRef.peak[stamAtkType][
-                    player.attacking.directionType
-                  ].normal
-                );
+                // console.log(
+                //   "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
+                // );
+                // console.log(
+                //   "counts",
+                //   player.attacking.count,
+                //   player.attacking.animRef.peak[stamAtkType][
+                //     player.attacking.directionType
+                //   ].normal
+                // );
                 executeAttack = true;
                 attackPeak =
                   player.attacking.animRef.peak[stamAtkType][
@@ -36200,13 +36205,13 @@ class App extends Component {
               } else if (player.attacking.count === attackPeak) {
                 executeAttack = true;
                 player.attacking.peakCount = attackPeak;
-                console.log(
-                  "execute ",
-                  chargeType,
-                  " attack at peak normally",
-                  player.attacking.charge,
-                  player.attacking.blunt
-                );
+                // console.log(
+                //   "execute ",
+                //   chargeType,
+                //   " attack at peak normally",
+                //   player.attacking.charge,
+                //   player.attacking.blunt
+                // );
               }
             } else {
               // console.log("attack peak already reached/passed");
@@ -36225,17 +36230,17 @@ class App extends Component {
 
                 let melee = true;
 
-                console.log(
-                  "atk peak:",
-                  player.attacking.direction,
-                  "counts:",
-                  player.attacking.count,
-                  player.attacking.peakCount,
-                  player.attacking.limit,
-                  chargeType === "charged",
-                  "blunt:",
-                  player.attacking.blunt
-                );
+                // console.log(
+                //   "atk peak:",
+                //   player.attacking.direction,
+                //   "counts:",
+                //   player.attacking.count,
+                //   player.attacking.peakCount,
+                //   player.attacking.limit,
+                //   chargeType === "charged",
+                //   "blunt:",
+                //   player.attacking.blunt
+                // );
 
                 player = this.setElasticCounter("attacking", "peak", false, player);
 
@@ -36322,15 +36327,15 @@ class App extends Component {
               player.attacking.count > player.attacking.peakCount &&
               player.attacking.count < player.attacking.limit
             ) {
-              console.log(
-                "atk cooldown:",
-                player.attacking.direction,
-                "counts:",
-                player.attacking.count,
-                player.attacking.peakCount,
-                player.attacking.limit,
-                chargeType === "charged"
-              );
+              // console.log(
+              //   "atk cooldown:",
+              //   player.attacking.direction,
+              //   "counts:",
+              //   player.attacking.count,
+              //   player.attacking.peakCount,
+              //   player.attacking.limit,
+              //   chargeType === "charged"
+              // );
               player.attacking.peak = false;
               player.attacking.chargePeak = false;
               player.attacking.blunt = false;
@@ -36389,7 +36394,7 @@ class App extends Component {
               ) {
                 this.setAutoCamera("attackFocusBreak", player);
               } else {
-                console.log("no setting auto cam: attackFocusBreak");
+                // console.log("no setting auto cam: attackFocusBreak");
               }
 
               if (player.popups.find((x) => x.msg === "attacking")) {
@@ -36476,19 +36481,19 @@ class App extends Component {
             if (defendPeak > player.defending.peakCount) {
               defenseValueDecreased = true;
             }
-            console.log(
-              "defend peak changed from",
-              player.defending.peakCount,
-              "to",
-              defendPeak
-            );
+            // console.log(
+            //   "defend peak changed from",
+            //   player.defending.peakCount,
+            //   "to",
+            //   defendPeak
+            // );
             player.defending.peakCount = defendPeak;
           }
 
           let limit =
             player.defending.animRef.limit[defendType][player.defending.directionType];
           if (player.defending.decay.state !== true && limit !== player.defending.limit) {
-            console.log("defend limit changed from", player.defending.limit, "to", limit);
+            // console.log("defend limit changed from", player.defending.limit, "to", limit);
             player.defending.limit = limit;
           }
 
@@ -36500,14 +36505,14 @@ class App extends Component {
             player.defending.count++;
             player.action = "defending";
             player.defending.peak = false;
-            console.log(
-              "defend windup:",
-              player.defending.direction,
-              "counts",
-              player.defending.count,
-              defendPeak,
-              player.defending.limit
-            );
+            // console.log(
+            //   "defend windup:",
+            //   player.defending.direction,
+            //   "counts",
+            //   player.defending.count,
+            //   defendPeak,
+            //   player.defending.limit
+            // );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
                 state: false,
@@ -36546,49 +36551,51 @@ class App extends Component {
             defenseValueDecreased === true &&
             player.defending.count > player.defending.peakCount
           ) {
-            console.log(
-              "defend was directional now non directional & pask peak. Execute defend"
-            );
+            // console.log(
+            //   "defend was directional now non directional & pask peak. Execute defend"
+            // );
             player.defending.peakCount = player.defending.count;
           }
 
           // SET DIRECTIONAL DEFEND ANIMATIONS
-          let dirAnimSetCalcMod = 5;
-          let xTime =
-            player.defending.peakCount +
-            dirAnimSetCalcMod -
-            directionalActionResult.inputThresh;
-          let existingDefendAnim = player.actionDirectionAnimationArray.find(
-            (x) => x.action === "defending"
-          );
-          // if (player.defending.count === directionalActionResult.inputThresh) {
-          if (!existingDefendAnim) {
-            console.log("xTime", Math.ceil(xTime / 2));
-            player = this.handlePlayerDirectionalActionAnimation(
-              "init",
-              "defending",
-              "release",
-              player,
-              null
+          if (this.showDirectionalActionAnimation === true) {
+            let dirAnimSetCalcMod = 5;
+            let xTime =
+              player.defending.peakCount +
+              dirAnimSetCalcMod -
+              directionalActionResult.inputThresh;
+            let existingDefendAnim = player.actionDirectionAnimationArray.find(
+              (x) => x.action === "defending"
             );
-          }
-          if (directionalActionResult.directionChanged === true) {
-            player.actionDirectionAnimationArray = [];
-            if (player.defending.decay.state !== true) {
-              console.log("yTime", player.defending.peakCount - player.defending.count);
-            } else {
-              console.log(
-                "yTime",
-                player.defending.decay.limit - player.defending.decay.count
+            // if (player.defending.count === directionalActionResult.inputThresh) {
+            if (!existingDefendAnim) {
+              console.log("xTime", Math.ceil(xTime / 2));
+              player = this.handlePlayerDirectionalActionAnimation(
+                "init",
+                "defending",
+                "release",
+                player,
+                null
               );
             }
-            player = this.handlePlayerDirectionalActionAnimation(
-              "init",
-              "defending",
-              "release",
-              player,
-              null
-            );
+            if (directionalActionResult.directionChanged === true) {
+              player.actionDirectionAnimationArray = [];
+              if (player.defending.decay.state !== true) {
+                console.log("yTime", player.defending.peakCount - player.defending.count);
+              } else {
+                console.log(
+                  "yTime",
+                  player.defending.decay.limit - player.defending.decay.count
+                );
+              }
+              player = this.handlePlayerDirectionalActionAnimation(
+                "init",
+                "defending",
+                "release",
+                player,
+                null
+              );
+            }
           }
 
           let executeDefend = false;
@@ -36627,18 +36634,18 @@ class App extends Component {
               }
 
               player = this.setElasticCounter("defending", "peak", false, player);
-              console.log(
-                "defend peak:",
-                player.defending.direction,
-                "counts",
-                player.defending.count,
-                defendPeak,
-                player.defending.limit,
-                "decay:",
-                player.defending.decay.state,
-                player.defending.decay.count,
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend peak:",
+              //   player.defending.direction,
+              //   "counts",
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit,
+              //   "decay:",
+              //   player.defending.decay.state,
+              //   player.defending.decay.count,
+              //   player.defending.decay.limit
+              // );
             }
             // OUT OF STAMINA
             else {
@@ -36708,32 +36715,32 @@ class App extends Component {
                 });
               }
               player = this.setElasticCounter("defending", "decay", false, player);
-              console.log(
-                "defend decay:",
-                player.defending.direction,
-                "counts",
-                player.defending.count,
-                defendPeak,
-                player.defending.limit,
-                "decay:",
-                player.defending.decay.state,
-                player.defending.decay.count,
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend decay:",
+              //   player.defending.direction,
+              //   "counts",
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit,
+              //   "decay:",
+              //   player.defending.decay.state,
+              //   player.defending.decay.count,
+              //   player.defending.decay.limit
+              // );
             }
 
             if (player.defending.decay.count >= player.defending.decay.limit) {
               player.defending.decay.state = false;
               player.defending.decay.count = 0;
               player.defending.count = defendPeak + player.defending.decay.limit;
-              console.log(
-                "defend decay end:",
-                player.defending.direction,
-                "counts",
-                player.defending.count,
-                defendPeak,
-                player.defending.limit
-              );
+              // console.log(
+              //   "defend decay end:",
+              //   player.defending.direction,
+              //   "counts",
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit
+              // );
             }
           }
 
@@ -36761,14 +36768,14 @@ class App extends Component {
               //   }
               // }
               player.defending.count++;
-              console.log(
-                "defend cooldown:",
-                player.defending.direction,
-                "counts",
-                player.defending.count,
-                defendPeak,
-                player.defending.limit
-              );
+              // console.log(
+              //   "defend cooldown:",
+              //   player.defending.direction,
+              //   "counts",
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit
+              // );
             }
             if (player.defending.count >= player.defending.limit) {
               player.action = "idle";
@@ -36817,7 +36824,7 @@ class App extends Component {
               ) {
                 this.setAutoCamera("defendFocusBreak", player);
               } else {
-                console.log("no setting auto cam: defendFocusBreak");
+                // console.log("no setting auto cam: defendFocusBreak");
               }
               // RESET ELASTIC COUNTER
               if (
@@ -41654,261 +41661,142 @@ class App extends Component {
           }
         }
         // CELL POPUPS
-        if (x === this.gridWidth && y === this.gridWidth) {
-          // console.log(this.pickupAmmoRef.current);
+        if (this.hideAllPopups !== true) {
+          if (x === this.gridWidth && y === this.gridWidth) {
+            // console.log(this.pickupAmmoRef.current);
 
-          for (const popup of this.cellPopups) {
-            let popupBorderColor = "black";
-            if (popup.state === true) {
-              // console.log('drawing a popup');
-              let popupDrawCoords;
-              if (popup.position === "" || !popup.position) {
-                let currentPopups = this.cellPopups.filter((x) => x.state === true);
-                let currentPopupsThisCell = this.cellPopups.filter(
-                  (x) =>
-                    x.state === true &&
-                    x.cell.number.x === popup.cell.number.x &&
-                    x.cell.number.y === popup.cell.number.y
-                );
-                let positions = [
-                  "north",
-                  "east",
-                  "south",
-                  "west",
-                  "northEast",
-                  "northWest",
-                  "southEast",
-                  "southWest",
-                ];
+            for (const popup of this.cellPopups) {
+              let popupBorderColor = "black";
+              if (popup.state === true) {
+                // console.log('drawing a popup');
+                let popupDrawCoords;
+                if (popup.position === "" || !popup.position) {
+                  let currentPopups = this.cellPopups.filter((x) => x.state === true);
+                  let currentPopupsThisCell = this.cellPopups.filter(
+                    (x) =>
+                      x.state === true &&
+                      x.cell.number.x === popup.cell.number.x &&
+                      x.cell.number.y === popup.cell.number.y
+                  );
+                  let positions = [
+                    "north",
+                    "east",
+                    "south",
+                    "west",
+                    "northEast",
+                    "northWest",
+                    "southEast",
+                    "southWest",
+                  ];
 
-                if (popup.color === "") {
-                  popup.color = this.cellColorRef.find(
-                    (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
-                  ).color;
-                }
-
-                // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
-                for (const popup2 of currentPopupsThisCell) {
-                  if (popup2.position && popup2.position !== "") {
-                    let indx = positions.indexOf(popup2.position);
-                    positions.splice(indx, 1);
+                  if (popup.color === "") {
+                    popup.color = this.cellColorRef.find(
+                      (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
+                    ).color;
                   }
-                }
 
-                let dir = undefined;
-                let dirs = [];
-
-                for (const plyr2 of this.players) {
-                  if (plyr2.ai.state !== true) {
-                    let myPos = popup.cell.number;
-                    let invalidPos =
-                      this.players[plyr2.number - 1].currentPosition.cell.number;
-                    // let invalidPositions = [invalidPos];
-
-                    // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
-                    dir = this.getDirectionFromCells(myPos, invalidPos);
-
-                    if (dir && positions.includes(dir) === true) {
-                      positions.splice(positions.indexOf(dir), 1);
-                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                  // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
+                  for (const popup2 of currentPopupsThisCell) {
+                    if (popup2.position && popup2.position !== "") {
+                      let indx = positions.indexOf(popup2.position);
+                      positions.splice(indx, 1);
                     }
+                  }
 
-                    // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
-                    for (const pop of plyr2.popups) {
-                      dir = undefined;
+                  let dir = undefined;
+                  let dirs = [];
 
-                      if (pop.state === true) {
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        };
+                  for (const plyr2 of this.players) {
+                    if (plyr2.ai.state !== true) {
+                      let myPos = popup.cell.number;
+                      let invalidPos =
+                        this.players[plyr2.number - 1].currentPosition.cell.number;
+                      // let invalidPositions = [invalidPos];
 
-                        invalidPos2 = this.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position
-                        );
+                      // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
+                      dir = this.getDirectionFromCells(myPos, invalidPos);
 
-                        // let dir = undefined;
+                      if (dir && positions.includes(dir) === true) {
+                        positions.splice(positions.indexOf(dir), 1);
+                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                      }
 
-                        dir = this.getDirectionFromCells(myPos, invalidPos2);
+                      // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+                      for (const pop of plyr2.popups) {
+                        dir = undefined;
 
-                        if (dir && positions.includes(dir) === true) {
-                          positions.splice(positions.indexOf(dir), 1);
-                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        if (pop.state === true) {
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          };
+
+                          invalidPos2 = this.getCellFromDirection(
+                            1,
+                            invalidPos,
+                            pop.position
+                          );
+
+                          // let dir = undefined;
+
+                          dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                          if (dir && positions.includes(dir) === true) {
+                            positions.splice(positions.indexOf(dir), 1);
+                            // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          }
                         }
                       }
                     }
                   }
-                }
 
-                // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
-                for (const popup2 of currentPopups) {
-                  dir = undefined;
+                  // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
+                  for (const popup2 of currentPopups) {
+                    dir = undefined;
 
-                  if (
-                    popup.cell.number.x !== popup2.cell.number.x &&
-                    popup.cell.number.y !== popup2.cell.number.y &&
-                    popup2.msg !== popup.msg &&
-                    popup2.state === true
-                  ) {
-                    let myPos = popup.cell.number;
-                    let cellPos = popup2.cell.number;
-                    let invalidPos2 = {
-                      x: undefined,
-                      y: undefined,
-                    };
+                    if (
+                      popup.cell.number.x !== popup2.cell.number.x &&
+                      popup.cell.number.y !== popup2.cell.number.y &&
+                      popup2.msg !== popup.msg &&
+                      popup2.state === true
+                    ) {
+                      let myPos = popup.cell.number;
+                      let cellPos = popup2.cell.number;
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      };
 
-                    invalidPos2 = this.getCellFromDirection(1, cellPos, popup2.position);
+                      invalidPos2 = this.getCellFromDirection(
+                        1,
+                        cellPos,
+                        popup2.position
+                      );
 
-                    dir = this.getDirectionFromCells(myPos, invalidPos2);
+                      dir = this.getDirectionFromCells(myPos, invalidPos2);
 
-                    if (dir && positions.includes(dir) === true) {
-                      positions.splice(positions.indexOf(dir), 1);
-                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                    }
-                  }
-                }
-
-                if (!positions[0]) {
-                  // console.log('no open positions for', popup.msg);
-                  popup.state = false;
-                  popup.count = 0;
-                } else {
-                  popup.position = positions[0];
-                }
-
-                popup.img = this.popupImageRef[popup.msg];
-
-                popupDrawCoords = this.popupDrawCalc(
-                  popup.position,
-                  { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
-                  0
-                );
-                this.drawPopupBubble(
-                  context,
-                  popupDrawCoords.origin.x,
-                  popupDrawCoords.origin.y,
-                  this.popupSize,
-                  this.popupSize,
-                  5,
-                  popupDrawCoords.anchor.x,
-                  popupDrawCoords.anchor.y,
-                  popup.color
-                );
-                // context.fillStyle = 'black';
-                // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                // console.log('popup.msg',popup.msg,popup.img);
-                let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-                context.drawImage(
-                  popup.img,
-                  popupDrawCoords.origin.x + centerPopupOffset,
-                  popupDrawCoords.origin.y + centerPopupOffset,
-                  this.popupImgSize,
-                  this.popupImgSize
-                );
-              } else {
-                let dir = undefined;
-                let dirs = [];
-
-                let currentPopupsNotThis = this.cellPopups.filter(
-                  (x) =>
-                    x.state === true &&
-                    x.msg !== popup.msg &&
-                    x.cell.number.x !== popup.cell.number.x &&
-                    x.cell.number.y !== popup.cell.number.y
-                );
-
-                for (const plyr2 of this.players) {
-                  if (plyr2.ai.state !== true) {
-                    let myPos = popup.cell.number;
-                    let invalidPos =
-                      this.players[plyr2.number - 1].currentPosition.cell.number;
-
-                    // invalidpostions2 push plyr2 position
-                    // for player popups
-                    //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
-                    //
-
-                    dir = this.getDirectionFromCells(myPos, invalidPos);
-
-                    dirs.push(dir);
-
-                    for (const pop of plyr2.popups) {
-                      if (pop.state === true) {
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        };
-
-                        invalidPos2 = this.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position
-                        );
-
-                        dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                        // if (dir && positions.includes(dir) === true) {
-                        //   positions.splice(positions.indexOf(dir),1);
-                        //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        // }
-                        dirs.push(dir);
+                      if (dir && positions.includes(dir) === true) {
+                        positions.splice(positions.indexOf(dir), 1);
+                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
                       }
                     }
                   }
-                }
 
-                for (const popup2 of currentPopupsNotThis) {
-                  dir = undefined;
-
-                  if (popup2.msg !== popup.msg && popup2.state === true) {
-                    let myPos = popup.cell.number;
-
-                    let cellPos = popup2.cell.number;
-                    let invalidPos2 = {
-                      x: undefined,
-                      y: undefined,
-                    };
-
-                    invalidPos2 = this.getCellFromDirection(1, cellPos, popup2.position);
-
-                    dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                    dirs.push(dir);
+                  if (!positions[0]) {
+                    // console.log('no open positions for', popup.msg);
+                    popup.state = false;
+                    popup.count = 0;
+                  } else {
+                    popup.position = positions[0];
                   }
-                }
 
-                // if (popup.position === dir ) {
-                if (dirs.find((x) => x === popup.position)) {
-                  // for (const pop of this.cellPopups) {
-                  //   pop.position = '';
-                  //   pop.state = false;
-                  // }
-                  this.cellPopups.find(
-                    (x) =>
-                      x.msg === popup.msg &&
-                      x.cell.number.x === popup.cell.number.x &&
-                      x.cell.number.x === popup.cell.number.x
-                  ).state = false;
-                  this.cellPopups.find(
-                    (x) =>
-                      x.msg === popup.msg &&
-                      x.cell.number.x === popup.cell.number.x &&
-                      x.cell.number.x === popup.cell.number.x
-                  ).position = "";
-                  // console.log('reconsidering...',popup.msg);
-                } else {
                   popup.img = this.popupImageRef[popup.msg];
+
                   popupDrawCoords = this.popupDrawCalc(
                     popup.position,
-                    {
-                      x: popup.cell.center.x - 25,
-                      y: popup.cell.center.y - 15,
-                    },
+                    { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
                     0
                   );
-                  // this.drawPopupBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
                   this.drawPopupBubble(
                     context,
                     popupDrawCoords.origin.x,
@@ -41922,7 +41810,7 @@ class App extends Component {
                   );
                   // context.fillStyle = 'black';
                   // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                  // console.log('popup.msg',popup.msg);
+                  // console.log('popup.msg',popup.msg,popup.img);
                   let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
                   context.drawImage(
                     popup.img,
@@ -41931,6 +41819,135 @@ class App extends Component {
                     this.popupImgSize,
                     this.popupImgSize
                   );
+                } else {
+                  let dir = undefined;
+                  let dirs = [];
+
+                  let currentPopupsNotThis = this.cellPopups.filter(
+                    (x) =>
+                      x.state === true &&
+                      x.msg !== popup.msg &&
+                      x.cell.number.x !== popup.cell.number.x &&
+                      x.cell.number.y !== popup.cell.number.y
+                  );
+
+                  for (const plyr2 of this.players) {
+                    if (plyr2.ai.state !== true) {
+                      let myPos = popup.cell.number;
+                      let invalidPos =
+                        this.players[plyr2.number - 1].currentPosition.cell.number;
+
+                      // invalidpostions2 push plyr2 position
+                      // for player popups
+                      //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+                      //
+
+                      dir = this.getDirectionFromCells(myPos, invalidPos);
+
+                      dirs.push(dir);
+
+                      for (const pop of plyr2.popups) {
+                        if (pop.state === true) {
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          };
+
+                          invalidPos2 = this.getCellFromDirection(
+                            1,
+                            invalidPos,
+                            pop.position
+                          );
+
+                          dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                          // if (dir && positions.includes(dir) === true) {
+                          //   positions.splice(positions.indexOf(dir),1);
+                          //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          // }
+                          dirs.push(dir);
+                        }
+                      }
+                    }
+                  }
+
+                  for (const popup2 of currentPopupsNotThis) {
+                    dir = undefined;
+
+                    if (popup2.msg !== popup.msg && popup2.state === true) {
+                      let myPos = popup.cell.number;
+
+                      let cellPos = popup2.cell.number;
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      };
+
+                      invalidPos2 = this.getCellFromDirection(
+                        1,
+                        cellPos,
+                        popup2.position
+                      );
+
+                      dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                      dirs.push(dir);
+                    }
+                  }
+
+                  // if (popup.position === dir ) {
+                  if (dirs.find((x) => x === popup.position)) {
+                    // for (const pop of this.cellPopups) {
+                    //   pop.position = '';
+                    //   pop.state = false;
+                    // }
+                    this.cellPopups.find(
+                      (x) =>
+                        x.msg === popup.msg &&
+                        x.cell.number.x === popup.cell.number.x &&
+                        x.cell.number.x === popup.cell.number.x
+                    ).state = false;
+                    this.cellPopups.find(
+                      (x) =>
+                        x.msg === popup.msg &&
+                        x.cell.number.x === popup.cell.number.x &&
+                        x.cell.number.x === popup.cell.number.x
+                    ).position = "";
+                    // console.log('reconsidering...',popup.msg);
+                  } else {
+                    popup.img = this.popupImageRef[popup.msg];
+                    popupDrawCoords = this.popupDrawCalc(
+                      popup.position,
+                      {
+                        x: popup.cell.center.x - 25,
+                        y: popup.cell.center.y - 15,
+                      },
+                      0
+                    );
+                    // this.drawPopupBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                    this.drawPopupBubble(
+                      context,
+                      popupDrawCoords.origin.x,
+                      popupDrawCoords.origin.y,
+                      this.popupSize,
+                      this.popupSize,
+                      5,
+                      popupDrawCoords.anchor.x,
+                      popupDrawCoords.anchor.y,
+                      popup.color
+                    );
+                    // context.fillStyle = 'black';
+                    // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                    // console.log('popup.msg',popup.msg);
+                    let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+                    context.drawImage(
+                      popup.img,
+                      popupDrawCoords.origin.x + centerPopupOffset,
+                      popupDrawCoords.origin.y + centerPopupOffset,
+                      this.popupImgSize,
+                      this.popupImgSize
+                    );
+                  }
                 }
               }
             }
@@ -44457,7 +44474,7 @@ class App extends Component {
                 ) {
                   this.setAutoCamera("playerSpawnFocus", plyr);
                 } else {
-                  console.log("no setting auto cam: playerSpawnFocus");
+                  // console.log("no setting auto cam: playerSpawnFocus");
                 }
               }
             }
@@ -44506,7 +44523,11 @@ class App extends Component {
           }
 
           // PLAYER POPUPS
-          if (x === this.gridWidth && y === this.gridWidth) {
+          if (
+            x === this.gridWidth &&
+            y === this.gridWidth &&
+            this.hideAllPopups !== true
+          ) {
             let popupBorderColor = this.playerColourRef["player" + plyr.number + ""];
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
