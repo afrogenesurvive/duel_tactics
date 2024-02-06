@@ -8726,14 +8726,56 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  directionalActionAnimLineCrementer(startPt, endPt, percent) {
+  directionalActionAnimLineCrementer = (player, elem) => {
+    let percent = elem.counter.count / elem.counter.limit;
+    let startPt;
+    let endPt;
+    let rearCellNo = this.getCellFromDirection(
+      1,
+      player.currentPosition.cell,
+      this.getOppositeDirection(player.direction)
+    );
+
+    if (elem.phase === "pullback") {
+      startPt = player.currentPosition.cell.center;
+      if (rearCellNo.x && rearCellNo.y) {
+        endPt = this.gridInfo.find(
+          (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
+        )?.center;
+      } else {
+        endPt = this.getVoidCenter(
+          1,
+          this.getOppositeDirection(player.direction),
+          player.currentPosition.cell.center
+        );
+      }
+    }
+    if (elem.phase === "release") {
+      if (rearCellNo.x && rearCellNo.y) {
+        startPt = this.gridInfo.find(
+          (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
+        )?.center;
+      } else {
+        startPt = this.getVoidCenter(
+          1,
+          this.getOppositeDirection(player.direction),
+          player.currentPosition.cell.center
+        );
+      }
+      endPt = player.target.cell1.center;
+    }
     let dx = endPt.x - startPt.x;
     let dy = endPt.y - startPt.y;
     let X = startPt.x + dx * percent;
     let Y = startPt.y + dy * percent;
-    // newPosition = {x:X,y:Y}
-    return { x: Math.round(X), y: Math.round(Y) };
-  }
+    let result = { x: Math.round(X), y: Math.round(Y) };
+
+    elem.points.push(result);
+    let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+    el = elem;
+
+    return player;
+  };
   circleArcCrementer = (
     type,
     player,
@@ -8744,7 +8786,7 @@ class App extends Component {
     shape,
     direction,
     face,
-    elemId
+    elem
   ) => {
     const colors = [
       "#FF5733", // Red-Orange
@@ -8784,7 +8826,6 @@ class App extends Component {
 
     // type args: 'testing'/'playerDirectionalAction'
 
-    let arrayElem = player.actionDirectionAnimationArray.find((x) => x.id === elemId);
     let pointIso;
     let point1Iso;
     let point2Iso;
@@ -8878,8 +8919,8 @@ class App extends Component {
       limit = this.testCount.limit;
     }
     if (type === "playerDirectionalAction") {
-      count = arrayElem.counter.count;
-      limit = arrayElem.counter.limit;
+      count = elem.counter.count;
+      limit = elem.counter.limit;
     }
 
     incr = count / limit;
@@ -8897,7 +8938,7 @@ class App extends Component {
       color = "pink";
     }
     if (type === "playerDirectionalAction") {
-      color = arrayElem.color;
+      color = elem.color;
     }
 
     let connetingLineArray = [];
@@ -8910,79 +8951,7 @@ class App extends Component {
       point1Iso = cartesianToIsometric(point1);
 
       point2Iso = cartesianToIsometric(point2);
-    }
 
-    if (shape === "sector") {
-      for (let i = 0; i < conntectingLineIncr; i++) {
-        let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
-        if (mode === "isometric") {
-          point3 = cartesianToIsometric(point3);
-
-          point3.x += sceneX;
-          point3.y += sceneY;
-
-          point3.x += xOffset;
-          point3.y -= yOffset;
-
-          if (faceRotation > 0) {
-            point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
-          }
-        }
-
-        if (type === "testing") {
-          this.testDraw.push({
-            color: "red",
-            x: point3.x,
-            y: point3.y,
-          });
-        }
-        if (type === "playerDirectionalAction") {
-          arrayElem.points.push({
-            color: color,
-            x: point3.x,
-            y: point3.y,
-          });
-        }
-      }
-    }
-
-    if (shape === "ringSection") {
-      if (count === 1 || count === limit) {
-        for (let i = 0; i < conntectingLineIncr; i++) {
-          let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
-          if (mode === "isometric") {
-            point3 = cartesianToIsometric(point3);
-
-            point3.x += sceneX;
-            point3.y += sceneY;
-
-            point3.x += xOffset;
-            point3.y -= yOffset;
-
-            if (faceRotation > 0) {
-              point3 = rotatePoint(point3.x, point3.y, pointA.x, pointA.y, faceRotation);
-            }
-          }
-
-          if (type === "testing") {
-            this.testDraw.push({
-              color: colors[this.testCount.count - 1],
-              x: point3.x,
-              y: point3.y,
-            });
-          }
-          if (type === "playerDirectionalAction") {
-            arrayElem.points.push({
-              color: color,
-              x: point3.x,
-              y: point3.y,
-            });
-          }
-        }
-      }
-    }
-
-    if (mode === "isometric") {
       point = pointIso;
       point1 = point1Iso;
       point2 = point2Iso;
@@ -9011,6 +8980,50 @@ class App extends Component {
       if (faceRotation > 0) {
         point1 = rotatePoint(point1.x, point1.y, point.x, point.y, faceRotation);
         point2 = rotatePoint(point2.x, point2.y, point.x, point.y, faceRotation);
+      }
+    }
+
+    if (shape === "ringSection") {
+      // if (count === 1 || count === limit) {
+      for (let i = 0; i < conntectingLineIncr; i++) {
+        let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
+
+        if (type === "testing") {
+          this.testDraw.push({
+            color: colors[this.testCount.count - 1],
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+        if (type === "playerDirectionalAction") {
+          elem.points.push({
+            color: color,
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+      }
+      // }
+    }
+
+    if (shape === "sector") {
+      for (let i = 0; i < conntectingLineIncr; i++) {
+        let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
+
+        if (type === "testing") {
+          this.testDraw.push({
+            color: "red",
+            x: point3.x,
+            y: point3.y,
+          });
+        }
+        if (type === "playerDirectionalAction") {
+          elem.points.push({
+            color: color,
+            x: point3.x,
+            y: point3.y,
+          });
+        }
       }
     }
 
@@ -9052,7 +9065,7 @@ class App extends Component {
       }
     }
     if (type === "playerDirectionalAction") {
-      arrayElem.points.push(
+      elem.points.push(
         {
           color: color,
           x: point1.x,
@@ -9075,7 +9088,7 @@ class App extends Component {
         }
       );
       if (shape === "ringSection") {
-        arrayElem.points.push({
+        elem.points.push({
           color: color,
           x: point2.x,
           y: point2.y,
@@ -9083,9 +9096,8 @@ class App extends Component {
       }
     }
 
-    let el = player.actionDirectionAnimationArray.find((x) => x.id === elemId);
-    // player.actionDirectionAnimationArray[indx] = arrayElem;
-    el = arrayElem;
+    let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+    el = elem;
 
     return player;
   };
@@ -14611,21 +14623,49 @@ class App extends Component {
       color = "blue";
     }
 
-    let countLimit = 30;
-    let delay = 20;
-    // count should be based on phase & action count based on direction
+    let countLimit = 15;
+    let delay = 500;
+    // count should be based on phase & action count based on direction & phase
 
     if (directionType === "thrust") {
-      // let percent = (elem.counter.count / elem.counter.limit) * 100;
-      //             let startPoint = player.currentPosition.cell.center;
-      //             let endPoint = player.target.cell1.center;
-      //             elem.points.push(point);
+      countLimit = 10;
+
+      if (phase === "release") {
+        countLimit = 15;
+      }
+
+      if (mode === "init") {
+        id = player.actionDirectionAnimationArray.length + 1;
+
+        player.actionDirectionAnimationArray.push({
+          id: id,
+          actionDirectionType: directionType,
+          phase: phase,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAngle,
+          direction: direction,
+          face: face,
+          color: color,
+          counter: {
+            count: 0,
+            limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
+          },
+          points: [],
+        });
+      }
     } else {
       if (phase === "pullback") {
         arcAngle = 90;
       }
       if (phase === "release") {
         arcAngle = 180;
+        color = "blue";
       }
 
       if (player.direction === "north") {
@@ -14829,6 +14869,10 @@ class App extends Component {
       if (mode === "init") {
         id = player.actionDirectionAnimationArray.length + 1;
 
+        startAngle = startAngle + 0;
+        arcAngle = arcAngle + 0;
+        // startAngle = startAngle + 10;
+        // arcAngle = arcAngle + 10;
         player.actionDirectionAnimationArray.push({
           id: id,
           actionDirectionType: directionType,
@@ -34065,8 +34109,9 @@ class App extends Component {
       // this.setBackgroundImage("sea_clouds_1");
       // this.testCount.state = true;
       // this.testCount.limit = 60;
-
-      player.attacking.direction = "north";
+      // player.attacking.direction = "none";
+      // player.attacking.directionType = "thrust";
+      player.attacking.direction = "south";
       player.attacking.directionType = "slash";
       player = this.handlePlayerDirectionalActionAnimation(
         "init",
@@ -34075,12 +34120,18 @@ class App extends Component {
         player,
         null
       );
-
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
-    if (this.time === 150 && player.number === 1) {
+    if (this.time === 120 && player.number === 1) {
+      // player = this.handlePlayerDirectionalActionAnimation(
+      //   "init",
+      //   "attacking",
+      //   "release",
+      //   player,
+      //   null
+      // );
       // this.setDeflection(player, "defended", true);
       // this.setDeflection(player, "attacked", false);
       // this.pushBack(player, this.getOppositeDirection(player.direction));
@@ -34110,18 +34161,18 @@ class App extends Component {
         //   "counterClockwise",
         //   "top"
         // );
-        // this.circleArcCrementer(
-        //   "testing",
-        //   player,
-        //   "isometric",
-        //   50,
-        //   360,
-        //   0,
-        //   "arc",
-        //   "counterClockwise",
-        //   "front",
-        //   0
-        // );
+        this.circleArcCrementer(
+          "testing",
+          player,
+          "isometric",
+          50,
+          180,
+          0,
+          "ringSection",
+          "counterClockwise",
+          "front",
+          null
+        );
         // this.circleArcCrementer(
         //   player,
         //   "isometric",
@@ -35362,17 +35413,17 @@ class App extends Component {
               if (elem.delay.state !== true) {
                 if (elem.counter.count < elem.counter.limit) {
                   elem.counter.count++;
-                  this.circleArcCrementer(
+                  player = this.circleArcCrementer(
                     "playerDirectionalAction",
                     player,
                     "isometric",
                     elem.radius,
                     elem.angle,
                     elem.startAngle,
-                    "arc",
+                    "ringSection",
                     elem.direction,
                     elem.face,
-                    elem.id
+                    elem
                   );
                 }
                 if (elem.counter.count >= elem.counter.limit) {
@@ -35394,12 +35445,7 @@ class App extends Component {
               if (elem.delay.state !== true) {
                 if (elem.counter.count < elem.counter.limit) {
                   elem.counter.count++;
-
-                  // let point = this.directionalActionAnimLineCrementer(
-                  //   startPoint,
-                  //   endPoint,
-                  //   percent
-                  // );
+                  player = this.directionalActionAnimLineCrementer(player, elem);
                 }
                 if (elem.counter.count >= elem.counter.limit) {
                   elem.delay.state = true;
