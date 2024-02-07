@@ -562,14 +562,14 @@ class App extends Component {
       ],
       row1: [
         "**_*_1.0_a_0a*",
-        "cn_*_1.1_a_0a*",
-        "**_c_1.2_a_0a*",
+        "**_*_1.1_a_0a*",
+        "**_*_1.2_a_0a*",
         "**_*_1.3_a_0a*",
         "**_*_1.4_a_0a*",
         "**_*_1.5_a_0a*",
         "**_*_1.6_a_0a*",
         "**_*_1.7_a_0a*",
-        "**_h_1.8_a_0a*",
+        "**_*_1.8_a_0a*",
         "**_*_1.9_a_0a*",
       ],
       row2: [
@@ -587,18 +587,18 @@ class App extends Component {
       row3: [
         "**_*_3.0_a_0a*",
         "**_*_3.1_a_0a*",
-        "**_h_3.2_a_0a*",
+        "**_*_3.2_a_0a*",
         "**_*_3.3_a_0a*",
         "**_*_3.4_a_0a*",
         "**_*_3.5_a_0a*",
-        "**_c_3.6_a_0a*",
+        "**_*_3.6_a_0a*",
         "**_*_3.7_a_0a*",
         "**_*_3.8_a_0a*",
-        "**_c_3.9_a_0a*",
+        "**_*_3.9_a_0a*",
       ],
       row4: [
         "**_*_4.0_a_0a*",
-        "dn_*_4.1_a_0a*",
+        "**_*_4.1_a_0a*",
         "**_*_4.2_f_0a*",
         "**_*_4.3_f_0a*",
         "**_*_4.4_a_0a*",
@@ -611,7 +611,7 @@ class App extends Component {
       row5: [
         "**_*_5.0_a_0a*",
         "**_*_5.1_a_0a*",
-        "de_*_5.2_a_0a*",
+        "**_*_5.2_a_0a*",
         "**_*_5.3_a_0a*",
         "**_*_5.4_a_0a*",
         "**_h_5.5_a_0a*",
@@ -629,20 +629,20 @@ class App extends Component {
         "**_*_6.5_j_0a*",
         "**_*_6.6_j_0a*",
         "**_*_6.7_j_0a*",
-        "de_*_6.8_j_0a*",
+        "**_*_6.8_j_0a*",
         "**_*_6.9_j_0a*",
       ],
       row7: [
         "**_*_7.0_j_0a*",
         "**_*_7.1_j_0a*",
         "**_*_7.2_a_0a*",
-        "cw_*_7.3_a_0a*",
+        "**_*_7.3_a_0a*",
         "**_*_7.4_a_0a*",
         "**_*_7.5_a_0a*",
         "**_*_7.6_a_0a*",
-        "cw*_*_7.7_a_0a*",
+        "**_*_7.7_a_0a*",
         "**_*_7.8_a_0a*",
-        "dw_*_7.9_d_0a*",
+        "**_*_7.9_d_0a*",
       ],
       row8: [
         "**_*_8.0_a_0a*",
@@ -1454,7 +1454,7 @@ class App extends Component {
           state: false,
           persistent: false,
           remaining: 5,
-          direction: "",
+          direction: "south",
           target: {},
           timer: {
             enabled: false,
@@ -1474,7 +1474,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "sword1",
+          itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
         },
@@ -8735,7 +8735,7 @@ class App extends Component {
     let endPt;
     let rearCellNo = this.getCellFromDirection(
       1,
-      elem.ownnerLocationCell,
+      elem.locationCell,
       this.getOppositeDirection(elem.ownerDirection)
     );
     let ownerCenter;
@@ -8745,10 +8745,7 @@ class App extends Component {
       targetCenter = owner.target.cell1.center;
     } else {
       const ref = this.gridInfo.find((x) => {
-        return (
-          x.number.x === elem.ownerLocationCell.x &&
-          x.number.y === elem.ownerLocationCell.y
-        );
+        return x.number.x === elem.locationCell.x && x.number.y === elem.locationCell.y;
       });
       ownerCenter = ref.center;
       const pretargetCenter = ref[ownerType].trap.target;
@@ -13745,8 +13742,9 @@ class App extends Component {
   obstacleBarrierTrapInitSet = (superType, type, data) => {
     // console.log("  obstacleBarrierTrapInitSet", data[type].trap.state);
     let trap = data[type].trap;
-
-    let item = this.itemList.find((x) => x.name === trap.itemNameRef);
+    let item = this.itemList.find((x) => {
+      return x.name === trap.itemNameRef;
+    });
     trap.item = {
       name: item.name,
       amount: item.amount,
@@ -13774,7 +13772,7 @@ class App extends Component {
           if (trap.direction === "") {
             availibleCells = this.getSurroundingCells(
               data.number,
-              30,
+              45,
               "walkable",
               false,
               false
@@ -13784,7 +13782,11 @@ class App extends Component {
                 trap.target = availibleCells
                   .slice()
                   .reverse()
-                  .find((x) => x.x === data.number.x || x.y === data.number.y);
+                  .find(
+                    (x) =>
+                      (x.x === data.number.x && x.y === data.number.y + 3) ||
+                      (x.y === data.number.y && x.x === data.number.x + 3)
+                  );
               } else {
                 if (trap.item.subType === "spear") {
                   // trap.target = availibleCells[1];
@@ -13885,6 +13887,7 @@ class App extends Component {
         }
       }
     }
+    // console.log("trap init set", trap);
     return trap;
   };
   customObstacleBarrierTrapSet = (instructionType, data) => {
@@ -14756,7 +14759,6 @@ class App extends Component {
     if (action === "defending") {
       color = "yellow";
     }
-    let trap;
     let directionType;
     let ownerDirection;
     let actionDirection;
@@ -14786,7 +14788,7 @@ class App extends Component {
     if (
       directionType === "thrust" ||
       (action === "attacking" &&
-        (owner.currentWeapon.type === "crossbow" ||
+        (owner.currentWeapon?.type === "crossbow" ||
           owner[ownerType]?.trap?.item?.subType === "crossbow"))
     ) {
       countLimit = 10;
@@ -14795,7 +14797,7 @@ class App extends Component {
         countLimit = 15;
       }
       if (
-        owner.currentWeapon.type === "crossbow" ||
+        owner.currentWeapon?.type === "crossbow" ||
         owner[ownerType]?.trap?.item?.subType === "crossbow"
       ) {
         directionType = "slash";
@@ -14827,7 +14829,7 @@ class App extends Component {
             limit: delay,
           },
           points: [],
-          locactionCell: ownerLocactionCell,
+          locationCell: ownerLocactionCell,
         });
       } else {
         id = this.obstacleBarrierActionAnimationArray.length + 1;
@@ -14855,7 +14857,7 @@ class App extends Component {
             limit: delay,
           },
           points: [],
-          locactionCell: ownerLocactionCell,
+          locationCell: ownerLocactionCell,
         });
       }
     } else {
@@ -15096,7 +15098,7 @@ class App extends Component {
             limit: delay,
           },
           points: [],
-          locactionCell: ownerLocactionCell,
+          locationCell: ownerLocactionCell,
         });
       } else {
         id = this.obstacleBarrierActionAnimationArray.length + 1;
@@ -15124,7 +15126,7 @@ class App extends Component {
             limit: delay,
           },
           points: [],
-          locactionCell: ownerLocactionCell,
+          locationCell: ownerLocactionCell,
         });
       }
     }
@@ -15135,7 +15137,7 @@ class App extends Component {
     if (ownerType === "player") {
       return owner;
     } else {
-      return trap;
+      return owner[ownerType].trap;
     }
   };
   meleeAttackPeak = (ownerType, owner) => {
@@ -34333,7 +34335,7 @@ class App extends Component {
       //   this.gridInfo.filter((x) => x.obstacle.state === true || x.barrier.state === true && x.).length
       // );
       // this.projectileTester(this.gridInfo.find((x) => x.number.x === 3 && x.number.y === 0));
-      let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
+      // let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
       // let testTraps = this.customObstacleBarrierTrapSet("shuffleActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("setNewRandom", "");
@@ -34364,6 +34366,7 @@ class App extends Component {
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
+      let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
     }
     if (this.time === 120 && player.number === 1) {
       // player = this.handleDirectionalActionAnimation(
@@ -39960,7 +39963,7 @@ class App extends Component {
     }
 
     // OBSTACLE BARRIER ACTION ANIMATION
-    for (const elem of this.obstacleBarrierActionAnimationArray) {
+    for (let elem of this.obstacleBarrierActionAnimationArray) {
       if (elem.actionDirectionType === "slash") {
         if (elem.delay.state !== true) {
           if (elem.counter.count < elem.counter.limit) {
