@@ -9029,6 +9029,19 @@ class App extends Component {
       }
     }
 
+    // UNDER SLASHES ADJUSTED UP
+    if (
+      type === "playerDirectionalAction" &&
+      (face === "front" || face === "side") &&
+      elem.actionDirectionType === "slash" &&
+      player.direction === this.getOppositeDirection(player[elem.action].direction)
+    ) {
+      point.y -= 30;
+      point1.y -= 30;
+      point2.y -= 30;
+      pointA.y -= 30;
+    }
+
     // console.log("sceneX", sceneX, "sceneY", sceneY);
     // console.log("pointA", pointA.x.toFixed(2), pointA.y.toFixed(2));
     // console.log("point", point.x.toFixed(2), point.y.toFixed(2));
@@ -10070,7 +10083,7 @@ class App extends Component {
           let countCalcDown;
           let countCalcUp = Math.floor(remainder / 2);
           if (player.elasticCounter.direction === this.getOppositeDirection(direction)) {
-            console.log("opposite direction!!");
+            // console.log("opposite direction!!");
             countCalcUp = Math.floor(remainder * 0.75); //0.66
             countCalcDown = Math.floor(remainder * 0.25); //0.33
           } else {
@@ -10080,19 +10093,19 @@ class App extends Component {
           player.elasticCounter.direction = direction;
           player.elasticCounter.subType = subType;
 
-          console.log(
-            "count",
-            player.defending.count,
-            "limit",
-            player.defending.limit,
-            "remainder",
-            remainder,
-            "calc up/dwn",
-            countCalcUp,
-            countCalcDown,
-            "dir",
-            player.elasticCounter.direction
-          );
+          // console.log(
+          //   "count",
+          //   player.defending.count,
+          //   "limit",
+          //   player.defending.limit,
+          //   "remainder",
+          //   remainder,
+          //   "calc up/dwn",
+          //   countCalcUp,
+          //   countCalcDown,
+          //   "dir",
+          //   player.elasticCounter.direction
+          // );
           player.elasticCounter.countUp.limit = countCalcUp;
           player.elasticCounter.countDown.limit = countCalcDown;
           player.elasticCounter.countUp.count = 0;
@@ -14203,7 +14216,6 @@ class App extends Component {
     let inputDirection = "";
     let inputDirections = [];
     let directionalInputThresh = 0;
-    let directionalDefendThresh = 0;
     let directionChanged = false;
     let inputCount = 0;
     if (this.keyPressed[player.number - 1].north === true) {
@@ -14418,7 +14430,7 @@ class App extends Component {
               }
               if (inputDirection === player[action].direction) {
                 if (player[action].count > player[action].peakCount) {
-                  console.log("past peak. no charging");
+                  // console.log("past peak. no charging");
                 } else {
                   if (inputCount > 1) {
                     console.log("directional attack w/ multiple inputs. feint attack");
@@ -14471,11 +14483,11 @@ class App extends Component {
               if (inputDirection === player[action].direction) {
                 // charge();
               } else {
-                console.log(
-                  "still time to set attack direction. changing direction",
-                  player[action].direction,
-                  inputDirection
-                );
+                // console.log(
+                //   "still time to set attack direction. changing direction",
+                //   player[action].direction,
+                //   inputDirection
+                // );
                 popup(inputDirection, player[action].direction);
                 player[action].direction = inputDirection;
                 player[action].directionType = "slash";
@@ -14511,7 +14523,7 @@ class App extends Component {
               }
               if (inputDirection === player[action].direction) {
                 if (player[action].count > player[action].peakCount) {
-                  console.log("past peak. no charging");
+                  // console.log("past peak. no charging");
                 } else {
                   if (inputCount > 1) {
                     console.log("directional attack w/ multiple inputs. feint attack");
@@ -34158,17 +34170,6 @@ class App extends Component {
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
-    if (this.time === 120 && player.number === 2) {
-      // player.defending.direction = "east";
-      // player.defending.directionType = "slash";
-      // player = this.handlePlayerDirectionalActionAnimation(
-      //   "init",
-      //   "defending",
-      //   "release",
-      //   player,
-      //   null
-      // );
-    }
     if (this.time === 120 && player.number === 1) {
       // player = this.handlePlayerDirectionalActionAnimation(
       //   "init",
@@ -34211,11 +34212,11 @@ class App extends Component {
           player,
           "isometric",
           50,
-          360,
+          180,
           0,
           "arc",
           "counterClockwise",
-          "top",
+          "side",
           null
         );
         // this.circleArcCrementer(
@@ -36137,7 +36138,7 @@ class App extends Component {
                 dirAnimSetCalcMod -
                 directionalActionResult.inputThresh;
               if (directionalActionResult.inputThresh === player.attacking.count) {
-                console.log("xTime", xTime / 2);
+                console.log("xTime", Math.ceil(xTime / 2));
                 player = this.handlePlayerDirectionalActionAnimation(
                   "init",
                   "attacking",
@@ -36152,7 +36153,7 @@ class App extends Component {
                 player.attacking.count ===
                   directionalActionResult.inputThresh + Math.ceil(xTime / 2)
               ) {
-                console.log("xTime2", xTime / 2, player.attacking.count);
+                console.log("xTime2", Math.ceil(xTime / 2), player.attacking.count);
                 player.actionDirectionAnimationArray = [];
                 player = this.handlePlayerDirectionalActionAnimation(
                   "init",
@@ -36569,7 +36570,7 @@ class App extends Component {
             );
             // if (player.defending.count === directionalActionResult.inputThresh) {
             if (!existingDefendAnim) {
-              console.log("xTime", Math.ceil(xTime / 2));
+              console.log("yTime", Math.ceil(xTime / 2));
               player = this.handlePlayerDirectionalActionAnimation(
                 "init",
                 "defending",
@@ -36581,10 +36582,13 @@ class App extends Component {
             if (directionalActionResult.directionChanged === true) {
               player.actionDirectionAnimationArray = [];
               if (player.defending.decay.state !== true) {
-                console.log("yTime", player.defending.peakCount - player.defending.count);
+                console.log(
+                  "yTime2",
+                  player.defending.peakCount - player.defending.count
+                );
               } else {
                 console.log(
-                  "yTime",
+                  "yTime3",
                   player.defending.decay.limit - player.defending.decay.count
                 );
               }
@@ -42815,7 +42819,22 @@ class App extends Component {
           }
 
           //PLAYER DEPTH SORTING!!
-          let elasticCountCalcResult;
+
+          // DIRECTIONAL ACTION INDICATION
+          const animateDirectionalAction = () => {
+            if (plyr.actionDirectionAnimationArray.length > 0) {
+              for (const animAction of plyr.actionDirectionAnimationArray) {
+                for (const point of animAction.points) {
+                  // if (x === 0 && y === 0) {
+                  context.fillStyle = point.color;
+                  context.beginPath();
+                  context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                  context.fill();
+                  // }
+                }
+              }
+            }
+          };
 
           // IN-GRID MOVING & MID STRAFE KEY RELEASE
           if (
@@ -43372,6 +43391,8 @@ class App extends Component {
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
+
+                  animateDirectionalAction();
                 }
               } else {
                 if (plyr.elasticCounter.direction === "north") {
@@ -43390,6 +43411,8 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
+
+                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "east") {
@@ -43408,6 +43431,8 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
+
+                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "west") {
@@ -43426,6 +43451,8 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
+
+                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "south") {
@@ -43444,6 +43471,8 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
+
+                    animateDirectionalAction();
                   }
                 }
               }
@@ -43464,6 +43493,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
+
+                animateDirectionalAction();
               }
             }
 
@@ -43560,6 +43591,8 @@ class App extends Component {
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
+
+                  animateDirectionalAction();
                 }
               } else {
                 if (plyr.elasticCounter.direction === "north") {
@@ -43578,6 +43611,8 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
+
+                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "east") {
@@ -43596,6 +43631,8 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
+
+                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "west") {
@@ -43614,6 +43651,8 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
+
+                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "south") {
@@ -43632,8 +43671,30 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
+
+                    animateDirectionalAction();
                   }
                 }
+              }
+            } else {
+              if (
+                x === plyr.moving.origin.number.x &&
+                y === plyr.moving.origin.number.y &&
+                plyr.success.deflected.state === false
+              ) {
+                context.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
+
+                animateDirectionalAction();
               }
             }
           }
@@ -43642,12 +43703,12 @@ class App extends Component {
           if (plyr.actionDirectionAnimationArray.length > 0) {
             for (const animAction of plyr.actionDirectionAnimationArray) {
               for (const point of animAction.points) {
-                if (x === this.gridWidth && y === this.gridWidth) {
-                  context.fillStyle = point.color;
-                  context.beginPath();
-                  context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-                  context.fill();
-                }
+                // if (x === 0 && y === 0) {
+                context.fillStyle = point.color;
+                context.beginPath();
+                context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                context.fill();
+                // }
               }
             }
           }
