@@ -3868,6 +3868,7 @@ class App extends Component {
     this.popupImgSize = 25;
     this.movingObstacles = [];
     this.halfPushBackObstacles = [];
+    this.obstacleBarrierActionAnimationArray = [];
 
     this.obstacleBarrierToDestroy = [];
     this.obstacleItemsToDrop = [];
@@ -8728,18 +8729,35 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  directionalActionAnimLineCrementer = (player, elem) => {
+  directionalActionAnimLineCrementer = (ownerType, owner, elem) => {
     let percent = elem.counter.count / elem.counter.limit;
     let startPt;
     let endPt;
     let rearCellNo = this.getCellFromDirection(
       1,
-      player.currentPosition.cell,
-      this.getOppositeDirection(player.direction)
+      elem.ownnerLocationCell,
+      this.getOppositeDirection(elem.ownerDirection)
     );
-
+    let ownerCenter;
+    let targetCenter;
+    if (ownerType === "player") {
+      onwerCenter = owner.currentPosition.cell.center;
+      targetCenter = owner.target.cell1.center;
+    } else {
+      const ref = this.gridInfo.find((x) => {
+        return (
+          x.number.x === elem.ownerLocationCell.x &&
+          x.number.y === elem.ownerLocationCell.y
+        );
+      });
+      ownerCenter = ref.center;
+      const pretargetCenter = ref[ownerType].trap.target;
+      targetCenter = this.gridInfo.find((x) => {
+        return x.number.x === pretargetCenter.x && x.number.y === pretargetCenter.y;
+      })?.center;
+    }
     if (elem.phase === "pullback") {
-      startPt = player.currentPosition.cell.center;
+      startPt = ownerCenter;
       if (rearCellNo.x && rearCellNo.y) {
         endPt = this.gridInfo.find(
           (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
@@ -8747,8 +8765,8 @@ class App extends Component {
       } else {
         endPt = this.getVoidCenter(
           1,
-          this.getOppositeDirection(player.direction),
-          player.currentPosition.cell.center
+          this.getOppositeDirection(elem.ownerDirection),
+          ownerCenter
         );
       }
     }
@@ -8760,11 +8778,11 @@ class App extends Component {
       } else {
         startPt = this.getVoidCenter(
           1,
-          this.getOppositeDirection(player.direction),
-          player.currentPosition.cell.center
+          this.getOppositeDirection(elem.ownerDirection),
+          ownerCenter
         );
       }
-      endPt = player.target.cell1.center;
+      endPt = targetCenter;
     }
     let dx = endPt.x - startPt.x;
     let dy = endPt.y - startPt.y;
@@ -8773,14 +8791,18 @@ class App extends Component {
     let result = { color: elem.color, x: Math.round(X), y: Math.round(Y) };
 
     elem.points.push(result);
-    let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
-    el = elem;
+    if (ownerType === "player") {
+      let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+      el = elem;
+    } else {
+      owner = elem;
+    }
 
-    return player;
+    return owner;
   };
   circleArcCrementer = (
     type,
-    player,
+    owner,
     mode,
     radiusA,
     deg,
@@ -8813,20 +8835,33 @@ class App extends Component {
       "#DA70D6", // Orchid
     ];
     let color = "green";
-    let pointA = {
-      x: player.currentPosition.cell.center.x,
-      y: player.currentPosition.cell.center.y,
-    };
-    let point = {
-      x: player.currentPosition.cell.number.x * this.tileWidth,
-      y: player.currentPosition.cell.number.y * this.tileWidth,
+    let pointA;
+    let point;
+    if (type === "playerDirectionalAction") {
+      pointA = {
+        x: owner.currentPosition.cell.center.x,
+        y: owner.currentPosition.cell.center.y,
+      };
+    }
+    if (type === "obstacleBarrierDirectionalAction") {
+      let refCell = this.gridInfo.find(
+        (x) => x.number.x === elem.locationCell.x && x.number.y === elem.locationCell.y
+      );
+      pointA = {
+        x: refCell.center.x,
+        y: refCell.center.y,
+      };
+    }
+    point = {
+      x: pointA * this.tileWidth,
+      y: pointA * this.tileWidth,
     };
     // starAngles:
     // top face: 0 = east, 90 = south, 180 = west, 270 = north
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
-    // type args: 'testing'/'playerDirectionalAction'
+    // type args: 'testing'/'playerDirectionalAction'/obstacleBarrierDirectionalAction
 
     let pointIso;
     let point1Iso;
@@ -8920,7 +8955,10 @@ class App extends Component {
       count = this.testCount.count;
       limit = this.testCount.limit;
     }
-    if (type === "playerDirectionalAction") {
+    if (
+      type === "playerDirectionalAction" ||
+      type === "obstacleBarrierDirectionalAction"
+    ) {
       count = elem.counter.count;
       limit = elem.counter.limit;
     }
@@ -8939,7 +8977,10 @@ class App extends Component {
       faceRotation = 120;
       color = "pink";
     }
-    if (type === "playerDirectionalAction") {
+    if (
+      type === "playerDirectionalAction" ||
+      type === "obstacleBarrierDirectionalAction"
+    ) {
       color = elem.color;
     }
 
@@ -8997,7 +9038,10 @@ class App extends Component {
             y: point3.y,
           });
         }
-        if (type === "playerDirectionalAction") {
+        if (
+          type === "playerDirectionalAction" ||
+          type === "obstacleBarrierDirectionalAction"
+        ) {
           elem.points.push({
             color: color,
             x: point3.x,
@@ -9019,7 +9063,10 @@ class App extends Component {
             y: point3.y,
           });
         }
-        if (type === "playerDirectionalAction") {
+        if (
+          type === "playerDirectionalAction" ||
+          type === "obstacleBarrierDirectionalAction"
+        ) {
           elem.points.push({
             color: color,
             x: point3.x,
@@ -9031,10 +9078,11 @@ class App extends Component {
 
     // UNDER SLASHES ADJUSTED UP
     if (
-      type === "playerDirectionalAction" &&
+      (type === "playerDirectionalAction" ||
+        type === "obstacleBarrierDirectionalAction") &&
       (face === "front" || face === "side") &&
       elem.actionDirectionType === "slash" &&
-      player.direction === this.getOppositeDirection(player[elem.action].direction)
+      ownerDirection === this.getOppositeDirection(actionDirection)
     ) {
       point.y -= 30;
       point1.y -= 30;
@@ -9079,7 +9127,10 @@ class App extends Component {
         });
       }
     }
-    if (type === "playerDirectionalAction") {
+    if (
+      type === "playerDirectionalAction" ||
+      type === "obstacleBarrierDirectionalAction"
+    ) {
       elem.points.push(
         {
           color: color,
@@ -9111,10 +9162,15 @@ class App extends Component {
       }
     }
 
-    let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
-    el = elem;
+    if (type === "playerDirectionalAction") {
+      let el = owner.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+      el = elem;
+    }
+    if (type === "obstacleBarrierDirectionalAction") {
+      owner = elem;
+    }
 
-    return player;
+    return owner;
   };
   arcBoltCrementer = () => {};
   obstacleMoveCrementer = (obstacleCell, destCell) => {
@@ -13287,11 +13343,11 @@ class App extends Component {
   };
   obstacleBarrierTrapChecker = (locationCell, ownerType) => {
     let trap = locationCell[ownerType].trap;
-    // console.log("obstacleBarrierTrapChecker", trap.trigger);
+    // console.log("obstacleBarrierTrapChecker", trap);
     const executeTrapAction = () => {
       // console.log("executeTrapAction");
       if (trap.acting.state === true) {
-        // console.log("trap is acting");
+        console.log("trap is acting");
         if (trap.action === "attack") {
           if (trap.acting.count === trap.acting.peak) {
             // console.log("trap is acting: attack peak");
@@ -13322,8 +13378,15 @@ class App extends Component {
                 break;
             }
             if (trap.item.subType === "crossbow") {
-              trap.acting.direction = "none";
-              trap.acting.directionType = "thrust";
+              trap.acting.direction = this.getDirectionFromCells(
+                locationCell.number,
+                trap.target
+              );
+              // trap.acting.direction = "none";
+              trap.acting.directionType = "slash";
+
+              // FIX ME
+              // set action direction based on trap target
               if (trap.ammo > 0) {
                 trap.ammo--;
                 let result = this.projectileCreator(
@@ -13346,6 +13409,7 @@ class App extends Component {
           }
           if (trap.acting.count < trap.acting.limit) {
             trap.acting.count++;
+
             if (trap.acting.count < trap.acting.peak) {
               // console.log("trap is acting: windup", trap.acting.count);
               higlightCell();
@@ -13354,6 +13418,48 @@ class App extends Component {
               // console.log("trap is acting: cooldown", trap.acting.count);
             }
 
+            // SET DIRECTIONAL ATTACK ANIMATIONS
+            if (this.showDirectionalActionAnimation === true) {
+              let pullbackTime = 0;
+              let releaseTime = 0;
+              if (trap.acting.peak > 20) {
+                pullbackTime = trap.acting.peak - 20;
+                releaseTime = trap.acting.peak - 10;
+              } else {
+                pullbackTime = 1;
+                releaseTime = trap.acting.peak / 2;
+              }
+
+              if (trap.acting.count === pullbackTime) {
+                trap = this.handleDirectionalActionAnimation(
+                  ownerType,
+                  "attacking",
+                  "pullback",
+                  locationCell,
+                  null
+                );
+              }
+              if (trap.acting.count === releaseTime) {
+                let toRemove = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
+                  return (
+                    x.locationCell === locationCell.number &&
+                    x.ownerType === ownerType &&
+                    x.action === "attacking"
+                  );
+                });
+                this.obstacleBarrierActionAnimationArray.splice(toRemove, 1);
+
+                trap = this.handleDirectionalActionAnimation(
+                  ownerType,
+                  "attacking",
+                  "release",
+                  locationCell,
+                  null
+                );
+              }
+            }
+
+            // POPUPS
             if (
               !this.cellPopups.find(
                 (x) =>
@@ -14631,7 +14737,7 @@ class App extends Component {
       directionChanged: directionChanged,
     };
   };
-  handlePlayerDirectionalActionAnimation = (mode, action, phase, player, arrayElemId) => {
+  handleDirectionalActionAnimation = (ownerType, action, phase, owner, arrayElemId) => {
     // modes:
     //   init, update, reset, cancel
     //    id used for update, reset, cancel
@@ -14639,7 +14745,7 @@ class App extends Component {
     //   attacking, defending
     // phase:
     // pullback, release
-    let directionType = player[action].directionType;
+
     let id = arrayElemId;
     let arcAngle = 0;
     let startAngle = 0;
@@ -14650,6 +14756,22 @@ class App extends Component {
     if (action === "defending") {
       color = "yellow";
     }
+    let trap;
+    let directionType;
+    let ownerDirection;
+    let actionDirection;
+    let ownerLocactionCell;
+    if (ownerType === "player") {
+      directionType = owner[action].directionType;
+      ownerDirection = owner.direction;
+      actionDirection = owner[action].direction;
+      ownerLocactionCell = owner.currentPosition.cell.number;
+    } else {
+      directionType = owner[ownerType].trap.acting.directionType;
+      ownerDirection = owner[ownerType].trap.direction;
+      actionDirection = owner[ownerType].trap.acting.direction;
+      ownerLocactionCell = owner.number;
+    }
     // starAngles:
     // top face: 0 = east, 90 = south, 180 = west, 270 = north
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
@@ -14658,263 +14780,34 @@ class App extends Component {
     let countLimit = 15;
     let delay = 20;
 
-    // maybe put FIX ME code here
-    // check action count
-    // count should be based on phase & action count based on direction & phase
+    // if ownerType is !player
+    // push to this.obstacleBarrierActionAnimationArray;
 
     if (
       directionType === "thrust" ||
-      (action === "attacking" && player.currentWeapon.type === "crossbow")
+      (action === "attacking" &&
+        (owner.currentWeapon.type === "crossbow" ||
+          owner[ownerType]?.trap?.item?.subType === "crossbow"))
     ) {
       countLimit = 10;
 
       if (phase === "release") {
         countLimit = 15;
       }
+      if (
+        owner.currentWeapon.type === "crossbow" ||
+        owner[ownerType]?.trap?.item?.subType === "crossbow"
+      ) {
+        directionType = "slash";
+      }
 
-      if (mode === "init") {
-        id = player.actionDirectionAnimationArray.length + 1;
+      if (ownerType === "player") {
+        id = owner.actionDirectionAnimationArray.length + 1;
 
-        player.actionDirectionAnimationArray.push({
+        owner.actionDirectionAnimationArray.push({
           id: id,
-          action: action,
-          actionDirectionType: "thrust",
-          phase: phase,
-          radius: radius,
-          angle: arcAngle,
-          startAngle: startAngle,
-          direction: direction,
-          face: face,
-          color: color,
-          counter: {
-            count: 0,
-            limit: countLimit,
-          },
-          delay: {
-            state: false,
-            count: 0,
-            limit: delay,
-          },
-          points: [],
-        });
-      }
-    } else {
-      if (action === "defending") {
-        // arcAngle = 90;
-        phase = "release";
-      }
-
-      if (phase === "pullback") {
-        arcAngle = 90;
-      }
-      if (phase === "release") {
-        arcAngle = 180;
-        // color = "blue";
-      }
-
-      if (player.direction === "north") {
-        if (player[action].direction === "north") {
-          face = "side";
-          if (phase === "pullback") {
-            startAngle = 90;
-            direction = "counterClockwise";
-          }
-          if (phase === "release") {
-            startAngle = 0;
-            direction = "clockwise";
-          }
-        }
-        if (player[action].direction === "south") {
-          face = "side";
-          if (phase === "pullback") {
-            startAngle = 270;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 0;
-            direction = "counterClockwise";
-          }
-        }
-      }
-
-      if (player.direction === "south") {
-        if (player[action].direction === "north") {
-          face = "side";
-          if (phase === "pullback") {
-            startAngle = 270;
-            direction = "counterClockwise";
-          }
-          if (phase === "release") {
-            startAngle = 180;
-            direction = "clockwise";
-          }
-        }
-        if (player[action].direction === "south") {
-          face = "side";
-          if (phase === "pullback") {
-            startAngle = 90;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 180;
-            direction = "counterClockwise";
-          }
-        }
-      }
-      // ----------------
-      if (player.direction === "east") {
-        if (player[action].direction === "east") {
-          face = "front";
-          if (phase === "pullback") {
-            startAngle = 180;
-            direction = "ccounterClockwise";
-          }
-          if (phase === "release") {
-            startAngle = 90;
-            direction = "clockwise";
-          }
-        }
-        if (player[action].direction === "west") {
-          face = "front";
-          if (phase === "pullback") {
-            startAngle = 0;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 90;
-            direction = "counterClockwise";
-          }
-        }
-      }
-      // ----------------
-      if (player.direction === "west") {
-        if (player[action].direction === "east") {
-          face = "front";
-          if (phase === "pullback") {
-            startAngle = 0;
-            direction = "counterClockwise";
-          }
-          if (phase === "release") {
-            startAngle = 270;
-            direction = "clockwise";
-          }
-        }
-        if (player[action].direction === "west") {
-          face = "front";
-          if (phase === "pullback") {
-            startAngle = 180;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 200;
-            direction = "counterClockwise";
-          }
-        }
-      }
-      // ----------------
-      if (player.direction === "east") {
-        if (player[action].direction === "north") {
-          face = "top";
-          if (phase === "pullback") {
-            startAngle = 270;
-            direction = "counterClockwise";
-          }
-          if (phase === "release") {
-            startAngle = 180;
-            direction = "clockwise";
-          }
-        }
-        if (player[action].direction === "south") {
-          face = "top";
-          if (phase === "pullback") {
-            startAngle = 90;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 180;
-            direction = "counterClockwise";
-          }
-        }
-      }
-      if (player.direction === "west") {
-        if (player[action].direction === "north") {
-          face = "top";
-          if (phase === "pullback") {
-            startAngle = 270;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 0;
-            direction = "counterClockwise";
-          }
-        }
-        if (player[action].direction === "south") {
-          face = "top";
-          if (phase === "pullback") {
-            startAngle = 90;
-            direction = "counterClockwise";
-          }
-          if (phase === "release") {
-            startAngle = 0;
-            direction = "clockwise";
-          }
-        }
-      }
-      // ----------------
-      if (player.direction === "north") {
-        if (player[action].direction === "east") {
-          face = "top";
-          if (phase === "pullback") {
-            startAngle = 0;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 90;
-            direction = "counterClockwise";
-          }
-        }
-        if (player[action].direction === "west") {
-          face = "top";
-          if (phase === "pullback") {
-            startAngle = 180;
-            direction = "counterClockwise";
-          }
-          if (phase === "release") {
-            startAngle = 90;
-            direction = "clockwise";
-          }
-        }
-      }
-      if (player.direction === "south") {
-        if (player[action].direction === "east") {
-          face = "top";
-          if (phase === "pullback") {
-            startAngle = 0;
-            direction = "counterClockwise";
-          }
-          if (phase === "release") {
-            startAngle = 270;
-            direction = "clockwise";
-          }
-        }
-        if (player[action].direction === "west") {
-          face = "top";
-          if (phase === "pullback") {
-            startAngle = 180;
-            direction = "clockwise";
-          }
-          if (phase === "release") {
-            startAngle = 270;
-            direction = "counterClockwise";
-          }
-        }
-      }
-
-      if (mode === "init") {
-        id = player.actionDirectionAnimationArray.length + 1;
-
-        player.actionDirectionAnimationArray.push({
-          id: id,
+          ownerType: ownerType,
+          ownerDirection: ownerDirection,
           action: action,
           actionDirectionType: directionType,
           phase: phase,
@@ -14934,14 +14827,316 @@ class App extends Component {
             limit: delay,
           },
           points: [],
+          locactionCell: ownerLocactionCell,
+        });
+      } else {
+        id = this.obstacleBarrierActionAnimationArray.length + 1;
+
+        this.obstacleBarrierActionAnimationArray.push({
+          id: id,
+          ownerType: ownerType,
+          ownerDirection: ownerDirection,
+          action: action,
+          actionDirectionType: "thrust",
+          phase: phase,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAngle,
+          direction: direction,
+          face: face,
+          color: color,
+          counter: {
+            count: 0,
+            limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
+          },
+          points: [],
+          locactionCell: ownerLocactionCell,
+        });
+      }
+    } else {
+      if (action === "defending") {
+        // arcAngle = 90;
+        phase = "release";
+      }
+
+      if (phase === "pullback") {
+        arcAngle = 90;
+      }
+      if (phase === "release") {
+        arcAngle = 180;
+        // color = "blue";
+      }
+
+      if (ownerDirection === "north") {
+        if (actionDirection === "north") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+        }
+        if (actionDirection === "south") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+        }
+      }
+
+      if (ownerDirection === "south") {
+        if (actionDirection === "north") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+        }
+        if (actionDirection === "south") {
+          face = "side";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      // ----------------
+      if (ownerDirection === "east") {
+        if (actionDirection === "east") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "ccounterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+        }
+        if (actionDirection === "west") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      // ----------------
+      if (ownerDirection === "west") {
+        if (actionDirection === "east") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+        }
+        if (actionDirection === "west") {
+          face = "front";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 200;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      // ----------------
+      if (ownerDirection === "east") {
+        if (actionDirection === "north") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+        }
+        if (actionDirection === "south") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+        }
+      }
+      if (ownerDirection === "west") {
+        if (actionDirection === "north") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+        }
+        if (actionDirection === "south") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+        }
+      }
+      // ----------------
+      if (ownerDirection === "north") {
+        if (actionDirection === "east") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "counterClockwise";
+          }
+        }
+        if (actionDirection === "west") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 90;
+            direction = "clockwise";
+          }
+        }
+      }
+      if (ownerDirection === "south") {
+        if (actionDirection === "east") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 0;
+            direction = "counterClockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "clockwise";
+          }
+        }
+        if (actionDirection === "west") {
+          face = "top";
+          if (phase === "pullback") {
+            startAngle = 180;
+            direction = "clockwise";
+          }
+          if (phase === "release") {
+            startAngle = 270;
+            direction = "counterClockwise";
+          }
+        }
+      }
+
+      if (ownerType === "player") {
+        id = owner.actionDirectionAnimationArray.length + 1;
+
+        owner.actionDirectionAnimationArray.push({
+          id: id,
+          ownerType: ownerType,
+          ownerDirection: ownerDirection,
+          action: action,
+          actionDirectionType: directionType,
+          phase: phase,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAngle,
+          direction: direction,
+          face: face,
+          color: color,
+          counter: {
+            count: 0,
+            limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
+          },
+          points: [],
+          locactionCell: ownerLocactionCell,
+        });
+      } else {
+        id = this.obstacleBarrierActionAnimationArray.length + 1;
+
+        this.obstacleBarrierActionAnimationArray.push({
+          id: id,
+          ownerType: ownerType,
+          ownerDirection: ownerDirection,
+          action: action,
+          actionDirectionType: "thrust",
+          phase: phase,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAngle,
+          direction: direction,
+          face: face,
+          color: color,
+          counter: {
+            count: 0,
+            limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
+          },
+          points: [],
+          locactionCell: ownerLocactionCell,
         });
       }
     }
 
-    if (mode === "clear") {
-      player.actionDirectionAnimationArray = [];
+    // if (mode === "clear") {
+    //   owner.actionDirectionAnimationArray = [];
+    // }
+    if (ownerType === "player") {
+      return owner;
+    } else {
+      return trap;
     }
-    return player;
   };
   meleeAttackPeak = (ownerType, owner) => {
     // console.log("meleeAttackPeak");
@@ -34138,7 +34333,7 @@ class App extends Component {
       //   this.gridInfo.filter((x) => x.obstacle.state === true || x.barrier.state === true && x.).length
       // );
       // this.projectileTester(this.gridInfo.find((x) => x.number.x === 3 && x.number.y === 0));
-      // let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
+      let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
       // let testTraps = this.customObstacleBarrierTrapSet("shuffleActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive","")
       // let testTraps = this.customObstacleBarrierTrapSet("setNewRandom", "");
@@ -34159,8 +34354,8 @@ class App extends Component {
       // player.attacking.directionType = "thrust";
       // player.attacking.direction = "south";
       // player.attacking.directionType = "slash";
-      // player = this.handlePlayerDirectionalActionAnimation(
-      //   "init",
+      // player = this.handleDirectionalActionAnimation(
+      //   "player",
       //   "attacking",
       //   "pullback",
       //   player,
@@ -34171,8 +34366,8 @@ class App extends Component {
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
     }
     if (this.time === 120 && player.number === 1) {
-      // player = this.handlePlayerDirectionalActionAnimation(
-      //   "init",
+      // player = this.handleDirectionalActionAnimation(
+      //   "player",
       //   "attacking",
       //   "release",
       //   player,
@@ -35554,7 +35749,11 @@ class App extends Component {
               if (elem.delay.state !== true) {
                 if (elem.counter.count < elem.counter.limit) {
                   elem.counter.count++;
-                  player = this.directionalActionAnimLineCrementer(player, elem);
+                  player = this.directionalActionAnimLineCrementer(
+                    "player",
+                    player,
+                    elem
+                  );
                 }
                 if (elem.counter.count >= elem.counter.limit) {
                   elem.delay.state = true;
@@ -36139,8 +36338,8 @@ class App extends Component {
                 directionalActionResult.inputThresh;
               if (directionalActionResult.inputThresh === player.attacking.count) {
                 console.log("xTime", Math.ceil(xTime / 2));
-                player = this.handlePlayerDirectionalActionAnimation(
-                  "init",
+                player = this.handleDirectionalActionAnimation(
+                  "player",
                   "attacking",
                   "pullback",
                   player,
@@ -36155,8 +36354,8 @@ class App extends Component {
               ) {
                 console.log("xTime2", Math.ceil(xTime / 2), player.attacking.count);
                 player.actionDirectionAnimationArray = [];
-                player = this.handlePlayerDirectionalActionAnimation(
-                  "init",
+                player = this.handleDirectionalActionAnimation(
+                  "player",
                   "attacking",
                   "release",
                   player,
@@ -36571,8 +36770,8 @@ class App extends Component {
             // if (player.defending.count === directionalActionResult.inputThresh) {
             if (!existingDefendAnim) {
               console.log("yTime", Math.ceil(xTime / 2));
-              player = this.handlePlayerDirectionalActionAnimation(
-                "init",
+              player = this.handleDirectionalActionAnimation(
+                "player",
                 "defending",
                 "release",
                 player,
@@ -36592,8 +36791,8 @@ class App extends Component {
                   player.defending.decay.limit - player.defending.decay.count
                 );
               }
-              player = this.handlePlayerDirectionalActionAnimation(
-                "init",
+              player = this.handleDirectionalActionAnimation(
+                "player",
                 "defending",
                 "release",
                 player,
@@ -39757,6 +39956,63 @@ class App extends Component {
       if (halfPushBackObstacle.state !== true) {
         let index = this.halfPushBackObstacles.indexOf(halfPushBackObstacle);
         this.halfPushBackObstacles.splice(index, 1);
+      }
+    }
+
+    // OBSTACLE BARRIER ACTION ANIMATION
+    for (const elem of this.obstacleBarrierActionAnimationArray) {
+      if (elem.actionDirectionType === "slash") {
+        if (elem.delay.state !== true) {
+          if (elem.counter.count < elem.counter.limit) {
+            elem.counter.count++;
+            elem = this.circleArcCrementer(
+              "obstacleBarrierDirectionalAction",
+              null,
+              "isometric",
+              elem.radius,
+              elem.angle,
+              elem.startAngle,
+              "arc",
+              elem.direction,
+              elem.face,
+              elem
+            );
+          }
+          if (elem.counter.count >= elem.counter.limit) {
+            elem.delay.state = true;
+          }
+        } else {
+          if (elem.delay.count < elem.delay.limit) {
+            elem.delay.count++;
+          }
+          if (elem.delay.count >= elem.delay.limit) {
+            let index = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
+              return x.id === elem.id;
+            });
+            this.obstacleBarrierActionAnimationArray.splice(index, 1);
+          }
+        }
+      }
+      if (elem.actionDirectionType === "thrust") {
+        if (elem.delay.state !== true) {
+          if (elem.counter.count < elem.counter.limit) {
+            elem.counter.count++;
+            elem = this.directionalActionAnimLineCrementer(elem.ownerType, null, elem);
+          }
+          if (elem.counter.count >= elem.counter.limit) {
+            elem.delay.state = true;
+          }
+        } else {
+          if (elem.delay.count < elem.delay.limit) {
+            elem.delay.count++;
+          }
+          if (elem.delay.count >= elem.delay.limit) {
+            let index = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
+              return x.id === elem.id;
+            });
+            this.obstacleBarrierActionAnimationArray.splice(index, 1);
+          }
+        }
       }
     }
 
@@ -43711,6 +43967,15 @@ class App extends Component {
                 // }
               }
             }
+
+            // ctx.beginPath();
+            // ctx.moveTo(points[0].x, points[0].y);
+            // for (var i = 1; i < points.length - 1; i++) {
+            //   ctx.arcTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, 50);
+            // }
+            // ctx.strokeStyle = 'blue';
+            // ctx.lineWidth = 3;
+            // ctx.stroke();
           }
 
           if (plyr.jumping.state === true) {
@@ -45348,6 +45613,16 @@ class App extends Component {
               barrierImg.width,
               barrierImg.height
             );
+          }
+        }
+
+        // OBSTACLE BARRIER DIRECTIONAL ACTION ANIM
+        for (const animAction of this.obstacleBarrierActionAnimationArray) {
+          for (const point of animAction.points) {
+            context.fillStyle = point.color;
+            context.beginPath();
+            context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+            context.fill();
           }
         }
 
