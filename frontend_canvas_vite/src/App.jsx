@@ -602,7 +602,7 @@ class App extends Component {
         "**_*_4.2_f_0a*",
         "**_*_4.3_f_0a*",
         "**_*_4.4_a_0a*",
-        "**_*_4.5_a_0a*",
+        "**_h_4.5_a_0a*",
         "**_*_4.6_j_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
@@ -614,7 +614,7 @@ class App extends Component {
         "**_*_5.2_a_0a*",
         "**_*_5.3_a_0a*",
         "**_*_5.4_a_0a*",
-        "**_h_5.5_a_0a*",
+        "**_*_5.5_a_0a*",
         "**_*_5.6_a_0a*",
         "**_*_5.7_a_0a*",
         "**_*_5.8_a_0a*",
@@ -1454,7 +1454,7 @@ class App extends Component {
           state: false,
           persistent: false,
           remaining: 5,
-          direction: "west",
+          direction: "",
           target: {},
           timer: {
             enabled: true,
@@ -13416,8 +13416,8 @@ class App extends Component {
               trap.acting.direction = trap.direction;
               trap.acting.directionType = "slash";
             }
-            // trap.acting.direction = "west";
-            // trap.acting.directionType = "slash";
+            trap.acting.direction = "south";
+            trap.acting.directionType = "slash";
 
             trap.acting.count++;
 
@@ -13461,7 +13461,6 @@ class App extends Component {
                   );
                 });
                 this.obstacleBarrierActionAnimationArray.splice(toRemove, 1);
-
                 trap = this.handleDirectionalActionAnimation(
                   ownerType,
                   "attacking",
@@ -13842,6 +13841,7 @@ class App extends Component {
                     );
                 }
               }
+              trap.direction = this.getDirectionFromCells(data.number, trap.target);
               // console.log("availibleCells", data.number, availibleCells, trap.target);
               // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
@@ -13903,6 +13903,7 @@ class App extends Component {
             );
           } else {
             trap.target = cell;
+            trap.direction = this.getDirectionFromCells(data.number, trap.target);
             // console.log("barrier trap target set", data.number, trap.target, trap.ammo);
           }
         }
@@ -40031,7 +40032,7 @@ class App extends Component {
             let index = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
               return x.id === elem.id;
             });
-            // this.obstacleBarrierActionAnimationArray.splice(index, 1);
+            this.obstacleBarrierActionAnimationArray.splice(index, 1);
           }
         }
       }
@@ -40052,7 +40053,7 @@ class App extends Component {
             let index = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
               return x.id === elem.id;
             });
-            // this.obstacleBarrierActionAnimationArray.splice(index, 1);
+            this.obstacleBarrierActionAnimationArray.splice(index, 1);
           }
         }
       }
@@ -45372,6 +45373,16 @@ class App extends Component {
 
         // OBSTACLES & BARRIERS
 
+        // OBSTACLE BARRIER DIRECTIONAL ACTION ANIM
+        for (const animAction of this.obstacleBarrierActionAnimationArray) {
+          for (const point of animAction.points) {
+            context.fillStyle = point.color;
+            context.beginPath();
+            context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+            context.fill();
+          }
+        }
+
         // FALLING
         // IN BOUNDS
         if (
@@ -45658,16 +45669,6 @@ class App extends Component {
               barrierImg.width,
               barrierImg.height
             );
-          }
-        }
-
-        // OBSTACLE BARRIER DIRECTIONAL ACTION ANIM
-        for (const animAction of this.obstacleBarrierActionAnimationArray) {
-          for (const point of animAction.points) {
-            context.fillStyle = point.color;
-            context.beginPath();
-            context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-            context.fill();
           }
         }
 
