@@ -13410,6 +13410,11 @@ class App extends Component {
                   break;
               }
             }
+            if (trap.item.subType === "crossbow") {
+              trap.acting.direction = trap.direction;
+              trap.acting.directionType = "slash";
+            }
+
             trap.acting.count++;
 
             if (trap.acting.count < trap.acting.peak) {
@@ -14990,7 +14995,7 @@ class App extends Component {
             direction = "clockwise";
           }
           if (phase === "release") {
-            startAngle = 200;
+            startAngle = 270;
             direction = "counterClockwise";
           }
         }
