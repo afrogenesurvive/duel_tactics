@@ -3895,6 +3895,7 @@ class App extends Component {
     this.showGridIsoGuide = false;
     this.showDirectionalActionAnimation = true;
     this.hideAllPopups = false;
+    this.hideDirectionalActionPopus = true;
 
     this.backgroundImageRef = {};
 
@@ -9173,7 +9174,6 @@ class App extends Component {
       el = elem;
     }
     if (type === "obstacleBarrierDirectionalAction") {
-      console.log("elem", elem);
       owner = elem;
     }
 
@@ -13416,8 +13416,6 @@ class App extends Component {
               trap.acting.direction = trap.direction;
               trap.acting.directionType = "slash";
             }
-            trap.acting.direction = "south";
-            trap.acting.directionType = "slash";
 
             trap.acting.count++;
 
@@ -14476,41 +14474,43 @@ class App extends Component {
     };
 
     const popup = (dir, prevDir) => {
-      let msg = dir + "Direction";
-      if (dir === "none") {
-        msg = "noDirection3";
-      }
-      let popup;
-      let popupsToRemove = [
-        "noDirection3",
-        "northDirection",
-        "southDirection",
-        "eastDirection",
-        "westDirection",
-      ];
-      popupsToRemove.splice(
-        popupsToRemove.findIndex((x) => x === msg),
-        1
-      );
-      for (const pop of popupsToRemove) {
-        popup = player.popups.find((x) => x.msg === pop);
-        if (popup) {
-          player.popups.splice(
-            player.popups.findIndex((x) => x.msg === pop),
-            1
-          );
+      if (this.hideDirectionalActionPopus !== true) {
+        let msg = dir + "Direction";
+        if (dir === "none") {
+          msg = "noDirection3";
         }
-      }
-      if (!player.popups.find((x) => x.msg === msg)) {
-        player.popups.push({
-          state: false,
-          count: 0,
-          limit: player.defending.limit,
-          type: "",
-          position: "",
-          msg: msg,
-          img: "",
-        });
+        let popup;
+        let popupsToRemove = [
+          "noDirection3",
+          "northDirection",
+          "southDirection",
+          "eastDirection",
+          "westDirection",
+        ];
+        popupsToRemove.splice(
+          popupsToRemove.findIndex((x) => x === msg),
+          1
+        );
+        for (const pop of popupsToRemove) {
+          popup = player.popups.find((x) => x.msg === pop);
+          if (popup) {
+            player.popups.splice(
+              player.popups.findIndex((x) => x.msg === pop),
+              1
+            );
+          }
+        }
+        if (!player.popups.find((x) => x.msg === msg)) {
+          player.popups.push({
+            state: false,
+            count: 0,
+            limit: player.defending.limit,
+            type: "",
+            position: "",
+            msg: msg,
+            img: "",
+          });
+        }
       }
     };
 
@@ -43075,11 +43075,11 @@ class App extends Component {
             let origin = popupCoordObject.west;
             let width = popupCoordObject.north.pt4.x - origin.pt3.x;
             let height = popupCoordObject.south.pt2.y - origin.pt3.y;
-            context.strokeStyle = "red";
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(origin.pt3.x, origin.pt3.y, width, height, 2);
-            context.stroke();
+            context2.strokeStyle = "red";
+            context2.lineWidth = 2;
+            context2.beginPath();
+            context2.roundRect(origin.pt3.x, origin.pt3.y, width, height, 2);
+            context2.stroke();
 
             let origin2 = {
               x: plyr.nextPosition.x - this.floorImageHeight / 2,
@@ -43091,39 +43091,39 @@ class App extends Component {
               2 -
               (plyr.nextPosition.y - this.floorImageHeight);
             let width2 = this.playerDrawWidth + 2;
-            context.strokeStyle = "blue";
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(
+            context2.strokeStyle = "blue";
+            context2.lineWidth = 2;
+            context2.beginPath();
+            context2.roundRect(
               origin2.x,
               origin2.y,
               width2 + 2,
               this.playerDrawHeight * 1.5,
               2
             );
-            // context.roundRect(origin2.x, origin2.y, width2, height2, 2);
-            // context.roundRect(
+            // context2.roundRect(origin2.x, origin2.y, width2, height2, 2);
+            // context2.roundRect(
             //   origin2.x,
             //   origin2.y,
             //   this.playerDrawWidth,
             //   this.playerDrawHeight * 1.5,
             //   2
             // );
-            // context.roundRect(
+            // context2.roundRect(
             //   origin2.x,
             //   origin2.y,
             //   this.playerDrawWidth + 2,
             //   this.floorImageHeight * 1.5,
             //   2
             // );
-            context.stroke();
+            context2.stroke();
           }
 
           //PLAYER DEPTH SORTING!!
 
           // DIRECTIONAL ACTION INDICATION
           const setCurrentPlayerDrawCell = (type, xArg, yArg) => {
-            // this.currentPlayerDrawCell = { x: xArg, y: yArg };
+            this.currentPlayerDrawCell = { x: xArg, y: yArg };
             // if (plyr.number === 1) {
             //   // console.log(type, ".", xArg, ".", yArg, ".", player.elasticCounter.state);
             // }
@@ -43501,8 +43501,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
             if (
@@ -43524,8 +43524,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
             if (
@@ -43547,8 +43547,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
             if (
@@ -43570,8 +43570,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
             if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 0) {
@@ -43590,8 +43590,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             } else {
               if (
@@ -43609,8 +43609,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
           }
@@ -45100,26 +45100,26 @@ class App extends Component {
 
                     if (showProgress === true && popupProgress === true) {
                       let perc = this.playerPopupProgressCalc(plyr, popup);
-                      context.fillStyle = this.popupProgressImgGradColor2;
-                      context.beginPath();
-                      // context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                      // context.stroke();
-                      context.fillStyle = this.popupProgressImgGradColor1;
-                      context.roundRect(
+                      context2.fillStyle = this.popupProgressImgGradColor2;
+                      context2.beginPath();
+                      // context2.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+                      // context2.stroke();
+                      context2.fillStyle = this.popupProgressImgGradColor1;
+                      context2.roundRect(
                         popupDrawCoords.origin.x,
                         popupDrawCoords.origin.y + this.popupSize,
                         10,
                         this.popupSize * perc,
                         5
                       );
-                      context.fill();
+                      context2.fill();
                       // console.log("playerPopupProgress init", perc);
                     }
 
                     if (writeValue === true) {
-                      context.font = "15px Arial";
-                      context.fillStyle = "black";
-                      context.fillText(
+                      context2.font = "15px Arial";
+                      context2.fillStyle = "black";
+                      context2.fillText(
                         popup.msg.split("_")[1],
                         popupDrawCoords.origin.x +
                           (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
@@ -45287,19 +45287,19 @@ class App extends Component {
 
                       if (showProgress === true && popupProgress === true) {
                         let perc = this.playerPopupProgressCalc(plyr, popup);
-                        context.fillStyle = this.popupProgressImgGradColor2;
-                        context.beginPath();
-                        // context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                        // context.stroke();
-                        context.fillStyle = this.popupProgressImgGradColor1;
-                        context.roundRect(
+                        context2.fillStyle = this.popupProgressImgGradColor2;
+                        context2.beginPath();
+                        // context2.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+                        // context2.stroke();
+                        context2.fillStyle = this.popupProgressImgGradColor1;
+                        context2.roundRect(
                           popupDrawCoords.origin.x,
                           popupDrawCoords.origin.y + this.popupSize,
                           10,
                           this.popupSize * perc,
                           5
                         );
-                        context.fill();
+                        context2.fill();
                         // console.log(
                         //   "playerPopupProgress continue",
                         //   perc,
@@ -45308,9 +45308,9 @@ class App extends Component {
                       }
 
                       if (writeValue === true) {
-                        context.font = "15px Arial";
-                        context.fillStyle = "black";
-                        context.fillText(
+                        context2.font = "15px Arial";
+                        context2.fillStyle = "black";
+                        context2.fillText(
                           popup.msg.split("_")[1],
                           popupDrawCoords.origin.x +
                             (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
