@@ -3887,6 +3887,7 @@ class App extends Component {
     this.popupProgressImgGradColor1 = "rgb(255,0,0)";
     this.popupProgressImgGradColor2 = "rgb(255,255,0)";
 
+    this.currentPlayerDrawCell;
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
@@ -9172,6 +9173,7 @@ class App extends Component {
       el = elem;
     }
     if (type === "obstacleBarrierDirectionalAction") {
+      console.log("elem", elem);
       owner = elem;
     }
 
@@ -41562,6 +41564,8 @@ class App extends Component {
 
     canvas.width = this.canvasWidth;
     canvas.height = this.canvasHeight;
+    canvas2.width = this.canvasWidth;
+    canvas2.height = this.canvasHeight;
 
     let floorImageWidth = this.floorImageWidth;
     let floorImageHeight = this.floorImageHeight;
@@ -43117,19 +43121,21 @@ class App extends Component {
           //PLAYER DEPTH SORTING!!
 
           // DIRECTIONAL ACTION INDICATION
-          const animateDirectionalAction = () => {
-            if (plyr.actionDirectionAnimationArray.length > 0) {
-              for (const animAction of plyr.actionDirectionAnimationArray) {
-                for (const point of animAction.points) {
-                  // if (x === 0 && y === 0) {
-                  context.fillStyle = point.color;
-                  context.beginPath();
-                  context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-                  context.fill();
-                  // }
-                }
-              }
-            }
+          const setCurrentPlayerDrawCell = (type, xArg, yArg) => {
+            // this.currentPlayerDrawCell = { x: xArg, y: yArg };
+            // if (plyr.number === 1) {
+            //   // console.log(type, ".", xArg, ".", yArg, ".", player.elasticCounter.state);
+            // }
+            // for (const animAction of plyr.actionDirectionAnimationArray) {
+            //   for (const point of animAction.points) {
+            //     // if (x === 0 && y === 0) {
+            //     context.fillStyle = point.color;
+            //     context.beginPath();
+            //     context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+            //     context.fill();
+            //     // }
+            //   }
+            // }
           };
 
           // IN-GRID MOVING & MID STRAFE KEY RELEASE
@@ -43152,7 +43158,7 @@ class App extends Component {
                 y === plyr.moving.origin.number.y
               ) {
                 if (plyr.jumping.state === true) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43164,7 +43170,7 @@ class App extends Component {
                     this.playerDrawHeight2
                   );
                 } else {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43184,7 +43190,7 @@ class App extends Component {
                 y === plyr.moving.origin.number.y
               ) {
                 if (plyr.jumping.state === true) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43196,7 +43202,7 @@ class App extends Component {
                     this.playerDrawHeight2
                   );
                 } else {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43216,7 +43222,7 @@ class App extends Component {
                 y === plyr.moving.origin.number.y
               ) {
                 if (plyr.jumping.state === true) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43228,7 +43234,7 @@ class App extends Component {
                     this.playerDrawHeight2
                   );
                 } else {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43248,7 +43254,7 @@ class App extends Component {
                 y === plyr.moving.origin.number.y + 1
               ) {
                 if (plyr.jumping.state === true) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43260,7 +43266,7 @@ class App extends Component {
                     this.playerDrawHeight2
                   );
                 } else {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43276,7 +43282,7 @@ class App extends Component {
             }
 
             if (plyr.pushBack.state === true) {
-              // context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
+              // context2.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
             }
           }
           // STATIONARY & HALFPUSH BACK
@@ -43322,7 +43328,7 @@ class App extends Component {
 
               // if (x === drawCell.x && y === drawCell.y) {
               //
-              //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+              //   context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
               //
               // }
 
@@ -43347,7 +43353,8 @@ class App extends Component {
                   x === plyr.currentPosition.cell.number.x &&
                   y === plyr.currentPosition.cell.number.y
                 ) {
-                  context.drawImage(
+                  setCurrentPlayerDrawCell(x, y, "non-elastic");
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43365,7 +43372,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y + 1
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "non-elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43383,7 +43391,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "non-elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43401,7 +43410,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x + 1 &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "non-elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43419,7 +43429,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x + 1 &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "non-elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43439,7 +43450,8 @@ class App extends Component {
                 y === plyr.moving.origin.number.y &&
                 plyr.success.deflected.state === false
               ) {
-                context.drawImage(
+                setCurrentPlayerDrawCell(x, y, "non-elastic");
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43477,7 +43489,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y + 1
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43500,7 +43512,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43523,7 +43535,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43546,7 +43558,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43566,7 +43578,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43585,7 +43597,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x + 1 &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43676,7 +43688,8 @@ class App extends Component {
                   x === plyr.currentPosition.cell.number.x &&
                   y === plyr.currentPosition.cell.number.y
                 ) {
-                  context.drawImage(
+                  setCurrentPlayerDrawCell(x, y, "elastic");
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43687,8 +43700,6 @@ class App extends Component {
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
-
-                  animateDirectionalAction();
                 }
               } else {
                 if (plyr.elasticCounter.direction === "north") {
@@ -43696,7 +43707,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43707,8 +43719,6 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
-
-                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "east") {
@@ -43716,7 +43726,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x + 1 &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43727,8 +43737,7 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
-
-                    animateDirectionalAction();
+                    setCurrentPlayerDrawCell(x, y, "elastic");
                   }
                 }
                 if (plyr.elasticCounter.direction === "west") {
@@ -43736,7 +43745,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43747,8 +43757,6 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
-
-                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "south") {
@@ -43756,7 +43764,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y + 1
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43767,8 +43776,6 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
-
-                    animateDirectionalAction();
                   }
                 }
               }
@@ -43778,7 +43785,8 @@ class App extends Component {
                 y === plyr.moving.origin.number.y &&
                 plyr.success.deflected.state === false
               ) {
-                context.drawImage(
+                setCurrentPlayerDrawCell(x, y, "elastic");
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43789,14 +43797,12 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-
-                animateDirectionalAction();
               }
             }
 
             // if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
             //
-            //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+            //   context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
             //
             // }
           }
@@ -43876,7 +43882,8 @@ class App extends Component {
                   x === plyr.currentPosition.cell.number.x &&
                   y === plyr.currentPosition.cell.number.y
                 ) {
-                  context.drawImage(
+                  setCurrentPlayerDrawCell(x, y, "elastic");
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -43887,8 +43894,6 @@ class App extends Component {
                     this.playerDrawWidth2,
                     this.playerDrawHeight2
                   );
-
-                  animateDirectionalAction();
                 }
               } else {
                 if (plyr.elasticCounter.direction === "north") {
@@ -43896,7 +43901,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43907,8 +43913,6 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
-
-                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "east") {
@@ -43916,7 +43920,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x + 1 &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43927,8 +43932,6 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
-
-                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "west") {
@@ -43936,7 +43939,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43947,8 +43951,6 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
-
-                    animateDirectionalAction();
                   }
                 }
                 if (plyr.elasticCounter.direction === "south") {
@@ -43956,7 +43958,8 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y + 1
                   ) {
-                    context.drawImage(
+                    setCurrentPlayerDrawCell(x, y, "elastic");
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -43967,8 +43970,6 @@ class App extends Component {
                       this.playerDrawWidth2,
                       this.playerDrawHeight2
                     );
-
-                    animateDirectionalAction();
                   }
                 }
               }
@@ -43978,7 +43979,8 @@ class App extends Component {
                 y === plyr.moving.origin.number.y &&
                 plyr.success.deflected.state === false
               ) {
-                context.drawImage(
+                setCurrentPlayerDrawCell(x, y, "elastic");
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43989,14 +43991,17 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-
-                animateDirectionalAction();
               }
             }
           }
 
           // DIRECTIONAL ACTION INDICATION
-          if (plyr.actionDirectionAnimationArray.length > 0) {
+          if (
+            plyr.actionDirectionAnimationArray.length > 0
+            // this.currentPlayerDrawCell.x === x &&
+            // this.currentPlayerDrawCell.y === y
+          ) {
+            // console.log("b", x, y);
             for (const animAction of plyr.actionDirectionAnimationArray) {
               for (const point of animAction.points) {
                 // if (x === 0 && y === 0) {
@@ -44007,7 +44012,6 @@ class App extends Component {
                 // }
               }
             }
-
             // ctx.beginPath();
             // ctx.moveTo(points[0].x, points[0].y);
             // for (var i = 1; i < points.length - 1; i++) {
@@ -44026,7 +44030,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44044,7 +44048,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44059,7 +44063,7 @@ class App extends Component {
             }
             if (plyr.direction === "east") {
               if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44074,7 +44078,7 @@ class App extends Component {
             }
             if (plyr.direction === "south") {
               if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44103,8 +44107,8 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
+                // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44123,8 +44127,8 @@ class App extends Component {
                 y === plyr.moving.origin.number.y
               ) {
                 // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
+                // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44144,8 +44148,8 @@ class App extends Component {
               ) {
                 // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
                 // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
+                // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44164,8 +44168,8 @@ class App extends Component {
                 x === plyr.moving.origin.number.x + 1 &&
                 y === plyr.moving.origin.number.y
               ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
+                // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44183,8 +44187,8 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y + 1
               ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
+                // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44207,7 +44211,7 @@ class App extends Component {
                   y === plyr.moving.origin.number.y
                 ) {
                   // console.log('draw flank north',);
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44227,7 +44231,7 @@ class App extends Component {
                   y === plyr.moving.origin.number.y
                 ) {
                   // console.log('draw flank west',);
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44247,7 +44251,7 @@ class App extends Component {
                   y === plyr.moving.origin.number.y
                 ) {
                   // console.log('draw flank east',);
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44267,7 +44271,7 @@ class App extends Component {
                   y === plyr.moving.origin.number.y + 1
                 ) {
                   // console.log('draw flank south',);
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44288,7 +44292,7 @@ class App extends Component {
                   x === plyr.moving.origin.number.x &&
                   y === plyr.moving.origin.number.y
                 ) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44307,7 +44311,7 @@ class App extends Component {
                   x === plyr.moving.origin.number.x &&
                   y === plyr.moving.origin.number.y
                 ) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44326,7 +44330,7 @@ class App extends Component {
                   x === plyr.moving.origin.number.x + 1 &&
                   y === plyr.moving.origin.number.y
                 ) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44345,7 +44349,7 @@ class App extends Component {
                   x === plyr.moving.origin.number.x &&
                   y === plyr.moving.origin.number.y + 1
                 ) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44443,7 +44447,7 @@ class App extends Component {
                   x === plyr.currentPosition.cell.number.x &&
                   y === plyr.currentPosition.cell.number.y
                 ) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44461,7 +44465,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y + 1
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -44479,7 +44483,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -44497,7 +44501,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x + 1 &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -44515,7 +44519,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x + 1 &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -44597,7 +44601,7 @@ class App extends Component {
                   x === plyr.currentPosition.cell.number.x &&
                   y === plyr.currentPosition.cell.number.y
                 ) {
-                  context.drawImage(
+                  context2.drawImage(
                     updatedPlayerImg,
                     sx,
                     sy,
@@ -44615,7 +44619,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -44633,7 +44637,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x + 1 &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -44651,7 +44655,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -44669,7 +44673,7 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y + 1
                   ) {
-                    context.drawImage(
+                    context2.drawImage(
                       updatedPlayerImg,
                       sx,
                       sy,
@@ -44817,7 +44821,7 @@ class App extends Component {
                 plyr.respawn = false;
                 this.players[plyr.number - 1] = plyr;
 
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44856,7 +44860,7 @@ class App extends Component {
               y === plyr.ghost.position.cell.number.y
             ) {
               // console.log('player',plyr.number,'dying',player.dead.count);
-              context.drawImage(
+              context2.drawImage(
                 this.indicatorImgs.death,
                 plyr.ghost.position.cell.center.x - 15,
                 plyr.ghost.position.cell.center.y - 15,
@@ -44878,7 +44882,7 @@ class App extends Component {
               //   plyr.ghost.position.cell.number,
               //   plyr.ghost.position.cell.center
               // );
-              context.drawImage(
+              context2.drawImage(
                 this.indicatorImgs.ghost,
                 plyr.ghost.position.cell.center.x - 20,
                 plyr.ghost.position.cell.center.y - 20,
@@ -45122,7 +45126,7 @@ class App extends Component {
                       );
 
                       centerPopupOffset = (this.popupSize - this.popupImgSize * 0.75) / 2;
-                      context.drawImage(
+                      context2.drawImage(
                         popup.img,
                         popupDrawCoords.origin.x + centerPopupOffset,
                         popupDrawCoords.origin.y + (centerPopupOffset + 5),
@@ -45130,7 +45134,7 @@ class App extends Component {
                         this.popupImgSize * 0.75
                       );
                     } else {
-                      context.drawImage(
+                      context2.drawImage(
                         popup.img,
                         popupDrawCoords.origin.x + centerPopupOffset,
                         popupDrawCoords.origin.y + centerPopupOffset,
@@ -45314,7 +45318,7 @@ class App extends Component {
 
                         centerPopupOffset =
                           (this.popupSize - this.popupImgSize * 0.75) / 2;
-                        context.drawImage(
+                        context2.drawImage(
                           popup.img,
                           popupDrawCoords.origin.x + centerPopupOffset,
                           popupDrawCoords.origin.y + (centerPopupOffset + 5),
@@ -45348,7 +45352,7 @@ class App extends Component {
                             popup.img = this.popupImageRef.defending;
                           }
                         }
-                        context.drawImage(
+                        context2.drawImage(
                           popup.img,
                           popupDrawCoords.origin.x + centerPopupOffset,
                           popupDrawCoords.origin.y + centerPopupOffset,
@@ -45367,6 +45371,7 @@ class App extends Component {
         }
 
         // OBSTACLES & BARRIERS
+
         // FALLING
         // IN BOUNDS
         if (
@@ -45450,14 +45455,14 @@ class App extends Component {
             let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type];
 
             if (gridInfoCell.obstacle.moving.state !== true) {
-              context.drawImage(
+              context2.drawImage(
                 obstacleImg,
                 iso.x - offset.x,
                 iso.y - obstacleImg.height
               );
             } else {
               // console.log('x/y',x,y);
-              // context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
+              // context2.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
             }
           }
         }
@@ -45509,7 +45514,7 @@ class App extends Component {
               // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
 
               let obstacleImg = this.obstacleImgs[cell.obstacle.type];
-              context.drawImage(
+              context2.drawImage(
                 obstacleImg,
                 cell.obstacle.moving.nextPosition.x - offset.x,
                 cell.obstacle.moving.nextPosition.y -
@@ -45534,7 +45539,7 @@ class App extends Component {
             //       drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
             //       console.log('drawCell1',drawCell);
             //       if (x === drawCell.x && y === drawCell.y) {
-            //           context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+            //           context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
             //       }
             //
             //     }
@@ -45544,7 +45549,7 @@ class App extends Component {
             //       drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
             //       console.log('drawCell2',drawCell);
             //       if (x === drawCell.x && y === drawCell.y) {
-            //           context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+            //           context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
             //       }
             //     }
             //   }
@@ -45562,14 +45567,14 @@ class App extends Component {
                       x: iso.x - offset.x,
                       y: iso.y - obstacleImg.height,
                     };
-                    context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+                    context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
                   } else {
                     obs.coords = this.calcElasticCountCoords(
                       "halfPushBack",
                       "obstacle",
                       obs
                     ).coords;
-                    context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+                    context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
                   }
                 }
               }
@@ -45587,7 +45592,7 @@ class App extends Component {
             if (cell.count % 3 === 0) {
               if (cell.type === "obstacle" && cell.cell.obstacle.type) {
                 let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
-                context.drawImage(
+                context2.drawImage(
                   obstacleImg,
                   iso.x - offset.x,
                   iso.y - obstacleImg.height
@@ -45596,7 +45601,7 @@ class App extends Component {
               if (cell.type === "barrier" && cell.cell.barrier.type) {
                 let barrierImg =
                   this.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
-                context.drawImage(
+                context2.drawImage(
                   barrierImg,
                   iso.x - offset.x,
                   iso.y - barrierImg.height,
@@ -45621,7 +45626,7 @@ class App extends Component {
               if (cell.item.type === "weapon" || cell.item.type === "armor") {
                 itemImg = this.itemImgs[cell.item.subType];
               }
-              context.drawImage(itemImg, center.x - 15, center.y - 15);
+              context2.drawImage(itemImg, center.x - 15, center.y - 15);
             }
           }
         }
@@ -45646,7 +45651,7 @@ class App extends Component {
           if (hide !== true) {
             let barrierImg =
               this.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
-            context.drawImage(
+            context2.drawImage(
               barrierImg,
               iso.x - offset.x,
               iso.y - barrierImg.height,
@@ -45692,7 +45697,7 @@ class App extends Component {
             // context2.fillStyle = "black";
             // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
             // this.testDraw.push({color:'green',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y})
-            context.drawImage(
+            context2.drawImage(
               boltImg,
               bolt.currentPosition.center.x - 15,
               bolt.currentPosition.center.y - 15,
@@ -47452,7 +47457,7 @@ class App extends Component {
               y: player.nextPosition.y - this.floorImageHeight,
             };
 
-            context.drawImage(
+            context2.drawImage(
               playerImg,
               sx,
               sy,
@@ -47469,7 +47474,7 @@ class App extends Component {
         // OBSTACLES & BARRIERS
         if (cell.barrier.state === true && cell.void.state !== true) {
           let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
-          context.drawImage(
+          context2.drawImage(
             barrierImg,
             iso.x - offset.x,
             iso.y - barrierImg.height,
@@ -47480,7 +47485,7 @@ class App extends Component {
 
         if (cell.obstacle.state === true && cell.void.state !== true) {
           let obstacleImg = this.obstacleImgs[cell.obstacle.type];
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - obstacleImg.height);
+          context2.drawImage(obstacleImg, iso.x - offset.x, iso.y - obstacleImg.height);
         }
 
         this.init = false;
