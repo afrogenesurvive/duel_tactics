@@ -13359,11 +13359,8 @@ class App extends Component {
 
             if (trap.item.subType === "crossbow") {
               trap.acting.direction = trap.direction;
-              // trap.acting.direction = "none";
               trap.acting.directionType = "slash";
 
-              // FIX ME
-              // set action direction based on trap target
               if (trap.ammo > 0) {
                 trap.ammo--;
                 let result = this.projectileCreator(
@@ -14798,6 +14795,11 @@ class App extends Component {
     // top face: 0 = east, 90 = south, 180 = west, 270 = north
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
+
+    // FIX ME
+    // Consider that action times will get shorter as players stats increase.
+    // if type === player or obs/bar
+    //   Arc crem should take a preCount and multiply that to get enough points for the arc
 
     let countLimit = 15;
     let delay = 20;
