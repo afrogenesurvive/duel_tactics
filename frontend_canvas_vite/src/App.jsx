@@ -831,7 +831,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "crossbow1",
+          itemNameRef: "sword1",
           item: {},
           ammo: 0,
         },
@@ -1454,10 +1454,10 @@ class App extends Component {
           state: false,
           persistent: false,
           remaining: 5,
-          direction: "south",
+          direction: "west",
           target: {},
           timer: {
-            enabled: false,
+            enabled: true,
             state: false,
             count: 0,
             limit: 65,
@@ -1474,7 +1474,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "crossbow1",
+          itemNameRef: "sword1",
           item: {},
           ammo: 0,
         },
@@ -8738,10 +8738,10 @@ class App extends Component {
       elem.locationCell,
       this.getOppositeDirection(elem.ownerDirection)
     );
-    let ownerCenter;
-    let targetCenter;
+    let ownerCenter = undefined;
+    let targetCenter = undefined;
     if (ownerType === "player") {
-      onwerCenter = owner.currentPosition.cell.center;
+      ownerCenter = owner.currentPosition.cell.center;
       targetCenter = owner.target.cell1.center;
     } else {
       const ref = this.gridInfo.find((x) => {
@@ -8753,9 +8753,10 @@ class App extends Component {
         return x.number.x === pretargetCenter.x && x.number.y === pretargetCenter.y;
       })?.center;
     }
+
     if (elem.phase === "pullback") {
       startPt = ownerCenter;
-      if (rearCellNo.x && rearCellNo.y) {
+      if (rearCellNo.x > -1 && rearCellNo.y > -1) {
         endPt = this.gridInfo.find(
           (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
         )?.center;
@@ -8768,7 +8769,7 @@ class App extends Component {
       }
     }
     if (elem.phase === "release") {
-      if (rearCellNo.x && rearCellNo.y) {
+      if (rearCellNo.x > -1 && rearCellNo.y > -1) {
         startPt = this.gridInfo.find(
           (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
         )?.center;
@@ -8789,7 +8790,7 @@ class App extends Component {
 
     elem.points.push(result);
     if (ownerType === "player") {
-      let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+      let el = owner.actionDirectionAnimationArray.find((x) => x.id === elem.id);
       el = elem;
     } else {
       owner = elem;
@@ -8831,14 +8832,19 @@ class App extends Component {
       "#EE82EE", // Violet
       "#DA70D6", // Orchid
     ];
+
     let color = "green";
     let pointA;
     let point;
+    let ownerDirection = elem.ownerDirection;
+    let actionDirection = elem.actionDirection;
+    let ownerCellNo;
     if (type === "playerDirectionalAction") {
       pointA = {
         x: owner.currentPosition.cell.center.x,
         y: owner.currentPosition.cell.center.y,
       };
+      ownerCellNo = owner.currentPosition.cell.number;
     }
     if (type === "obstacleBarrierDirectionalAction") {
       let refCell = this.gridInfo.find(
@@ -8848,11 +8854,13 @@ class App extends Component {
         x: refCell.center.x,
         y: refCell.center.y,
       };
+      ownerCellNo = elem.locationCell;
     }
     point = {
-      x: pointA * this.tileWidth,
-      y: pointA * this.tileWidth,
+      x: ownerCellNo.x * this.tileWidth,
+      y: ownerCellNo.y * this.tileWidth,
     };
+
     // starAngles:
     // top face: 0 = east, 90 = south, 180 = west, 270 = north
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
@@ -13344,41 +13352,13 @@ class App extends Component {
     const executeTrapAction = () => {
       // console.log("executeTrapAction");
       if (trap.acting.state === true) {
-        console.log("trap is acting");
+        // console.log("trap is acting");
         if (trap.action === "attack") {
           if (trap.acting.count === trap.acting.peak) {
             // console.log("trap is acting: attack peak");
 
-            let whatDirection = this.rnJesus(0, 4);
-            switch (whatDirection) {
-              case 0:
-                trap.acting.direction = "none";
-                trap.acting.directionType = "thrust";
-                break;
-              case 1:
-                trap.acting.direction = "north";
-                trap.acting.directionType = "slash";
-                break;
-              case 2:
-                trap.acting.direction = "south";
-                trap.acting.directionType = "slash";
-                break;
-              case 3:
-                trap.acting.direction = "east";
-                trap.acting.directionType = "slash";
-                break;
-              case 4:
-                trap.acting.direction = "west";
-                trap.acting.directionType = "slash";
-                break;
-              default:
-                break;
-            }
             if (trap.item.subType === "crossbow") {
-              trap.acting.direction = this.getDirectionFromCells(
-                locationCell.number,
-                trap.target
-              );
+              trap.acting.direction = trap.direction;
               // trap.acting.direction = "none";
               trap.acting.directionType = "slash";
 
@@ -13405,6 +13385,34 @@ class App extends Component {
             }
           }
           if (trap.acting.count < trap.acting.limit) {
+            // SET DIRECTION
+            if (trap.acting.count === 0) {
+              let whatDirection = this.rnJesus(0, 4);
+              switch (whatDirection) {
+                case 0:
+                  trap.acting.direction = "none";
+                  trap.acting.directionType = "thrust";
+                  break;
+                case 1:
+                  trap.acting.direction = "north";
+                  trap.acting.directionType = "slash";
+                  break;
+                case 2:
+                  trap.acting.direction = "south";
+                  trap.acting.directionType = "slash";
+                  break;
+                case 3:
+                  trap.acting.direction = "east";
+                  trap.acting.directionType = "slash";
+                  break;
+                case 4:
+                  trap.acting.direction = "west";
+                  trap.acting.directionType = "slash";
+                  break;
+                default:
+                  break;
+              }
+            }
             trap.acting.count++;
 
             if (trap.acting.count < trap.acting.peak) {
@@ -13424,19 +13432,21 @@ class App extends Component {
                 releaseTime = trap.acting.peak - 10;
               } else {
                 pullbackTime = 1;
-                releaseTime = trap.acting.peak / 2;
+                releaseTime = Math.ceil(trap.acting.peak / 2);
               }
 
               if (trap.acting.count === pullbackTime) {
+                console.log("pullbackTime", pullbackTime);
                 trap = this.handleDirectionalActionAnimation(
                   ownerType,
                   "attacking",
                   "pullback",
                   locationCell,
-                  null
+                  trap
                 );
               }
               if (trap.acting.count === releaseTime) {
+                console.log("releaseTime", releaseTime);
                 let toRemove = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
                   return (
                     x.locationCell === locationCell.number &&
@@ -13451,7 +13461,7 @@ class App extends Component {
                   "attacking",
                   "release",
                   locationCell,
-                  null
+                  trap
                 );
               }
             }
@@ -13499,6 +13509,15 @@ class App extends Component {
               ),
               1
             );
+
+            let toRemove = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
+              return (
+                x.locationCell === locationCell.number &&
+                x.ownerType === ownerType &&
+                x.action === "attacking"
+              );
+            });
+            this.obstacleBarrierActionAnimationArray.splice(toRemove, 1);
           }
         } else {
           // apply non attack action here
@@ -13893,7 +13912,7 @@ class App extends Component {
   customObstacleBarrierTrapSet = (instructionType, data) => {
     // when externalized, call and update gridinfo function
     let localGridInfo = [];
-    console.log("customObstacleBarrierTrapSet", instructionType);
+    // console.log("customObstacleBarrierTrapSet", instructionType);
     let type;
     let trapsToSet = [];
     const trapRandomizer = (trap) => {
@@ -14749,7 +14768,7 @@ class App extends Component {
     // phase:
     // pullback, release
 
-    let id = arrayElemId;
+    let id;
     let arcAngle = 0;
     let startAngle = 0;
     let direction = "counterClockwise"; // 'clockwise' or 'counterClockwise'
@@ -14759,21 +14778,22 @@ class App extends Component {
     if (action === "defending") {
       color = "yellow";
     }
-    let directionType;
-    let ownerDirection;
-    let actionDirection;
-    let ownerLocactionCell;
+    let directionType = "";
+    let ownerDirection = "";
+    let actionDirection = "";
+    let ownerlocationCell;
     if (ownerType === "player") {
       directionType = owner[action].directionType;
       ownerDirection = owner.direction;
       actionDirection = owner[action].direction;
-      ownerLocactionCell = owner.currentPosition.cell.number;
+      ownerlocationCell = owner.currentPosition.cell.number;
     } else {
-      directionType = owner[ownerType].trap.acting.directionType;
-      ownerDirection = owner[ownerType].trap.direction;
-      actionDirection = owner[ownerType].trap.acting.direction;
-      ownerLocactionCell = owner.number;
+      directionType = arrayElemId.acting.directionType;
+      ownerDirection = arrayElemId.direction;
+      actionDirection = arrayElemId.acting.direction;
+      ownerlocationCell = owner.number;
     }
+
     // starAngles:
     // top face: 0 = east, 90 = south, 180 = west, 270 = north
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
@@ -14781,9 +14801,7 @@ class App extends Component {
 
     let countLimit = 15;
     let delay = 20;
-
-    // if ownerType is !player
-    // push to this.obstacleBarrierActionAnimationArray;
+    let result;
 
     if (
       directionType === "thrust" ||
@@ -14800,7 +14818,7 @@ class App extends Component {
         owner.currentWeapon?.type === "crossbow" ||
         owner[ownerType]?.trap?.item?.subType === "crossbow"
       ) {
-        directionType = "slash";
+        directionType = "thrust";
       }
 
       if (ownerType === "player") {
@@ -14811,6 +14829,7 @@ class App extends Component {
           ownerType: ownerType,
           ownerDirection: ownerDirection,
           action: action,
+          actionDirection: actionDirection,
           actionDirectionType: directionType,
           phase: phase,
           radius: radius,
@@ -14829,7 +14848,7 @@ class App extends Component {
             limit: delay,
           },
           points: [],
-          locationCell: ownerLocactionCell,
+          locationCell: ownerlocationCell,
         });
       } else {
         id = this.obstacleBarrierActionAnimationArray.length + 1;
@@ -14839,7 +14858,8 @@ class App extends Component {
           ownerType: ownerType,
           ownerDirection: ownerDirection,
           action: action,
-          actionDirectionType: "thrust",
+          actionDirection: actionDirection,
+          actionDirectionType: directionType,
           phase: phase,
           radius: radius,
           angle: arcAngle,
@@ -14857,7 +14877,7 @@ class App extends Component {
             limit: delay,
           },
           points: [],
-          locationCell: ownerLocactionCell,
+          locationCell: ownerlocationCell,
         });
       }
     } else {
@@ -15080,6 +15100,7 @@ class App extends Component {
           ownerType: ownerType,
           ownerDirection: ownerDirection,
           action: action,
+          actionDirection: actionDirection,
           actionDirectionType: directionType,
           phase: phase,
           radius: radius,
@@ -15098,7 +15119,7 @@ class App extends Component {
             limit: delay,
           },
           points: [],
-          locationCell: ownerLocactionCell,
+          locationCell: ownerlocationCell,
         });
       } else {
         id = this.obstacleBarrierActionAnimationArray.length + 1;
@@ -15108,7 +15129,8 @@ class App extends Component {
           ownerType: ownerType,
           ownerDirection: ownerDirection,
           action: action,
-          actionDirectionType: "thrust",
+          actionDirection: actionDirection,
+          actionDirectionType: directionType,
           phase: phase,
           radius: radius,
           angle: arcAngle,
@@ -15126,18 +15148,15 @@ class App extends Component {
             limit: delay,
           },
           points: [],
-          locationCell: ownerLocactionCell,
+          locationCell: ownerlocationCell,
         });
       }
     }
 
-    // if (mode === "clear") {
-    //   owner.actionDirectionAnimationArray = [];
-    // }
     if (ownerType === "player") {
       return owner;
     } else {
-      return owner[ownerType].trap;
+      return arrayElemId;
     }
   };
   meleeAttackPeak = (ownerType, owner) => {
@@ -39992,7 +40011,7 @@ class App extends Component {
             let index = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
               return x.id === elem.id;
             });
-            this.obstacleBarrierActionAnimationArray.splice(index, 1);
+            // this.obstacleBarrierActionAnimationArray.splice(index, 1);
           }
         }
       }
@@ -40013,7 +40032,7 @@ class App extends Component {
             let index = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
               return x.id === elem.id;
             });
-            this.obstacleBarrierActionAnimationArray.splice(index, 1);
+            // this.obstacleBarrierActionAnimationArray.splice(index, 1);
           }
         }
       }
