@@ -8970,6 +8970,7 @@ class App extends Component {
       limit = elem.counter.limit;
     }
 
+    // limit = 25;
     incr = count / limit;
     conntectingLineIncr = limit;
 
@@ -44006,21 +44007,29 @@ class App extends Component {
             for (const animAction of plyr.actionDirectionAnimationArray) {
               for (const point of animAction.points) {
                 // if (x === 0 && y === 0) {
-                context.fillStyle = point.color;
-                context.beginPath();
-                context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-                context.fill();
+                // context.fillStyle = point.color;
+                // context.beginPath();
+                // context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                // context.fill();
                 // }
               }
+              if (animAction.points.length > 1) {
+                context.beginPath();
+                context.moveTo(animAction.points[0].x, animAction.points[0].y);
+                for (var i = 1; i < animAction.points.length - 1; i++) {
+                  context.arcTo(
+                    animAction.points[i].x,
+                    animAction.points[i].y,
+                    animAction.points[i + 1].x,
+                    animAction.points[i + 1].y,
+                    40
+                  );
+                }
+                context.strokeStyle = animAction.points[0].color;
+                context.lineWidth = 7;
+                context.stroke();
+              }
             }
-            // ctx.beginPath();
-            // ctx.moveTo(points[0].x, points[0].y);
-            // for (var i = 1; i < points.length - 1; i++) {
-            //   ctx.arcTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, 50);
-            // }
-            // ctx.strokeStyle = 'blue';
-            // ctx.lineWidth = 3;
-            // ctx.stroke();
           }
 
           if (plyr.jumping.state === true) {
@@ -45375,11 +45384,27 @@ class App extends Component {
 
         // OBSTACLE BARRIER DIRECTIONAL ACTION ANIM
         for (const animAction of this.obstacleBarrierActionAnimationArray) {
-          for (const point of animAction.points) {
-            context.fillStyle = point.color;
+          // for (const point of animAction.points) {
+          //   context.fillStyle = point.color;
+          //   context.beginPath();
+          //   context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+          //   context.fill();
+          // }
+          if (animAction.points.length > 1) {
             context.beginPath();
-            context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-            context.fill();
+            context.moveTo(animAction.points[0].x, animAction.points[0].y);
+            for (var i = 1; i < animAction.points.length - 1; i++) {
+              context.arcTo(
+                animAction.points[i].x,
+                animAction.points[i].y,
+                animAction.points[i + 1].x,
+                animAction.points[i + 1].y,
+                40
+              );
+            }
+            context.strokeStyle = animAction.points[0].color;
+            context.lineWidth = 7;
+            context.stroke();
           }
         }
 
