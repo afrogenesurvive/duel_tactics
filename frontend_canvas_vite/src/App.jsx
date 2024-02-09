@@ -601,7 +601,7 @@ class App extends Component {
         "**_*_4.1_a_0a*",
         "**_*_4.2_f_0a*",
         "**_*_4.3_f_0a*",
-        "**_*_4.4_a_0a*",
+        "**_h_4.4_a_0a*",
         "**_h_4.5_a_0a*",
         "**_*_4.6_j_0a*",
         "**_*_4.7_a_0a*",
@@ -3896,6 +3896,7 @@ class App extends Component {
     this.showDirectionalActionAnimation = true;
     this.hideAllPopups = false;
     this.hideDirectionalActionPopus = true;
+    this.directionalAnimShape = "ringSection";
 
     this.backgroundImageRef = {};
 
@@ -8952,7 +8953,7 @@ class App extends Component {
       point = pointA;
     }
 
-    const innerRadius = radiusA - 5;
+    const innerRadius = radiusA - 15;
     let incr = 0;
     let conntectingLineIncr = 0;
 
@@ -9039,23 +9040,23 @@ class App extends Component {
       for (let i = 0; i < conntectingLineIncr; i++) {
         let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
 
-        if (type === "testing") {
-          this.testDraw.push({
-            color: colors[this.testCount.count - 1],
-            x: point3.x,
-            y: point3.y,
-          });
-        }
-        if (
-          type === "playerDirectionalAction" ||
-          type === "obstacleBarrierDirectionalAction"
-        ) {
-          elem.points.push({
-            color: color,
-            x: point3.x,
-            y: point3.y,
-          });
-        }
+        // if (type === "testing") {
+        //   this.testDraw.push({
+        //     color: colors[this.testCount.count - 1],
+        //     x: point3.x,
+        //     y: point3.y,
+        //   });
+        // }
+        // if (
+        //   type === "playerDirectionalAction" ||
+        //   type === "obstacleBarrierDirectionalAction"
+        // ) {
+        //   elem.points.push({
+        //     color: color,
+        //     x: point3.x,
+        //     y: point3.y,
+        //   });
+        // }
       }
       // }
     }
@@ -9104,34 +9105,43 @@ class App extends Component {
     // console.log("point1", point1.x.toFixed(2), point1.y.toFixed(2));
 
     if (type === "testing") {
-      this.testDraw.push(
-        {
+      // this.testDraw.push(
+      //   {
+      //     color: color,
+      //     x: point1.x,
+      //     y: point1.y,
+      //   },
+      //   {
+      //     color: color,
+      //     x: point.x,
+      //     y: point.y,
+      //   },
+      //   {
+      //     color: "red",
+      //     x: pointA.x,
+      //     y: pointA.y,
+      //   },
+      //   {
+      //     color: "purple",
+      //     x: pointB.x,
+      //     y: pointB.y,
+      //   }
+      // );
+      if (shape === "arc") {
+        this.testDraw.push({
           color: color,
           x: point1.x,
           y: point1.y,
-        },
-        {
-          color: color,
-          x: point.x,
-          y: point.y,
-        },
-        {
-          color: "red",
-          x: pointA.x,
-          y: pointA.y,
-        },
-        {
-          color: "purple",
-          x: pointB.x,
-          y: pointB.y,
-        }
-      );
+        });
+      }
 
       if (shape === "ringSection") {
         this.testDraw.push({
           color: "purple",
-          x: point2.x,
-          y: point2.y,
+          x: point1.x,
+          y: point1.y,
+          x2: point2.x,
+          y2: point2.y,
         });
       }
     }
@@ -9139,33 +9149,20 @@ class App extends Component {
       type === "playerDirectionalAction" ||
       type === "obstacleBarrierDirectionalAction"
     ) {
-      elem.points.push(
-        {
+      if (shape === "arc") {
+        elem.points.push({
           color: color,
           x: point1.x,
           y: point1.y,
-        }
-        // {
-        //   color: colors[2],
-        //   x: point.x,
-        //   y: point.y,
-        // }
-        // {
-        //   color: colors[3],
-        //   x: pointA.x,
-        //   y: pointA.y,
-        // }
-        // {
-        //   color: colors[4],
-        //   x: pointB.x,
-        //   y: pointB.y,
-        // }
-      );
+        });
+      }
       if (shape === "ringSection") {
         elem.points.push({
           color: color,
-          x: point2.x,
-          y: point2.y,
+          x: point1.x,
+          y: point1.y,
+          x2: point2.x,
+          y2: point2.y,
         });
       }
     }
@@ -11596,7 +11593,7 @@ class App extends Component {
               }
               let dodged = false;
 
-              // CHECK FOR PLAYERS
+              // CHECK FOR PLAYERS, OBSTACLE &  REAR BARRIER COLLISION
               if (fwdBarrier !== true) {
                 if (bolt.ownerType === "player") {
                   for (const plyr of this.players) {
@@ -13447,7 +13444,8 @@ class App extends Component {
                   "attacking",
                   "pullback",
                   locationCell,
-                  trap
+                  trap,
+                  releaseTime - pullbackTime
                 );
               }
               if (trap.acting.count === releaseTime) {
@@ -13465,7 +13463,9 @@ class App extends Component {
                   "attacking",
                   "release",
                   locationCell,
-                  trap
+                  trap,
+                  // (trap.acting.limit-releaseTime)
+                  trap.acting.peak - 5 - releaseTime
                 );
               }
             }
@@ -14767,10 +14767,14 @@ class App extends Component {
       directionChanged: directionChanged,
     };
   };
-  handleDirectionalActionAnimation = (ownerType, action, phase, owner, arrayElemId) => {
-    // modes:
-    //   init, update, reset, cancel
-    //    id used for update, reset, cancel
+  handleDirectionalActionAnimation = (
+    ownerType,
+    action,
+    phase,
+    owner,
+    arrayElemId,
+    xCount
+  ) => {
     // action:
     //   attacking, defending
     // phase:
@@ -14807,17 +14811,13 @@ class App extends Component {
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
-    // FIX ME
-    // Consider that action times will get shorter as players stats increase.
-    // if type === player or obs/bar
-    //   Arc crem should take a a Count as args
-    //use move to draw method
-    // or
-    //  multiply that to get enough points for the arc + double up count stepping
-
     let countLimit = 15;
     let delay = 20;
-    let result;
+
+    if (ownerType === "player" || ownerType === "obstacle" || ownerType === "barrier") {
+      console.log("xCount", xCount);
+      // countLimit = xCount;
+    }
 
     if (
       directionType === "thrust" ||
@@ -34393,30 +34393,12 @@ class App extends Component {
       // this.setBackgroundImage("sea_clouds_1");
       // this.testCount.state = true;
       // this.testCount.limit = 30;
-      // player.attacking.direction = "none";
-      // player.attacking.directionType = "thrust";
-      // player.attacking.direction = "south";
-      // player.attacking.directionType = "slash";
-      // player = this.handleDirectionalActionAnimation(
-      //   "player",
-      //   "attacking",
-      //   "pullback",
-      //   player,
-      //   null
-      // );
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
       let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
     }
     if (this.time === 120 && player.number === 1) {
-      // player = this.handleDirectionalActionAnimation(
-      //   "player",
-      //   "attacking",
-      //   "release",
-      //   player,
-      //   null
-      // );
       // this.setDeflection(player, "defended", true);
       // this.setDeflection(player, "attacked", false);
       // this.pushBack(player, this.getOppositeDirection(player.direction));
@@ -35768,7 +35750,7 @@ class App extends Component {
                     elem.radius,
                     elem.angle,
                     elem.startAngle,
-                    "arc",
+                    this.directionalAnimShape,
                     elem.direction,
                     elem.face,
                     elem
@@ -36061,7 +36043,7 @@ class App extends Component {
           this.keyPressed[player.number - 1].dodge !== true &&
           player.flanking.state !== true
         ) {
-          console.log("released dodge key while winding up. cancel dodge.");
+          // console.log("released dodge key while winding up. cancel dodge.");
           player.stamina.current += this.staminaCostRef.dodge.pre;
           player.action = "idle";
           player.dodging = {
@@ -36387,7 +36369,10 @@ class App extends Component {
                   "attacking",
                   "pullback",
                   player,
-                  null
+                  null,
+                  directionalActionResult.inputThresh +
+                    Math.ceil(xTime / 2) -
+                    player.attacking.count
                 );
               }
               // if (player.attacking.count < player.attacking.peakCount && player.attacking.count === (directionalActionResult.inputThresh+15)) {
@@ -36403,7 +36388,10 @@ class App extends Component {
                   "attacking",
                   "release",
                   player,
-                  null
+                  null,
+                  player.attacking.peakCount +
+                    dirAnimSetCalcMod -
+                    (directionalActionResult.inputThresh + Math.ceil(xTime / 2))
                 );
               }
             }
@@ -36819,28 +36807,33 @@ class App extends Component {
                 "defending",
                 "release",
                 player,
-                null
+                null,
+                xTime
               );
             }
             if (directionalActionResult.directionChanged === true) {
               player.actionDirectionAnimationArray = [];
+              let yTime;
               if (player.defending.decay.state !== true) {
                 console.log(
                   "yTime2",
                   player.defending.peakCount - player.defending.count
                 );
+                yTime = player.defending.peakCount - player.defending.count;
               } else {
                 console.log(
                   "yTime3",
                   player.defending.decay.limit - player.defending.decay.count
                 );
+                yTime = player.defending.decay.limit - player.defending.decay.count;
               }
               player = this.handleDirectionalActionAnimation(
                 "player",
                 "defending",
                 "release",
                 player,
-                null
+                null,
+                yTime
               );
             }
           }
@@ -37247,7 +37240,7 @@ class App extends Component {
           if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
             player.dodging.count++;
             player.action = "dodging";
-            console.log("dodge count", player.dodging.count);
+            // console.log("dodge count", player.dodging.count);
 
             if (!player.popups.find((x) => x.msg === "dodging")) {
               player.popups.push({
@@ -37285,7 +37278,7 @@ class App extends Component {
           ) {
             player.dodging.state = true;
 
-            console.log("dodge peak", player.dodging.count);
+            // console.log("dodge peak", player.dodging.count);
           }
 
           // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
@@ -37967,18 +37960,18 @@ class App extends Component {
               this.keyPressed[player.number - 1].west === true
             ) {
               if (player.flanking.direction === keyPressedDirection) {
-                console.log(
-                  "already flanking in this direction. no move interrupt. continue flank"
-                );
+                // console.log(
+                //   "already flanking in this direction. no move interrupt. continue flank"
+                // );
                 continueFlank = true;
               } else {
-                console.log(
-                  "flanking cancelled by move input!",
-                  player.flanking.direction,
-                  player.turning.toDirection,
-                  player.direction,
-                  keyPressedDirection
-                );
+                // console.log(
+                //   "flanking cancelled by move input!",
+                //   player.flanking.direction,
+                //   player.turning.toDirection,
+                //   player.direction,
+                //   keyPressedDirection
+                // );
                 player.action = "idle";
                 player.turning.toDirection = player.direction;
 
@@ -38177,14 +38170,14 @@ class App extends Component {
                   player.dodging.peak.start - player.crits.dodge
                 ) {
                   canFlank1 = true;
-                  console.log("can flank before dodge peak start");
+                  // console.log("can flank before dodge peak start");
                 } else {
                   console.log("too late in dodge windup to flank");
                   continueDodge();
                 }
               }
               if (player.dodging.countState === true && player.dodging.state === true) {
-                console.log("peak dodging. can't flank");
+                // console.log("peak dodging. can't flank");
               }
               if (player.dodging.countState !== true && player.dodging.state !== true) {
                 console.log("highly unlikely. can flank anyway");
@@ -38365,7 +38358,7 @@ class App extends Component {
                 }
               }
             } else {
-              console.log("already strafing and/or flanking. cant start flank");
+              // console.log("already strafing and/or flanking. cant start flank");
             }
           }
         }
@@ -40003,7 +39996,7 @@ class App extends Component {
       }
     }
 
-    // OBSTACLE BARRIER ACTION ANIMATION
+    // OBSTACLE BARRIER DIRECTIONAL ACTION ANIMATION
     for (let elem of this.obstacleBarrierActionAnimationArray) {
       if (elem.actionDirectionType === "slash") {
         if (elem.delay.state !== true) {
@@ -40016,7 +40009,7 @@ class App extends Component {
               elem.radius,
               elem.angle,
               elem.startAngle,
-              "arc",
+              this.directionalAnimShape,
               elem.direction,
               elem.face,
               elem
@@ -41966,299 +41959,299 @@ class App extends Component {
             context.stroke();
           }
         }
-        // CELL POPUPS
-        if (this.hideAllPopups !== true) {
-          if (x === this.gridWidth && y === this.gridWidth) {
-            // console.log(this.pickupAmmoRef.current);
+        // // CELL POPUPS
+        // if (this.hideAllPopups !== true) {
+        //   if (x === this.gridWidth && y === this.gridWidth) {
+        //     // console.log(this.pickupAmmoRef.current);
 
-            for (const popup of this.cellPopups) {
-              let popupBorderColor = "black";
-              if (popup.state === true) {
-                // console.log('drawing a popup');
-                let popupDrawCoords;
-                if (popup.position === "" || !popup.position) {
-                  let currentPopups = this.cellPopups.filter((x) => x.state === true);
-                  let currentPopupsThisCell = this.cellPopups.filter(
-                    (x) =>
-                      x.state === true &&
-                      x.cell.number.x === popup.cell.number.x &&
-                      x.cell.number.y === popup.cell.number.y
-                  );
-                  let positions = [
-                    "north",
-                    "east",
-                    "south",
-                    "west",
-                    "northEast",
-                    "northWest",
-                    "southEast",
-                    "southWest",
-                  ];
+        //     for (const popup of this.cellPopups) {
+        //       let popupBorderColor = "black";
+        //       if (popup.state === true) {
+        //         // console.log('drawing a popup');
+        //         let popupDrawCoords;
+        //         if (popup.position === "" || !popup.position) {
+        //           let currentPopups = this.cellPopups.filter((x) => x.state === true);
+        //           let currentPopupsThisCell = this.cellPopups.filter(
+        //             (x) =>
+        //               x.state === true &&
+        //               x.cell.number.x === popup.cell.number.x &&
+        //               x.cell.number.y === popup.cell.number.y
+        //           );
+        //           let positions = [
+        //             "north",
+        //             "east",
+        //             "south",
+        //             "west",
+        //             "northEast",
+        //             "northWest",
+        //             "southEast",
+        //             "southWest",
+        //           ];
 
-                  if (popup.color === "") {
-                    popup.color = this.cellColorRef.find(
-                      (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
-                    ).color;
-                  }
+        //           if (popup.color === "") {
+        //             popup.color = this.cellColorRef.find(
+        //               (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
+        //             ).color;
+        //           }
 
-                  // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
-                  for (const popup2 of currentPopupsThisCell) {
-                    if (popup2.position && popup2.position !== "") {
-                      let indx = positions.indexOf(popup2.position);
-                      positions.splice(indx, 1);
-                    }
-                  }
+        //           // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
+        //           for (const popup2 of currentPopupsThisCell) {
+        //             if (popup2.position && popup2.position !== "") {
+        //               let indx = positions.indexOf(popup2.position);
+        //               positions.splice(indx, 1);
+        //             }
+        //           }
 
-                  let dir = undefined;
-                  let dirs = [];
+        //           let dir = undefined;
+        //           let dirs = [];
 
-                  for (const plyr2 of this.players) {
-                    if (plyr2.ai.state !== true) {
-                      let myPos = popup.cell.number;
-                      let invalidPos =
-                        this.players[plyr2.number - 1].currentPosition.cell.number;
-                      // let invalidPositions = [invalidPos];
+        //           for (const plyr2 of this.players) {
+        //             if (plyr2.ai.state !== true) {
+        //               let myPos = popup.cell.number;
+        //               let invalidPos =
+        //                 this.players[plyr2.number - 1].currentPosition.cell.number;
+        //               // let invalidPositions = [invalidPos];
 
-                      // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
-                      dir = this.getDirectionFromCells(myPos, invalidPos);
+        //               // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
+        //               dir = this.getDirectionFromCells(myPos, invalidPos);
 
-                      if (dir && positions.includes(dir) === true) {
-                        positions.splice(positions.indexOf(dir), 1);
-                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                      }
+        //               if (dir && positions.includes(dir) === true) {
+        //                 positions.splice(positions.indexOf(dir), 1);
+        //                 // console.log('dont draw over player @',dir,'choose frome these position',positions);
+        //               }
 
-                      // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
-                      for (const pop of plyr2.popups) {
-                        dir = undefined;
+        //               // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+        //               for (const pop of plyr2.popups) {
+        //                 dir = undefined;
 
-                        if (pop.state === true) {
-                          let invalidPos2 = {
-                            x: undefined,
-                            y: undefined,
-                          };
+        //                 if (pop.state === true) {
+        //                   let invalidPos2 = {
+        //                     x: undefined,
+        //                     y: undefined,
+        //                   };
 
-                          invalidPos2 = this.getCellFromDirection(
-                            1,
-                            invalidPos,
-                            pop.position
-                          );
+        //                   invalidPos2 = this.getCellFromDirection(
+        //                     1,
+        //                     invalidPos,
+        //                     pop.position
+        //                   );
 
-                          // let dir = undefined;
+        //                   // let dir = undefined;
 
-                          dir = this.getDirectionFromCells(myPos, invalidPos2);
+        //                   dir = this.getDirectionFromCells(myPos, invalidPos2);
 
-                          if (dir && positions.includes(dir) === true) {
-                            positions.splice(positions.indexOf(dir), 1);
-                            // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                          }
-                        }
-                      }
-                    }
-                  }
+        //                   if (dir && positions.includes(dir) === true) {
+        //                     positions.splice(positions.indexOf(dir), 1);
+        //                     // console.log('dont draw over player @',dir,'choose frome these position',positions);
+        //                   }
+        //                 }
+        //               }
+        //             }
+        //           }
 
-                  // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
-                  for (const popup2 of currentPopups) {
-                    dir = undefined;
+        //           // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
+        //           for (const popup2 of currentPopups) {
+        //             dir = undefined;
 
-                    if (
-                      popup.cell.number.x !== popup2.cell.number.x &&
-                      popup.cell.number.y !== popup2.cell.number.y &&
-                      popup2.msg !== popup.msg &&
-                      popup2.state === true
-                    ) {
-                      let myPos = popup.cell.number;
-                      let cellPos = popup2.cell.number;
-                      let invalidPos2 = {
-                        x: undefined,
-                        y: undefined,
-                      };
+        //             if (
+        //               popup.cell.number.x !== popup2.cell.number.x &&
+        //               popup.cell.number.y !== popup2.cell.number.y &&
+        //               popup2.msg !== popup.msg &&
+        //               popup2.state === true
+        //             ) {
+        //               let myPos = popup.cell.number;
+        //               let cellPos = popup2.cell.number;
+        //               let invalidPos2 = {
+        //                 x: undefined,
+        //                 y: undefined,
+        //               };
 
-                      invalidPos2 = this.getCellFromDirection(
-                        1,
-                        cellPos,
-                        popup2.position
-                      );
+        //               invalidPos2 = this.getCellFromDirection(
+        //                 1,
+        //                 cellPos,
+        //                 popup2.position
+        //               );
 
-                      dir = this.getDirectionFromCells(myPos, invalidPos2);
+        //               dir = this.getDirectionFromCells(myPos, invalidPos2);
 
-                      if (dir && positions.includes(dir) === true) {
-                        positions.splice(positions.indexOf(dir), 1);
-                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                      }
-                    }
-                  }
+        //               if (dir && positions.includes(dir) === true) {
+        //                 positions.splice(positions.indexOf(dir), 1);
+        //                 // console.log('dont draw over player @',dir,'choose frome these position',positions);
+        //               }
+        //             }
+        //           }
 
-                  if (!positions[0]) {
-                    // console.log('no open positions for', popup.msg);
-                    popup.state = false;
-                    popup.count = 0;
-                  } else {
-                    popup.position = positions[0];
-                  }
+        //           if (!positions[0]) {
+        //             // console.log('no open positions for', popup.msg);
+        //             popup.state = false;
+        //             popup.count = 0;
+        //           } else {
+        //             popup.position = positions[0];
+        //           }
 
-                  popup.img = this.popupImageRef[popup.msg];
+        //           popup.img = this.popupImageRef[popup.msg];
 
-                  popupDrawCoords = this.popupDrawCalc(
-                    popup.position,
-                    { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
-                    0
-                  );
-                  this.drawPopupBubble(
-                    context,
-                    popupDrawCoords.origin.x,
-                    popupDrawCoords.origin.y,
-                    this.popupSize,
-                    this.popupSize,
-                    5,
-                    popupDrawCoords.anchor.x,
-                    popupDrawCoords.anchor.y,
-                    popup.color
-                  );
-                  // context.fillStyle = 'black';
-                  // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                  // console.log('popup.msg',popup.msg,popup.img);
-                  let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-                  context.drawImage(
-                    popup.img,
-                    popupDrawCoords.origin.x + centerPopupOffset,
-                    popupDrawCoords.origin.y + centerPopupOffset,
-                    this.popupImgSize,
-                    this.popupImgSize
-                  );
-                } else {
-                  let dir = undefined;
-                  let dirs = [];
+        //           popupDrawCoords = this.popupDrawCalc(
+        //             popup.position,
+        //             { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
+        //             0
+        //           );
+        //           this.drawPopupBubble(
+        //             context,
+        //             popupDrawCoords.origin.x,
+        //             popupDrawCoords.origin.y,
+        //             this.popupSize,
+        //             this.popupSize,
+        //             5,
+        //             popupDrawCoords.anchor.x,
+        //             popupDrawCoords.anchor.y,
+        //             popup.color
+        //           );
+        //           // context.fillStyle = 'black';
+        //           // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+        //           // console.log('popup.msg',popup.msg,popup.img);
+        //           let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+        //           context2.drawImage(
+        //             popup.img,
+        //             popupDrawCoords.origin.x + centerPopupOffset,
+        //             popupDrawCoords.origin.y + centerPopupOffset,
+        //             this.popupImgSize,
+        //             this.popupImgSize
+        //           );
+        //         } else {
+        //           let dir = undefined;
+        //           let dirs = [];
 
-                  let currentPopupsNotThis = this.cellPopups.filter(
-                    (x) =>
-                      x.state === true &&
-                      x.msg !== popup.msg &&
-                      x.cell.number.x !== popup.cell.number.x &&
-                      x.cell.number.y !== popup.cell.number.y
-                  );
+        //           let currentPopupsNotThis = this.cellPopups.filter(
+        //             (x) =>
+        //               x.state === true &&
+        //               x.msg !== popup.msg &&
+        //               x.cell.number.x !== popup.cell.number.x &&
+        //               x.cell.number.y !== popup.cell.number.y
+        //           );
 
-                  for (const plyr2 of this.players) {
-                    if (plyr2.ai.state !== true) {
-                      let myPos = popup.cell.number;
-                      let invalidPos =
-                        this.players[plyr2.number - 1].currentPosition.cell.number;
+        //           for (const plyr2 of this.players) {
+        //             if (plyr2.ai.state !== true) {
+        //               let myPos = popup.cell.number;
+        //               let invalidPos =
+        //                 this.players[plyr2.number - 1].currentPosition.cell.number;
 
-                      // invalidpostions2 push plyr2 position
-                      // for player popups
-                      //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
-                      //
+        //               // invalidpostions2 push plyr2 position
+        //               // for player popups
+        //               //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+        //               //
 
-                      dir = this.getDirectionFromCells(myPos, invalidPos);
+        //               dir = this.getDirectionFromCells(myPos, invalidPos);
 
-                      dirs.push(dir);
+        //               dirs.push(dir);
 
-                      for (const pop of plyr2.popups) {
-                        if (pop.state === true) {
-                          let invalidPos2 = {
-                            x: undefined,
-                            y: undefined,
-                          };
+        //               for (const pop of plyr2.popups) {
+        //                 if (pop.state === true) {
+        //                   let invalidPos2 = {
+        //                     x: undefined,
+        //                     y: undefined,
+        //                   };
 
-                          invalidPos2 = this.getCellFromDirection(
-                            1,
-                            invalidPos,
-                            pop.position
-                          );
+        //                   invalidPos2 = this.getCellFromDirection(
+        //                     1,
+        //                     invalidPos,
+        //                     pop.position
+        //                   );
 
-                          dir = this.getDirectionFromCells(myPos, invalidPos2);
+        //                   dir = this.getDirectionFromCells(myPos, invalidPos2);
 
-                          // if (dir && positions.includes(dir) === true) {
-                          //   positions.splice(positions.indexOf(dir),1);
-                          //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                          // }
-                          dirs.push(dir);
-                        }
-                      }
-                    }
-                  }
+        //                   // if (dir && positions.includes(dir) === true) {
+        //                   //   positions.splice(positions.indexOf(dir),1);
+        //                   //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+        //                   // }
+        //                   dirs.push(dir);
+        //                 }
+        //               }
+        //             }
+        //           }
 
-                  for (const popup2 of currentPopupsNotThis) {
-                    dir = undefined;
+        //           for (const popup2 of currentPopupsNotThis) {
+        //             dir = undefined;
 
-                    if (popup2.msg !== popup.msg && popup2.state === true) {
-                      let myPos = popup.cell.number;
+        //             if (popup2.msg !== popup.msg && popup2.state === true) {
+        //               let myPos = popup.cell.number;
 
-                      let cellPos = popup2.cell.number;
-                      let invalidPos2 = {
-                        x: undefined,
-                        y: undefined,
-                      };
+        //               let cellPos = popup2.cell.number;
+        //               let invalidPos2 = {
+        //                 x: undefined,
+        //                 y: undefined,
+        //               };
 
-                      invalidPos2 = this.getCellFromDirection(
-                        1,
-                        cellPos,
-                        popup2.position
-                      );
+        //               invalidPos2 = this.getCellFromDirection(
+        //                 1,
+        //                 cellPos,
+        //                 popup2.position
+        //               );
 
-                      dir = this.getDirectionFromCells(myPos, invalidPos2);
+        //               dir = this.getDirectionFromCells(myPos, invalidPos2);
 
-                      dirs.push(dir);
-                    }
-                  }
+        //               dirs.push(dir);
+        //             }
+        //           }
 
-                  // if (popup.position === dir ) {
-                  if (dirs.find((x) => x === popup.position)) {
-                    // for (const pop of this.cellPopups) {
-                    //   pop.position = '';
-                    //   pop.state = false;
-                    // }
-                    this.cellPopups.find(
-                      (x) =>
-                        x.msg === popup.msg &&
-                        x.cell.number.x === popup.cell.number.x &&
-                        x.cell.number.x === popup.cell.number.x
-                    ).state = false;
-                    this.cellPopups.find(
-                      (x) =>
-                        x.msg === popup.msg &&
-                        x.cell.number.x === popup.cell.number.x &&
-                        x.cell.number.x === popup.cell.number.x
-                    ).position = "";
-                    // console.log('reconsidering...',popup.msg);
-                  } else {
-                    popup.img = this.popupImageRef[popup.msg];
-                    popupDrawCoords = this.popupDrawCalc(
-                      popup.position,
-                      {
-                        x: popup.cell.center.x - 25,
-                        y: popup.cell.center.y - 15,
-                      },
-                      0
-                    );
-                    // this.drawPopupBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                    this.drawPopupBubble(
-                      context,
-                      popupDrawCoords.origin.x,
-                      popupDrawCoords.origin.y,
-                      this.popupSize,
-                      this.popupSize,
-                      5,
-                      popupDrawCoords.anchor.x,
-                      popupDrawCoords.anchor.y,
-                      popup.color
-                    );
-                    // context.fillStyle = 'black';
-                    // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                    // console.log('popup.msg',popup.msg);
-                    let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-                    context.drawImage(
-                      popup.img,
-                      popupDrawCoords.origin.x + centerPopupOffset,
-                      popupDrawCoords.origin.y + centerPopupOffset,
-                      this.popupImgSize,
-                      this.popupImgSize
-                    );
-                  }
-                }
-              }
-            }
-          }
-        }
+        //           // if (popup.position === dir ) {
+        //           if (dirs.find((x) => x === popup.position)) {
+        //             // for (const pop of this.cellPopups) {
+        //             //   pop.position = '';
+        //             //   pop.state = false;
+        //             // }
+        //             this.cellPopups.find(
+        //               (x) =>
+        //                 x.msg === popup.msg &&
+        //                 x.cell.number.x === popup.cell.number.x &&
+        //                 x.cell.number.x === popup.cell.number.x
+        //             ).state = false;
+        //             this.cellPopups.find(
+        //               (x) =>
+        //                 x.msg === popup.msg &&
+        //                 x.cell.number.x === popup.cell.number.x &&
+        //                 x.cell.number.x === popup.cell.number.x
+        //             ).position = "";
+        //             // console.log('reconsidering...',popup.msg);
+        //           } else {
+        //             popup.img = this.popupImageRef[popup.msg];
+        //             popupDrawCoords = this.popupDrawCalc(
+        //               popup.position,
+        //               {
+        //                 x: popup.cell.center.x - 25,
+        //                 y: popup.cell.center.y - 15,
+        //               },
+        //               0
+        //             );
+        //             // this.drawPopupBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+        //             this.drawPopupBubble(
+        //               context,
+        //               popupDrawCoords.origin.x,
+        //               popupDrawCoords.origin.y,
+        //               this.popupSize,
+        //               this.popupSize,
+        //               5,
+        //               popupDrawCoords.anchor.x,
+        //               popupDrawCoords.anchor.y,
+        //               popup.color
+        //             );
+        //             // context.fillStyle = 'black';
+        //             // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+        //             // console.log('popup.msg',popup.msg);
+        //             let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+        //             context2.drawImage(
+        //               popup.img,
+        //               popupDrawCoords.origin.x + centerPopupOffset,
+        //               popupDrawCoords.origin.y + centerPopupOffset,
+        //               this.popupImgSize,
+        //               this.popupImgSize
+        //             );
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+        // }
 
         // DRAWN PLAYERS!!
         const playerDrawLog = (
@@ -44074,11 +44067,7 @@ class App extends Component {
           }
 
           // DIRECTIONAL ACTION INDICATION
-          if (
-            plyr.actionDirectionAnimationArray.length > 0
-            // this.currentPlayerDrawCell.x === x &&
-            // this.currentPlayerDrawCell.y === y
-          ) {
+          if (plyr.actionDirectionAnimationArray.length > 0) {
             // console.log("b", x, y);
             for (const animAction of plyr.actionDirectionAnimationArray) {
               for (const point of animAction.points) {
@@ -44104,6 +44093,27 @@ class App extends Component {
                 context.strokeStyle = animAction.points[0].color;
                 context.lineWidth = 7;
                 context.stroke();
+
+                if (animAction.points[0].x2) {
+                  context.beginPath();
+                  context.moveTo(animAction.points[0].x2, animAction.points[0].y2);
+                  for (var i = 1; i < animAction.points.length - 1; i++) {
+                    context.arcTo(
+                      animAction.points[i].x2,
+                      animAction.points[i].y2,
+                      animAction.points[i + 1].x2,
+                      animAction.points[i + 1].y2,
+                      30
+                    );
+                  }
+                  context.strokeStyle = animAction.points[0].color;
+                  context.lineWidth = 7;
+                  context.stroke();
+                }
+
+                // for (var i = 1; i < animAction.points.length - 1; i++) {
+
+                // }
               }
             }
           }
@@ -45254,7 +45264,7 @@ class App extends Component {
                     );
 
                     this.drawPopupBubble(
-                      context,
+                      context2,
                       popupDrawCoords.origin.x,
                       popupDrawCoords.origin.y,
                       this.popupSize,
@@ -45441,7 +45451,7 @@ class App extends Component {
                         plyr.number
                       );
                       this.drawPopupBubble(
-                        context,
+                        context2,
                         popupDrawCoords.origin.x,
                         popupDrawCoords.origin.y,
                         this.popupSize,
@@ -45564,6 +45574,23 @@ class App extends Component {
             context.strokeStyle = animAction.points[0].color;
             context.lineWidth = 7;
             context.stroke();
+
+            if (animAction.points[0].x2) {
+              context.beginPath();
+              context.moveTo(animAction.points[0].x2, animAction.points[0].y2);
+              for (var i = 1; i < animAction.points.length - 1; i++) {
+                context.arcTo(
+                  animAction.points[i].x2,
+                  animAction.points[i].y2,
+                  animAction.points[i + 1].x2,
+                  animAction.points[i + 1].y2,
+                  30
+                );
+              }
+              context.strokeStyle = animAction.points[0].color;
+              context.lineWidth = 7;
+              context.stroke();
+            }
           }
         }
 
@@ -45889,6 +45916,302 @@ class App extends Component {
               35,
               35
             );
+          }
+        }
+
+        // CELL POPUPS
+        if (this.hideAllPopups !== true) {
+          // if (x === 0 && y === 0) {
+          if (x === this.gridWidth && y === this.gridWidth) {
+            // console.log(this.pickupAmmoRef.current);
+
+            for (const popup of this.cellPopups) {
+              let popupBorderColor = "black";
+              if (popup.state === true) {
+                // console.log("drawing a popup", popup.cell.number);
+                // console.log('drawing a popup');
+                let popupDrawCoords;
+                if (popup.position === "" || !popup.position) {
+                  let currentPopups = this.cellPopups.filter((x) => x.state === true);
+                  let currentPopupsThisCell = this.cellPopups.filter(
+                    (x) =>
+                      x.state === true &&
+                      x.cell.number.x === popup.cell.number.x &&
+                      x.cell.number.y === popup.cell.number.y
+                  );
+                  let positions = [
+                    "north",
+                    "east",
+                    "south",
+                    "west",
+                    "northEast",
+                    "northWest",
+                    "southEast",
+                    "southWest",
+                  ];
+
+                  if (popup.color === "") {
+                    popup.color = this.cellColorRef.find(
+                      (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
+                    ).color;
+                  }
+
+                  // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
+                  for (const popup2 of currentPopupsThisCell) {
+                    if (popup2.position && popup2.position !== "") {
+                      let indx = positions.indexOf(popup2.position);
+                      positions.splice(indx, 1);
+                    }
+                  }
+
+                  let dir = undefined;
+                  let dirs = [];
+
+                  for (const plyr2 of this.players) {
+                    if (plyr2.ai.state !== true) {
+                      let myPos = popup.cell.number;
+                      let invalidPos =
+                        this.players[plyr2.number - 1].currentPosition.cell.number;
+                      // let invalidPositions = [invalidPos];
+
+                      // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
+                      dir = this.getDirectionFromCells(myPos, invalidPos);
+
+                      if (dir && positions.includes(dir) === true) {
+                        positions.splice(positions.indexOf(dir), 1);
+                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                      }
+
+                      // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+                      for (const pop of plyr2.popups) {
+                        dir = undefined;
+
+                        if (pop.state === true) {
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          };
+
+                          invalidPos2 = this.getCellFromDirection(
+                            1,
+                            invalidPos,
+                            pop.position
+                          );
+
+                          // let dir = undefined;
+
+                          dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                          if (dir && positions.includes(dir) === true) {
+                            positions.splice(positions.indexOf(dir), 1);
+                            // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
+                  for (const popup2 of currentPopups) {
+                    dir = undefined;
+
+                    if (
+                      popup.cell.number.x !== popup2.cell.number.x &&
+                      popup.cell.number.y !== popup2.cell.number.y &&
+                      popup2.msg !== popup.msg &&
+                      popup2.state === true
+                    ) {
+                      let myPos = popup.cell.number;
+                      let cellPos = popup2.cell.number;
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      };
+
+                      invalidPos2 = this.getCellFromDirection(
+                        1,
+                        cellPos,
+                        popup2.position
+                      );
+
+                      dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                      if (dir && positions.includes(dir) === true) {
+                        positions.splice(positions.indexOf(dir), 1);
+                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                      }
+                    }
+                  }
+
+                  if (!positions[0]) {
+                    // console.log('no open positions for', popup.msg);
+                    popup.state = false;
+                    popup.count = 0;
+                  } else {
+                    popup.position = positions[0];
+                  }
+
+                  popup.img = this.popupImageRef[popup.msg];
+
+                  popupDrawCoords = this.popupDrawCalc(
+                    popup.position,
+                    { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
+                    0
+                  );
+                  this.drawPopupBubble(
+                    context2,
+                    popupDrawCoords.origin.x,
+                    popupDrawCoords.origin.y,
+                    this.popupSize,
+                    this.popupSize,
+                    5,
+                    popupDrawCoords.anchor.x,
+                    popupDrawCoords.anchor.y,
+                    popup.color
+                  );
+                  // context2.fillStyle = 'black';
+                  // context2.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                  // console.log('popup.msg',popup.msg,popup.img);
+                  let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+                  context2.drawImage(
+                    popup.img,
+                    popupDrawCoords.origin.x + centerPopupOffset,
+                    popupDrawCoords.origin.y + centerPopupOffset,
+                    this.popupImgSize,
+                    this.popupImgSize
+                  );
+                } else {
+                  let dir = undefined;
+                  let dirs = [];
+
+                  let currentPopupsNotThis = this.cellPopups.filter(
+                    (x) =>
+                      x.state === true &&
+                      x.msg !== popup.msg &&
+                      x.cell.number.x !== popup.cell.number.x &&
+                      x.cell.number.y !== popup.cell.number.y
+                  );
+
+                  for (const plyr2 of this.players) {
+                    if (plyr2.ai.state !== true) {
+                      let myPos = popup.cell.number;
+                      let invalidPos =
+                        this.players[plyr2.number - 1].currentPosition.cell.number;
+
+                      // invalidpostions2 push plyr2 position
+                      // for player popups
+                      //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+                      //
+
+                      dir = this.getDirectionFromCells(myPos, invalidPos);
+
+                      dirs.push(dir);
+
+                      for (const pop of plyr2.popups) {
+                        if (pop.state === true) {
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          };
+
+                          invalidPos2 = this.getCellFromDirection(
+                            1,
+                            invalidPos,
+                            pop.position
+                          );
+
+                          dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                          // if (dir && positions.includes(dir) === true) {
+                          //   positions.splice(positions.indexOf(dir),1);
+                          //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          // }
+                          dirs.push(dir);
+                        }
+                      }
+                    }
+                  }
+
+                  for (const popup2 of currentPopupsNotThis) {
+                    dir = undefined;
+
+                    if (popup2.msg !== popup.msg && popup2.state === true) {
+                      let myPos = popup.cell.number;
+
+                      let cellPos = popup2.cell.number;
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      };
+
+                      invalidPos2 = this.getCellFromDirection(
+                        1,
+                        cellPos,
+                        popup2.position
+                      );
+
+                      dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                      dirs.push(dir);
+                    }
+                  }
+
+                  // if (popup.position === dir ) {
+                  if (dirs.find((x) => x === popup.position)) {
+                    // for (const pop of this.cellPopups) {
+                    //   pop.position = '';
+                    //   pop.state = false;
+                    // }
+                    this.cellPopups.find(
+                      (x) =>
+                        x.msg === popup.msg &&
+                        x.cell.number.x === popup.cell.number.x &&
+                        x.cell.number.x === popup.cell.number.x
+                    ).state = false;
+                    this.cellPopups.find(
+                      (x) =>
+                        x.msg === popup.msg &&
+                        x.cell.number.x === popup.cell.number.x &&
+                        x.cell.number.x === popup.cell.number.x
+                    ).position = "";
+                    // console.log('reconsidering...',popup.msg);
+                  } else {
+                    popup.img = this.popupImageRef[popup.msg];
+                    popupDrawCoords = this.popupDrawCalc(
+                      popup.position,
+                      {
+                        x: popup.cell.center.x - 25,
+                        y: popup.cell.center.y - 15,
+                      },
+                      0
+                    );
+                    // this.drawPopupBubble2(context2,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                    this.drawPopupBubble(
+                      context2,
+                      popupDrawCoords.origin.x,
+                      popupDrawCoords.origin.y,
+                      this.popupSize,
+                      this.popupSize,
+                      5,
+                      popupDrawCoords.anchor.x,
+                      popupDrawCoords.anchor.y,
+                      popup.color
+                    );
+                    // context2.fillStyle = 'black';
+                    // context2.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                    // console.log('popup.msg',popup.msg);
+                    let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+                    context2.drawImage(
+                      popup.img,
+                      popupDrawCoords.origin.x + centerPopupOffset,
+                      popupDrawCoords.origin.y + centerPopupOffset,
+                      this.popupImgSize,
+                      this.popupImgSize
+                    );
+                  }
+                }
+              }
+            }
           }
         }
 
