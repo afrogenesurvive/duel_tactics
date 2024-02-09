@@ -3894,7 +3894,7 @@ class App extends Component {
     this.showPlayerOutlines = false;
     this.showGridIsoGuide = false;
     this.showDirectionalActionAnimation = true;
-    this.hideAllPopups = false;
+    this.hideAllPopups = true;
     this.hideDirectionalActionPopus = true;
     this.directionalAnimShape = "ringSection";
 
@@ -8839,8 +8839,8 @@ class App extends Component {
     let color = "green";
     let pointA;
     let point;
-    let ownerDirection = elem.ownerDirection;
-    let actionDirection = elem.actionDirection;
+    let ownerDirection = elem?.ownerDirection;
+    let actionDirection = elem?.actionDirection;
     let ownerCellNo;
     if (type === "playerDirectionalAction") {
       pointA = {
@@ -8858,6 +8858,15 @@ class App extends Component {
         y: refCell.center.y,
       };
       ownerCellNo = elem.locationCell;
+    }
+    if (type === "testing") {
+      pointA = {
+        x: owner.currentPosition.cell.center.x,
+        y: owner.currentPosition.cell.center.y,
+      };
+      ownerDirection = owner.direction;
+      actionDirection = elem;
+      ownerCellNo = owner.currentPosition.cell.number;
     }
     point = {
       x: ownerCellNo.x * this.tileWidth,
@@ -8955,7 +8964,7 @@ class App extends Component {
 
     const innerRadius = radiusA - 15;
     let incr = 0;
-    let conntectingLineIncr = 0;
+    let connectingLineIncr = 0;
 
     let count = 0;
     let limit = 0;
@@ -8973,7 +8982,7 @@ class App extends Component {
 
     // limit = 25;
     incr = count / limit;
-    conntectingLineIncr = limit;
+    connectingLineIncr = limit;
 
     let point1 = getPointOnArc(point.x, point.y, radiusA, startAng, incr);
     let point2 = getPointOnArc(point.x, point.y, innerRadius, startAng, incr);
@@ -8993,7 +9002,7 @@ class App extends Component {
       color = elem.color;
     }
 
-    let connetingLineArray = [];
+    let connectingLineArray = [];
 
     const arcStep = (incr * 100).toFixed(0);
 
@@ -9036,52 +9045,20 @@ class App extends Component {
     }
 
     if (shape === "ringSection") {
-      // if (count === 1 || count === limit) {
-      for (let i = 0; i < conntectingLineIncr; i++) {
-        let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
+      if (count === 1 || count === limit) {
+        for (let i = 0; i < connectingLineIncr; i++) {
+          let point3 = getLineXYatPercent(point2, point1, i, connectingLineIncr);
 
-        // if (type === "testing") {
-        //   this.testDraw.push({
-        //     color: colors[this.testCount.count - 1],
-        //     x: point3.x,
-        //     y: point3.y,
-        //   });
-        // }
-        // if (
-        //   type === "playerDirectionalAction" ||
-        //   type === "obstacleBarrierDirectionalAction"
-        // ) {
-        //   elem.points.push({
-        //     color: color,
-        //     x: point3.x,
-        //     y: point3.y,
-        //   });
-        // }
+          connectingLineArray.push(point3);
+        }
       }
-      // }
     }
 
     if (shape === "sector") {
-      for (let i = 0; i < conntectingLineIncr; i++) {
-        let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
+      for (let i = 0; i < connectingLineIncr; i++) {
+        let point3 = getLineXYatPercent(point, point1, i, connectingLineIncr);
 
-        if (type === "testing") {
-          this.testDraw.push({
-            color: "red",
-            x: point3.x,
-            y: point3.y,
-          });
-        }
-        if (
-          type === "playerDirectionalAction" ||
-          type === "obstacleBarrierDirectionalAction"
-        ) {
-          elem.points.push({
-            color: color,
-            x: point3.x,
-            y: point3.y,
-          });
-        }
+        connectingLineArray.push(point3);
       }
     }
 
@@ -9129,19 +9106,22 @@ class App extends Component {
       // );
       if (shape === "arc") {
         this.testDraw.push({
+          type: "arcCrementer",
           color: color,
           x: point1.x,
           y: point1.y,
         });
       }
 
-      if (shape === "ringSection") {
+      if (shape === "ringSection" || shape === "sector") {
         this.testDraw.push({
+          type: "arcCrementer",
           color: "purple",
           x: point1.x,
           y: point1.y,
           x2: point2.x,
           y2: point2.y,
+          lineArray: connectingLineArray,
         });
       }
     }
@@ -9156,13 +9136,14 @@ class App extends Component {
           y: point1.y,
         });
       }
-      if (shape === "ringSection") {
+      if (shape === "ringSection" || shape === "sector") {
         elem.points.push({
           color: color,
           x: point1.x,
           y: point1.y,
           x2: point2.x,
           y2: point2.y,
+          lineArray: connectingLineArray,
         });
       }
     }
@@ -13445,7 +13426,8 @@ class App extends Component {
                   "pullback",
                   locationCell,
                   trap,
-                  releaseTime - pullbackTime
+                  releaseTime - pullbackTime,
+                  this.directionalAnimShape
                 );
               }
               if (trap.acting.count === releaseTime) {
@@ -13465,7 +13447,8 @@ class App extends Component {
                   locationCell,
                   trap,
                   // (trap.acting.limit-releaseTime)
-                  trap.acting.peak - 5 - releaseTime
+                  trap.acting.peak - 5 - releaseTime,
+                  this.directionalAnimShape
                 );
               }
             }
@@ -14773,7 +14756,8 @@ class App extends Component {
     phase,
     owner,
     arrayElemId,
-    xCount
+    xCount,
+    shape
   ) => {
     // action:
     //   attacking, defending
@@ -14811,7 +14795,7 @@ class App extends Component {
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
-    let countLimit = 15;
+    let countLimit = 6;
     let delay = 20;
 
     if (ownerType === "player" || ownerType === "obstacle" || ownerType === "barrier") {
@@ -14853,6 +14837,7 @@ class App extends Component {
           startAngle: startAngle,
           direction: direction,
           face: face,
+          shape: shape,
           color: color,
           counter: {
             count: 0,
@@ -14882,6 +14867,7 @@ class App extends Component {
           startAngle: startAngle,
           direction: direction,
           face: face,
+          shape: shape,
           color: color,
           counter: {
             count: 0,
@@ -15124,6 +15110,7 @@ class App extends Component {
           startAngle: startAngle,
           direction: direction,
           face: face,
+          shape: shape,
           color: color,
           counter: {
             count: 0,
@@ -15153,6 +15140,7 @@ class App extends Component {
           startAngle: startAngle,
           direction: direction,
           face: face,
+          shape: shape,
           color: color,
           counter: {
             count: 0,
@@ -34392,7 +34380,7 @@ class App extends Component {
     if (this.time === 100 && player.number === 1) {
       // this.setBackgroundImage("sea_clouds_1");
       // this.testCount.state = true;
-      // this.testCount.limit = 30;
+      // this.testCount.limit = 6;
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
@@ -34408,26 +34396,6 @@ class App extends Component {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
 
-        // this.circleArcCrementer(
-        //   player,
-        //   "cartesian",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   ""
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   50,
-        //   360,
-        //   0,
-        //   "arc",
-        //   "counterClockwise",
-        //   "top"
-        // );
         this.circleArcCrementer(
           "testing",
           player,
@@ -34437,23 +34405,13 @@ class App extends Component {
           0,
           "arc",
           "counterClockwise",
-          "side",
-          null
+          "top",
+          "east"
         );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   50,
-        //   360,
-        //   0,
-        //   "arc",
-        //   "counterClockwise",
-        //   "side"
-        // );
       }
-      // if (this.testCount.count >= this.testCount.limit) {
-      //   this.testCount.state = false;
-      // }
+      if (this.testCount.count >= this.testCount.limit) {
+        this.testCount.state = false;
+      }
     }
     // POPUP TESTING
     if (this.time === 250 || this.time === 500) {
@@ -35750,7 +35708,7 @@ class App extends Component {
                     elem.radius,
                     elem.angle,
                     elem.startAngle,
-                    this.directionalAnimShape,
+                    elem.shape,
                     elem.direction,
                     elem.face,
                     elem
@@ -36372,7 +36330,8 @@ class App extends Component {
                   null,
                   directionalActionResult.inputThresh +
                     Math.ceil(xTime / 2) -
-                    player.attacking.count
+                    player.attacking.count,
+                  this.directionalAnimShape
                 );
               }
               // if (player.attacking.count < player.attacking.peakCount && player.attacking.count === (directionalActionResult.inputThresh+15)) {
@@ -36391,7 +36350,8 @@ class App extends Component {
                   null,
                   player.attacking.peakCount +
                     dirAnimSetCalcMod -
-                    (directionalActionResult.inputThresh + Math.ceil(xTime / 2))
+                    (directionalActionResult.inputThresh + Math.ceil(xTime / 2)),
+                  this.directionalAnimShape
                 );
               }
             }
@@ -36808,7 +36768,8 @@ class App extends Component {
                 "release",
                 player,
                 null,
-                xTime
+                xTime,
+                this.directionalAnimShape
               );
             }
             if (directionalActionResult.directionChanged === true) {
@@ -36833,7 +36794,8 @@ class App extends Component {
                 "release",
                 player,
                 null,
-                yTime
+                yTime,
+                this.directionalAnimShape
               );
             }
           }
@@ -40009,7 +39971,7 @@ class App extends Component {
               elem.radius,
               elem.angle,
               elem.startAngle,
-              this.directionalAnimShape,
+              elem.shape,
               elem.direction,
               elem.face,
               elem
@@ -41959,299 +41921,7 @@ class App extends Component {
             context.stroke();
           }
         }
-        // // CELL POPUPS
-        // if (this.hideAllPopups !== true) {
-        //   if (x === this.gridWidth && y === this.gridWidth) {
-        //     // console.log(this.pickupAmmoRef.current);
-
-        //     for (const popup of this.cellPopups) {
-        //       let popupBorderColor = "black";
-        //       if (popup.state === true) {
-        //         // console.log('drawing a popup');
-        //         let popupDrawCoords;
-        //         if (popup.position === "" || !popup.position) {
-        //           let currentPopups = this.cellPopups.filter((x) => x.state === true);
-        //           let currentPopupsThisCell = this.cellPopups.filter(
-        //             (x) =>
-        //               x.state === true &&
-        //               x.cell.number.x === popup.cell.number.x &&
-        //               x.cell.number.y === popup.cell.number.y
-        //           );
-        //           let positions = [
-        //             "north",
-        //             "east",
-        //             "south",
-        //             "west",
-        //             "northEast",
-        //             "northWest",
-        //             "southEast",
-        //             "southWest",
-        //           ];
-
-        //           if (popup.color === "") {
-        //             popup.color = this.cellColorRef.find(
-        //               (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
-        //             ).color;
-        //           }
-
-        //           // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
-        //           for (const popup2 of currentPopupsThisCell) {
-        //             if (popup2.position && popup2.position !== "") {
-        //               let indx = positions.indexOf(popup2.position);
-        //               positions.splice(indx, 1);
-        //             }
-        //           }
-
-        //           let dir = undefined;
-        //           let dirs = [];
-
-        //           for (const plyr2 of this.players) {
-        //             if (plyr2.ai.state !== true) {
-        //               let myPos = popup.cell.number;
-        //               let invalidPos =
-        //                 this.players[plyr2.number - 1].currentPosition.cell.number;
-        //               // let invalidPositions = [invalidPos];
-
-        //               // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
-        //               dir = this.getDirectionFromCells(myPos, invalidPos);
-
-        //               if (dir && positions.includes(dir) === true) {
-        //                 positions.splice(positions.indexOf(dir), 1);
-        //                 // console.log('dont draw over player @',dir,'choose frome these position',positions);
-        //               }
-
-        //               // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
-        //               for (const pop of plyr2.popups) {
-        //                 dir = undefined;
-
-        //                 if (pop.state === true) {
-        //                   let invalidPos2 = {
-        //                     x: undefined,
-        //                     y: undefined,
-        //                   };
-
-        //                   invalidPos2 = this.getCellFromDirection(
-        //                     1,
-        //                     invalidPos,
-        //                     pop.position
-        //                   );
-
-        //                   // let dir = undefined;
-
-        //                   dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-        //                   if (dir && positions.includes(dir) === true) {
-        //                     positions.splice(positions.indexOf(dir), 1);
-        //                     // console.log('dont draw over player @',dir,'choose frome these position',positions);
-        //                   }
-        //                 }
-        //               }
-        //             }
-        //           }
-
-        //           // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
-        //           for (const popup2 of currentPopups) {
-        //             dir = undefined;
-
-        //             if (
-        //               popup.cell.number.x !== popup2.cell.number.x &&
-        //               popup.cell.number.y !== popup2.cell.number.y &&
-        //               popup2.msg !== popup.msg &&
-        //               popup2.state === true
-        //             ) {
-        //               let myPos = popup.cell.number;
-        //               let cellPos = popup2.cell.number;
-        //               let invalidPos2 = {
-        //                 x: undefined,
-        //                 y: undefined,
-        //               };
-
-        //               invalidPos2 = this.getCellFromDirection(
-        //                 1,
-        //                 cellPos,
-        //                 popup2.position
-        //               );
-
-        //               dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-        //               if (dir && positions.includes(dir) === true) {
-        //                 positions.splice(positions.indexOf(dir), 1);
-        //                 // console.log('dont draw over player @',dir,'choose frome these position',positions);
-        //               }
-        //             }
-        //           }
-
-        //           if (!positions[0]) {
-        //             // console.log('no open positions for', popup.msg);
-        //             popup.state = false;
-        //             popup.count = 0;
-        //           } else {
-        //             popup.position = positions[0];
-        //           }
-
-        //           popup.img = this.popupImageRef[popup.msg];
-
-        //           popupDrawCoords = this.popupDrawCalc(
-        //             popup.position,
-        //             { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
-        //             0
-        //           );
-        //           this.drawPopupBubble(
-        //             context,
-        //             popupDrawCoords.origin.x,
-        //             popupDrawCoords.origin.y,
-        //             this.popupSize,
-        //             this.popupSize,
-        //             5,
-        //             popupDrawCoords.anchor.x,
-        //             popupDrawCoords.anchor.y,
-        //             popup.color
-        //           );
-        //           // context.fillStyle = 'black';
-        //           // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-        //           // console.log('popup.msg',popup.msg,popup.img);
-        //           let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-        //           context2.drawImage(
-        //             popup.img,
-        //             popupDrawCoords.origin.x + centerPopupOffset,
-        //             popupDrawCoords.origin.y + centerPopupOffset,
-        //             this.popupImgSize,
-        //             this.popupImgSize
-        //           );
-        //         } else {
-        //           let dir = undefined;
-        //           let dirs = [];
-
-        //           let currentPopupsNotThis = this.cellPopups.filter(
-        //             (x) =>
-        //               x.state === true &&
-        //               x.msg !== popup.msg &&
-        //               x.cell.number.x !== popup.cell.number.x &&
-        //               x.cell.number.y !== popup.cell.number.y
-        //           );
-
-        //           for (const plyr2 of this.players) {
-        //             if (plyr2.ai.state !== true) {
-        //               let myPos = popup.cell.number;
-        //               let invalidPos =
-        //                 this.players[plyr2.number - 1].currentPosition.cell.number;
-
-        //               // invalidpostions2 push plyr2 position
-        //               // for player popups
-        //               //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
-        //               //
-
-        //               dir = this.getDirectionFromCells(myPos, invalidPos);
-
-        //               dirs.push(dir);
-
-        //               for (const pop of plyr2.popups) {
-        //                 if (pop.state === true) {
-        //                   let invalidPos2 = {
-        //                     x: undefined,
-        //                     y: undefined,
-        //                   };
-
-        //                   invalidPos2 = this.getCellFromDirection(
-        //                     1,
-        //                     invalidPos,
-        //                     pop.position
-        //                   );
-
-        //                   dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-        //                   // if (dir && positions.includes(dir) === true) {
-        //                   //   positions.splice(positions.indexOf(dir),1);
-        //                   //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
-        //                   // }
-        //                   dirs.push(dir);
-        //                 }
-        //               }
-        //             }
-        //           }
-
-        //           for (const popup2 of currentPopupsNotThis) {
-        //             dir = undefined;
-
-        //             if (popup2.msg !== popup.msg && popup2.state === true) {
-        //               let myPos = popup.cell.number;
-
-        //               let cellPos = popup2.cell.number;
-        //               let invalidPos2 = {
-        //                 x: undefined,
-        //                 y: undefined,
-        //               };
-
-        //               invalidPos2 = this.getCellFromDirection(
-        //                 1,
-        //                 cellPos,
-        //                 popup2.position
-        //               );
-
-        //               dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-        //               dirs.push(dir);
-        //             }
-        //           }
-
-        //           // if (popup.position === dir ) {
-        //           if (dirs.find((x) => x === popup.position)) {
-        //             // for (const pop of this.cellPopups) {
-        //             //   pop.position = '';
-        //             //   pop.state = false;
-        //             // }
-        //             this.cellPopups.find(
-        //               (x) =>
-        //                 x.msg === popup.msg &&
-        //                 x.cell.number.x === popup.cell.number.x &&
-        //                 x.cell.number.x === popup.cell.number.x
-        //             ).state = false;
-        //             this.cellPopups.find(
-        //               (x) =>
-        //                 x.msg === popup.msg &&
-        //                 x.cell.number.x === popup.cell.number.x &&
-        //                 x.cell.number.x === popup.cell.number.x
-        //             ).position = "";
-        //             // console.log('reconsidering...',popup.msg);
-        //           } else {
-        //             popup.img = this.popupImageRef[popup.msg];
-        //             popupDrawCoords = this.popupDrawCalc(
-        //               popup.position,
-        //               {
-        //                 x: popup.cell.center.x - 25,
-        //                 y: popup.cell.center.y - 15,
-        //               },
-        //               0
-        //             );
-        //             // this.drawPopupBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-        //             this.drawPopupBubble(
-        //               context,
-        //               popupDrawCoords.origin.x,
-        //               popupDrawCoords.origin.y,
-        //               this.popupSize,
-        //               this.popupSize,
-        //               5,
-        //               popupDrawCoords.anchor.x,
-        //               popupDrawCoords.anchor.y,
-        //               popup.color
-        //             );
-        //             // context.fillStyle = 'black';
-        //             // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-        //             // console.log('popup.msg',popup.msg);
-        //             let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-        //             context2.drawImage(
-        //               popup.img,
-        //               popupDrawCoords.origin.x + centerPopupOffset,
-        //               popupDrawCoords.origin.y + centerPopupOffset,
-        //               this.popupImgSize,
-        //               this.popupImgSize
-        //             );
-        //           }
-        //         }
-        //       }
-        //     }
-        //   }
-        // }
+        // // CELL POPUPS?
 
         // DRAWN PLAYERS!!
         const playerDrawLog = (
@@ -44091,7 +43761,7 @@ class App extends Component {
                   );
                 }
                 context.strokeStyle = animAction.points[0].color;
-                context.lineWidth = 7;
+                context.lineWidth = 5;
                 context.stroke();
 
                 if (animAction.points[0].x2) {
@@ -44107,13 +43777,40 @@ class App extends Component {
                     );
                   }
                   context.strokeStyle = animAction.points[0].color;
-                  context.lineWidth = 7;
+                  context.lineWidth = 5;
                   context.stroke();
                 }
 
-                // for (var i = 1; i < animAction.points.length - 1; i++) {
+                if (animAction.points[0].lineArray) {
+                  // for (var i = 1; i < animAction.points.length - 1; i++) {
+                  //   if (i === animAction.points.length - 2) {
+                  //     context.beginPath();
+                  //     context.moveTo(animAction.points[i].x, animAction.points[i].y);
+                  //     context.lineTo(animAction.points[i].x2, animAction.points[i].y2);
 
-                // }
+                  //     context.strokeStyle = animAction.points[i].color;
+                  //     context.lineWidth = 5;
+                  //     context.stroke();
+                  //   }
+                  // }
+                  context.beginPath();
+                  context.moveTo(
+                    animAction.points[animAction.points.length - 1].lineArray[0].x,
+                    animAction.points[animAction.points.length - 1].lineArray[0].y
+                  );
+                  context.lineTo(
+                    animAction.points[animAction.points.length - 1].lineArray[
+                      animAction.points[animAction.points.length - 1].lineArray.length - 1
+                    ].x,
+                    animAction.points[animAction.points.length - 1].lineArray[
+                      animAction.points[animAction.points.length - 1].lineArray.length - 1
+                    ].y
+                  );
+
+                  context.strokeStyle = animAction.points[i].color;
+                  context.lineWidth = 5;
+                  context.stroke();
+                }
               }
             }
           }
@@ -45572,7 +45269,7 @@ class App extends Component {
               );
             }
             context.strokeStyle = animAction.points[0].color;
-            context.lineWidth = 7;
+            context.lineWidth = 5;
             context.stroke();
 
             if (animAction.points[0].x2) {
@@ -45588,8 +45285,22 @@ class App extends Component {
                 );
               }
               context.strokeStyle = animAction.points[0].color;
-              context.lineWidth = 7;
+              context.lineWidth = 5;
               context.stroke();
+            }
+
+            if (animAction.points[0].lineArray) {
+              for (var i = 1; i < animAction.points.length - 1; i++) {
+                if (i === animAction.points.length - 2) {
+                  context.beginPath();
+                  context.moveTo(animAction.points[i].x, animAction.points[i].y);
+                  context.lineTo(animAction.points[i].x2, animAction.points[i].y2);
+
+                  context.strokeStyle = animAction.points[i].color;
+                  context.lineWidth = 5;
+                  context.stroke();
+                }
+              }
             }
           }
         }
@@ -46227,18 +45938,74 @@ class App extends Component {
 
         // TEST DRAW
 
-        for (const point of this.testDraw) {
-          if (x === this.gridWidth && y === this.gridWidth) {
-            context.fillStyle = point.color;
-            context.beginPath();
-            context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-            context.fill();
+        if (this.testDraw.length > 1) {
+          if (x === 0 && y === 0) {
+            // console.log("testDraw", this.testDraw);
           }
-          // let indx = this.testDraw.findIndex(
-          //   (x) => x.x === point.x && x.y === point.y && x.color === point.color
-          // );
+          if (this.testDraw[0]?.type === "arcCrementer") {
+            context.beginPath();
+            context.moveTo(this.testDraw[0].x, this.testDraw[0].y);
+            for (var i = 1; i < this.testDraw.length - 1; i++) {
+              context.arcTo(
+                this.testDraw[i].x,
+                this.testDraw[i].y,
+                this.testDraw[i + 1].x,
+                this.testDraw[i + 1].y,
+                20
+              );
+            }
+            context.strokeStyle = this.testDraw[0].color;
+            context.lineWidth = 5;
+            context.stroke();
 
-          // this.testDraw.splice(indx, 1);
+            if (this.testDraw[0].x2) {
+              context.beginPath();
+              context.moveTo(this.testDraw[0].x2, this.testDraw[0].y2);
+              for (var i = 1; i < this.testDraw.length - 1; i++) {
+                context.arcTo(
+                  this.testDraw[i].x2,
+                  this.testDraw[i].y2,
+                  this.testDraw[i + 1].x2,
+                  this.testDraw[i + 1].y2,
+                  30
+                );
+              }
+              context.strokeStyle = this.testDraw[0].color;
+              context.lineWidth = 5;
+              context.stroke();
+            }
+
+            if (this.testDraw[0].lineArray) {
+              for (var i = 1; i < this.testDraw.length - 1; i++) {
+                if (i === this.testDraw.length - 2) {
+                  context.beginPath();
+                  context.moveTo(this.testDraw[i].x, this.testDraw[i].y);
+                  context.lineTo(this.testDraw[i].x2, this.testDraw[i].y2);
+
+                  context.strokeStyle = this.testDraw[i].color;
+                  context.lineWidth = 5;
+                  context.stroke();
+                }
+              }
+            }
+            for (const point of this.testDraw) {
+              if (x === this.gridWidth && y === this.gridWidth) {
+                context.fillStyle = point.color;
+                context.beginPath();
+                context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                context.fill();
+              }
+            }
+          } else {
+            for (const point of this.testDraw) {
+              if (x === this.gridWidth && y === this.gridWidth) {
+                context.fillStyle = point.color;
+                context.beginPath();
+                context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                context.fill();
+              }
+            }
+          }
         }
       }
     }
