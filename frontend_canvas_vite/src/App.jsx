@@ -603,7 +603,7 @@ class App extends Component {
         "**_*_4.3_f_0a*",
         "**_h_4.4_a_0a*",
         "**_h_4.5_a_0a*",
-        "**_*_4.6_k_0a*",
+        "**_*_4.6_j_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
         "**_*_4.9_a_0a*",
@@ -1454,7 +1454,7 @@ class App extends Component {
           state: false,
           persistent: true,
           remaining: 5,
-          direction: "west",
+          direction: "",
           target: {},
           timer: {
             enabled: true,
@@ -1474,7 +1474,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "crossbow1",
+          itemNameRef: "spear1",
           item: {},
           ammo: 0,
         },
@@ -6064,7 +6064,7 @@ class App extends Component {
           while (randomFreeCellChosen !== true) {
             cll.x = this.rnJesus(0, this.gridWidth);
             cll.y = this.rnJesus(0, this.gridWidth);
-            randomFreeCellChosen = this.checkCell(cll);
+            randomFreeCellChosen = this.checkCell(cll, ["all"]);
           }
 
           if (randomFreeCellChosen === true) {
@@ -6225,7 +6225,7 @@ class App extends Component {
 
         for (const elem of this.settingsFormAiGridInfo) {
           if (
-            this.checkCell({ x: elem.number.x, y: elem.number.y }) === true &&
+            this.checkCell({ x: elem.number.x, y: elem.number.y }, ["all"]) === true &&
             !avoidCells.find(
               (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y
             )
@@ -10765,8 +10765,9 @@ class App extends Component {
       myCellBlock: false,
     };
   };
-  checkCell = (cell) => {
+  checkCell = (cell, include) => {
     // console.log('check cell',cell);
+    // include = ["void", "deep", "hazard", "all"];
 
     let cellFree = true;
     let cell2 = this.gridInfo.find(
@@ -10782,15 +10783,30 @@ class App extends Component {
     if (cell2.item.name !== "") {
       cellFree = false;
     }
-    if (cell2.void.state === true) {
-      cellFree = false;
+    if (include.includes("void")) {
+      if (cell2.void.state === true || cell2.terrain.type === "void") {
+        cellFree = false;
+      }
     }
-    if (
-      cell2.terrain.type === "deep" ||
-      cell2.terrain.type === "hazard" ||
-      cell2.terrain.type === "void"
-    ) {
-      cellFree = false;
+    if (include.includes("deep")) {
+      if (cell2.terrain.type === "deep") {
+        cellFree = false;
+      }
+    }
+    if (include.includes("hazard")) {
+      if (cell2.terrain.type === "hazard") {
+        cellFree = false;
+      }
+    }
+    if (include.includes("all")) {
+      if (
+        cell2.void.state === true ||
+        cell2.terrain.type === "void" ||
+        cell2.terrain.type === "deep" ||
+        cell2.terrain.type === "hazard"
+      ) {
+        cellFree = false;
+      }
     }
 
     // PLAYERS 1&2 ALT RESPAWN POINTS!
@@ -10835,7 +10851,7 @@ class App extends Component {
     while (randomFreeCellChosen !== true) {
       cell.number.x = this.rnJesus(0, this.gridWidth);
       cell.number.y = this.rnJesus(0, this.gridWidth);
-      randomFreeCellChosen = this.checkCell(cell.number);
+      randomFreeCellChosen = this.checkCell(cell.number, ["all"]);
 
       if (randomFreeCellChosen !== true) {
         // console.log('getRandomFreeCell: not free',cell.number);
@@ -15242,8 +15258,8 @@ class App extends Component {
       targetCell2 = this.gridInfo.find(
         (x) => x.number.x === cell2.x && x.number.y === cell2.y
       );
-      cell1Free = this.checkCell(targetCell1.number);
-      cell2Free = this.checkCell(targetCell2.number);
+      cell1Free = this.checkCell(targetCell1.number, []);
+      cell2Free = this.checkCell(targetCell2.number, []);
       myCellBlock = this.checkMyCellBarrier(ownerDirection, myCell);
 
       ownerWeaponType = owner.trap.item.subType;
@@ -19876,7 +19892,7 @@ class App extends Component {
           while (checkCell === false) {
             cell.x = this.rnJesus(0, this.gridWidth);
             cell.y = this.rnJesus(0, this.gridWidth);
-            checkCell = this.checkCell(cell);
+            checkCell = this.checkCell(cell, ["void", "deep"]);
             // console.log(checkCell);
           }
           if (checkCell === true) {
@@ -19914,7 +19930,7 @@ class App extends Component {
             while (checkCell === false) {
               cell.x = this.rnJesus(0, this.gridWidth);
               cell.y = this.rnJesus(0, this.gridWidth);
-              checkCell = this.checkCell(cell);
+              checkCell = this.checkCell(cell, ["void", "deep"]);
             }
             if (checkCell === true) {
               let cell2 = this.gridInfo.find(
@@ -27313,7 +27329,7 @@ class App extends Component {
         while (checkCell === false) {
           cell.x = this.rnJesus(0, this.gridWidth);
           cell.y = this.rnJesus(0, this.gridWidth);
-          checkCell = this.checkCell(cell);
+          checkCell = this.checkCell(cell, ["all"]);
         }
       }
       if (
@@ -27327,7 +27343,7 @@ class App extends Component {
         while (checkPatrolCell1 === false) {
           cell1.x = this.rnJesus(0, this.gridWidth);
           cell1.y = this.rnJesus(0, this.gridWidth);
-          checkPatrolCell1 = this.checkCell(cell1);
+          checkPatrolCell1 = this.checkCell(cell1, ["all"]);
         }
 
         while (checkPatrolCell2 === false && checkPatrolCell1 === true) {
@@ -27375,7 +27391,7 @@ class App extends Component {
           } else {
             cell3.x = this.rnJesus(0, this.gridWidth);
             cell3.y = this.rnJesus(0, this.gridWidth);
-            checkPatrolCell2 = this.checkCell(cell3);
+            checkPatrolCell2 = this.checkCell(cell3, ["all"]);
           }
         }
 
@@ -27389,7 +27405,7 @@ class App extends Component {
           while (checkCell === false) {
             cell.x = this.rnJesus(0, this.gridWidth);
             cell.y = this.rnJesus(0, this.gridWidth);
-            checkCell = this.checkCell(cell);
+            checkCell = this.checkCell(cell, ["all"]);
             if (cell === cell1 || cell === cell3) {
               checkCell = false;
             }
@@ -27414,7 +27430,7 @@ class App extends Component {
         while (checkCell2 === false) {
           cell4.x = this.rnJesus(0, this.gridWidth);
           cell4.y = this.rnJesus(0, this.gridWidth);
-          checkCell2 = this.checkCell(cell4);
+          checkCell2 = this.checkCell(cell4, ["all"]);
         }
         if (checkCell2 === true) {
           this.aiInitSettings.partolArea[0] = cell4;
@@ -27423,7 +27439,7 @@ class App extends Component {
         while (checkCell === false && checkCell2 === true) {
           cell.x = this.rnJesus(0, this.gridWidth);
           cell.y = this.rnJesus(0, this.gridWidth);
-          checkCell = this.checkCell(cell);
+          checkCell = this.checkCell(cell, ["all"]);
         }
         if (checkCell === true) {
           console.log("random defend points chosen: start", cell, "defend point", cell4);
@@ -30371,7 +30387,7 @@ class App extends Component {
         while (checkCell === false && safeTarget !== true && isSafeDistance !== true) {
           cell.x = this.rnJesus(0, this.gridWidth);
           cell.y = this.rnJesus(0, this.gridWidth);
-          checkCell = this.checkCell(cell);
+          checkCell = this.checkCell(cell, ["all"]);
           safeTarget = this.scanTargetAreaThreat({
             player: plyr.number,
             point: {
@@ -47447,7 +47463,7 @@ class App extends Component {
         while (randomFreeCellChosen !== true) {
           cll.x = this.rnJesus(0, this.gridWidth);
           cll.y = this.rnJesus(0, this.gridWidth);
-          randomFreeCellChosen = this.checkCell(cll);
+          randomFreeCellChosen = this.checkCell(cll, ["all"]);
         }
 
         if (randomFreeCellChosen === true) {
@@ -47484,7 +47500,7 @@ class App extends Component {
         while (randomFreeCellChosen !== true) {
           cll.x = this.rnJesus(0, this.gridWidth);
           cll.y = this.rnJesus(0, this.gridWidth);
-          randomFreeCellChosen = this.checkCell(cll);
+          randomFreeCellChosen = this.checkCell(cll, ["all"]);
         }
 
         if (randomFreeCellChosen === true) {
