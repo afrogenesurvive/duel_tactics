@@ -42803,7 +42803,11 @@ class App extends Component {
               direction = plyr.strafing.direction;
             }
 
-            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            // if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            if (
+              x === plyr.currentPosition.cell.number.x &&
+              y === plyr.currentPosition.cell.number.y
+            ) {
               if (plyr.jumping.state === true) {
                 context2.drawImage(
                   updatedPlayerImg,
