@@ -1474,7 +1474,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "spear1",
+          itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
         },
@@ -15904,7 +15904,8 @@ class App extends Component {
       }
       let defendPeak = targetPlayerRef.defending.animRef.peak[defendType];
       if (
-        targetPlayerRef.defending.count === defendPeak ||
+        (targetPlayerRef.defending.count > 0 &&
+          targetPlayerRef.defending.count === defendPeak) ||
         targetPlayerRef.defending.decay.state === true
       ) {
         return true;
@@ -16841,7 +16842,7 @@ class App extends Component {
       }
       let defendPeak = target.defending.peakCount;
       if (
-        target.defending.count === defendPeak ||
+        (target.defending.count > 0 && target.defending.count === defendPeak) ||
         target.defending.decay.state === true
       ) {
         playerDefending = true;
