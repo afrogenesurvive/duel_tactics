@@ -1474,7 +1474,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "sword1",
+          itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
         },
@@ -8980,7 +8980,6 @@ class App extends Component {
       limit = elem.counter.limit;
     }
 
-    // limit = 25;
     incr = count / limit;
     connectingLineIncr = limit;
 
@@ -13419,7 +13418,6 @@ class App extends Component {
               }
 
               if (trap.acting.count === pullbackTime) {
-                console.log("pullbackTime", pullbackTime);
                 trap = this.handleDirectionalActionAnimation(
                   ownerType,
                   "attacking",
@@ -13431,7 +13429,6 @@ class App extends Component {
                 );
               }
               if (trap.acting.count === releaseTime) {
-                console.log("releaseTime", releaseTime);
                 let toRemove = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
                   return (
                     x.locationCell === locationCell.number &&
@@ -14795,7 +14792,7 @@ class App extends Component {
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
-    let countLimit = 6;
+    let countLimit = 10;
     let delay = 20;
 
     if (ownerType === "player" || ownerType === "obstacle" || ownerType === "barrier") {
@@ -34379,8 +34376,8 @@ class App extends Component {
     }
     if (this.time === 100 && player.number === 1) {
       // this.setBackgroundImage("sea_clouds_1");
-      // this.testCount.state = true;
-      // this.testCount.limit = 6;
+      this.testCount.state = true;
+      this.testCount.limit = 10;
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
@@ -34402,10 +34399,10 @@ class App extends Component {
           "isometric",
           50,
           180,
-          0,
+          180,
           "arc",
           "counterClockwise",
-          "top",
+          "front",
           "east"
         );
       }
@@ -36321,7 +36318,6 @@ class App extends Component {
                 dirAnimSetCalcMod -
                 directionalActionResult.inputThresh;
               if (directionalActionResult.inputThresh === player.attacking.count) {
-                console.log("xTime", Math.ceil(xTime / 2));
                 player = this.handleDirectionalActionAnimation(
                   "player",
                   "attacking",
@@ -36334,13 +36330,12 @@ class App extends Component {
                   this.directionalAnimShape
                 );
               }
-              // if (player.attacking.count < player.attacking.peakCount && player.attacking.count === (directionalActionResult.inputThresh+15)) {
+
               if (
                 player.attacking.count < player.attacking.peakCount &&
                 player.attacking.count ===
                   directionalActionResult.inputThresh + Math.ceil(xTime / 2)
               ) {
-                console.log("xTime2", Math.ceil(xTime / 2), player.attacking.count);
                 player.actionDirectionAnimationArray = [];
                 player = this.handleDirectionalActionAnimation(
                   "player",
@@ -36761,7 +36756,6 @@ class App extends Component {
             );
             // if (player.defending.count === directionalActionResult.inputThresh) {
             if (!existingDefendAnim) {
-              console.log("yTime", Math.ceil(xTime / 2));
               player = this.handleDirectionalActionAnimation(
                 "player",
                 "defending",
@@ -36776,16 +36770,8 @@ class App extends Component {
               player.actionDirectionAnimationArray = [];
               let yTime;
               if (player.defending.decay.state !== true) {
-                console.log(
-                  "yTime2",
-                  player.defending.peakCount - player.defending.count
-                );
                 yTime = player.defending.peakCount - player.defending.count;
               } else {
-                console.log(
-                  "yTime3",
-                  player.defending.decay.limit - player.defending.decay.count
-                );
                 yTime = player.defending.decay.limit - player.defending.decay.count;
               }
               player = this.handleDirectionalActionAnimation(
@@ -43740,12 +43726,13 @@ class App extends Component {
           if (plyr.actionDirectionAnimationArray.length > 0) {
             // console.log("b", x, y);
             for (const animAction of plyr.actionDirectionAnimationArray) {
+              let lastPoint;
               for (const point of animAction.points) {
-                // if (x === 0 && y === 0) {
-                // context.fillStyle = point.color;
-                // context.beginPath();
-                // context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-                // context.fill();
+                // if (x === this.gridWidth && y === this.gridWidth) {
+                //   context.fillStyle = "purple";
+                //   context.beginPath();
+                //   context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                //   context.fill();
                 // }
               }
               if (animAction.points.length > 1) {
@@ -43760,6 +43747,10 @@ class App extends Component {
                     40
                   );
                 }
+
+                lastPoint = animAction.points[animAction.points.length - 1];
+                context.lineTo(lastPoint.x, lastPoint.y);
+
                 context.strokeStyle = animAction.points[0].color;
                 context.lineWidth = 5;
                 context.stroke();
@@ -43776,40 +43767,39 @@ class App extends Component {
                       30
                     );
                   }
+                  lastPoint = animAction.points[animAction.points.length - 1];
+                  context.lineTo(lastPoint.x2, lastPoint.y2);
+
                   context.strokeStyle = animAction.points[0].color;
                   context.lineWidth = 5;
                   context.stroke();
                 }
 
-                if (animAction.points[0].lineArray) {
-                  // for (var i = 1; i < animAction.points.length - 1; i++) {
-                  //   if (i === animAction.points.length - 2) {
-                  //     context.beginPath();
-                  //     context.moveTo(animAction.points[i].x, animAction.points[i].y);
-                  //     context.lineTo(animAction.points[i].x2, animAction.points[i].y2);
+                if (animAction.points[0].lineArray?.length > 0) {
+                  for (var i = 0; i < animAction.points.length; i++) {
+                    let length = animAction.points[i].lineArray.length - 1;
+                    if (i === animAction.points.length - 1) {
+                      let pointOuter = {
+                        x: animAction.points[i].x,
+                        y: animAction.points[i].y,
+                        // x: animAction.points[i].lineArray[0].x,
+                        // y: animAction.points[i].lineArray[0].y,
+                      };
+                      let pointInner = {
+                        x: animAction.points[i].x2,
+                        y: animAction.points[i].y2,
+                        // x: animAction.points[i].lineArray[length]?.x,
+                        // y: animAction.points[i].lineArray[length]?.y,
+                      };
+                      context.beginPath();
+                      context.moveTo(pointInner.x, pointInner.y);
+                      context.lineTo(pointOuter.x, pointOuter.y);
 
-                  //     context.strokeStyle = animAction.points[i].color;
-                  //     context.lineWidth = 5;
-                  //     context.stroke();
-                  //   }
-                  // }
-                  context.beginPath();
-                  context.moveTo(
-                    animAction.points[animAction.points.length - 1].lineArray[0].x,
-                    animAction.points[animAction.points.length - 1].lineArray[0].y
-                  );
-                  context.lineTo(
-                    animAction.points[animAction.points.length - 1].lineArray[
-                      animAction.points[animAction.points.length - 1].lineArray.length - 1
-                    ].x,
-                    animAction.points[animAction.points.length - 1].lineArray[
-                      animAction.points[animAction.points.length - 1].lineArray.length - 1
-                    ].y
-                  );
-
-                  context.strokeStyle = animAction.points[i].color;
-                  context.lineWidth = 5;
-                  context.stroke();
+                      context.strokeStyle = animAction.points[i].color;
+                      context.lineWidth = 5;
+                      context.stroke();
+                    }
+                  }
                 }
               }
             }
@@ -45257,6 +45247,8 @@ class App extends Component {
           //   context.fill();
           // }
           if (animAction.points.length > 1) {
+            let lastPoint;
+
             context.beginPath();
             context.moveTo(animAction.points[0].x, animAction.points[0].y);
             for (var i = 1; i < animAction.points.length - 1; i++) {
@@ -45268,6 +45260,9 @@ class App extends Component {
                 40
               );
             }
+            lastPoint = animAction.points[animAction.points.length - 1];
+            context.lineTo(lastPoint.x, lastPoint.y);
+
             context.strokeStyle = animAction.points[0].color;
             context.lineWidth = 5;
             context.stroke();
@@ -45284,6 +45279,9 @@ class App extends Component {
                   30
                 );
               }
+              lastPoint = animAction.points[animAction.points.length - 1];
+              context.lineTo(lastPoint.x, lastPoint.y);
+
               context.strokeStyle = animAction.points[0].color;
               context.lineWidth = 5;
               context.stroke();
@@ -45291,10 +45289,22 @@ class App extends Component {
 
             if (animAction.points[0].lineArray) {
               for (var i = 1; i < animAction.points.length - 1; i++) {
-                if (i === animAction.points.length - 2) {
+                if (i === animAction.points.length - 1) {
+                  let pointOuter = {
+                    x: animAction.points[i].x,
+                    y: animAction.points[i].y,
+                    // x: animAction.points[i].lineArray[0].x,
+                    // y: animAction.points[i].lineArray[0].y,
+                  };
+                  let pointInner = {
+                    x: animAction.points[i].x2,
+                    y: animAction.points[i].y2,
+                    // x: animAction.points[i].lineArray[length]?.x,
+                    // y: animAction.points[i].lineArray[length]?.y,
+                  };
                   context.beginPath();
-                  context.moveTo(animAction.points[i].x, animAction.points[i].y);
-                  context.lineTo(animAction.points[i].x2, animAction.points[i].y2);
+                  context.moveTo(pointInner.x, pointInner.y);
+                  context.lineTo(pointOuter.x, pointOuter.y);
 
                   context.strokeStyle = animAction.points[i].color;
                   context.lineWidth = 5;
@@ -45939,10 +45949,16 @@ class App extends Component {
         // TEST DRAW
 
         if (this.testDraw.length > 1) {
-          if (x === 0 && y === 0) {
-            // console.log("testDraw", this.testDraw);
+          if (x === this.gridWidth && y === this.gridWidth) {
+            for (const point of this.testDraw) {
+              context.fillStyle = point.color;
+              context.beginPath();
+              context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+              context.fill();
+            }
           }
           if (this.testDraw[0]?.type === "arcCrementer") {
+            let lastPoint;
             context.beginPath();
             context.moveTo(this.testDraw[0].x, this.testDraw[0].y);
             for (var i = 1; i < this.testDraw.length - 1; i++) {
@@ -45954,6 +45970,9 @@ class App extends Component {
                 20
               );
             }
+            lastPoint = this.testDraw[this.testDraw.length - 1];
+            context.lineTo(lastPoint.x, lastPoint.y);
+
             context.strokeStyle = this.testDraw[0].color;
             context.lineWidth = 5;
             context.stroke();
@@ -45970,30 +45989,35 @@ class App extends Component {
                   30
                 );
               }
+              lastPoint = this.testDraw[this.testDraw.length - 1];
+              context.lineTo(lastPoint.x, lastPoint.y);
+
               context.strokeStyle = this.testDraw[0].color;
               context.lineWidth = 5;
               context.stroke();
             }
 
-            if (this.testDraw[0].lineArray) {
-              for (var i = 1; i < this.testDraw.length - 1; i++) {
-                if (i === this.testDraw.length - 2) {
-                  context.beginPath();
-                  context.moveTo(this.testDraw[i].x, this.testDraw[i].y);
-                  context.lineTo(this.testDraw[i].x2, this.testDraw[i].y2);
-
-                  context.strokeStyle = this.testDraw[i].color;
-                  context.lineWidth = 5;
-                  context.stroke();
-                }
-              }
-            }
-            for (const point of this.testDraw) {
-              if (x === this.gridWidth && y === this.gridWidth) {
-                context.fillStyle = point.color;
+            if (this.testDraw[0].lineArray?.length > 0) {
+              for (var i = 0; i < this.testDraw.length - 0; i++) {
+                let pointOuter = {
+                  x: this.testDraw[i].x,
+                  y: this.testDraw[i].y,
+                  // x: this.testDraw[i].lineArray[0].x,
+                  // y: this.testDraw[i].lineArray[0].y,
+                };
+                let pointInner = {
+                  x: this.testDraw[i].x2,
+                  y: this.testDraw[i].y2,
+                  // x: this.testDraw[i].lineArray[length]?.x,
+                  // y: this.testDraw[i].lineArray[length]?.y,
+                };
                 context.beginPath();
-                context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-                context.fill();
+                context.moveTo(pointInner.x, pointInner.y);
+                context.lineTo(pointOuter.x, pointOuter.y);
+
+                context.strokeStyle = this.testDraw[i].color;
+                context.lineWidth = 5;
+                context.stroke();
               }
             }
           } else {
