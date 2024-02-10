@@ -603,7 +603,7 @@ class App extends Component {
         "**_*_4.3_f_0a*",
         "**_h_4.4_a_0a*",
         "**_h_4.5_a_0a*",
-        "**_*_4.6_j_0a*",
+        "**_*_4.6_k_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
         "**_*_4.9_a_0a*",
@@ -1452,9 +1452,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
-          persistent: false,
+          persistent: true,
           remaining: 5,
-          direction: "",
+          direction: "west",
           target: {},
           timer: {
             enabled: true,
@@ -13352,9 +13352,26 @@ class App extends Component {
                 this.getBoltTarget(result.projectile);
                 trap = result.owner.trap;
               } else {
-                console.log(
-                  "This trap is meant to fire a projectile but has no ammo. Do nothing"
-                );
+                console.log("This trap is meant to fire a projectile but has no ammo.");
+                if (trap.persistent === true) {
+                  console.log(
+                    "This trap is persistent but out of ammo. Reload from default"
+                  );
+                  let item = this.itemList.find((x) => {
+                    return x.name === trap.itemNameRef;
+                  });
+                  trap.item = {
+                    name: item.name,
+                    amount: item.amount,
+                    total: item.total,
+                    type: item.type,
+                    subType: item.subType,
+                    effect: item.effect,
+                  };
+                  if (trap.item.effect.split("+")[0] === "ammo") {
+                    trap.ammo = parseInt(trap.item.effect.split("+")[1]);
+                  }
+                }
               }
             }
             if (trap.item.subType === "sword" || trap.item.subType === "spear") {
@@ -13407,14 +13424,15 @@ class App extends Component {
 
             // SET DIRECTIONAL ATTACK ANIMATIONS
             if (this.showDirectionalActionAnimation === true) {
+              let dirAnimSetCalcMod = 5;
               let pullbackTime = 0;
               let releaseTime = 0;
               if (trap.acting.peak > 20) {
-                pullbackTime = trap.acting.peak - 20;
-                releaseTime = trap.acting.peak - 10;
+                pullbackTime = trap.acting.peak + dirAnimSetCalcMod - 20;
+                releaseTime = trap.acting.peak + dirAnimSetCalcMod - 10;
               } else {
                 pullbackTime = 1;
-                releaseTime = Math.ceil(trap.acting.peak / 2);
+                releaseTime = Math.ceil((trap.acting.peak + dirAnimSetCalcMod) / 2);
               }
 
               if (trap.acting.count === pullbackTime) {
@@ -13444,7 +13462,7 @@ class App extends Component {
                   locationCell,
                   trap,
                   // (trap.acting.limit-releaseTime)
-                  trap.acting.peak - 5 - releaseTime,
+                  trap.acting.peak + dirAnimSetCalcMod - releaseTime,
                   this.directionalAnimShape
                 );
               }
@@ -14796,8 +14814,14 @@ class App extends Component {
     let delay = 20;
 
     if (ownerType === "player" || ownerType === "obstacle" || ownerType === "barrier") {
-      console.log("xCount", xCount);
-      // countLimit = xCount;
+      console.log("directional action anim count", xCount);
+      countLimit = xCount;
+      if (countLimit > 18) {
+        countLimit = 18;
+      }
+      if (countLimit < 8) {
+        countLimit = 8;
+      }
     }
 
     if (
@@ -15313,16 +15337,16 @@ class App extends Component {
             cell1Rubble === true ||
             boltTarget1 === true
           ) {
-            // console.log(
-            //   "melee attack peak:",
-            //   ownerType,
-            //   owner.number,
-            //   owner.id,
-            //   "hit player, obstacle, bolt, item or rubble w/ ",
-            //   ownerWeaponType,
-            //   " @ ",
-            //   targetCell1.number
-            // );
+            console.log(
+              "melee attack peak:",
+              ownerType,
+              owner.number,
+              owner.id,
+              "hit player, obstacle, bolt, item or rubble w/ ",
+              ownerWeaponType,
+              " @ ",
+              targetCell1.number
+            );
             this.meleeAttackParse(ownerType, owner, 1);
           }
 
@@ -16799,7 +16823,7 @@ class App extends Component {
       if (target.currentWeapon.name === "") {
         defendType = "unarmed";
       }
-      let defendPeak = target.defending.animRef.peak[defendType];
+      let defendPeak = target.defending.peakCount;
       if (
         target.defending.count === defendPeak ||
         target.defending.decay.state === true
@@ -16853,6 +16877,10 @@ class App extends Component {
           deflected !== true
         ) {
           // PLAYER IS ATTACKING ARMED
+
+          // FIX ME
+          // check if plyr atk dir is opposite to botl dir
+          // only slash can attack bolt
           if (target.attacking.peak === true && weapon !== "unarmed") {
             // CHANCE TO KILL BOLT & PUSHBACK
             if (this.rnJesus(1, target.crits.pushBack) === 1) {
@@ -16952,6 +16980,9 @@ class App extends Component {
               return;
             }
             // ARMED DEFENSE
+
+            // defend dir oppose bolt dir
+            // only slash can attack/defend bolt
             else {
               // PEAK DEFEND
               if (target.defending.peak === true) {
@@ -17092,6 +17123,9 @@ class App extends Component {
           deflected !== true
         ) {
           // PLAYER ARMED AND ATTACKING
+
+          // atk dir must match bolt dir axis
+          // only slash can attack/defend bolt
           if (target.attacking.peak === true && weapon !== "unarmed") {
             console.log(
               "bolt hit plyr",
@@ -17147,6 +17181,8 @@ class App extends Component {
           }
 
           // PLAYER DEFENDING
+          // defend dir must match bolt dir axis
+          // only slash can attack/defend bolt
           if (playerDefending === true) {
             if (weapon === "unarmed") {
               // UNARMED PEAK DEFEND, SUCCESS
@@ -17595,6 +17631,15 @@ class App extends Component {
     let damage;
     let doubleHitChance;
     let singleHitChance;
+
+    // FIX ME
+    // estimate maximum charge
+    // calc damage using bolt charge
+    // directionalInputThresh = Math.ceil(
+    //   player[action].animRef.peak.unarmed.thrust.normal / 2
+    // );
+    // % charge = charge/(actionpeak-inputthesh)
+    // percentage determine chache to double atak
 
     if (ownerType === "player") {
       if (targetType === "player") {
@@ -34376,8 +34421,8 @@ class App extends Component {
     }
     if (this.time === 100 && player.number === 1) {
       // this.setBackgroundImage("sea_clouds_1");
-      this.testCount.state = true;
-      this.testCount.limit = 10;
+      // this.testCount.state = true;
+      // this.testCount.limit = 10;
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
@@ -36324,9 +36369,10 @@ class App extends Component {
                   "pullback",
                   player,
                   null,
-                  directionalActionResult.inputThresh +
-                    Math.ceil(xTime / 2) -
-                    player.attacking.count,
+                  // directionalActionResult.inputThresh +
+                  //   Math.ceil(xTime / 2) -
+                  //   player.attacking.count,
+                  Math.ceil(xTime / 2),
                   this.directionalAnimShape
                 );
               }
@@ -36343,9 +36389,10 @@ class App extends Component {
                   "release",
                   player,
                   null,
-                  player.attacking.peakCount +
-                    dirAnimSetCalcMod -
-                    (directionalActionResult.inputThresh + Math.ceil(xTime / 2)),
+                  // player.attacking.peakCount +
+                  //   dirAnimSetCalcMod -
+                  //   (directionalActionResult.inputThresh + Math.ceil(xTime / 2)),
+                  Math.ceil(xTime / 2),
                   this.directionalAnimShape
                 );
               }
@@ -36747,10 +36794,14 @@ class App extends Component {
           // SET DIRECTIONAL DEFEND ANIMATIONS
           if (this.showDirectionalActionAnimation === true) {
             let dirAnimSetCalcMod = 5;
+            const decayLimit = Math.ceil(
+              (player.defending.limit - defendPeak) * defendDecayLimitPercentage
+            );
             let xTime =
               player.defending.peakCount +
+              decayLimit +
               dirAnimSetCalcMod -
-              directionalActionResult.inputThresh;
+              player.defending.count;
             let existingDefendAnim = player.actionDirectionAnimationArray.find(
               (x) => x.action === "defending"
             );
@@ -36770,9 +36821,12 @@ class App extends Component {
               player.actionDirectionAnimationArray = [];
               let yTime;
               if (player.defending.decay.state !== true) {
-                yTime = player.defending.peakCount - player.defending.count;
+                yTime = player.defending.peakCount + decayLimit - player.defending.count;
               } else {
-                yTime = player.defending.decay.limit - player.defending.decay.count;
+                yTime =
+                  player.defending.decay.limit +
+                  dirAnimSetCalcMod -
+                  player.defending.decay.count;
               }
               player = this.handleDirectionalActionAnimation(
                 "player",
