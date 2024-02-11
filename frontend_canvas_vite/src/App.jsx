@@ -562,14 +562,14 @@ class App extends Component {
       ],
       row1: [
         "**_*_1.0_a_0a*",
-        "cn_*_1.1_a_0a*",
-        "**_c_1.2_a_0a*",
+        "**_*_1.1_a_0a*",
+        "**_*_1.2_a_0a*",
         "**_*_1.3_a_0a*",
         "**_*_1.4_a_0a*",
         "**_*_1.5_a_0a*",
         "**_*_1.6_a_0a*",
         "**_*_1.7_a_0a*",
-        "**_h_1.8_a_0a*",
+        "**_*_1.8_a_0a*",
         "**_*_1.9_a_0a*",
       ],
       row2: [
@@ -587,22 +587,22 @@ class App extends Component {
       row3: [
         "**_*_3.0_a_0a*",
         "**_*_3.1_a_0a*",
-        "**_h_3.2_a_0a*",
+        "**_*_3.2_a_0a*",
         "**_*_3.3_a_0a*",
         "**_*_3.4_a_0a*",
         "**_*_3.5_a_0a*",
-        "**_c_3.6_a_0a*",
+        "**_*_3.6_a_0a*",
         "**_*_3.7_a_0a*",
         "**_*_3.8_a_0a*",
-        "**_c_3.9_a_0a*",
+        "**_*_3.9_a_0a*",
       ],
       row4: [
         "**_*_4.0_a_0a*",
-        "dn_*_4.1_a_0a*",
+        "**_*_4.1_a_0a*",
         "**_*_4.2_f_0a*",
         "**_*_4.3_f_0a*",
-        "**_*_4.4_a_0a*",
-        "**_*_4.5_a_0a*",
+        "**_h_4.4_a_0a*",
+        "**_h_4.5_a_0a*",
         "**_*_4.6_j_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
@@ -611,10 +611,10 @@ class App extends Component {
       row5: [
         "**_*_5.0_a_0a*",
         "**_*_5.1_a_0a*",
-        "de_*_5.2_a_0a*",
+        "**_*_5.2_a_0a*",
         "**_*_5.3_a_0a*",
         "**_*_5.4_a_0a*",
-        "**_h_5.5_a_0a*",
+        "**_*_5.5_a_0a*",
         "**_*_5.6_a_0a*",
         "**_*_5.7_a_0a*",
         "**_*_5.8_a_0a*",
@@ -629,20 +629,20 @@ class App extends Component {
         "**_*_6.5_j_0a*",
         "**_*_6.6_j_0a*",
         "**_*_6.7_j_0a*",
-        "de_*_6.8_j_0a*",
+        "**_*_6.8_j_0a*",
         "**_*_6.9_j_0a*",
       ],
       row7: [
         "**_*_7.0_j_0a*",
         "**_*_7.1_j_0a*",
         "**_*_7.2_a_0a*",
-        "cw_*_7.3_a_0a*",
+        "**_*_7.3_a_0a*",
         "**_*_7.4_a_0a*",
         "**_*_7.5_a_0a*",
         "**_*_7.6_a_0a*",
-        "cw*_*_7.7_a_0a*",
+        "**_*_7.7_a_0a*",
         "**_*_7.8_a_0a*",
-        "dw_*_7.9_d_0a*",
+        "**_*_7.9_d_0a*",
       ],
       row8: [
         "**_*_8.0_a_0a*",
@@ -831,7 +831,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "crossbow1",
+          itemNameRef: "sword1",
           item: {},
           ammo: 0,
         },
@@ -1452,12 +1452,12 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
-          persistent: false,
+          persistent: true,
           remaining: 5,
           direction: "",
           target: {},
           timer: {
-            enabled: false,
+            enabled: true,
             state: false,
             count: 0,
             limit: 65,
@@ -1474,7 +1474,7 @@ class App extends Component {
             direction: "",
             directionType: "",
           },
-          itemNameRef: "sword1",
+          itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
         },
@@ -3868,6 +3868,7 @@ class App extends Component {
     this.popupImgSize = 25;
     this.movingObstacles = [];
     this.halfPushBackObstacles = [];
+    this.obstacleBarrierActionAnimationArray = [];
 
     this.obstacleBarrierToDestroy = [];
     this.obstacleItemsToDrop = [];
@@ -3886,11 +3887,16 @@ class App extends Component {
     this.popupProgressImgGradColor1 = "rgb(255,0,0)";
     this.popupProgressImgGradColor2 = "rgb(255,255,0)";
 
+    this.currentPlayerDrawCell;
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
-    this.showPlayerOutlines = true;
+    this.showPlayerOutlines = false;
     this.showGridIsoGuide = false;
+    this.showDirectionalActionAnimation = true;
+    this.hideAllPopups = true;
+    this.hideDirectionalActionPopus = true;
+    this.directionalAnimShape = "ringSection";
 
     this.backgroundImageRef = {};
 
@@ -6058,7 +6064,7 @@ class App extends Component {
           while (randomFreeCellChosen !== true) {
             cll.x = this.rnJesus(0, this.gridWidth);
             cll.y = this.rnJesus(0, this.gridWidth);
-            randomFreeCellChosen = this.checkCell(cll);
+            randomFreeCellChosen = this.checkCell(cll, ["all"]);
           }
 
           if (randomFreeCellChosen === true) {
@@ -6219,7 +6225,7 @@ class App extends Component {
 
         for (const elem of this.settingsFormAiGridInfo) {
           if (
-            this.checkCell({ x: elem.number.x, y: elem.number.y }) === true &&
+            this.checkCell({ x: elem.number.x, y: elem.number.y }, ["all"]) === true &&
             !avoidCells.find(
               (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y
             )
@@ -8726,59 +8732,78 @@ class App extends Component {
     // console.log('bolt crementer new position',newPosition);
     return newPosition;
   };
-  directionalActionAnimLineCrementer = (player, elem) => {
+  directionalActionAnimLineCrementer = (ownerType, owner, elem) => {
     let percent = elem.counter.count / elem.counter.limit;
     let startPt;
     let endPt;
     let rearCellNo = this.getCellFromDirection(
       1,
-      player.currentPosition.cell,
-      this.getOppositeDirection(player.direction)
+      elem.locationCell,
+      this.getOppositeDirection(elem.ownerDirection)
     );
+    let ownerCenter = undefined;
+    let targetCenter = undefined;
+    if (ownerType === "player") {
+      ownerCenter = owner.currentPosition.cell.center;
+      targetCenter = owner.target.cell1.center;
+    } else {
+      const ref = this.gridInfo.find((x) => {
+        return x.number.x === elem.locationCell.x && x.number.y === elem.locationCell.y;
+      });
+      ownerCenter = ref.center;
+      const pretargetCenter = ref[ownerType].trap.target;
+      targetCenter = this.gridInfo.find((x) => {
+        return x.number.x === pretargetCenter.x && x.number.y === pretargetCenter.y;
+      })?.center;
+    }
 
     if (elem.phase === "pullback") {
-      startPt = player.currentPosition.cell.center;
-      if (rearCellNo.x && rearCellNo.y) {
+      startPt = ownerCenter;
+      if (rearCellNo.x > -1 && rearCellNo.y > -1) {
         endPt = this.gridInfo.find(
           (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
         )?.center;
       } else {
         endPt = this.getVoidCenter(
           1,
-          this.getOppositeDirection(player.direction),
-          player.currentPosition.cell.center
+          this.getOppositeDirection(elem.ownerDirection),
+          ownerCenter
         );
       }
     }
     if (elem.phase === "release") {
-      if (rearCellNo.x && rearCellNo.y) {
+      if (rearCellNo.x > -1 && rearCellNo.y > -1) {
         startPt = this.gridInfo.find(
           (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
         )?.center;
       } else {
         startPt = this.getVoidCenter(
           1,
-          this.getOppositeDirection(player.direction),
-          player.currentPosition.cell.center
+          this.getOppositeDirection(elem.ownerDirection),
+          ownerCenter
         );
       }
-      endPt = player.target.cell1.center;
+      endPt = targetCenter;
     }
     let dx = endPt.x - startPt.x;
     let dy = endPt.y - startPt.y;
     let X = startPt.x + dx * percent;
     let Y = startPt.y + dy * percent;
-    let result = { x: Math.round(X), y: Math.round(Y) };
+    let result = { color: elem.color, x: Math.round(X), y: Math.round(Y) };
 
     elem.points.push(result);
-    let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
-    el = elem;
+    if (ownerType === "player") {
+      let el = owner.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+      el = elem;
+    } else {
+      owner = elem;
+    }
 
-    return player;
+    return owner;
   };
   circleArcCrementer = (
     type,
-    player,
+    owner,
     mode,
     radiusA,
     deg,
@@ -8810,21 +8835,50 @@ class App extends Component {
       "#EE82EE", // Violet
       "#DA70D6", // Orchid
     ];
+
     let color = "green";
-    let pointA = {
-      x: player.currentPosition.cell.center.x,
-      y: player.currentPosition.cell.center.y,
+    let pointA;
+    let point;
+    let ownerDirection = elem?.ownerDirection;
+    let actionDirection = elem?.actionDirection;
+    let ownerCellNo;
+    if (type === "playerDirectionalAction") {
+      pointA = {
+        x: owner.currentPosition.cell.center.x,
+        y: owner.currentPosition.cell.center.y,
+      };
+      ownerCellNo = owner.currentPosition.cell.number;
+    }
+    if (type === "obstacleBarrierDirectionalAction") {
+      let refCell = this.gridInfo.find(
+        (x) => x.number.x === elem.locationCell.x && x.number.y === elem.locationCell.y
+      );
+      pointA = {
+        x: refCell.center.x,
+        y: refCell.center.y,
+      };
+      ownerCellNo = elem.locationCell;
+    }
+    if (type === "testing") {
+      pointA = {
+        x: owner.currentPosition.cell.center.x,
+        y: owner.currentPosition.cell.center.y,
+      };
+      ownerDirection = owner.direction;
+      actionDirection = elem;
+      ownerCellNo = owner.currentPosition.cell.number;
+    }
+    point = {
+      x: ownerCellNo.x * this.tileWidth,
+      y: ownerCellNo.y * this.tileWidth,
     };
-    let point = {
-      x: player.currentPosition.cell.number.x * this.tileWidth,
-      y: player.currentPosition.cell.number.y * this.tileWidth,
-    };
+
     // starAngles:
     // top face: 0 = east, 90 = south, 180 = west, 270 = north
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
-    // type args: 'testing'/'playerDirectionalAction'
+    // type args: 'testing'/'playerDirectionalAction'/obstacleBarrierDirectionalAction
 
     let pointIso;
     let point1Iso;
@@ -8908,9 +8962,9 @@ class App extends Component {
       point = pointA;
     }
 
-    const innerRadius = radiusA - 20;
+    const innerRadius = radiusA - 15;
     let incr = 0;
-    let conntectingLineIncr = 0;
+    let connectingLineIncr = 0;
 
     let count = 0;
     let limit = 0;
@@ -8918,13 +8972,16 @@ class App extends Component {
       count = this.testCount.count;
       limit = this.testCount.limit;
     }
-    if (type === "playerDirectionalAction") {
+    if (
+      type === "playerDirectionalAction" ||
+      type === "obstacleBarrierDirectionalAction"
+    ) {
       count = elem.counter.count;
       limit = elem.counter.limit;
     }
 
     incr = count / limit;
-    conntectingLineIncr = limit;
+    connectingLineIncr = limit;
 
     let point1 = getPointOnArc(point.x, point.y, radiusA, startAng, incr);
     let point2 = getPointOnArc(point.x, point.y, innerRadius, startAng, incr);
@@ -8937,11 +8994,14 @@ class App extends Component {
       faceRotation = 120;
       color = "pink";
     }
-    if (type === "playerDirectionalAction") {
+    if (
+      type === "playerDirectionalAction" ||
+      type === "obstacleBarrierDirectionalAction"
+    ) {
       color = elem.color;
     }
 
-    let connetingLineArray = [];
+    let connectingLineArray = [];
 
     const arcStep = (incr * 100).toFixed(0);
 
@@ -8984,47 +9044,35 @@ class App extends Component {
     }
 
     if (shape === "ringSection") {
-      // if (count === 1 || count === limit) {
-      for (let i = 0; i < conntectingLineIncr; i++) {
-        let point3 = getLineXYatPercent(point2, point1, i, conntectingLineIncr);
+      if (count === 1 || count === limit) {
+        for (let i = 0; i < connectingLineIncr; i++) {
+          let point3 = getLineXYatPercent(point2, point1, i, connectingLineIncr);
 
-        if (type === "testing") {
-          this.testDraw.push({
-            color: colors[this.testCount.count - 1],
-            x: point3.x,
-            y: point3.y,
-          });
-        }
-        if (type === "playerDirectionalAction") {
-          elem.points.push({
-            color: color,
-            x: point3.x,
-            y: point3.y,
-          });
+          connectingLineArray.push(point3);
         }
       }
-      // }
     }
 
     if (shape === "sector") {
-      for (let i = 0; i < conntectingLineIncr; i++) {
-        let point3 = getLineXYatPercent(point, point1, i, conntectingLineIncr);
+      for (let i = 0; i < connectingLineIncr; i++) {
+        let point3 = getLineXYatPercent(point, point1, i, connectingLineIncr);
 
-        if (type === "testing") {
-          this.testDraw.push({
-            color: "red",
-            x: point3.x,
-            y: point3.y,
-          });
-        }
-        if (type === "playerDirectionalAction") {
-          elem.points.push({
-            color: color,
-            x: point3.x,
-            y: point3.y,
-          });
-        }
+        connectingLineArray.push(point3);
       }
+    }
+
+    // UNDER SLASHES ADJUSTED UP
+    if (
+      (type === "playerDirectionalAction" ||
+        type === "obstacleBarrierDirectionalAction") &&
+      (face === "front" || face === "side") &&
+      elem.actionDirectionType === "slash" &&
+      ownerDirection === this.getOppositeDirection(actionDirection)
+    ) {
+      point.y -= 30;
+      point1.y -= 30;
+      point2.y -= 30;
+      pointA.y -= 30;
     }
 
     // console.log("sceneX", sceneX, "sceneY", sceneY);
@@ -9033,73 +9081,81 @@ class App extends Component {
     // console.log("point1", point1.x.toFixed(2), point1.y.toFixed(2));
 
     if (type === "testing") {
-      this.testDraw.push(
-        {
+      // this.testDraw.push(
+      //   {
+      //     color: color,
+      //     x: point1.x,
+      //     y: point1.y,
+      //   },
+      //   {
+      //     color: color,
+      //     x: point.x,
+      //     y: point.y,
+      //   },
+      //   {
+      //     color: "red",
+      //     x: pointA.x,
+      //     y: pointA.y,
+      //   },
+      //   {
+      //     color: "purple",
+      //     x: pointB.x,
+      //     y: pointB.y,
+      //   }
+      // );
+      if (shape === "arc") {
+        this.testDraw.push({
+          type: "arcCrementer",
           color: color,
           x: point1.x,
           y: point1.y,
-        },
-        {
-          color: color,
-          x: point.x,
-          y: point.y,
-        },
-        {
-          color: "red",
-          x: pointA.x,
-          y: pointA.y,
-        },
-        {
-          color: "purple",
-          x: pointB.x,
-          y: pointB.y,
-        }
-      );
+        });
+      }
 
-      if (shape === "ringSection") {
+      if (shape === "ringSection" || shape === "sector") {
         this.testDraw.push({
+          type: "arcCrementer",
           color: "purple",
-          x: point2.x,
-          y: point2.y,
+          x: point1.x,
+          y: point1.y,
+          x2: point2.x,
+          y2: point2.y,
+          lineArray: connectingLineArray,
         });
       }
     }
-    if (type === "playerDirectionalAction") {
-      elem.points.push(
-        {
-          color: color,
-          x: point1.x,
-          y: point1.y,
-        },
-        {
-          color: color,
-          x: point.x,
-          y: point.y,
-        },
-        {
-          color: color,
-          x: pointA.x,
-          y: pointA.y,
-        },
-        {
-          color: color,
-          x: pointB.x,
-          y: pointB.y,
-        }
-      );
-      if (shape === "ringSection") {
+    if (
+      type === "playerDirectionalAction" ||
+      type === "obstacleBarrierDirectionalAction"
+    ) {
+      if (shape === "arc") {
         elem.points.push({
           color: color,
-          x: point2.x,
-          y: point2.y,
+          x: point1.x,
+          y: point1.y,
+        });
+      }
+      if (shape === "ringSection" || shape === "sector") {
+        elem.points.push({
+          color: color,
+          x: point1.x,
+          y: point1.y,
+          x2: point2.x,
+          y2: point2.y,
+          lineArray: connectingLineArray,
         });
       }
     }
 
-    let el = player.actionDirectionAnimationArray.find((x) => x.id === elem.id);
-    el = elem;
+    if (type === "playerDirectionalAction") {
+      let el = owner.actionDirectionAnimationArray.find((x) => x.id === elem.id);
+      el = elem;
+    }
+    if (type === "obstacleBarrierDirectionalAction") {
+      owner = elem;
+    }
 
-    return player;
+    return owner;
   };
   arcBoltCrementer = () => {};
   obstacleMoveCrementer = (obstacleCell, destCell) => {
@@ -10068,7 +10124,7 @@ class App extends Component {
           let countCalcDown;
           let countCalcUp = Math.floor(remainder / 2);
           if (player.elasticCounter.direction === this.getOppositeDirection(direction)) {
-            console.log("opposite direction!!");
+            // console.log("opposite direction!!");
             countCalcUp = Math.floor(remainder * 0.75); //0.66
             countCalcDown = Math.floor(remainder * 0.25); //0.33
           } else {
@@ -10078,19 +10134,19 @@ class App extends Component {
           player.elasticCounter.direction = direction;
           player.elasticCounter.subType = subType;
 
-          console.log(
-            "count",
-            player.defending.count,
-            "limit",
-            player.defending.limit,
-            "remainder",
-            remainder,
-            "calc up/dwn",
-            countCalcUp,
-            countCalcDown,
-            "dir",
-            player.elasticCounter.direction
-          );
+          // console.log(
+          //   "count",
+          //   player.defending.count,
+          //   "limit",
+          //   player.defending.limit,
+          //   "remainder",
+          //   remainder,
+          //   "calc up/dwn",
+          //   countCalcUp,
+          //   countCalcDown,
+          //   "dir",
+          //   player.elasticCounter.direction
+          // );
           player.elasticCounter.countUp.limit = countCalcUp;
           player.elasticCounter.countDown.limit = countCalcDown;
           player.elasticCounter.countUp.count = 0;
@@ -10709,8 +10765,9 @@ class App extends Component {
       myCellBlock: false,
     };
   };
-  checkCell = (cell) => {
+  checkCell = (cell, include) => {
     // console.log('check cell',cell);
+    // include = ["void", "deep", "hazard", "all"];
 
     let cellFree = true;
     let cell2 = this.gridInfo.find(
@@ -10726,15 +10783,30 @@ class App extends Component {
     if (cell2.item.name !== "") {
       cellFree = false;
     }
-    if (cell2.void.state === true) {
-      cellFree = false;
+    if (include.includes("void")) {
+      if (cell2.void.state === true || cell2.terrain.type === "void") {
+        cellFree = false;
+      }
     }
-    if (
-      cell2.terrain.type === "deep" ||
-      cell2.terrain.type === "hazard" ||
-      cell2.terrain.type === "void"
-    ) {
-      cellFree = false;
+    if (include.includes("deep")) {
+      if (cell2.terrain.type === "deep") {
+        cellFree = false;
+      }
+    }
+    if (include.includes("hazard")) {
+      if (cell2.terrain.type === "hazard") {
+        cellFree = false;
+      }
+    }
+    if (include.includes("all")) {
+      if (
+        cell2.void.state === true ||
+        cell2.terrain.type === "void" ||
+        cell2.terrain.type === "deep" ||
+        cell2.terrain.type === "hazard"
+      ) {
+        cellFree = false;
+      }
     }
 
     // PLAYERS 1&2 ALT RESPAWN POINTS!
@@ -10779,7 +10851,7 @@ class App extends Component {
     while (randomFreeCellChosen !== true) {
       cell.number.x = this.rnJesus(0, this.gridWidth);
       cell.number.y = this.rnJesus(0, this.gridWidth);
-      randomFreeCellChosen = this.checkCell(cell.number);
+      randomFreeCellChosen = this.checkCell(cell.number, ["all"]);
 
       if (randomFreeCellChosen !== true) {
         // console.log('getRandomFreeCell: not free',cell.number);
@@ -11160,7 +11232,7 @@ class App extends Component {
       // }
       this.setAutoCamera(`followBolt_${result.projectile.id}`, "");
     } else {
-      console.log("no setting auto cam: followBolt");
+      // console.log("no setting auto cam: followBolt");
     }
   };
   projectileCreator = (ownerType, owner, projectileType) => {
@@ -11517,7 +11589,7 @@ class App extends Component {
               }
               let dodged = false;
 
-              // CHECK FOR PLAYERS
+              // CHECK FOR PLAYERS, OBSTACLE &  REAR BARRIER COLLISION
               if (fwdBarrier !== true) {
                 if (bolt.ownerType === "player") {
                   for (const plyr of this.players) {
@@ -13272,7 +13344,7 @@ class App extends Component {
   };
   obstacleBarrierTrapChecker = (locationCell, ownerType) => {
     let trap = locationCell[ownerType].trap;
-    // console.log("obstacleBarrierTrapChecker", trap.trigger);
+    // console.log("obstacleBarrierTrapChecker", trap);
     const executeTrapAction = () => {
       // console.log("executeTrapAction");
       if (trap.acting.state === true) {
@@ -13281,34 +13353,10 @@ class App extends Component {
           if (trap.acting.count === trap.acting.peak) {
             // console.log("trap is acting: attack peak");
 
-            let whatDirection = this.rnJesus(0, 4);
-            switch (whatDirection) {
-              case 0:
-                trap.acting.direction = "none";
-                trap.acting.directionType = "thrust";
-                break;
-              case 1:
-                trap.acting.direction = "north";
-                trap.acting.directionType = "slash";
-                break;
-              case 2:
-                trap.acting.direction = "south";
-                trap.acting.directionType = "slash";
-                break;
-              case 3:
-                trap.acting.direction = "east";
-                trap.acting.directionType = "slash";
-                break;
-              case 4:
-                trap.acting.direction = "west";
-                trap.acting.directionType = "slash";
-                break;
-              default:
-                break;
-            }
             if (trap.item.subType === "crossbow") {
-              trap.acting.direction = "none";
-              trap.acting.directionType = "thrust";
+              trap.acting.direction = trap.direction;
+              trap.acting.directionType = "slash";
+
               if (trap.ammo > 0) {
                 trap.ammo--;
                 let result = this.projectileCreator(
@@ -13320,9 +13368,26 @@ class App extends Component {
                 this.getBoltTarget(result.projectile);
                 trap = result.owner.trap;
               } else {
-                console.log(
-                  "This trap is meant to fire a projectile but has no ammo. Do nothing"
-                );
+                console.log("This trap is meant to fire a projectile but has no ammo.");
+                if (trap.persistent === true) {
+                  console.log(
+                    "This trap is persistent but out of ammo. Reload from default"
+                  );
+                  let item = this.itemList.find((x) => {
+                    return x.name === trap.itemNameRef;
+                  });
+                  trap.item = {
+                    name: item.name,
+                    amount: item.amount,
+                    total: item.total,
+                    type: item.type,
+                    subType: item.subType,
+                    effect: item.effect,
+                  };
+                  if (trap.item.effect.split("+")[0] === "ammo") {
+                    trap.ammo = parseInt(trap.item.effect.split("+")[1]);
+                  }
+                }
               }
             }
             if (trap.item.subType === "sword" || trap.item.subType === "spear") {
@@ -13330,7 +13395,41 @@ class App extends Component {
             }
           }
           if (trap.acting.count < trap.acting.limit) {
+            // SET DIRECTION
+            if (trap.acting.count === 0) {
+              let whatDirection = this.rnJesus(0, 4);
+              switch (whatDirection) {
+                case 0:
+                  trap.acting.direction = "none";
+                  trap.acting.directionType = "thrust";
+                  break;
+                case 1:
+                  trap.acting.direction = "north";
+                  trap.acting.directionType = "slash";
+                  break;
+                case 2:
+                  trap.acting.direction = "south";
+                  trap.acting.directionType = "slash";
+                  break;
+                case 3:
+                  trap.acting.direction = "east";
+                  trap.acting.directionType = "slash";
+                  break;
+                case 4:
+                  trap.acting.direction = "west";
+                  trap.acting.directionType = "slash";
+                  break;
+                default:
+                  break;
+              }
+            }
+            if (trap.item.subType === "crossbow") {
+              trap.acting.direction = trap.direction;
+              trap.acting.directionType = "slash";
+            }
+
             trap.acting.count++;
+
             if (trap.acting.count < trap.acting.peak) {
               // console.log("trap is acting: windup", trap.acting.count);
               higlightCell();
@@ -13339,6 +13438,53 @@ class App extends Component {
               // console.log("trap is acting: cooldown", trap.acting.count);
             }
 
+            // SET DIRECTIONAL ATTACK ANIMATIONS
+            if (this.showDirectionalActionAnimation === true) {
+              let dirAnimSetCalcMod = 5;
+              let pullbackTime = 0;
+              let releaseTime = 0;
+              if (trap.acting.peak > 20) {
+                pullbackTime = trap.acting.peak + dirAnimSetCalcMod - 20;
+                releaseTime = trap.acting.peak + dirAnimSetCalcMod - 10;
+              } else {
+                pullbackTime = 1;
+                releaseTime = Math.ceil((trap.acting.peak + dirAnimSetCalcMod) / 2);
+              }
+
+              if (trap.acting.count === pullbackTime) {
+                trap = this.handleDirectionalActionAnimation(
+                  ownerType,
+                  "attacking",
+                  "pullback",
+                  locationCell,
+                  trap,
+                  releaseTime - pullbackTime,
+                  this.directionalAnimShape
+                );
+              }
+              if (trap.acting.count === releaseTime) {
+                let toRemove = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
+                  return (
+                    x.locationCell === locationCell.number &&
+                    x.ownerType === ownerType &&
+                    x.action === "attacking"
+                  );
+                });
+                this.obstacleBarrierActionAnimationArray.splice(toRemove, 1);
+                trap = this.handleDirectionalActionAnimation(
+                  ownerType,
+                  "attacking",
+                  "release",
+                  locationCell,
+                  trap,
+                  // (trap.acting.limit-releaseTime)
+                  trap.acting.peak + dirAnimSetCalcMod - releaseTime,
+                  this.directionalAnimShape
+                );
+              }
+            }
+
+            // POPUPS
             if (
               !this.cellPopups.find(
                 (x) =>
@@ -13381,6 +13527,15 @@ class App extends Component {
               ),
               1
             );
+
+            let toRemove = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
+              return (
+                x.locationCell === locationCell.number &&
+                x.ownerType === ownerType &&
+                x.action === "attacking"
+              );
+            });
+            this.obstacleBarrierActionAnimationArray.splice(toRemove, 1);
           }
         } else {
           // apply non attack action here
@@ -13624,8 +13779,9 @@ class App extends Component {
   obstacleBarrierTrapInitSet = (superType, type, data) => {
     // console.log("  obstacleBarrierTrapInitSet", data[type].trap.state);
     let trap = data[type].trap;
-
-    let item = this.itemList.find((x) => x.name === trap.itemNameRef);
+    let item = this.itemList.find((x) => {
+      return x.name === trap.itemNameRef;
+    });
     trap.item = {
       name: item.name,
       amount: item.amount,
@@ -13653,7 +13809,7 @@ class App extends Component {
           if (trap.direction === "") {
             availibleCells = this.getSurroundingCells(
               data.number,
-              30,
+              45,
               "walkable",
               false,
               false
@@ -13663,7 +13819,11 @@ class App extends Component {
                 trap.target = availibleCells
                   .slice()
                   .reverse()
-                  .find((x) => x.x === data.number.x || x.y === data.number.y);
+                  .find(
+                    (x) =>
+                      (x.x === data.number.x && x.y === data.number.y + 3) ||
+                      (x.y === data.number.y && x.x === data.number.x + 3)
+                  );
               } else {
                 if (trap.item.subType === "spear") {
                   // trap.target = availibleCells[1];
@@ -13694,6 +13854,7 @@ class App extends Component {
                     );
                 }
               }
+              trap.direction = this.getDirectionFromCells(data.number, trap.target);
               // console.log("availibleCells", data.number, availibleCells, trap.target);
               // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
@@ -13755,6 +13916,7 @@ class App extends Component {
             );
           } else {
             trap.target = cell;
+            trap.direction = this.getDirectionFromCells(data.number, trap.target);
             // console.log("barrier trap target set", data.number, trap.target, trap.ammo);
           }
         }
@@ -13764,12 +13926,13 @@ class App extends Component {
         }
       }
     }
+    // console.log("trap init set", trap);
     return trap;
   };
   customObstacleBarrierTrapSet = (instructionType, data) => {
     // when externalized, call and update gridinfo function
     let localGridInfo = [];
-    console.log("customObstacleBarrierTrapSet", instructionType);
+    // console.log("customObstacleBarrierTrapSet", instructionType);
     let type;
     let trapsToSet = [];
     const trapRandomizer = (trap) => {
@@ -14201,7 +14364,6 @@ class App extends Component {
     let inputDirection = "";
     let inputDirections = [];
     let directionalInputThresh = 0;
-    let directionalDefendThresh = 0;
     let directionChanged = false;
     let inputCount = 0;
     if (this.keyPressed[player.number - 1].north === true) {
@@ -14327,41 +14489,43 @@ class App extends Component {
     };
 
     const popup = (dir, prevDir) => {
-      let msg = dir + "Direction";
-      if (dir === "none") {
-        msg = "noDirection3";
-      }
-      let popup;
-      let popupsToRemove = [
-        "noDirection3",
-        "northDirection",
-        "southDirection",
-        "eastDirection",
-        "westDirection",
-      ];
-      popupsToRemove.splice(
-        popupsToRemove.findIndex((x) => x === msg),
-        1
-      );
-      for (const pop of popupsToRemove) {
-        popup = player.popups.find((x) => x.msg === pop);
-        if (popup) {
-          player.popups.splice(
-            player.popups.findIndex((x) => x.msg === pop),
-            1
-          );
+      if (this.hideDirectionalActionPopus !== true) {
+        let msg = dir + "Direction";
+        if (dir === "none") {
+          msg = "noDirection3";
         }
-      }
-      if (!player.popups.find((x) => x.msg === msg)) {
-        player.popups.push({
-          state: false,
-          count: 0,
-          limit: player.defending.limit,
-          type: "",
-          position: "",
-          msg: msg,
-          img: "",
-        });
+        let popup;
+        let popupsToRemove = [
+          "noDirection3",
+          "northDirection",
+          "southDirection",
+          "eastDirection",
+          "westDirection",
+        ];
+        popupsToRemove.splice(
+          popupsToRemove.findIndex((x) => x === msg),
+          1
+        );
+        for (const pop of popupsToRemove) {
+          popup = player.popups.find((x) => x.msg === pop);
+          if (popup) {
+            player.popups.splice(
+              player.popups.findIndex((x) => x.msg === pop),
+              1
+            );
+          }
+        }
+        if (!player.popups.find((x) => x.msg === msg)) {
+          player.popups.push({
+            state: false,
+            count: 0,
+            limit: player.defending.limit,
+            type: "",
+            position: "",
+            msg: msg,
+            img: "",
+          });
+        }
       }
     };
 
@@ -14416,7 +14580,7 @@ class App extends Component {
               }
               if (inputDirection === player[action].direction) {
                 if (player[action].count > player[action].peakCount) {
-                  console.log("past peak. no charging");
+                  // console.log("past peak. no charging");
                 } else {
                   if (inputCount > 1) {
                     console.log("directional attack w/ multiple inputs. feint attack");
@@ -14469,11 +14633,11 @@ class App extends Component {
               if (inputDirection === player[action].direction) {
                 // charge();
               } else {
-                console.log(
-                  "still time to set attack direction. changing direction",
-                  player[action].direction,
-                  inputDirection
-                );
+                // console.log(
+                //   "still time to set attack direction. changing direction",
+                //   player[action].direction,
+                //   inputDirection
+                // );
                 popup(inputDirection, player[action].direction);
                 player[action].direction = inputDirection;
                 player[action].directionType = "slash";
@@ -14509,7 +14673,7 @@ class App extends Component {
               }
               if (inputDirection === player[action].direction) {
                 if (player[action].count > player[action].peakCount) {
-                  console.log("past peak. no charging");
+                  // console.log("past peak. no charging");
                 } else {
                   if (inputCount > 1) {
                     console.log("directional attack w/ multiple inputs. feint attack");
@@ -14523,7 +14687,7 @@ class App extends Component {
           }
         }
       }
-      console.log("directional attack input thresh", directionalInputThresh);
+      // console.log("directional attack input thresh", directionalInputThresh);
     }
 
     if (action === "defending") {
@@ -14577,6 +14741,7 @@ class App extends Component {
                 "to",
                 inputDirection
               );
+              directionChanged = true;
               popup(inputDirection, player[action].direction);
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
@@ -14588,6 +14753,7 @@ class App extends Component {
                 player[action].direction,
                 "to none"
               );
+              directionChanged = true;
             }
             popup("none", player[action].direction);
             player[action].direction = "none";
@@ -14595,7 +14761,7 @@ class App extends Component {
           }
         } else {
           if (input === true) {
-            console.log("too late to change defend direction: count");
+            // console.log("too late to change defend direction: count");
           } else {
             if (player[action].direction === "" || player[action].directionType === "") {
               popup("none", player[action].direction);
@@ -14604,7 +14770,7 @@ class App extends Component {
             }
           }
         }
-        console.log("directional defend input thresh", directionalInputThresh);
+        // console.log("directional defend input thresh", directionalInputThresh);
       }
     }
 
@@ -14615,59 +14781,100 @@ class App extends Component {
       directionChanged: directionChanged,
     };
   };
-  handlePlayerDirectionalActionAnimation = (mode, action, phase, player, arrayElemId) => {
-    // modes:
-    //   init, update, reset, cancel
-    //    id used for update, reset, cancel
+  handleDirectionalActionAnimation = (
+    ownerType,
+    action,
+    phase,
+    owner,
+    arrayElemId,
+    xCount,
+    shape
+  ) => {
     // action:
     //   attacking, defending
     // phase:
     // pullback, release
-    let directionType = player[action].directionType;
-    let id = arrayElemId;
+
+    let id;
     let arcAngle = 0;
     let startAngle = 0;
     let direction = "counterClockwise"; // 'clockwise' or 'counterClockwise'
     let face = "top"; // top,front,side
-    let radius = 40;
+    let radius = 50;
     let color = "red";
     if (action === "defending") {
-      color = "blue";
+      color = "yellow";
     }
+    let directionType = "";
+    let ownerDirection = "";
+    let actionDirection = "";
+    let ownerlocationCell;
+    if (ownerType === "player") {
+      directionType = owner[action].directionType;
+      ownerDirection = owner.direction;
+      actionDirection = owner[action].direction;
+      ownerlocationCell = owner.currentPosition.cell.number;
+    } else {
+      directionType = arrayElemId.acting.directionType;
+      ownerDirection = arrayElemId.direction;
+      actionDirection = arrayElemId.acting.direction;
+      ownerlocationCell = owner.number;
+    }
+
     // starAngles:
     // top face: 0 = east, 90 = south, 180 = west, 270 = north
     // side face: 0 = south, 90 = top/up, 180 = north/right, 270 = bottom/down
     // front face: 0 = bottom/down, 90 = back/left/west, 180 = top/up, 270 = front/right
 
-    let countLimit = 15;
-    let delay = 300;
+    let countLimit = 10;
+    let delay = 20;
 
-    // maybe put FIX ME code here
-    // check action count
-    // count should be based on phase & action count based on direction & phase
+    if (ownerType === "player" || ownerType === "obstacle" || ownerType === "barrier") {
+      console.log("directional action anim count", xCount);
+      countLimit = xCount;
+      if (countLimit > 18) {
+        countLimit = 18;
+      }
+      if (countLimit < 8) {
+        countLimit = 8;
+      }
+    }
 
     if (
       directionType === "thrust" ||
-      (action === "attacking" && player.currentWeapon.type === "crossbow")
+      (action === "attacking" &&
+        (owner.currentWeapon?.type === "crossbow" ||
+          owner[ownerType]?.trap?.item?.subType === "crossbow"))
     ) {
       countLimit = 10;
 
       if (phase === "release") {
         countLimit = 15;
       }
+      if (
+        owner.currentWeapon?.type === "crossbow" ||
+        owner[ownerType]?.trap?.item?.subType === "crossbow"
+      ) {
+        directionType = "thrust";
+      }
 
-      if (mode === "init") {
-        id = player.actionDirectionAnimationArray.length + 1;
+      if (ownerType === "player") {
+        id = owner.actionDirectionAnimationArray.length + 1;
 
-        player.actionDirectionAnimationArray.push({
+        owner.actionDirectionAnimationArray.push({
           id: id,
-          actionDirectionType: "thrust",
+          ownerType: ownerType,
+          ownerDirection: ownerDirection,
+          action: action,
+          actionDirection: actionDirection,
+          actionDirectionType: directionType,
           phase: phase,
           radius: radius,
           angle: arcAngle,
           startAngle: startAngle,
           direction: direction,
           face: face,
+          shape: shape,
           color: color,
           counter: {
             count: 0,
@@ -14679,23 +14886,55 @@ class App extends Component {
             limit: delay,
           },
           points: [],
+          locationCell: ownerlocationCell,
+        });
+      } else {
+        id = this.obstacleBarrierActionAnimationArray.length + 1;
+
+        this.obstacleBarrierActionAnimationArray.push({
+          id: id,
+          ownerType: ownerType,
+          ownerDirection: ownerDirection,
+          action: action,
+          actionDirection: actionDirection,
+          actionDirectionType: directionType,
+          phase: phase,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAngle,
+          direction: direction,
+          face: face,
+          shape: shape,
+          color: color,
+          counter: {
+            count: 0,
+            limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
+          },
+          points: [],
+          locationCell: ownerlocationCell,
         });
       }
     } else {
-      if (phase === "pullback") {
-        arcAngle = 90;
-      }
-      if (phase === "release") {
-        arcAngle = 180;
-        color = "blue";
-      }
       if (action === "defending") {
         // arcAngle = 90;
         phase = "release";
       }
 
-      if (player.direction === "north") {
-        if (player[action].direction === "north") {
+      if (phase === "pullback") {
+        arcAngle = 90;
+      }
+      if (phase === "release") {
+        arcAngle = 180;
+        // color = "blue";
+      }
+
+      if (ownerDirection === "north") {
+        if (actionDirection === "north") {
           face = "side";
           if (phase === "pullback") {
             startAngle = 90;
@@ -14706,7 +14945,7 @@ class App extends Component {
             direction = "clockwise";
           }
         }
-        if (player[action].direction === "south") {
+        if (actionDirection === "south") {
           face = "side";
           if (phase === "pullback") {
             startAngle = 270;
@@ -14719,8 +14958,8 @@ class App extends Component {
         }
       }
 
-      if (player.direction === "south") {
-        if (player[action].direction === "north") {
+      if (ownerDirection === "south") {
+        if (actionDirection === "north") {
           face = "side";
           if (phase === "pullback") {
             startAngle = 270;
@@ -14731,7 +14970,7 @@ class App extends Component {
             direction = "clockwise";
           }
         }
-        if (player[action].direction === "south") {
+        if (actionDirection === "south") {
           face = "side";
           if (phase === "pullback") {
             startAngle = 90;
@@ -14744,8 +14983,8 @@ class App extends Component {
         }
       }
       // ----------------
-      if (player.direction === "east") {
-        if (player[action].direction === "east") {
+      if (ownerDirection === "east") {
+        if (actionDirection === "east") {
           face = "front";
           if (phase === "pullback") {
             startAngle = 180;
@@ -14756,7 +14995,7 @@ class App extends Component {
             direction = "clockwise";
           }
         }
-        if (player[action].direction === "west") {
+        if (actionDirection === "west") {
           face = "front";
           if (phase === "pullback") {
             startAngle = 0;
@@ -14769,8 +15008,8 @@ class App extends Component {
         }
       }
       // ----------------
-      if (player.direction === "west") {
-        if (player[action].direction === "east") {
+      if (ownerDirection === "west") {
+        if (actionDirection === "east") {
           face = "front";
           if (phase === "pullback") {
             startAngle = 0;
@@ -14781,21 +15020,21 @@ class App extends Component {
             direction = "clockwise";
           }
         }
-        if (player[action].direction === "west") {
+        if (actionDirection === "west") {
           face = "front";
           if (phase === "pullback") {
             startAngle = 180;
             direction = "clockwise";
           }
           if (phase === "release") {
-            startAngle = 200;
+            startAngle = 270;
             direction = "counterClockwise";
           }
         }
       }
       // ----------------
-      if (player.direction === "east") {
-        if (player[action].direction === "north") {
+      if (ownerDirection === "east") {
+        if (actionDirection === "north") {
           face = "top";
           if (phase === "pullback") {
             startAngle = 270;
@@ -14806,7 +15045,7 @@ class App extends Component {
             direction = "clockwise";
           }
         }
-        if (player[action].direction === "south") {
+        if (actionDirection === "south") {
           face = "top";
           if (phase === "pullback") {
             startAngle = 90;
@@ -14818,8 +15057,8 @@ class App extends Component {
           }
         }
       }
-      if (player.direction === "west") {
-        if (player[action].direction === "north") {
+      if (ownerDirection === "west") {
+        if (actionDirection === "north") {
           face = "top";
           if (phase === "pullback") {
             startAngle = 270;
@@ -14830,7 +15069,7 @@ class App extends Component {
             direction = "counterClockwise";
           }
         }
-        if (player[action].direction === "south") {
+        if (actionDirection === "south") {
           face = "top";
           if (phase === "pullback") {
             startAngle = 90;
@@ -14843,8 +15082,8 @@ class App extends Component {
         }
       }
       // ----------------
-      if (player.direction === "north") {
-        if (player[action].direction === "east") {
+      if (ownerDirection === "north") {
+        if (actionDirection === "east") {
           face = "top";
           if (phase === "pullback") {
             startAngle = 0;
@@ -14855,7 +15094,7 @@ class App extends Component {
             direction = "counterClockwise";
           }
         }
-        if (player[action].direction === "west") {
+        if (actionDirection === "west") {
           face = "top";
           if (phase === "pullback") {
             startAngle = 180;
@@ -14867,8 +15106,8 @@ class App extends Component {
           }
         }
       }
-      if (player.direction === "south") {
-        if (player[action].direction === "east") {
+      if (ownerDirection === "south") {
+        if (actionDirection === "east") {
           face = "top";
           if (phase === "pullback") {
             startAngle = 0;
@@ -14879,7 +15118,7 @@ class App extends Component {
             direction = "clockwise";
           }
         }
-        if (player[action].direction === "west") {
+        if (actionDirection === "west") {
           face = "top";
           if (phase === "pullback") {
             startAngle = 180;
@@ -14892,11 +15131,15 @@ class App extends Component {
         }
       }
 
-      if (mode === "init") {
-        id = player.actionDirectionAnimationArray.length + 1;
+      if (ownerType === "player") {
+        id = owner.actionDirectionAnimationArray.length + 1;
 
-        player.actionDirectionAnimationArray.push({
+        owner.actionDirectionAnimationArray.push({
           id: id,
+          ownerType: ownerType,
+          ownerDirection: ownerDirection,
+          action: action,
+          actionDirection: actionDirection,
           actionDirectionType: directionType,
           phase: phase,
           radius: radius,
@@ -14904,6 +15147,7 @@ class App extends Component {
           startAngle: startAngle,
           direction: direction,
           face: face,
+          shape: shape,
           color: color,
           counter: {
             count: 0,
@@ -14915,14 +15159,46 @@ class App extends Component {
             limit: delay,
           },
           points: [],
+          locationCell: ownerlocationCell,
+        });
+      } else {
+        id = this.obstacleBarrierActionAnimationArray.length + 1;
+
+        this.obstacleBarrierActionAnimationArray.push({
+          id: id,
+          ownerType: ownerType,
+          ownerDirection: ownerDirection,
+          action: action,
+          actionDirection: actionDirection,
+          actionDirectionType: directionType,
+          phase: phase,
+          radius: radius,
+          angle: arcAngle,
+          startAngle: startAngle,
+          direction: direction,
+          face: face,
+          shape: shape,
+          color: color,
+          counter: {
+            count: 0,
+            limit: countLimit,
+          },
+          delay: {
+            state: false,
+            count: 0,
+            limit: delay,
+          },
+          points: [],
+          locationCell: ownerlocationCell,
         });
       }
     }
 
-    if (mode === "clear") {
-      player.actionDirectionAnimationArray = [];
+    if (ownerType === "player") {
+      return owner;
+    } else {
+      return arrayElemId;
     }
-    return player;
   };
   meleeAttackPeak = (ownerType, owner) => {
     // console.log("meleeAttackPeak");
@@ -14982,8 +15258,8 @@ class App extends Component {
       targetCell2 = this.gridInfo.find(
         (x) => x.number.x === cell2.x && x.number.y === cell2.y
       );
-      cell1Free = this.checkCell(targetCell1.number);
-      cell2Free = this.checkCell(targetCell2.number);
+      cell1Free = this.checkCell(targetCell1.number, []);
+      cell2Free = this.checkCell(targetCell2.number, []);
       myCellBlock = this.checkMyCellBarrier(ownerDirection, myCell);
 
       ownerWeaponType = owner.trap.item.subType;
@@ -14993,182 +15269,255 @@ class App extends Component {
       cell2Item = targetCell2.item.name !== "";
       cell2Rubble = targetCell2.rubble === true;
     }
+    let voidTarget = false;
+    if (!targetCell1) {
+      voidTarget = true;
+      console.log("Target is edge void. Do nothing.");
+    } else {
+      if (myCellBlock !== true) {
+        let boltTarget1 = false;
+        let boltTarget2 = false;
+        boltTarget1 = this.isBoltInCell(targetCell1.number);
+        if (targetCell2?.number) {
+          boltTarget2 = this.isBoltInCell(targetCell2.number);
+        }
 
-    if (myCellBlock !== true) {
-      let boltTarget1 = false;
-      let boltTarget2 = false;
-      boltTarget1 = this.isBoltInCell(targetCell1.number);
-      if (targetCell2?.number) {
-        boltTarget2 = this.isBoltInCell(targetCell2.number);
-      }
-
-      // SET STAM TYPE
-      if (ownerType === "player") {
-        if (owner.currentWeapon.name === "") {
-          playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
-          if (owner.attacking.blunt === true) {
-            playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+        // SET STAM TYPE
+        if (ownerType === "player") {
+          if (owner.currentWeapon.name === "") {
+            playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
+            if (owner.attacking.blunt === true) {
+              playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+            }
+          }
+          if (owner.attacking.blunt === true && owner.currentWeapon.name !== "") {
+            playerAttackStamType =
+              this.staminaCostRef.attack[owner.currentWeapon.type].blunt;
+          }
+          if (owner.currentWeapon.name !== "") {
+            playerAttackStamType =
+              this.staminaCostRef.attack[owner.currentWeapon.type].normal;
           }
         }
-        if (owner.attacking.blunt === true && owner.currentWeapon.name !== "") {
-          playerAttackStamType =
-            this.staminaCostRef.attack[owner.currentWeapon.type].blunt;
-        }
-        if (owner.currentWeapon.name !== "") {
-          playerAttackStamType =
-            this.staminaCostRef.attack[owner.currentWeapon.type].normal;
-        }
-      }
 
-      if (ownerWeaponType === "spear") {
-        this.cellsUnderAttack.push(
-          {
+        if (ownerWeaponType === "spear") {
+          this.cellsUnderAttack.push(
+            {
+              number: {
+                x: targetCell1.number.x,
+                y: targetCell1.number.y,
+              },
+              count: 1,
+              limit: 8,
+            },
+            {
+              number: {
+                x: targetCell2.number.x,
+                y: targetCell2.number.y,
+              },
+              count: 1,
+              limit: 8,
+            }
+          );
+          // TARGET CELL 1 IS NOT FREE, ITEM, BOLT, RUBBLE, ATTACK CELL1
+
+          if (targetCell1.barrier.state === true) {
+            if (
+              // targetCell1.barrier.position === ownerDirection ||
+              targetCell1.barrier.position === this.getOppositeDirection(ownerDirection)
+            ) {
+              // console.log(
+              //   "melee attack peak:",
+              //   ownerType,
+              //   owner.number,
+              //   owner.id,
+              //   "hit barrier w/ ",
+              //   ownerWeaponType,
+              //   " @ ",
+              //   targetCell1.number
+              // );
+              this.attackCellContents(
+                "melee",
+                ownerType,
+                owner,
+                targetCell1,
+                targetCell2,
+                myCell,
+                undefined
+              );
+            }
+          }
+          if (
+            cell1Free !== true ||
+            cell1Item === true ||
+            cell1Rubble === true ||
+            boltTarget1 === true
+          ) {
+            console.log(
+              "melee attack peak:",
+              ownerType,
+              owner.number,
+              owner.id,
+              "hit player, obstacle, bolt, item or rubble w/ ",
+              ownerWeaponType,
+              " @ ",
+              targetCell1.number
+            );
+            this.meleeAttackParse(ownerType, owner, 1);
+          }
+
+          // TARGET CELL 1 IS FREE NOT ITEM, BOLT, RUBBLE
+          if (
+            cell1Free === true &&
+            cell1Item !== true &&
+            cell1Rubble !== true &&
+            boltTarget1 !== true
+          ) {
+            if (
+              targetCell1.barrier.state === true &&
+              targetCell1.barrier.position === ownerDirection
+            ) {
+              // console.log(
+              //   "melee attack peak:",
+              //   ownerType,
+              //   owner.number,
+              //   owner.id,
+              //   "hit barrier w/ ",
+              //   ownerWeaponType,
+              //   " @ ",
+              //   targetCell1.number
+              // );
+              this.attackCellContents(
+                "melee",
+                ownerType,
+                owner,
+                targetCell1,
+                targetCell2,
+                myCell,
+                undefined
+              );
+            }
+
+            if (
+              targetCell2.barrier.state === true &&
+              targetCell2.barrier.position === this.getOppositeDirection(ownerDirection)
+            ) {
+              // console.log(
+              //   "melee attack peak:",
+              //   ownerType,
+              //   owner.number,
+              //   owner.id,
+              //   "hit barrier w/ ",
+              //   ownerWeaponType,
+              //   " @ ",
+              //   targetCell2.number
+              // );
+              this.attackCellContents(
+                "melee",
+                ownerType,
+                owner,
+                targetCell1,
+                targetCell2,
+                myCell,
+                undefined
+              );
+            }
+
+            // TARGET CELL 2 IS NOT FREE HAS ITEM, BOLT, RUBBLE ATTACK
+            if (
+              cell2Free !== true ||
+              cell2Item === true ||
+              cell2Rubble === true ||
+              boltTarget2 === true
+            ) {
+              // console.log(
+              //   "melee attack peak:",
+              //   ownerType,
+              //   owner.number,
+              //   owner.id,
+              //   "hit player, obstacle, bolt, item or rubble w/ ",
+              //   ownerWeaponType,
+              //   " @ ",
+              //   targetCell2.number
+              // );
+              this.meleeAttackParse(ownerType, owner, 2);
+            }
+
+            // TARGET CELL2 IS FREE AND NOT ITEM, BOLT, RUBBLE, MISS
+            if (
+              cell2Free === true &&
+              cell2Item !== true &&
+              cell2Rubble !== true &&
+              boltTarget2 !== true
+            ) {
+              if (ownerType === "player") {
+                if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+                  owner.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "missedAttack2",
+                    img: "",
+                  });
+                }
+                owner.stamina.current -= playerAttackStamType.pre;
+                console.log(
+                  "melee attack peak:",
+                  ownerType,
+                  owner.number,
+                  owner.id,
+                  " attacked empty cell @ ",
+                  targetCell2.number,
+                  "w/",
+                  ownerWeaponType
+                );
+              }
+            }
+          }
+        }
+
+        if (ownerWeaponType === "sword") {
+          this.cellsUnderAttack.push({
             number: {
               x: targetCell1.number.x,
               y: targetCell1.number.y,
             },
             count: 1,
             limit: 8,
-          },
-          {
-            number: {
-              x: targetCell2.number.x,
-              y: targetCell2.number.y,
-            },
-            count: 1,
-            limit: 8,
-          }
-        );
-        // TARGET CELL 1 IS NOT FREE, ITEM, BOLT, RUBBLE, ATTACK CELL1
-
-        if (targetCell1.barrier.state === true) {
+          });
+          // if (
+          //   targetCell1.barrier.state === true &&
+          //   (targetCell1.barrier.position === ownerDirection ||
+          //     targetCell1.barrier.position === this.getOppositeDirection(ownerDirection))
+          // ) {
+          //   console.log(
+          //     "melee attack peak:",
+          //     ownerType,
+          //     owner.number,
+          //     owner.id,
+          //     "hit barrier w/ ",
+          //     ownerWeaponType,
+          //     " @ ",
+          //     targetCell1.number
+          //   );
+          //   this.attackCellContents(
+          //     "melee",
+          //     ownerType,
+          //     owner,
+          //     targetCell1,
+          //     targetCell2,
+          //     myCell,
+          //     undefined
+          //   );
+          // }
+          // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
           if (
-            // targetCell1.barrier.position === ownerDirection ||
-            targetCell1.barrier.position === this.getOppositeDirection(ownerDirection)
-          ) {
-            // console.log(
-            //   "melee attack peak:",
-            //   ownerType,
-            //   owner.number,
-            //   owner.id,
-            //   "hit barrier w/ ",
-            //   ownerWeaponType,
-            //   " @ ",
-            //   targetCell1.number
-            // );
-            this.attackCellContents(
-              "melee",
-              ownerType,
-              owner,
-              targetCell1,
-              targetCell2,
-              myCell,
-              undefined
-            );
-          }
-        }
-        if (
-          cell1Free !== true ||
-          cell1Item === true ||
-          cell1Rubble === true ||
-          boltTarget1 === true
-        ) {
-          // console.log(
-          //   "melee attack peak:",
-          //   ownerType,
-          //   owner.number,
-          //   owner.id,
-          //   "hit player, obstacle, bolt, item or rubble w/ ",
-          //   ownerWeaponType,
-          //   " @ ",
-          //   targetCell1.number
-          // );
-          this.meleeAttackParse(ownerType, owner, 1);
-        }
-
-        // TARGET CELL 1 IS FREE NOT ITEM, BOLT, RUBBLE
-        if (
-          cell1Free === true &&
-          cell1Item !== true &&
-          cell1Rubble !== true &&
-          boltTarget1 !== true
-        ) {
-          if (
-            targetCell1.barrier.state === true &&
-            targetCell1.barrier.position === ownerDirection
-          ) {
-            // console.log(
-            //   "melee attack peak:",
-            //   ownerType,
-            //   owner.number,
-            //   owner.id,
-            //   "hit barrier w/ ",
-            //   ownerWeaponType,
-            //   " @ ",
-            //   targetCell1.number
-            // );
-            this.attackCellContents(
-              "melee",
-              ownerType,
-              owner,
-              targetCell1,
-              targetCell2,
-              myCell,
-              undefined
-            );
-          }
-
-          if (
-            targetCell2.barrier.state === true &&
-            targetCell2.barrier.position === this.getOppositeDirection(ownerDirection)
-          ) {
-            // console.log(
-            //   "melee attack peak:",
-            //   ownerType,
-            //   owner.number,
-            //   owner.id,
-            //   "hit barrier w/ ",
-            //   ownerWeaponType,
-            //   " @ ",
-            //   targetCell2.number
-            // );
-            this.attackCellContents(
-              "melee",
-              ownerType,
-              owner,
-              targetCell1,
-              targetCell2,
-              myCell,
-              undefined
-            );
-          }
-
-          // TARGET CELL 2 IS NOT FREE HAS ITEM, BOLT, RUBBLE ATTACK
-          if (
-            cell2Free !== true ||
-            cell2Item === true ||
-            cell2Rubble === true ||
-            boltTarget2 === true
-          ) {
-            // console.log(
-            //   "melee attack peak:",
-            //   ownerType,
-            //   owner.number,
-            //   owner.id,
-            //   "hit player, obstacle, bolt, item or rubble w/ ",
-            //   ownerWeaponType,
-            //   " @ ",
-            //   targetCell2.number
-            // );
-            this.meleeAttackParse(ownerType, owner, 2);
-          }
-
-          // TARGET CELL2 IS FREE AND NOT ITEM, BOLT, RUBBLE, MISS
-          if (
-            cell2Free === true &&
-            cell2Item !== true &&
-            cell2Rubble !== true &&
-            boltTarget2 !== true
+            cell1Free === true &&
+            cell1Item !== true &&
+            cell1Rubble !== true &&
+            boltTarget1 !== true
           ) {
             if (ownerType === "player") {
               if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
@@ -15184,151 +15533,16 @@ class App extends Component {
               }
               owner.stamina.current -= playerAttackStamType.pre;
               console.log(
-                "melee attack peak:",
+                "melee attack peak: ",
                 ownerType,
                 owner.number,
                 owner.id,
                 " attacked empty cell @ ",
-                targetCell2.number,
+                targetCell1.number,
                 "w/",
                 ownerWeaponType
               );
             }
-          }
-        }
-      }
-
-      if (ownerWeaponType === "sword") {
-        this.cellsUnderAttack.push({
-          number: {
-            x: targetCell1.number.x,
-            y: targetCell1.number.y,
-          },
-          count: 1,
-          limit: 8,
-        });
-        // if (
-        //   targetCell1.barrier.state === true &&
-        //   (targetCell1.barrier.position === ownerDirection ||
-        //     targetCell1.barrier.position === this.getOppositeDirection(ownerDirection))
-        // ) {
-        //   console.log(
-        //     "melee attack peak:",
-        //     ownerType,
-        //     owner.number,
-        //     owner.id,
-        //     "hit barrier w/ ",
-        //     ownerWeaponType,
-        //     " @ ",
-        //     targetCell1.number
-        //   );
-        //   this.attackCellContents(
-        //     "melee",
-        //     ownerType,
-        //     owner,
-        //     targetCell1,
-        //     targetCell2,
-        //     myCell,
-        //     undefined
-        //   );
-        // }
-        // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
-        if (
-          cell1Free === true &&
-          cell1Item !== true &&
-          cell1Rubble !== true &&
-          boltTarget1 !== true
-        ) {
-          if (ownerType === "player") {
-            if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
-              owner.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "missedAttack2",
-                img: "",
-              });
-            }
-            owner.stamina.current -= playerAttackStamType.pre;
-            console.log(
-              "melee attack peak: ",
-              ownerType,
-              owner.number,
-              owner.id,
-              " attacked empty cell @ ",
-              targetCell1.number,
-              "w/",
-              ownerWeaponType
-            );
-          }
-        }
-
-        // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
-        if (
-          cell1Free !== true ||
-          cell1Item === true ||
-          cell1Rubble === true ||
-          boltTarget1 === true
-        ) {
-          this.meleeAttackParse(ownerType, owner, 1);
-          // console.log(
-          //   "melee attack peak: ",
-          //   ownerType,
-          //   owner.number,
-          //   owner.id,
-          //   " hit player, obstacle, barrier, bolt, item or rubble w/ ",
-          //   ownerWeaponType,
-          //   " @ ",
-          //   targetCell1.number
-          // );
-        }
-      }
-
-      // UNARMED ATTACK
-      // CROSSBOW BLUNT ATTACK
-      if (ownerType === "player") {
-        // UNARMED ATTACK
-        if (owner.currentWeapon?.name === "") {
-          this.cellsUnderAttack.push({
-            number: {
-              x: owner.target.cell1.number.x,
-              y: owner.target.cell1.number.y,
-            },
-            count: 1,
-            limit: 8,
-          });
-
-          // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
-          if (
-            cell1Free === true &&
-            cell1Item !== true &&
-            cell1Rubble !== true &&
-            boltTarget1 !== true
-          ) {
-            if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
-              owner.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "missedAttack2",
-                img: "",
-              });
-            }
-
-            owner.stamina.current -= playerAttackStamType.pre;
-            console.log(
-              "melee attack peak: ",
-              ownerType,
-              owner.number,
-              owner.id,
-              " attacked empty cell @ ",
-              targetCell1.number,
-              "unarmed"
-            );
           }
 
           // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
@@ -15344,19 +15558,19 @@ class App extends Component {
             //   ownerType,
             //   owner.number,
             //   owner.id,
-            //   " hit player, obstacle, barrier, bolt, item or rubble unarmed  @ ",
+            //   " hit player, obstacle, barrier, bolt, item or rubble w/ ",
+            //   ownerWeaponType,
+            //   " @ ",
             //   targetCell1.number
             // );
           }
         }
 
+        // UNARMED ATTACK
         // CROSSBOW BLUNT ATTACK
-        if (
-          owner.currentWeapon.type === "crossbow" ||
-          owner.currentWeapon.type === "longbow"
-        ) {
-          // CROSSBOW BLUNT ATTACK
-          if (owner.attacking.blunt === true) {
+        if (ownerType === "player") {
+          // UNARMED ATTACK
+          if (owner.currentWeapon?.name === "") {
             this.cellsUnderAttack.push({
               number: {
                 x: owner.target.cell1.number.x,
@@ -15366,34 +15580,13 @@ class App extends Component {
               limit: 8,
             });
 
-            // if (
-            //   targetCell1.barrier.state === true &&
-            //   (targetCell1.barrier.position === ownerDirection ||
-            //     targetCell1.barrier.position === this.getOppositeDirection(ownerDirection))
-            // ) {
-            //   console.log(
-            //     "melee attack peak:",
-            //     ownerType,
-            //     owner.number,
-            //     owner.id,
-            //     "blunt attacked barrier w/ ",
-            //     ownerWeaponType,
-            //     " @ ",
-            //     targetCell21.number
-            //   );
-            //   this.attackCellContents(
-            //     "melee",
-            //     ownerType,
-            //     owner,
-            //     targetCell1,
-            //     targetCell2,
-            //     myCell,
-            //     undefined
-            //   );
-            // }
-
-            // TARGET CELL 1 FREE NO ITEM OR BOLT
-            if (cell1Free === true && cell1Item === true && boltTarget1 !== true) {
+            // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
+            if (
+              cell1Free === true &&
+              cell1Item !== true &&
+              cell1Rubble !== true &&
+              boltTarget1 !== true
+            ) {
               if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
                 owner.popups.push({
                   state: false,
@@ -15412,17 +15605,17 @@ class App extends Component {
                 ownerType,
                 owner.number,
                 owner.id,
-                " blunt attacked empty cell @ ",
+                " attacked empty cell @ ",
                 targetCell1.number,
-                "w/",
-                owner.currentWeapon.type
+                "unarmed"
               );
             }
 
-            // TARGET CELL 1 NOT FREE, OR ITEM OR BOLT
+            // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
             if (
               cell1Free !== true ||
-              player.target.cell1.occupant.type === "item" ||
+              cell1Item === true ||
+              cell1Rubble === true ||
               boltTarget1 === true
             ) {
               this.meleeAttackParse(ownerType, owner, 1);
@@ -15431,37 +15624,126 @@ class App extends Component {
               //   ownerType,
               //   owner.number,
               //   owner.id,
-              //   " blunt attacked bolt, item or w/ ",
-              //   ownerWeaponType,
-              //   " @ ",
+              //   " hit player, obstacle, barrier, bolt, item or rubble unarmed  @ ",
               //   targetCell1.number
               // );
             }
           }
+
+          // CROSSBOW BLUNT ATTACK
+          if (
+            owner.currentWeapon.type === "crossbow" ||
+            owner.currentWeapon.type === "longbow"
+          ) {
+            // CROSSBOW BLUNT ATTACK
+            if (owner.attacking.blunt === true) {
+              this.cellsUnderAttack.push({
+                number: {
+                  x: owner.target.cell1.number.x,
+                  y: owner.target.cell1.number.y,
+                },
+                count: 1,
+                limit: 8,
+              });
+
+              // if (
+              //   targetCell1.barrier.state === true &&
+              //   (targetCell1.barrier.position === ownerDirection ||
+              //     targetCell1.barrier.position === this.getOppositeDirection(ownerDirection))
+              // ) {
+              //   console.log(
+              //     "melee attack peak:",
+              //     ownerType,
+              //     owner.number,
+              //     owner.id,
+              //     "blunt attacked barrier w/ ",
+              //     ownerWeaponType,
+              //     " @ ",
+              //     targetCell21.number
+              //   );
+              //   this.attackCellContents(
+              //     "melee",
+              //     ownerType,
+              //     owner,
+              //     targetCell1,
+              //     targetCell2,
+              //     myCell,
+              //     undefined
+              //   );
+              // }
+
+              // TARGET CELL 1 FREE NO ITEM OR BOLT
+              if (cell1Free === true && cell1Item === true && boltTarget1 !== true) {
+                if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+                  owner.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "missedAttack2",
+                    img: "",
+                  });
+                }
+
+                owner.stamina.current -= playerAttackStamType.pre;
+                console.log(
+                  "melee attack peak: ",
+                  ownerType,
+                  owner.number,
+                  owner.id,
+                  " blunt attacked empty cell @ ",
+                  targetCell1.number,
+                  "w/",
+                  owner.currentWeapon.type
+                );
+              }
+
+              // TARGET CELL 1 NOT FREE, OR ITEM OR BOLT
+              if (
+                cell1Free !== true ||
+                player.target.cell1.occupant.type === "item" ||
+                boltTarget1 === true
+              ) {
+                this.meleeAttackParse(ownerType, owner, 1);
+                // console.log(
+                //   "melee attack peak: ",
+                //   ownerType,
+                //   owner.number,
+                //   owner.id,
+                //   " blunt attacked bolt, item or w/ ",
+                //   ownerWeaponType,
+                //   " @ ",
+                //   targetCell1.number
+                // );
+              }
+            }
+          }
         }
+      }
+
+      // ATTACK MY CELL BARRIER
+      else {
+        console.log(
+          "melee attak peak: ",
+          ownerType,
+          owner.number,
+          owner.id,
+          "s mycell barrier is in the way at",
+          myCell.number
+        );
+        this.attackCellContents(
+          "melee",
+          ownerType,
+          owner,
+          targetCell1,
+          targetCell2,
+          myCell,
+          undefined
+        );
       }
     }
 
-    // ATTACK MY CELL BARRIER
-    else {
-      console.log(
-        "melee attak peak: ",
-        ownerType,
-        owner.number,
-        owner.id,
-        "s mycell barrier is in the way at",
-        myCell.number
-      );
-      this.attackCellContents(
-        "melee",
-        ownerType,
-        owner,
-        targetCell1,
-        targetCell2,
-        myCell,
-        undefined
-      );
-    }
     if (ownerType === "player") {
       this.players[owner.number - 1] = owner;
     }
@@ -15622,7 +15904,8 @@ class App extends Component {
       }
       let defendPeak = targetPlayerRef.defending.animRef.peak[defendType];
       if (
-        targetPlayerRef.defending.count === defendPeak ||
+        (targetPlayerRef.defending.count > 0 &&
+          targetPlayerRef.defending.count === defendPeak) ||
         targetPlayerRef.defending.decay.state === true
       ) {
         return true;
@@ -16518,6 +16801,17 @@ class App extends Component {
 
     let deflected = false;
     let x;
+    let boltChargePercentage = 0;
+    let boltOwner;
+    if (ownerType === "player") {
+      const directionalInputThresh = Math.ceil(
+        this.players[bolt.owner - 1].attacking.animRef.peak.crossbow.slash.normal / 2
+      );
+      boltChargePercentage =
+        (bolt.charge /
+          (this.players[bolt.owner - 1].attacking.peakCount - directionalInputThresh)) *
+        100;
+    }
 
     this.cellsUnderAttack.push({
       number: {
@@ -16557,9 +16851,9 @@ class App extends Component {
       if (target.currentWeapon.name === "") {
         defendType = "unarmed";
       }
-      let defendPeak = target.defending.animRef.peak[defendType];
+      let defendPeak = target.defending.peakCount;
       if (
-        target.defending.count === defendPeak ||
+        (target.defending.count > 0 && target.defending.count === defendPeak) ||
         target.defending.decay.state === true
       ) {
         playerDefending = true;
@@ -16611,40 +16905,67 @@ class App extends Component {
           deflected !== true
         ) {
           // PLAYER IS ATTACKING ARMED
+
           if (target.attacking.peak === true && weapon !== "unarmed") {
             // CHANCE TO KILL BOLT & PUSHBACK
-            if (this.rnJesus(1, target.crits.pushBack) === 1) {
-              console.log(
-                "bolt hit plyr",
-                target.number,
-                "from the side. by",
-                bolt.ownerType,
-                bolt.owner,
-                "but they attacked it successfully. Pushback?"
-              );
-              if (!target.popups.find((x) => x.msg === "boltKilled")) {
-                target.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 30,
-                  type: "",
-                  position: "",
-                  msg: "boltKilled",
-                  img: "",
-                });
-              }
-              this.pushBack(target, this.getOppositeDirection(target.direction));
-              target.success.attackSuccess = {
-                state: true,
-                count: 1,
-                limit: target.success.attackSuccess.limit,
-              };
+            // ONLY SLASH IN OPPOSITE DIRECTION CAN KILL BOLT
+            if (
+              target.attacking.directionType === "slash" &&
+              target.attacking.direction === this.getOppositeDirection(bolt.direction)
+            ) {
+              if (this.rnJesus(1, target.crits.pushBack + bolt.charge) === 1) {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the side. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they attacked it successfully. Pushback?"
+                );
+                if (!target.popups.find((x) => x.msg === "boltKilled")) {
+                  target.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "boltKilled",
+                    img: "",
+                  });
+                }
+                this.pushBack(target, this.getOppositeDirection(target.direction));
+                target.success.attackSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: target.success.attackSuccess.limit,
+                };
 
-              // FINISH
-              x = this.projectiles.find((x) => x.id === bolt.id);
-              x = bolt;
-              this.players[target.number - 1] = target;
-              return;
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
+              }
+
+              // OR BE INJURED
+              else {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the side. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they attacked it unsuccessfully due to bolt charge roll. Damage & Deflect?"
+                );
+                this.handleProjectileDamage(bolt, ownerType, "player", target);
+                this.setDeflection(target, "attacked", false);
+                deflected = true;
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
+              }
             }
 
             // OR BE INJURED
@@ -16655,7 +16976,7 @@ class App extends Component {
                 "from the side. by",
                 bolt.ownerType,
                 bolt.owner,
-                "but they attacked it unsuccessfully. Damage & Deflect?"
+                "but they attacked it unsuccessfully due to attack direction. Damage & Deflect?"
               );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
@@ -16711,62 +17032,22 @@ class App extends Component {
             }
             // ARMED DEFENSE
             else {
-              // PEAK DEFEND
-              if (target.defending.peak === true) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the side. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they parried"
-                );
-                target.stamina.current += this.staminaCostRef.defend.peak;
-                target.success.defendSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: target.success.defendSuccess.limit,
-                };
-                target.statusDisplay = {
-                  state: true,
-                  status: "Parry!",
-                  count: 1,
-                  limit: target.statusDisplay.limit,
-                };
-                if (!target.popups.find((x) => x.msg === "attackParried")) {
-                  target.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: "",
-                    position: "",
-                    msg: "attackParried",
-                    img: "",
-                  });
-                }
-                if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                  this.pushBack(target, this.getOppositeDirection(target.direction));
-                }
-
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
-              }
-              // OFF PEAK DEFEND
-              // if (target.defending.decay.state === true && target.defending.peak !== true) {
-              if (target.defending.peak !== true) {
-                // CHANCE FOR DEFEND SUCCESS
-                if (this.rnJesus(1, target.crits.guardBreak) !== 1) {
+              // ONLY SLASH IN OPPOSITE DIRECTION CAN DEFEND BOLT
+              if (
+                target.attacking.directionType === "slash" &&
+                target.attacking.direction === this.getOppositeDirection(bolt.direction)
+              ) {
+                // CHANCE TO BE PUSHED BACK INCREASES WITH BOLT CHARGE
+                if (target.defending.peak === true) {
                   console.log(
                     "bolt hit plyr",
                     target.number,
                     "from the side. by",
                     bolt.ownerType,
                     bolt.owner,
-                    "but they off-peak defended successfully"
+                    "but they parried. Pushback?"
                   );
+                  target.stamina.current += this.staminaCostRef.defend.peak;
                   target.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -16774,50 +17055,119 @@ class App extends Component {
                   };
                   target.statusDisplay = {
                     state: true,
-                    status: "Defend",
+                    status: "Parry!",
                     count: 1,
                     limit: target.statusDisplay.limit,
                   };
-                  if (!target.popups.find((x) => x.msg === "defendSuccess")) {
+                  if (!target.popups.find((x) => x.msg === "attackParried")) {
                     target.popups.push({
                       state: false,
                       count: 0,
-                      limit: 25,
+                      limit: 30,
                       type: "",
                       position: "",
-                      msg: "defendSuccess",
+                      msg: "attackParried",
                       img: "",
                     });
                   }
-                  if (this.rnJesus(1, target.crits.pushBack) === 1) {
+                  // CHANCE TO BE PUSHED BACK INCREASES WITH BOLT CHARGE
+                  if (this.rnJesus(1, target.crits.pushBack + bolt.charge) !== 1) {
+                    console.log("and were pushed back due to bolt charge");
                     this.pushBack(target, this.getOppositeDirection(target.direction));
                   }
+
                   // FINISH
                   x = this.projectiles.find((x) => x.id === bolt.id);
                   x = bolt;
                   this.players[target.number - 1] = target;
                   return;
                 }
+                // OFF PEAK DEFEND
 
-                // DEFEND FAILURE DAMAGE, DEFLECT || DEFLECT + PUSHBACK
-                else {
-                  console.log(
-                    "bolt hit plyr",
-                    target.number,
-                    "from the side. by",
-                    bolt.ownerType,
-                    bolt.owner,
-                    "but they off-peak defended unsuccessfully. Damage, Deflect, Pushback?"
-                  );
-                  this.handleProjectileDamage(bolt, ownerType, "player", target);
+                // CHANCE FOR DEFEND SUCCESS
+                // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF DEFEND SUCCESS
+                if (target.defending.peak !== true) {
+                  if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the side. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they off-peak defended successfully overcoming bolt charge"
+                    );
+                    target.success.defendSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: target.success.defendSuccess.limit,
+                    };
+                    target.statusDisplay = {
+                      state: true,
+                      status: "Defend",
+                      count: 1,
+                      limit: target.statusDisplay.limit,
+                    };
+                    if (!target.popups.find((x) => x.msg === "defendSuccess")) {
+                      target.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: "",
+                        position: "",
+                        msg: "defendSuccess",
+                        img: "",
+                      });
+                    }
+                    if (this.rnJesus(1, target.crits.pushBack) === 1) {
+                      this.pushBack(target, this.getOppositeDirection(target.direction));
+                    }
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
 
-                  deflected = true;
-                  // FINISH
-                  x = this.projectiles.find((x) => x.id === bolt.id);
-                  x = bolt;
-                  this.players[target.number - 1] = target;
-                  return;
+                  // DEFEND FAILURE DAMAGE, DEFLECT || DEFLECT + PUSHBACK
+                  else {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the side. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they off-peak defended unsuccessfully due to bolt charge. Damage, Deflect, Pushback?"
+                    );
+                    this.handleProjectileDamage(bolt, ownerType, "player", target);
+
+                    deflected = true;
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
                 }
+              }
+
+              // OR BE INJURED
+              else {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the side. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they defended it unsuccessfully due to action direction. Damage & Deflect?"
+                );
+                this.handleProjectileDamage(bolt, ownerType, "player", target);
+                this.setDeflection(target, "attacked", false);
+                deflected = true;
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
               }
             }
           }
@@ -16849,47 +17199,12 @@ class App extends Component {
           bolt.direction === this.getOppositeDirection(target.direction) &&
           deflected !== true
         ) {
-          // PLAYER ARMED AND ATTACKING
-          if (target.attacking.peak === true && weapon !== "unarmed") {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the front. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they attacked successfully. pushback target?"
-            );
-            if (!target.popups.find((x) => x.msg === "boltKilled")) {
-              target.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "boltKilled",
-                img: "",
-              });
-            }
-            if (this.rnJesus(1, target.crits.pushBack) === 1) {
-              this.pushBack(target, this.getOppositeDirection(target.direction));
-            }
-            target.success.attackSuccess = {
-              state: true,
-              count: 1,
-              limit: target.success.attackSuccess.limit,
-            };
-            // FINISH
-            x = this.projectiles.find((x) => x.id === bolt.id);
-            x = bolt;
-            this.players[target.number - 1] = target;
-            return;
-          }
           // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
           if (target.attacking.peak === true && weapon === "unarmed") {
             console.log(
               "bolt hit plyr",
               target.number,
-              "from the side. by",
+              "from the front. by",
               bolt.ownerType,
               bolt.owner,
               "but they attacked successfully but unarmed. Damage, Deflect?"
@@ -16904,156 +17219,294 @@ class App extends Component {
             return;
           }
 
+          // PLAYER ARMED AND ATTACKING
+          // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
+          if (
+            target.attacking.directionType === "slash" &&
+            (target.attacking.direction === this.getOppositeDirection(bolt.direction) ||
+              target.attacking.direction === bolt.direction)
+          ) {
+            if (target.attacking.peak === true && weapon !== "unarmed") {
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the front. by",
+                bolt.ownerType,
+                bolt.owner,
+                "but they attacked successfully. pushback target?"
+              );
+              if (!target.popups.find((x) => x.msg === "boltKilled")) {
+                target.popups.push({
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: "",
+                  position: "",
+                  msg: "boltKilled",
+                  img: "",
+                });
+              }
+              if (this.rnJesus(1, bolt.charge - target.crits.pushBack) <= 1) {
+                console.log("and was pushed back due to bolt charge");
+                this.pushBack(target, this.getOppositeDirection(target.direction));
+              }
+              target.success.attackSuccess = {
+                state: true,
+                count: 1,
+                limit: target.success.attackSuccess.limit,
+              };
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
+            }
+          }
+
+          // TAKE DAMAGE/BE INJURED
+          else {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the front. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked unsuccessfully due to attack direction. Damage, Deflect?"
+            );
+            this.handleProjectileDamage(bolt, ownerType, "player", target);
+            this.setDeflection(target, "attacked", false);
+            deflected = true;
+            // FINISH
+            x = this.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            this.players[target.number - 1] = target;
+            return;
+          }
+
           // PLAYER DEFENDING
           if (playerDefending === true) {
-            if (weapon === "unarmed") {
-              // UNARMED PEAK DEFEND, SUCCESS
-              if (target.defending.peak === true) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they parried successfully unarmed."
-                );
-                // target.stamina.current += this.staminaCostRef.defend.peak;
-                target.success.defendSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: target.success.defendSuccess.limit,
-                };
-                target.statusDisplay = {
-                  state: true,
-                  status: "Parry!",
-                  count: 1,
-                  limit: target.statusDisplay.limit,
-                };
-                if (!target.popups.find((x) => x.msg === "attackParried")) {
-                  target.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: "",
-                    position: "",
-                    msg: "attackParried",
-                    img: "",
-                  });
+            // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
+            if (
+              target.attacking.directionType === "slash" &&
+              (target.attacking.direction === this.getOppositeDirection(bolt.direction) ||
+                target.attacking.direction === bolt.direction)
+            ) {
+              if (weapon === "unarmed") {
+                // UNARMED PEAK DEFEND, BOLT CHRG RNG SUCCESS ?
+                if (target.defending.peak === true) {
+                  // PARRIED & OVERCOME BOLT CHARGE
+
+                  if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the front. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they parried successfully unarmed overcoming bolt charge."
+                    );
+                    // target.stamina.current += this.staminaCostRef.defend.peak;
+                    target.success.defendSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: target.success.defendSuccess.limit,
+                    };
+                    target.statusDisplay = {
+                      state: true,
+                      status: "Parry!",
+                      count: 1,
+                      limit: target.statusDisplay.limit,
+                    };
+                    if (!target.popups.find((x) => x.msg === "attackParried")) {
+                      target.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: "",
+                        position: "",
+                        msg: "attackParried",
+                        img: "",
+                      });
+                    }
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
+                  // SUCCESSFUL PARRY BUT OVERCOME BY BOLT CHARGE. TAKE DAMAGE
+                  else {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the front. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they peak defended successfully unarmed and overcome by bolt charge. Damage deflect?"
+                    );
+                    this.handleProjectileDamage(bolt, ownerType, "player", target);
+                    this.setDeflection(target, "attacked", false);
+                    deflected = true;
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
                 }
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
+
+                // UNARMED OFF PEAK DEFEND, TAKE DAMAGE
+                if (target.defending.peak !== true) {
+                  console.log(
+                    "bolt hit plyr",
+                    target.number,
+                    "from the front. by",
+                    bolt.ownerType,
+                    bolt.owner,
+                    "but they off-peak defended successfully but unarmed. Damage deflect?"
+                  );
+                  this.handleProjectileDamage(bolt, ownerType, "player", target);
+                  this.setDeflection(target, "attacked", false);
+                  deflected = true;
+                  // FINISH
+                  x = this.projectiles.find((x) => x.id === bolt.id);
+                  x = bolt;
+                  this.players[target.number - 1] = target;
+                  return;
+                }
               }
 
-              // UNARMED OFF PEAK DEFEND, Take DAMAGE
-              // if (target.defending.decay.state === true && target.defending.peak !== true) {
-              if (target.defending.peak !== true) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they off-peak defended successfully unarmed. Damage deflect?"
-                );
-                this.handleProjectileDamage(bolt, ownerType, "player", target);
-                this.setDeflection(target, "attacked", false);
-                deflected = true;
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
+              // ARMED DEFENSE
+              else {
+                // ARMED PEAK DEFEND
+                if (target.defending.peak === true) {
+                  console.log(
+                    "bolt hit plyr",
+                    target.number,
+                    "from the front. by",
+                    bolt.ownerType,
+                    bolt.owner,
+                    "but they parried successfully armed. Pushback?"
+                  );
+                  target.stamina.current += this.staminaCostRef.defend.peak;
+                  target.success.defendSuccess = {
+                    state: true,
+                    count: 1,
+                    limit: target.success.defendSuccess.limit,
+                  };
+                  target.statusDisplay = {
+                    state: true,
+                    status: "Parry!",
+                    count: 1,
+                    limit: target.statusDisplay.limit,
+                  };
+                  if (!target.popups.find((x) => x.msg === "attackParried")) {
+                    target.popups.push({
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: "",
+                      position: "",
+                      msg: "attackParried",
+                      img: "",
+                    });
+                  }
+                  if (this.rnJesus(1, target.crits.pushBack + bolt.charge) === 1) {
+                    console.log("and was pushed back due to bolt charge");
+                    this.pushBack(target, this.getOppositeDirection(target.direction));
+                  }
+                  // FINISH
+                  x = this.projectiles.find((x) => x.id === bolt.id);
+                  x = bolt;
+                  this.players[target.number - 1] = target;
+                  return;
+                }
+
+                // ARMED OFF PEAK DEFEND
+                // IF BOLT CHARGE PERC IS OVER 90%, CHANCE TO DEFEND BREAK/TAKE DMG
+                if (target.defending.peak !== true) {
+                  if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the front. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they off-peak defended successfully armed overcoming bolt charge. Pushback?"
+                    );
+                    target.success.defendSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: target.success.defendSuccess.limit,
+                    };
+                    target.statusDisplay = {
+                      state: true,
+                      status: "Defend",
+                      count: 1,
+                      limit: target.statusDisplay.limit,
+                    };
+                    if (!target.popups.find((x) => x.msg === "defendSuccess")) {
+                      target.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: "",
+                        position: "",
+                        msg: "defendSuccess",
+                        img: "",
+                      });
+                    }
+                    if (this.rnJesus(1, target.crits.pushBack) === 1) {
+                      this.pushBack(target, this.getOppositeDirection(target.direction));
+                    }
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
+
+                  // TAKE DAMAGE/BE INJURED
+                  else {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the front. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they defended overcome by bolt charge. Damage, Deflect?"
+                    );
+                    this.handleProjectileDamage(bolt, ownerType, "player", target);
+                    this.setDeflection(target, "attacked", false);
+                    deflected = true;
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
+                }
               }
             }
 
-            // PLAYER DEFENDING AND ARMED, GUARANTEED DEFEND W/ CHANCE TO PUSH BACK
+            // TAKE DAMAGE/BE INJURED
             else {
-              if (target.defending.peak === true) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they parried successfully armed."
-                );
-                target.stamina.current += this.staminaCostRef.defend.peak;
-                target.success.defendSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: target.success.defendSuccess.limit,
-                };
-                target.statusDisplay = {
-                  state: true,
-                  status: "Parry!",
-                  count: 1,
-                  limit: target.statusDisplay.limit,
-                };
-                if (!target.popups.find((x) => x.msg === "attackParried")) {
-                  target.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: "",
-                    position: "",
-                    msg: "attackParried",
-                    img: "",
-                  });
-                }
-                if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                  this.pushBack(target, this.getOppositeDirection(target.direction));
-                }
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
-              }
-
-              // if (target.defending.decay.state === true && target.defending.peak !== true) {
-              if (target.defending.peak !== true) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they off-peak defended successfully armed. Pushback?"
-                );
-                target.success.defendSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: target.success.defendSuccess.limit,
-                };
-                target.statusDisplay = {
-                  state: true,
-                  status: "Defend",
-                  count: 1,
-                  limit: target.statusDisplay.limit,
-                };
-                if (!target.popups.find((x) => x.msg === "defendSuccess")) {
-                  target.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: "",
-                    position: "",
-                    msg: "defendSuccess",
-                    img: "",
-                  });
-                }
-                if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                  this.pushBack(target, this.getOppositeDirection(target.direction));
-                }
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
-              }
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the front. by",
+                bolt.ownerType,
+                bolt.owner,
+                "but they defended unsuccessfully & unarmed due to action direction . Damage, Deflect?"
+              );
+              this.handleProjectileDamage(bolt, ownerType, "player", target);
+              this.setDeflection(target, "attacked", false);
+              deflected = true;
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
             }
           }
 
@@ -17066,26 +17519,6 @@ class App extends Component {
               bolt.ownerType,
               bolt.owner,
               "but arent defending or attacking. Damage Deflect?"
-            );
-            this.handleProjectileDamage(bolt, ownerType, "player", target);
-            this.setDeflection(target, "attacked", false);
-            deflected = true;
-            // FINISH
-            x = this.projectiles.find((x) => x.id === bolt.id);
-            x = bolt;
-            this.players[target.number - 1] = target;
-            return;
-          }
-
-          // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-          if (target.attacking.peak === true && weapon === "unarmed") {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the front. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they attack successfully unarmed. Damage Deflect?"
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
@@ -17358,6 +17791,16 @@ class App extends Component {
       if (targetType === "player") {
         boltOwner = this.players[bolt.owner - 1];
         damage = 0;
+        let boltChargePercentage = 0;
+
+        const directionalInputThresh = Math.ceil(
+          boltOwner.attacking.animRef.peak.crossbow.slash.normal / 2
+        );
+        boltChargePercentage =
+          (bolt.charge /
+            (this.players[bolt.owner - 1].attacking.peakCount - directionalInputThresh)) *
+          100;
+
         doubleHitChance = boltOwner.crits.doubleHit;
         singleHitChance = boltOwner.crits.singleHit;
 
@@ -17385,19 +17828,18 @@ class App extends Component {
           }
         }
 
-        let doubleHit = this.rnJesus(1, doubleHitChance);
-        let singleHit = this.rnJesus(1, singleHitChance);
-
-        // BACK ATTACK
-        if (target.direction === bolt.direction) {
-          damage = 2;
-        }
+        let doubleHit = this.rnJesus(1, doubleHitChance + bolt.charge);
+        let singleHit = this.rnJesus(1, singleHitChance + bolt.charge);
 
         if (singleHit === 1) {
           damage = 1;
         }
-        if (doubleHit === 1) {
+        if (doubleHit !== 1) {
           damage = 2;
+        }
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          damage += 1;
         }
         boltOwner.success.attackSuccess = {
           state: true,
@@ -18173,6 +18615,7 @@ class App extends Component {
         );
       }
     }
+    player.actionDirectionAnimationArray = [];
 
     if (player.ai.state === true) {
       this.players[player.number - 1].ai.currentInstruction = 0;
@@ -19588,7 +20031,7 @@ class App extends Component {
           while (checkCell === false) {
             cell.x = this.rnJesus(0, this.gridWidth);
             cell.y = this.rnJesus(0, this.gridWidth);
-            checkCell = this.checkCell(cell);
+            checkCell = this.checkCell(cell, ["void", "deep"]);
             // console.log(checkCell);
           }
           if (checkCell === true) {
@@ -19626,7 +20069,7 @@ class App extends Component {
             while (checkCell === false) {
               cell.x = this.rnJesus(0, this.gridWidth);
               cell.y = this.rnJesus(0, this.gridWidth);
-              checkCell = this.checkCell(cell);
+              checkCell = this.checkCell(cell, ["void", "deep"]);
             }
             if (checkCell === true) {
               let cell2 = this.gridInfo.find(
@@ -27025,7 +27468,7 @@ class App extends Component {
         while (checkCell === false) {
           cell.x = this.rnJesus(0, this.gridWidth);
           cell.y = this.rnJesus(0, this.gridWidth);
-          checkCell = this.checkCell(cell);
+          checkCell = this.checkCell(cell, ["all"]);
         }
       }
       if (
@@ -27039,7 +27482,7 @@ class App extends Component {
         while (checkPatrolCell1 === false) {
           cell1.x = this.rnJesus(0, this.gridWidth);
           cell1.y = this.rnJesus(0, this.gridWidth);
-          checkPatrolCell1 = this.checkCell(cell1);
+          checkPatrolCell1 = this.checkCell(cell1, ["all"]);
         }
 
         while (checkPatrolCell2 === false && checkPatrolCell1 === true) {
@@ -27087,7 +27530,7 @@ class App extends Component {
           } else {
             cell3.x = this.rnJesus(0, this.gridWidth);
             cell3.y = this.rnJesus(0, this.gridWidth);
-            checkPatrolCell2 = this.checkCell(cell3);
+            checkPatrolCell2 = this.checkCell(cell3, ["all"]);
           }
         }
 
@@ -27101,7 +27544,7 @@ class App extends Component {
           while (checkCell === false) {
             cell.x = this.rnJesus(0, this.gridWidth);
             cell.y = this.rnJesus(0, this.gridWidth);
-            checkCell = this.checkCell(cell);
+            checkCell = this.checkCell(cell, ["all"]);
             if (cell === cell1 || cell === cell3) {
               checkCell = false;
             }
@@ -27126,7 +27569,7 @@ class App extends Component {
         while (checkCell2 === false) {
           cell4.x = this.rnJesus(0, this.gridWidth);
           cell4.y = this.rnJesus(0, this.gridWidth);
-          checkCell2 = this.checkCell(cell4);
+          checkCell2 = this.checkCell(cell4, ["all"]);
         }
         if (checkCell2 === true) {
           this.aiInitSettings.partolArea[0] = cell4;
@@ -27135,7 +27578,7 @@ class App extends Component {
         while (checkCell === false && checkCell2 === true) {
           cell.x = this.rnJesus(0, this.gridWidth);
           cell.y = this.rnJesus(0, this.gridWidth);
-          checkCell = this.checkCell(cell);
+          checkCell = this.checkCell(cell, ["all"]);
         }
         if (checkCell === true) {
           console.log("random defend points chosen: start", cell, "defend point", cell4);
@@ -27777,7 +28220,7 @@ class App extends Component {
         ) {
           // this.setAutoCamera('aiSpawnFocus',newPlayer)
         } else {
-          console.log("no setting auto cam: aiSpawnFocus");
+          // console.log("no setting auto cam: aiSpawnFocus");
         }
       }
     } else if (this.addAiCount.state === true) {
@@ -30083,7 +30526,7 @@ class App extends Component {
         while (checkCell === false && safeTarget !== true && isSafeDistance !== true) {
           cell.x = this.rnJesus(0, this.gridWidth);
           cell.y = this.rnJesus(0, this.gridWidth);
-          checkCell = this.checkCell(cell);
+          checkCell = this.checkCell(cell, ["all"]);
           safeTarget = this.scanTargetAreaThreat({
             player: plyr.number,
             point: {
@@ -34104,6 +34547,7 @@ class App extends Component {
 
     let nextPosition;
 
+    // TESTING
     if (this.time === 10 && player.number === 1) {
       this.toggleCameraCustomView();
       // this.setAutoCamera("test", player);
@@ -34134,41 +34578,13 @@ class App extends Component {
     if (this.time === 100 && player.number === 1) {
       // this.setBackgroundImage("sea_clouds_1");
       // this.testCount.state = true;
-      // this.testCount.limit = 60;
-      // player.attacking.direction = "none";
-      // player.attacking.directionType = "thrust";
-      player.attacking.direction = "east";
-      player.attacking.directionType = "slash";
-      player = this.handlePlayerDirectionalActionAnimation(
-        "init",
-        "attacking",
-        "pullback",
-        player,
-        null
-      );
+      // this.testCount.limit = 10;
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
-    }
-    if (this.time === 120 && player.number === 2) {
-      player.defending.direction = "east";
-      player.defending.directionType = "slash";
-      player = this.handlePlayerDirectionalActionAnimation(
-        "init",
-        "defending",
-        "release",
-        player,
-        null
-      );
+      let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
     }
     if (this.time === 120 && player.number === 1) {
-      player = this.handlePlayerDirectionalActionAnimation(
-        "init",
-        "attacking",
-        "release",
-        player,
-        null
-      );
       // this.setDeflection(player, "defended", true);
       // this.setDeflection(player, "attacked", false);
       // this.pushBack(player, this.getOppositeDirection(player.direction));
@@ -34178,51 +34594,84 @@ class App extends Component {
       if (this.testCount.count < this.testCount.limit) {
         this.testCount.count++;
 
-        // this.circleArcCrementer(
-        //   player,
-        //   "cartesian",
-        //   70,
-        //   0,
-        //   180,
-        //   "arc",
-        //   "counterClockwise",
-        //   ""
-        // );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   50,
-        //   360,
-        //   0,
-        //   "arc",
-        //   "counterClockwise",
-        //   "top"
-        // );
         this.circleArcCrementer(
           "testing",
           player,
           "isometric",
           50,
           180,
-          0,
-          "ringSection",
+          180,
+          "arc",
           "counterClockwise",
           "front",
-          null
+          "east"
         );
-        // this.circleArcCrementer(
-        //   player,
-        //   "isometric",
-        //   50,
-        //   360,
-        //   0,
-        //   "arc",
-        //   "counterClockwise",
-        //   "side"
-        // );
       }
-      // if (this.testCount.count >= this.testCount.limit) {
-      //   this.testCount.state = false;
+      if (this.testCount.count >= this.testCount.limit) {
+        this.testCount.state = false;
+      }
+    }
+    // POPUP TESTING
+    if (this.time === 250 || this.time === 500) {
+      // let newArray = [];
+      // let x = 0;
+      // let y = 0;
+      // for (const [key, value] of Object.entries(this.popupImageRef)) {
+      //   newArray.push(key);
+      // }
+      // player.popups.push({
+      //   state: false,
+      //   count: 0,
+      //   limit: 30,
+      //   type: "",
+      //   position: "",
+      //   msg: "hpUp" + "_-5",
+      //   img: "",
+      //   cell: this.gridInfo.find(
+      //     (x) =>
+      //       x.number.x === player.currentPosition.cell.number.x &&
+      //       x.number.y === player.currentPosition.cell.number.y
+      //   ),
+      // });
+      // for (var i = 0; i < 10; i++) {
+      //   if (
+      //     !player.popups.find((x) => x.msg === newArray[i])
+      //     // player.number === 2 &&
+      //     // newArray[i] !== "hpUp" &&
+      //     // newArray[i] !== "hpDown"
+      //   ) {
+      //     if (newArray[i] === "hpUp" || newArray[i] === "hpDown") {
+      //       player.popups.push({
+      //         state: false,
+      //         count: 0,
+      //         limit: 30,
+      //         type: "",
+      //         position: "",
+      //         msg: newArray[i] + "_-5",
+      //         img: "",
+      //         cell: this.gridInfo.find(
+      //           (x) =>
+      //             x.number.x === player.currentPosition.cell.number.x &&
+      //             x.number.y === player.currentPosition.cell.number.y
+      //         ),
+      //       });
+      //     } else {
+      //       player.popups.push({
+      //         state: false,
+      //         count: 0,
+      //         limit: 30,
+      //         type: "",
+      //         position: "",
+      //         msg: newArray[i],
+      //         img: "",
+      //         cell: this.gridInfo.find(
+      //           (x) =>
+      //             x.number.x === player.currentPosition.cell.number.x &&
+      //             x.number.y === player.currentPosition.cell.number.y
+      //         ),
+      //       });
+      //     }
+      //   }
       // }
     }
 
@@ -35443,7 +35892,7 @@ class App extends Component {
           player.idleAnim.count = 0;
         }
 
-        // DIRECTIONAL ACTION ANIM
+        // DIRECTIONAL ATTACK/DEFEND ANIM
         if (player.actionDirectionAnimationArray.length > 0) {
           for (const elem of player.actionDirectionAnimationArray) {
             if (elem.actionDirectionType === "slash") {
@@ -35457,7 +35906,7 @@ class App extends Component {
                     elem.radius,
                     elem.angle,
                     elem.startAngle,
-                    "arc",
+                    elem.shape,
                     elem.direction,
                     elem.face,
                     elem
@@ -35482,7 +35931,11 @@ class App extends Component {
               if (elem.delay.state !== true) {
                 if (elem.counter.count < elem.counter.limit) {
                   elem.counter.count++;
-                  player = this.directionalActionAnimLineCrementer(player, elem);
+                  player = this.directionalActionAnimLineCrementer(
+                    "player",
+                    player,
+                    elem
+                  );
                 }
                 if (elem.counter.count >= elem.counter.limit) {
                   elem.delay.state = true;
@@ -35746,7 +36199,7 @@ class App extends Component {
           this.keyPressed[player.number - 1].dodge !== true &&
           player.flanking.state !== true
         ) {
-          console.log("released dodge key while winding up. cancel dodge.");
+          // console.log("released dodge key while winding up. cancel dodge.");
           player.stamina.current += this.staminaCostRef.dodge.pre;
           player.action = "idle";
           player.dodging = {
@@ -35800,28 +36253,6 @@ class App extends Component {
             };
           }
         }
-
-        // FIX ME!
-        // if attacking
-        // xtime = time from count to peak + X
-        // if attacking
-        //   if count === inputthresh
-        //     set anim
-        //     split xtime in half & set w/ pullback
-
-        // if count > inputthresh && atk peak
-        // xtime = input thresh to peak + x
-        // if count === inputthresh+(xtime/2)
-        //   reset & set w/ release
-        // compare xtime to 15
-
-        // if defending
-        //   if count === inputthresh
-        //     set anim w/ xtime & release
-
-        //   if direction changed && count > inputthresh && count < peak
-        //    xtime = time from count to peak + X
-        //     reset, then set anim if enough time (10 or more?)
 
         // ATTACKING!
         if (player.attacking.state === true) {
@@ -35895,15 +36326,15 @@ class App extends Component {
             // STEP ATTACKING COUNT
             if (player.attacking.count < player.attacking.limit) {
               if (player.attacking.count < player.attacking.peakCount) {
-                console.log(
-                  "atk windup:",
-                  player.attacking.direction,
-                  "counts:",
-                  player.attacking.count,
-                  player.attacking.peakCount,
-                  player.attacking.limit,
-                  chargeType === "charged"
-                );
+                // console.log(
+                //   "atk windup:",
+                //   player.attacking.direction,
+                //   "counts:",
+                //   player.attacking.count,
+                //   player.attacking.peakCount,
+                //   player.attacking.limit,
+                //   chargeType === "charged"
+                // );
                 player.attacking.peak = false;
                 player.attacking.chargePeak = false;
               }
@@ -36042,7 +36473,7 @@ class App extends Component {
                     this.setAutoCamera("attackFocus", player);
                   }
                 } else {
-                  console.log("no setting auto cam: attackFocus");
+                  // console.log("no setting auto cam: attackFocus");
                 }
               }
 
@@ -36080,6 +36511,49 @@ class App extends Component {
               }
             }
 
+            // SET DIRECTIONAL ATTACK ANIMATIONS
+            if (this.showDirectionalActionAnimation === true) {
+              let dirAnimSetCalcMod = 5;
+              let xTime =
+                player.attacking.peakCount +
+                dirAnimSetCalcMod -
+                directionalActionResult.inputThresh;
+              if (directionalActionResult.inputThresh === player.attacking.count) {
+                player = this.handleDirectionalActionAnimation(
+                  "player",
+                  "attacking",
+                  "pullback",
+                  player,
+                  null,
+                  // directionalActionResult.inputThresh +
+                  //   Math.ceil(xTime / 2) -
+                  //   player.attacking.count,
+                  Math.ceil(xTime / 2),
+                  this.directionalAnimShape
+                );
+              }
+
+              if (
+                player.attacking.count < player.attacking.peakCount &&
+                player.attacking.count ===
+                  directionalActionResult.inputThresh + Math.ceil(xTime / 2)
+              ) {
+                player.actionDirectionAnimationArray = [];
+                player = this.handleDirectionalActionAnimation(
+                  "player",
+                  "attacking",
+                  "release",
+                  player,
+                  null,
+                  // player.attacking.peakCount +
+                  //   dirAnimSetCalcMod -
+                  //   (directionalActionResult.inputThresh + Math.ceil(xTime / 2)),
+                  Math.ceil(xTime / 2),
+                  this.directionalAnimShape
+                );
+              }
+            }
+
             let executeAttack = false;
             if (
               player.elasticCounter.state !== true &&
@@ -36098,16 +36572,16 @@ class App extends Component {
                     player.attacking.directionType
                   ].charged
               ) {
-                console.log(
-                  "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
-                );
-                console.log(
-                  "counts",
-                  player.attacking.count,
-                  player.attacking.animRef.peak[stamAtkType][
-                    player.attacking.directionType
-                  ].normal
-                );
+                // console.log(
+                //   "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
+                // );
+                // console.log(
+                //   "counts",
+                //   player.attacking.count,
+                //   player.attacking.animRef.peak[stamAtkType][
+                //     player.attacking.directionType
+                //   ].normal
+                // );
                 executeAttack = true;
                 attackPeak =
                   player.attacking.animRef.peak[stamAtkType][
@@ -36121,13 +36595,13 @@ class App extends Component {
               } else if (player.attacking.count === attackPeak) {
                 executeAttack = true;
                 player.attacking.peakCount = attackPeak;
-                console.log(
-                  "execute ",
-                  chargeType,
-                  " attack at peak normally",
-                  player.attacking.charge,
-                  player.attacking.blunt
-                );
+                // console.log(
+                //   "execute ",
+                //   chargeType,
+                //   " attack at peak normally",
+                //   player.attacking.charge,
+                //   player.attacking.blunt
+                // );
               }
             } else {
               // console.log("attack peak already reached/passed");
@@ -36146,17 +36620,17 @@ class App extends Component {
 
                 let melee = true;
 
-                console.log(
-                  "atk peak:",
-                  player.attacking.direction,
-                  "counts:",
-                  player.attacking.count,
-                  player.attacking.peakCount,
-                  player.attacking.limit,
-                  chargeType === "charged",
-                  "blunt:",
-                  player.attacking.blunt
-                );
+                // console.log(
+                //   "atk peak:",
+                //   player.attacking.direction,
+                //   "counts:",
+                //   player.attacking.count,
+                //   player.attacking.peakCount,
+                //   player.attacking.limit,
+                //   chargeType === "charged",
+                //   "blunt:",
+                //   player.attacking.blunt
+                // );
 
                 player = this.setElasticCounter("attacking", "peak", false, player);
 
@@ -36243,15 +36717,15 @@ class App extends Component {
               player.attacking.count > player.attacking.peakCount &&
               player.attacking.count < player.attacking.limit
             ) {
-              console.log(
-                "atk cooldown:",
-                player.attacking.direction,
-                "counts:",
-                player.attacking.count,
-                player.attacking.peakCount,
-                player.attacking.limit,
-                chargeType === "charged"
-              );
+              // console.log(
+              //   "atk cooldown:",
+              //   player.attacking.direction,
+              //   "counts:",
+              //   player.attacking.count,
+              //   player.attacking.peakCount,
+              //   player.attacking.limit,
+              //   chargeType === "charged"
+              // );
               player.attacking.peak = false;
               player.attacking.chargePeak = false;
               player.attacking.blunt = false;
@@ -36310,7 +36784,7 @@ class App extends Component {
               ) {
                 this.setAutoCamera("attackFocusBreak", player);
               } else {
-                console.log("no setting auto cam: attackFocusBreak");
+                // console.log("no setting auto cam: attackFocusBreak");
               }
 
               if (player.popups.find((x) => x.msg === "attacking")) {
@@ -36372,11 +36846,12 @@ class App extends Component {
 
         // DEFENDING!!
         if (player.defending.state === true) {
-          player = this.checkSetAttackDefendDirectionalInput(
+          let directionalActionResult = this.checkSetAttackDefendDirectionalInput(
             "windup",
             "defending",
             player
-          ).player;
+          );
+          player = directionalActionResult.player;
 
           let defendDecayLimitPercentage = 0.55; // calc & increase this based on defend stats
 
@@ -36396,19 +36871,19 @@ class App extends Component {
             if (defendPeak > player.defending.peakCount) {
               defenseValueDecreased = true;
             }
-            console.log(
-              "defend peak changed from",
-              player.defending.peakCount,
-              "to",
-              defendPeak
-            );
+            // console.log(
+            //   "defend peak changed from",
+            //   player.defending.peakCount,
+            //   "to",
+            //   defendPeak
+            // );
             player.defending.peakCount = defendPeak;
           }
 
           let limit =
             player.defending.animRef.limit[defendType][player.defending.directionType];
           if (player.defending.decay.state !== true && limit !== player.defending.limit) {
-            console.log("defend limit changed from", player.defending.limit, "to", limit);
+            // console.log("defend limit changed from", player.defending.limit, "to", limit);
             player.defending.limit = limit;
           }
 
@@ -36420,14 +36895,14 @@ class App extends Component {
             player.defending.count++;
             player.action = "defending";
             player.defending.peak = false;
-            console.log(
-              "defend windup:",
-              player.defending.direction,
-              "counts",
-              player.defending.count,
-              defendPeak,
-              player.defending.limit
-            );
+            // console.log(
+            //   "defend windup:",
+            //   player.defending.direction,
+            //   "counts",
+            //   player.defending.count,
+            //   defendPeak,
+            //   player.defending.limit
+            // );
             if (!player.popups.find((x) => x.msg === "defending")) {
               player.popups.push({
                 state: false,
@@ -36466,10 +36941,59 @@ class App extends Component {
             defenseValueDecreased === true &&
             player.defending.count > player.defending.peakCount
           ) {
-            console.log(
-              "defend was directional now non directional & pask peak. Execute defend"
-            );
+            // console.log(
+            //   "defend was directional now non directional & pask peak. Execute defend"
+            // );
             player.defending.peakCount = player.defending.count;
+          }
+
+          // SET DIRECTIONAL DEFEND ANIMATIONS
+          if (this.showDirectionalActionAnimation === true) {
+            let dirAnimSetCalcMod = 5;
+            const decayLimit = Math.ceil(
+              (player.defending.limit - defendPeak) * defendDecayLimitPercentage
+            );
+            let xTime =
+              player.defending.peakCount +
+              decayLimit +
+              dirAnimSetCalcMod -
+              player.defending.count;
+            let existingDefendAnim = player.actionDirectionAnimationArray.find(
+              (x) => x.action === "defending"
+            );
+            // if (player.defending.count === directionalActionResult.inputThresh) {
+            if (!existingDefendAnim) {
+              player = this.handleDirectionalActionAnimation(
+                "player",
+                "defending",
+                "release",
+                player,
+                null,
+                xTime,
+                this.directionalAnimShape
+              );
+            }
+            if (directionalActionResult.directionChanged === true) {
+              player.actionDirectionAnimationArray = [];
+              let yTime;
+              if (player.defending.decay.state !== true) {
+                yTime = player.defending.peakCount + decayLimit - player.defending.count;
+              } else {
+                yTime =
+                  player.defending.decay.limit +
+                  dirAnimSetCalcMod -
+                  player.defending.decay.count;
+              }
+              player = this.handleDirectionalActionAnimation(
+                "player",
+                "defending",
+                "release",
+                player,
+                null,
+                yTime,
+                this.directionalAnimShape
+              );
+            }
           }
 
           let executeDefend = false;
@@ -36508,18 +37032,18 @@ class App extends Component {
               }
 
               player = this.setElasticCounter("defending", "peak", false, player);
-              console.log(
-                "defend peak:",
-                player.defending.direction,
-                "counts",
-                player.defending.count,
-                defendPeak,
-                player.defending.limit,
-                "decay:",
-                player.defending.decay.state,
-                player.defending.decay.count,
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend peak:",
+              //   player.defending.direction,
+              //   "counts",
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit,
+              //   "decay:",
+              //   player.defending.decay.state,
+              //   player.defending.decay.count,
+              //   player.defending.decay.limit
+              // );
             }
             // OUT OF STAMINA
             else {
@@ -36589,32 +37113,32 @@ class App extends Component {
                 });
               }
               player = this.setElasticCounter("defending", "decay", false, player);
-              console.log(
-                "defend decay:",
-                player.defending.direction,
-                "counts",
-                player.defending.count,
-                defendPeak,
-                player.defending.limit,
-                "decay:",
-                player.defending.decay.state,
-                player.defending.decay.count,
-                player.defending.decay.limit
-              );
+              // console.log(
+              //   "defend decay:",
+              //   player.defending.direction,
+              //   "counts",
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit,
+              //   "decay:",
+              //   player.defending.decay.state,
+              //   player.defending.decay.count,
+              //   player.defending.decay.limit
+              // );
             }
 
             if (player.defending.decay.count >= player.defending.decay.limit) {
               player.defending.decay.state = false;
               player.defending.decay.count = 0;
               player.defending.count = defendPeak + player.defending.decay.limit;
-              console.log(
-                "defend decay end:",
-                player.defending.direction,
-                "counts",
-                player.defending.count,
-                defendPeak,
-                player.defending.limit
-              );
+              // console.log(
+              //   "defend decay end:",
+              //   player.defending.direction,
+              //   "counts",
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit
+              // );
             }
           }
 
@@ -36642,14 +37166,14 @@ class App extends Component {
               //   }
               // }
               player.defending.count++;
-              console.log(
-                "defend cooldown:",
-                player.defending.direction,
-                "counts",
-                player.defending.count,
-                defendPeak,
-                player.defending.limit
-              );
+              // console.log(
+              //   "defend cooldown:",
+              //   player.defending.direction,
+              //   "counts",
+              //   player.defending.count,
+              //   defendPeak,
+              //   player.defending.limit
+              // );
             }
             if (player.defending.count >= player.defending.limit) {
               player.action = "idle";
@@ -36698,7 +37222,7 @@ class App extends Component {
               ) {
                 this.setAutoCamera("defendFocusBreak", player);
               } else {
-                console.log("no setting auto cam: defendFocusBreak");
+                // console.log("no setting auto cam: defendFocusBreak");
               }
               // RESET ELASTIC COUNTER
               if (
@@ -36874,7 +37398,7 @@ class App extends Component {
           if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
             player.dodging.count++;
             player.action = "dodging";
-            console.log("dodge count", player.dodging.count);
+            // console.log("dodge count", player.dodging.count);
 
             if (!player.popups.find((x) => x.msg === "dodging")) {
               player.popups.push({
@@ -36912,7 +37436,7 @@ class App extends Component {
           ) {
             player.dodging.state = true;
 
-            console.log("dodge peak", player.dodging.count);
+            // console.log("dodge peak", player.dodging.count);
           }
 
           // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
@@ -37594,18 +38118,18 @@ class App extends Component {
               this.keyPressed[player.number - 1].west === true
             ) {
               if (player.flanking.direction === keyPressedDirection) {
-                console.log(
-                  "already flanking in this direction. no move interrupt. continue flank"
-                );
+                // console.log(
+                //   "already flanking in this direction. no move interrupt. continue flank"
+                // );
                 continueFlank = true;
               } else {
-                console.log(
-                  "flanking cancelled by move input!",
-                  player.flanking.direction,
-                  player.turning.toDirection,
-                  player.direction,
-                  keyPressedDirection
-                );
+                // console.log(
+                //   "flanking cancelled by move input!",
+                //   player.flanking.direction,
+                //   player.turning.toDirection,
+                //   player.direction,
+                //   keyPressedDirection
+                // );
                 player.action = "idle";
                 player.turning.toDirection = player.direction;
 
@@ -37804,14 +38328,14 @@ class App extends Component {
                   player.dodging.peak.start - player.crits.dodge
                 ) {
                   canFlank1 = true;
-                  console.log("can flank before dodge peak start");
+                  // console.log("can flank before dodge peak start");
                 } else {
                   console.log("too late in dodge windup to flank");
                   continueDodge();
                 }
               }
               if (player.dodging.countState === true && player.dodging.state === true) {
-                console.log("peak dodging. can't flank");
+                // console.log("peak dodging. can't flank");
               }
               if (player.dodging.countState !== true && player.dodging.state !== true) {
                 console.log("highly unlikely. can flank anyway");
@@ -37992,7 +38516,7 @@ class App extends Component {
                 }
               }
             } else {
-              console.log("already strafing and/or flanking. cant start flank");
+              // console.log("already strafing and/or flanking. cant start flank");
             }
           }
         }
@@ -39630,6 +40154,63 @@ class App extends Component {
       }
     }
 
+    // OBSTACLE BARRIER DIRECTIONAL ACTION ANIMATION
+    for (let elem of this.obstacleBarrierActionAnimationArray) {
+      if (elem.actionDirectionType === "slash") {
+        if (elem.delay.state !== true) {
+          if (elem.counter.count < elem.counter.limit) {
+            elem.counter.count++;
+            elem = this.circleArcCrementer(
+              "obstacleBarrierDirectionalAction",
+              null,
+              "isometric",
+              elem.radius,
+              elem.angle,
+              elem.startAngle,
+              elem.shape,
+              elem.direction,
+              elem.face,
+              elem
+            );
+          }
+          if (elem.counter.count >= elem.counter.limit) {
+            elem.delay.state = true;
+          }
+        } else {
+          if (elem.delay.count < elem.delay.limit) {
+            elem.delay.count++;
+          }
+          if (elem.delay.count >= elem.delay.limit) {
+            let index = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
+              return x.id === elem.id;
+            });
+            this.obstacleBarrierActionAnimationArray.splice(index, 1);
+          }
+        }
+      }
+      if (elem.actionDirectionType === "thrust") {
+        if (elem.delay.state !== true) {
+          if (elem.counter.count < elem.counter.limit) {
+            elem.counter.count++;
+            elem = this.directionalActionAnimLineCrementer(elem.ownerType, null, elem);
+          }
+          if (elem.counter.count >= elem.counter.limit) {
+            elem.delay.state = true;
+          }
+        } else {
+          if (elem.delay.count < elem.delay.limit) {
+            elem.delay.count++;
+          }
+          if (elem.delay.count >= elem.delay.limit) {
+            let index = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
+              return x.id === elem.id;
+            });
+            this.obstacleBarrierActionAnimationArray.splice(index, 1);
+          }
+        }
+      }
+    }
+
     // ITEMS TO DROP
     // -call itemdrop crementer and set position like w/ movement
     for (const cell of this.obstacleItemsToDrop) {
@@ -39666,69 +40247,7 @@ class App extends Component {
     }
 
     // POPUPS
-    // Testing
-    // if (this.time === 250 || this.time === 500) {
-    //   let newArray = [];
-    //   let x = 0;
-    //   let y = 0;
-    //   for (const [key, value] of Object.entries(this.popupImageRef)) {
-    //     newArray.push(key);
-    //   }
-    //   player.popups.push({
-    //     state: false,
-    //     count: 0,
-    //     limit: 30,
-    //     type: "",
-    //     position: "",
-    //     msg: "hpUp" + "_-5",
-    //     img: "",
-    //     cell: this.gridInfo.find(
-    //       (x) =>
-    //         x.number.x === player.currentPosition.cell.number.x &&
-    //         x.number.y === player.currentPosition.cell.number.y
-    //     ),
-    //   });
-    //   for (var i = 0; i < 10; i++) {
-    //     if (
-    //       !player.popups.find((x) => x.msg === newArray[i])
-    //       // player.number === 2 &&
-    //       // newArray[i] !== "hpUp" &&
-    //       // newArray[i] !== "hpDown"
-    //     ) {
-    //       if (newArray[i] === "hpUp" || newArray[i] === "hpDown") {
-    //         player.popups.push({
-    //           state: false,
-    //           count: 0,
-    //           limit: 30,
-    //           type: "",
-    //           position: "",
-    //           msg: newArray[i] + "_-5",
-    //           img: "",
-    //           cell: this.gridInfo.find(
-    //             (x) =>
-    //               x.number.x === player.currentPosition.cell.number.x &&
-    //               x.number.y === player.currentPosition.cell.number.y
-    //           ),
-    //         });
-    //       } else {
-    //         player.popups.push({
-    //           state: false,
-    //           count: 0,
-    //           limit: 30,
-    //           type: "",
-    //           position: "",
-    //           msg: newArray[i],
-    //           img: "",
-    //           cell: this.gridInfo.find(
-    //             (x) =>
-    //               x.number.x === player.currentPosition.cell.number.x &&
-    //               x.number.y === player.currentPosition.cell.number.y
-    //           ),
-    //         });
-    //       }
-    //     }
-    //   }
-    // }
+
     //PLAYER
     if (player.popups.length > 0) {
       for (const popup of player.popups) {
@@ -41198,6 +41717,8 @@ class App extends Component {
 
     canvas.width = this.canvasWidth;
     canvas.height = this.canvasHeight;
+    canvas2.width = this.canvasWidth;
+    canvas2.height = this.canvasHeight;
 
     let floorImageWidth = this.floorImageWidth;
     let floorImageHeight = this.floorImageHeight;
@@ -41596,289 +42117,7 @@ class App extends Component {
             context.stroke();
           }
         }
-        // CELL POPUPS
-        if (x === this.gridWidth && y === this.gridWidth) {
-          // console.log(this.pickupAmmoRef.current);
-
-          for (const popup of this.cellPopups) {
-            let popupBorderColor = "black";
-            if (popup.state === true) {
-              // console.log('drawing a popup');
-              let popupDrawCoords;
-              if (popup.position === "" || !popup.position) {
-                let currentPopups = this.cellPopups.filter((x) => x.state === true);
-                let currentPopupsThisCell = this.cellPopups.filter(
-                  (x) =>
-                    x.state === true &&
-                    x.cell.number.x === popup.cell.number.x &&
-                    x.cell.number.y === popup.cell.number.y
-                );
-                let positions = [
-                  "north",
-                  "east",
-                  "south",
-                  "west",
-                  "northEast",
-                  "northWest",
-                  "southEast",
-                  "southWest",
-                ];
-
-                if (popup.color === "") {
-                  popup.color = this.cellColorRef.find(
-                    (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
-                  ).color;
-                }
-
-                // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
-                for (const popup2 of currentPopupsThisCell) {
-                  if (popup2.position && popup2.position !== "") {
-                    let indx = positions.indexOf(popup2.position);
-                    positions.splice(indx, 1);
-                  }
-                }
-
-                let dir = undefined;
-                let dirs = [];
-
-                for (const plyr2 of this.players) {
-                  if (plyr2.ai.state !== true) {
-                    let myPos = popup.cell.number;
-                    let invalidPos =
-                      this.players[plyr2.number - 1].currentPosition.cell.number;
-                    // let invalidPositions = [invalidPos];
-
-                    // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
-                    dir = this.getDirectionFromCells(myPos, invalidPos);
-
-                    if (dir && positions.includes(dir) === true) {
-                      positions.splice(positions.indexOf(dir), 1);
-                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                    }
-
-                    // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
-                    for (const pop of plyr2.popups) {
-                      dir = undefined;
-
-                      if (pop.state === true) {
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        };
-
-                        invalidPos2 = this.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position
-                        );
-
-                        // let dir = undefined;
-
-                        dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                        if (dir && positions.includes(dir) === true) {
-                          positions.splice(positions.indexOf(dir), 1);
-                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        }
-                      }
-                    }
-                  }
-                }
-
-                // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
-                for (const popup2 of currentPopups) {
-                  dir = undefined;
-
-                  if (
-                    popup.cell.number.x !== popup2.cell.number.x &&
-                    popup.cell.number.y !== popup2.cell.number.y &&
-                    popup2.msg !== popup.msg &&
-                    popup2.state === true
-                  ) {
-                    let myPos = popup.cell.number;
-                    let cellPos = popup2.cell.number;
-                    let invalidPos2 = {
-                      x: undefined,
-                      y: undefined,
-                    };
-
-                    invalidPos2 = this.getCellFromDirection(1, cellPos, popup2.position);
-
-                    dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                    if (dir && positions.includes(dir) === true) {
-                      positions.splice(positions.indexOf(dir), 1);
-                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                    }
-                  }
-                }
-
-                if (!positions[0]) {
-                  // console.log('no open positions for', popup.msg);
-                  popup.state = false;
-                  popup.count = 0;
-                } else {
-                  popup.position = positions[0];
-                }
-
-                popup.img = this.popupImageRef[popup.msg];
-
-                popupDrawCoords = this.popupDrawCalc(
-                  popup.position,
-                  { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
-                  0
-                );
-                this.drawPopupBubble(
-                  context,
-                  popupDrawCoords.origin.x,
-                  popupDrawCoords.origin.y,
-                  this.popupSize,
-                  this.popupSize,
-                  5,
-                  popupDrawCoords.anchor.x,
-                  popupDrawCoords.anchor.y,
-                  popup.color
-                );
-                // context.fillStyle = 'black';
-                // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                // console.log('popup.msg',popup.msg,popup.img);
-                let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-                context.drawImage(
-                  popup.img,
-                  popupDrawCoords.origin.x + centerPopupOffset,
-                  popupDrawCoords.origin.y + centerPopupOffset,
-                  this.popupImgSize,
-                  this.popupImgSize
-                );
-              } else {
-                let dir = undefined;
-                let dirs = [];
-
-                let currentPopupsNotThis = this.cellPopups.filter(
-                  (x) =>
-                    x.state === true &&
-                    x.msg !== popup.msg &&
-                    x.cell.number.x !== popup.cell.number.x &&
-                    x.cell.number.y !== popup.cell.number.y
-                );
-
-                for (const plyr2 of this.players) {
-                  if (plyr2.ai.state !== true) {
-                    let myPos = popup.cell.number;
-                    let invalidPos =
-                      this.players[plyr2.number - 1].currentPosition.cell.number;
-
-                    // invalidpostions2 push plyr2 position
-                    // for player popups
-                    //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
-                    //
-
-                    dir = this.getDirectionFromCells(myPos, invalidPos);
-
-                    dirs.push(dir);
-
-                    for (const pop of plyr2.popups) {
-                      if (pop.state === true) {
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        };
-
-                        invalidPos2 = this.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position
-                        );
-
-                        dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                        // if (dir && positions.includes(dir) === true) {
-                        //   positions.splice(positions.indexOf(dir),1);
-                        //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        // }
-                        dirs.push(dir);
-                      }
-                    }
-                  }
-                }
-
-                for (const popup2 of currentPopupsNotThis) {
-                  dir = undefined;
-
-                  if (popup2.msg !== popup.msg && popup2.state === true) {
-                    let myPos = popup.cell.number;
-
-                    let cellPos = popup2.cell.number;
-                    let invalidPos2 = {
-                      x: undefined,
-                      y: undefined,
-                    };
-
-                    invalidPos2 = this.getCellFromDirection(1, cellPos, popup2.position);
-
-                    dir = this.getDirectionFromCells(myPos, invalidPos2);
-
-                    dirs.push(dir);
-                  }
-                }
-
-                // if (popup.position === dir ) {
-                if (dirs.find((x) => x === popup.position)) {
-                  // for (const pop of this.cellPopups) {
-                  //   pop.position = '';
-                  //   pop.state = false;
-                  // }
-                  this.cellPopups.find(
-                    (x) =>
-                      x.msg === popup.msg &&
-                      x.cell.number.x === popup.cell.number.x &&
-                      x.cell.number.x === popup.cell.number.x
-                  ).state = false;
-                  this.cellPopups.find(
-                    (x) =>
-                      x.msg === popup.msg &&
-                      x.cell.number.x === popup.cell.number.x &&
-                      x.cell.number.x === popup.cell.number.x
-                  ).position = "";
-                  // console.log('reconsidering...',popup.msg);
-                } else {
-                  popup.img = this.popupImageRef[popup.msg];
-                  popupDrawCoords = this.popupDrawCalc(
-                    popup.position,
-                    {
-                      x: popup.cell.center.x - 25,
-                      y: popup.cell.center.y - 15,
-                    },
-                    0
-                  );
-                  // this.drawPopupBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                  this.drawPopupBubble(
-                    context,
-                    popupDrawCoords.origin.x,
-                    popupDrawCoords.origin.y,
-                    this.popupSize,
-                    this.popupSize,
-                    5,
-                    popupDrawCoords.anchor.x,
-                    popupDrawCoords.anchor.y,
-                    popup.color
-                  );
-                  // context.fillStyle = 'black';
-                  // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                  // console.log('popup.msg',popup.msg);
-                  let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
-                  context.drawImage(
-                    popup.img,
-                    popupDrawCoords.origin.x + centerPopupOffset,
-                    popupDrawCoords.origin.y + centerPopupOffset,
-                    this.popupImgSize,
-                    this.popupImgSize
-                  );
-                }
-              }
-            }
-          }
-        }
+        // // CELL POPUPS?
 
         // DRAWN PLAYERS!!
         const playerDrawLog = (
@@ -42696,11 +42935,11 @@ class App extends Component {
             let origin = popupCoordObject.west;
             let width = popupCoordObject.north.pt4.x - origin.pt3.x;
             let height = popupCoordObject.south.pt2.y - origin.pt3.y;
-            context.strokeStyle = "red";
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(origin.pt3.x, origin.pt3.y, width, height, 2);
-            context.stroke();
+            context2.strokeStyle = "red";
+            context2.lineWidth = 2;
+            context2.beginPath();
+            context2.roundRect(origin.pt3.x, origin.pt3.y, width, height, 2);
+            context2.stroke();
 
             let origin2 = {
               x: plyr.nextPosition.x - this.floorImageHeight / 2,
@@ -42712,36 +42951,52 @@ class App extends Component {
               2 -
               (plyr.nextPosition.y - this.floorImageHeight);
             let width2 = this.playerDrawWidth + 2;
-            context.strokeStyle = "blue";
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(
+            context2.strokeStyle = "blue";
+            context2.lineWidth = 2;
+            context2.beginPath();
+            context2.roundRect(
               origin2.x,
               origin2.y,
               width2 + 2,
               this.playerDrawHeight * 1.5,
               2
             );
-            // context.roundRect(origin2.x, origin2.y, width2, height2, 2);
-            // context.roundRect(
+            // context2.roundRect(origin2.x, origin2.y, width2, height2, 2);
+            // context2.roundRect(
             //   origin2.x,
             //   origin2.y,
             //   this.playerDrawWidth,
             //   this.playerDrawHeight * 1.5,
             //   2
             // );
-            // context.roundRect(
+            // context2.roundRect(
             //   origin2.x,
             //   origin2.y,
             //   this.playerDrawWidth + 2,
             //   this.floorImageHeight * 1.5,
             //   2
             // );
-            context.stroke();
+            context2.stroke();
           }
 
           //PLAYER DEPTH SORTING!!
-          let elasticCountCalcResult;
+
+          const setCurrentPlayerDrawCell = (type, xArg, yArg) => {
+            this.currentPlayerDrawCell = { x: xArg, y: yArg };
+            // if (plyr.number === 1) {
+            //   // console.log(type, ".", xArg, ".", yArg, ".", player.elasticCounter.state);
+            // }
+            // for (const animAction of plyr.actionDirectionAnimationArray) {
+            //   for (const point of animAction.points) {
+            //     // if (x === 0 && y === 0) {
+            //     context.fillStyle = point.color;
+            //     context.beginPath();
+            //     context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+            //     context.fill();
+            //     // }
+            //   }
+            // }
+          };
 
           // IN-GRID MOVING & MID STRAFE KEY RELEASE
           if (
@@ -42757,137 +43012,170 @@ class App extends Component {
             if (plyr.strafing.direction !== "") {
               direction = plyr.strafing.direction;
             }
-            if (direction === "north") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                if (plyr.jumping.state === true) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                } else {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-            if (direction === "west") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                if (plyr.jumping.state === true) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                } else {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-            if (direction === "east") {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
-                if (plyr.jumping.state === true) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                } else {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
-            if (direction === "south") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
-                if (plyr.jumping.state === true) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                } else {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
+
+            // if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            if (
+              x === plyr.currentPosition.cell.number.x &&
+              y === plyr.currentPosition.cell.number.y
+            ) {
+              if (plyr.jumping.state === true) {
+                context2.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
+              } else {
+                context2.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
               }
             }
 
+            // if (direction === "north") {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y
+            //   ) {
+            //     if (plyr.jumping.state === true) {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10 - jumpYCalc * 3,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     } else {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
+            // }
+            // if (direction === "west") {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y
+            //   ) {
+            //     if (plyr.jumping.state === true) {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10 - jumpYCalc * 3,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     } else {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
+            // }
+            // if (direction === "east") {
+            //   if (
+            //     x === plyr.moving.origin.number.x + 1 &&
+            //     y === plyr.moving.origin.number.y
+            //   ) {
+            //     if (plyr.jumping.state === true) {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10 - jumpYCalc * 3,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     } else {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
+            // }
+            // if (direction === "south") {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y + 1
+            //   ) {
+            //     if (plyr.jumping.state === true) {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10 - jumpYCalc * 3,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     } else {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
+            // }
+
             if (plyr.pushBack.state === true) {
-              // context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
+              // context2.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
             }
           }
           // STATIONARY & HALFPUSH BACK
@@ -42931,126 +43219,144 @@ class App extends Component {
               finalCoords.x -= 5;
               finalCoords.y -= 10;
 
-              // if (x === drawCell.x && y === drawCell.y) {
-              //
-              //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-              //
-              // }
-
               if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.halfPushBack.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.halfPushBack.direction
-                      ).y
-                )
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
               ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
+                setCurrentPlayerDrawCell(x, y, "non-elastic");
+                context2.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  finalCoords.x,
+                  finalCoords.y,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
               }
+
+              // if (
+              //   !this.gridInfo.find(
+              //     (x) =>
+              //       x.number.x ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.halfPushBack.direction
+              //         ).x &&
+              //       x.number.y ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.halfPushBack.direction
+              //         ).y
+              //   )
+              // ) {
+              //   if (
+              //     x === plyr.currentPosition.cell.number.x &&
+              //     y === plyr.currentPosition.cell.number.y
+              //   ) {
+              //     setCurrentPlayerDrawCell(x, y, "non-elastic");
+              //     context2.drawImage(
+              //       updatedPlayerImg,
+              //       sx,
+              //       sy,
+              //       sWidth,
+              //       sHeight,
+              //       finalCoords.x,
+              //       finalCoords.y,
+              //       this.playerDrawWidth2,
+              //       this.playerDrawHeight2
+              //     );
+              //   }
+              // } else {
+              //   if (plyr.direction === "north") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y + 1
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "non-elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.direction === "east") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "non-elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.direction === "west") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x + 1 &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "non-elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.direction === "south") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x + 1 &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "non-elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              // }
             } else {
               if (
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y &&
                 plyr.success.deflected.state === false
               ) {
-                context.drawImage(
+                setCurrentPlayerDrawCell(x, y, "non-elastic");
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43088,7 +43394,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y + 1
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43099,8 +43405,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
             if (
@@ -43111,7 +43417,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43122,8 +43428,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
             if (
@@ -43134,7 +43440,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43145,8 +43451,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
             if (
@@ -43157,7 +43463,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43168,8 +43474,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
             if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 0) {
@@ -43177,7 +43483,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43188,15 +43494,15 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             } else {
               if (
                 x === plyr.moving.origin.number.x + 1 &&
                 y === plyr.moving.origin.number.y
               ) {
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43207,8 +43513,8 @@ class App extends Component {
                   this.playerDrawWidth2,
                   this.playerDrawHeight2
                 );
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
+                // context2.fillStyle = "black";
+                // context2.fillRect(point.x, point.y,5,5);
               }
             }
           }
@@ -43267,119 +43573,143 @@ class App extends Component {
               }
 
               if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).y
-                )
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
               ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.elasticCounter.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
+                setCurrentPlayerDrawCell(x, y, "elastic");
+                context2.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  finalCoords.x,
+                  finalCoords.y,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
               }
+
+              // if (
+              //   !this.gridInfo.find(
+              //     (x) =>
+              //       x.number.x ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.elasticCounter.direction
+              //         ).x &&
+              //       x.number.y ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.elasticCounter.direction
+              //         ).y
+              //   )
+              // ) {
+              //   if (
+              //     x === plyr.currentPosition.cell.number.x &&
+              //     y === plyr.currentPosition.cell.number.y
+              //   ) {
+              //     setCurrentPlayerDrawCell(x, y, "elastic");
+              //     context2.drawImage(
+              //       updatedPlayerImg,
+              //       sx,
+              //       sy,
+              //       sWidth,
+              //       sHeight,
+              //       finalCoords.x,
+              //       finalCoords.y,
+              //       this.playerDrawWidth2,
+              //       this.playerDrawHeight2
+              //     );
+              //   }
+              // } else {
+              //   if (plyr.elasticCounter.direction === "north") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "east") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x + 1 &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //       setCurrentPlayerDrawCell(x, y, "elastic");
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "west") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "south") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y + 1
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              // }
             } else {
               if (
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y &&
                 plyr.success.deflected.state === false
               ) {
-                context.drawImage(
+                setCurrentPlayerDrawCell(x, y, "elastic");
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -43395,7 +43725,7 @@ class App extends Component {
 
             // if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
             //
-            //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+            //   context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
             //
             // }
           }
@@ -43455,124 +43785,235 @@ class App extends Component {
               }
 
               if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).y
-                )
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
               ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.elasticCounter.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
+                setCurrentPlayerDrawCell(x, y, "elastic");
+                context2.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  finalCoords.x,
+                  finalCoords.y,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
+              }
+
+              // if (
+              //   !this.gridInfo.find(
+              //     (x) =>
+              //       x.number.x ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.elasticCounter.direction
+              //         ).x &&
+              //       x.number.y ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.elasticCounter.direction
+              //         ).y
+              //   )
+              // ) {
+              //   if (
+              //     x === plyr.currentPosition.cell.number.x &&
+              //     y === plyr.currentPosition.cell.number.y
+              //   ) {
+              //     setCurrentPlayerDrawCell(x, y, "elastic");
+              //     context2.drawImage(
+              //       updatedPlayerImg,
+              //       sx,
+              //       sy,
+              //       sWidth,
+              //       sHeight,
+              //       finalCoords.x,
+              //       finalCoords.y,
+              //       this.playerDrawWidth2,
+              //       this.playerDrawHeight2
+              //     );
+              //   }
+              // } else {
+              //   if (plyr.elasticCounter.direction === "north") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "east") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x + 1 &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "west") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "south") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y + 1
+              //     ) {
+              //       setCurrentPlayerDrawCell(x, y, "elastic");
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              // }
+            } else {
+              if (
+                x === plyr.moving.origin.number.x &&
+                y === plyr.moving.origin.number.y &&
+                plyr.success.deflected.state === false
+              ) {
+                setCurrentPlayerDrawCell(x, y, "elastic");
+                context2.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  newCharDrawPoint.x - 5,
+                  newCharDrawPoint.y - 10,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
               }
             }
           }
 
           // DIRECTIONAL ACTION INDICATION
           if (plyr.actionDirectionAnimationArray.length > 0) {
+            // console.log("b", x, y);
             for (const animAction of plyr.actionDirectionAnimationArray) {
+              let lastPoint;
               for (const point of animAction.points) {
-                if (x === this.gridWidth && y === this.gridWidth) {
-                  context.fillStyle = point.color;
+                // if (x === this.gridWidth && y === this.gridWidth) {
+                //   context.fillStyle = "purple";
+                //   context.beginPath();
+                //   context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                //   context.fill();
+                // }
+              }
+              if (animAction.points.length > 1) {
+                context.beginPath();
+                context.moveTo(animAction.points[0].x, animAction.points[0].y);
+                for (var i = 1; i < animAction.points.length - 1; i++) {
+                  context.arcTo(
+                    animAction.points[i].x,
+                    animAction.points[i].y,
+                    animAction.points[i + 1].x,
+                    animAction.points[i + 1].y,
+                    40
+                  );
+                }
+
+                lastPoint = animAction.points[animAction.points.length - 1];
+                context.lineTo(lastPoint.x, lastPoint.y);
+
+                context.strokeStyle = animAction.points[0].color;
+                context.lineWidth = 5;
+                context.stroke();
+
+                if (animAction.points[0].x2) {
                   context.beginPath();
-                  context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-                  context.fill();
+                  context.moveTo(animAction.points[0].x2, animAction.points[0].y2);
+                  for (var i = 1; i < animAction.points.length - 1; i++) {
+                    context.arcTo(
+                      animAction.points[i].x2,
+                      animAction.points[i].y2,
+                      animAction.points[i + 1].x2,
+                      animAction.points[i + 1].y2,
+                      30
+                    );
+                  }
+                  lastPoint = animAction.points[animAction.points.length - 1];
+                  context.lineTo(lastPoint.x2, lastPoint.y2);
+
+                  context.strokeStyle = animAction.points[0].color;
+                  context.lineWidth = 5;
+                  context.stroke();
+                }
+
+                if (animAction.points[0].lineArray?.length > 0) {
+                  for (var i = 0; i < animAction.points.length; i++) {
+                    let length = animAction.points[i].lineArray.length - 1;
+                    if (i === animAction.points.length - 1) {
+                      let pointOuter = {
+                        x: animAction.points[i].x,
+                        y: animAction.points[i].y,
+                        // x: animAction.points[i].lineArray[0].x,
+                        // y: animAction.points[i].lineArray[0].y,
+                      };
+                      let pointInner = {
+                        x: animAction.points[i].x2,
+                        y: animAction.points[i].y2,
+                        // x: animAction.points[i].lineArray[length]?.x,
+                        // y: animAction.points[i].lineArray[length]?.y,
+                      };
+                      context.beginPath();
+                      context.moveTo(pointInner.x, pointInner.y);
+                      context.lineTo(pointOuter.x, pointOuter.y);
+
+                      context.strokeStyle = animAction.points[i].color;
+                      context.lineWidth = 5;
+                      context.stroke();
+                    }
+                  }
                 }
               }
             }
@@ -43581,71 +44022,84 @@ class App extends Component {
           if (plyr.jumping.state === true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
 
-            if (plyr.direction === "north") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.direction === "west") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.direction === "east") {
-              if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.direction === "south") {
-              if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10 - jumpYCalc * 3,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
+            // if (plyr.direction === "north") {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y
+            //   ) {
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10 - jumpYCalc * 3,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
+            // if (plyr.direction === "west") {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y
+            //   ) {
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10 - jumpYCalc * 3,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
+            // if (plyr.direction === "east") {
+            //   if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10 - jumpYCalc * 3,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
+            // if (plyr.direction === "south") {
+            //   if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10 - jumpYCalc * 3,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+              context2.drawImage(
+                updatedPlayerImg,
+                sx,
+                sy,
+                sWidth,
+                sHeight,
+                newCharDrawPoint.x - 5,
+                newCharDrawPoint.y - 10 - jumpYCalc * 3,
+                this.playerDrawWidth2,
+                this.playerDrawHeight2
+              );
             }
           }
           // STRAFE MOVEMENT
@@ -43654,270 +44108,306 @@ class App extends Component {
             plyr.falling.state !== true &&
             plyr.jumping.state !== true
           ) {
-            if (
-              plyr.strafing.direction === "north" ||
-              plyr.strafing.direction === "northWest" ||
-              plyr.strafing.direction === "west"
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.strafing.direction === "east" || plyr.direction === "east") {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
-                // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.strafing.direction === "south" || plyr.direction === "south") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
-                // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
-                // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
+            // if (
+            //   plyr.strafing.direction === "north" ||
+            //   plyr.strafing.direction === "northWest" ||
+            //   plyr.strafing.direction === "west"
+            // ) {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y
+            //   ) {
+            //     // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
+            // if (plyr.strafing.direction === "east" || plyr.direction === "east") {
+            //   if (
+            //     x === plyr.moving.origin.number.x + 1 &&
+            //     y === plyr.moving.origin.number.y
+            //   ) {
+            //     // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
+            //     // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
+            // if (plyr.strafing.direction === "south" || plyr.direction === "south") {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y + 1
+            //   ) {
+            //     // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
+            //     // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
+            //     // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
 
-            if (plyr.strafing.direction === "northEast") {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
-            }
-            if (plyr.strafing.direction === "southWest") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  newCharDrawPoint.x - 5,
-                  newCharDrawPoint.y - 10,
-                  this.playerDrawWidth2,
-                  this.playerDrawHeight2
-                );
-              }
+            // if (plyr.strafing.direction === "northEast") {
+            //   if (
+            //     x === plyr.moving.origin.number.x + 1 &&
+            //     y === plyr.moving.origin.number.y
+            //   ) {
+            //     // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
+            // if (plyr.strafing.direction === "southWest") {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y + 1
+            //   ) {
+            //     // context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+            //     context2.drawImage(
+            //       updatedPlayerImg,
+            //       sx,
+            //       sy,
+            //       sWidth,
+            //       sHeight,
+            //       newCharDrawPoint.x - 5,
+            //       newCharDrawPoint.y - 10,
+            //       this.playerDrawWidth2,
+            //       this.playerDrawHeight2
+            //     );
+            //   }
+            // }
+            if (
+              x === plyr.moving.origin.number.x &&
+              y === plyr.moving.origin.number.y
+              // plyr.success.deflected.state === false
+            ) {
+              setCurrentPlayerDrawCell(x, y, "non-elastic");
+              context2.drawImage(
+                updatedPlayerImg,
+                sx,
+                sy,
+                sWidth,
+                sHeight,
+                newCharDrawPoint.x - 5,
+                newCharDrawPoint.y - 10,
+                this.playerDrawWidth2,
+                this.playerDrawHeight2
+              );
             }
           }
           // FLANKING
           if (plyr.flanking.state === true && plyr.falling.state !== true) {
-            if (plyr.flanking.step === 1) {
-              if (plyr.flanking.direction === "north") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  // console.log('draw flank north',);
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
+            // if (plyr.flanking.step === 1) {
+            //   if (plyr.flanking.direction === "north") {
+            //     if (
+            //       x === plyr.moving.origin.number.x &&
+            //       y === plyr.moving.origin.number.y
+            //     ) {
+            //       // console.log('draw flank north',);
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
 
-              if (plyr.flanking.direction === "west") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  // console.log('draw flank west',);
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
+            //   if (plyr.flanking.direction === "west") {
+            //     if (
+            //       x === plyr.moving.origin.number.x &&
+            //       y === plyr.moving.origin.number.y
+            //     ) {
+            //       // console.log('draw flank west',);
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
 
-              if (plyr.flanking.direction === "east") {
-                if (
-                  x === plyr.moving.origin.number.x + 1 &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  // console.log('draw flank east',);
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
+            //   if (plyr.flanking.direction === "east") {
+            //     if (
+            //       x === plyr.moving.origin.number.x + 1 &&
+            //       y === plyr.moving.origin.number.y
+            //     ) {
+            //       // console.log('draw flank east',);
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
 
-              if (plyr.flanking.direction === "south") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y + 1
-                ) {
-                  // console.log('draw flank south',);
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
-            }
+            //   if (plyr.flanking.direction === "south") {
+            //     if (
+            //       x === plyr.moving.origin.number.x &&
+            //       y === plyr.moving.origin.number.y + 1
+            //     ) {
+            //       // console.log('draw flank south',);
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
+            // }
 
-            if (plyr.flanking.step === 2) {
-              if (plyr.direction === "north") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
+            // if (plyr.flanking.step === 2) {
+            //   if (plyr.direction === "north") {
+            //     if (
+            //       x === plyr.moving.origin.number.x &&
+            //       y === plyr.moving.origin.number.y
+            //     ) {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
 
-              if (plyr.direction === "west") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
+            //   if (plyr.direction === "west") {
+            //     if (
+            //       x === plyr.moving.origin.number.x &&
+            //       y === plyr.moving.origin.number.y
+            //     ) {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
 
-              if (plyr.direction === "east") {
-                if (
-                  x === plyr.moving.origin.number.x + 1 &&
-                  y === plyr.moving.origin.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
+            //   if (plyr.direction === "east") {
+            //     if (
+            //       x === plyr.moving.origin.number.x + 1 &&
+            //       y === plyr.moving.origin.number.y
+            //     ) {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
 
-              if (plyr.direction === "south") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y + 1
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    newCharDrawPoint.x - 5,
-                    newCharDrawPoint.y - 10,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              }
+            //   if (plyr.direction === "south") {
+            //     if (
+            //       x === plyr.moving.origin.number.x &&
+            //       y === plyr.moving.origin.number.y + 1
+            //     ) {
+            //       context2.drawImage(
+            //         updatedPlayerImg,
+            //         sx,
+            //         sy,
+            //         sWidth,
+            //         sHeight,
+            //         newCharDrawPoint.x - 5,
+            //         newCharDrawPoint.y - 10,
+            //         this.playerDrawWidth2,
+            //         this.playerDrawHeight2
+            //       );
+            //     }
+            //   }
+            // }
+            if (
+              x === plyr.moving.origin.number.x &&
+              y === plyr.moving.origin.number.y
+              // plyr.success.deflected.state === false
+            ) {
+              setCurrentPlayerDrawCell(x, y, "non-elastic");
+              context2.drawImage(
+                updatedPlayerImg,
+                sx,
+                sy,
+                sWidth,
+                sHeight,
+                newCharDrawPoint.x - 5,
+                newCharDrawPoint.y - 10,
+                this.playerDrawWidth2,
+                this.playerDrawHeight2
+              );
             }
           }
           // FALLING
@@ -43983,112 +44473,129 @@ class App extends Component {
               finalCoords.y -= 10;
 
               if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).y
-                )
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
               ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.elasticCounter.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
+                context2.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  finalCoords.x,
+                  finalCoords.y,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
               }
+
+              // if (
+              //   !this.gridInfo.find(
+              //     (x) =>
+              //       x.number.x ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.elasticCounter.direction
+              //         ).x &&
+              //       x.number.y ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.elasticCounter.direction
+              //         ).y
+              //   )
+              // ) {
+              //   if (
+              //     x === plyr.currentPosition.cell.number.x &&
+              //     y === plyr.currentPosition.cell.number.y
+              //   ) {
+              //     context2.drawImage(
+              //       updatedPlayerImg,
+              //       sx,
+              //       sy,
+              //       sWidth,
+              //       sHeight,
+              //       finalCoords.x,
+              //       finalCoords.y,
+              //       this.playerDrawWidth2,
+              //       this.playerDrawHeight2
+              //     );
+              //   }
+              // } else {
+              //   if (plyr.elasticCounter.direction === "south") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y + 1
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "west") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "east") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x + 1 &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "north") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x + 1 &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              // }
             }
             if (
               plyr.elasticCounter.state !== true &&
@@ -44137,112 +44644,129 @@ class App extends Component {
               }
 
               if (
-                !this.gridInfo.find(
-                  (x) =>
-                    x.number.x ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).x &&
-                    x.number.y ===
-                      this.getCellFromDirection(
-                        1,
-                        plyr.currentPosition.cell.number,
-                        plyr.elasticCounter.direction
-                      ).y
-                )
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
               ) {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(
-                    updatedPlayerImg,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.playerDrawWidth2,
-                    this.playerDrawHeight2
-                  );
-                }
-              } else {
-                if (plyr.elasticCounter.direction === "north") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "east") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x + 1 &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "west") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
-                if (plyr.elasticCounter.direction === "south") {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y + 1
-                  ) {
-                    context.drawImage(
-                      updatedPlayerImg,
-                      sx,
-                      sy,
-                      sWidth,
-                      sHeight,
-                      finalCoords.x,
-                      finalCoords.y,
-                      this.playerDrawWidth2,
-                      this.playerDrawHeight2
-                    );
-                  }
-                }
+                context2.drawImage(
+                  updatedPlayerImg,
+                  sx,
+                  sy,
+                  sWidth,
+                  sHeight,
+                  finalCoords.x,
+                  finalCoords.y,
+                  this.playerDrawWidth2,
+                  this.playerDrawHeight2
+                );
               }
+
+              // if (
+              //   !this.gridInfo.find(
+              //     (x) =>
+              //       x.number.x ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.elasticCounter.direction
+              //         ).x &&
+              //       x.number.y ===
+              //         this.getCellFromDirection(
+              //           1,
+              //           plyr.currentPosition.cell.number,
+              //           plyr.elasticCounter.direction
+              //         ).y
+              //   )
+              // ) {
+              //   if (
+              //     x === plyr.currentPosition.cell.number.x &&
+              //     y === plyr.currentPosition.cell.number.y
+              //   ) {
+              //     context2.drawImage(
+              //       updatedPlayerImg,
+              //       sx,
+              //       sy,
+              //       sWidth,
+              //       sHeight,
+              //       finalCoords.x,
+              //       finalCoords.y,
+              //       this.playerDrawWidth2,
+              //       this.playerDrawHeight2
+              //     );
+              //   }
+              // } else {
+              //   if (plyr.elasticCounter.direction === "north") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "east") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x + 1 &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "west") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              //   if (plyr.elasticCounter.direction === "south") {
+              //     if (
+              //       x === plyr.currentPosition.cell.number.x &&
+              //       y === plyr.currentPosition.cell.number.y + 1
+              //     ) {
+              //       context2.drawImage(
+              //         updatedPlayerImg,
+              //         sx,
+              //         sy,
+              //         sWidth,
+              //         sHeight,
+              //         finalCoords.x,
+              //         finalCoords.y,
+              //         this.playerDrawWidth2,
+              //         this.playerDrawHeight2
+              //       );
+              //     }
+              //   }
+              // }
             }
           }
 
@@ -44377,7 +44901,7 @@ class App extends Component {
                 plyr.respawn = false;
                 this.players[plyr.number - 1] = plyr;
 
-                context.drawImage(
+                context2.drawImage(
                   updatedPlayerImg,
                   sx,
                   sy,
@@ -44400,7 +44924,7 @@ class App extends Component {
                 ) {
                   this.setAutoCamera("playerSpawnFocus", plyr);
                 } else {
-                  console.log("no setting auto cam: playerSpawnFocus");
+                  // console.log("no setting auto cam: playerSpawnFocus");
                 }
               }
             }
@@ -44416,7 +44940,7 @@ class App extends Component {
               y === plyr.ghost.position.cell.number.y
             ) {
               // console.log('player',plyr.number,'dying',player.dead.count);
-              context.drawImage(
+              context2.drawImage(
                 this.indicatorImgs.death,
                 plyr.ghost.position.cell.center.x - 15,
                 plyr.ghost.position.cell.center.y - 15,
@@ -44438,7 +44962,7 @@ class App extends Component {
               //   plyr.ghost.position.cell.number,
               //   plyr.ghost.position.cell.center
               // );
-              context.drawImage(
+              context2.drawImage(
                 this.indicatorImgs.ghost,
                 plyr.ghost.position.cell.center.x - 20,
                 plyr.ghost.position.cell.center.y - 20,
@@ -44449,7 +44973,11 @@ class App extends Component {
           }
 
           // PLAYER POPUPS
-          if (x === this.gridWidth && y === this.gridWidth) {
+          if (
+            x === this.gridWidth &&
+            y === this.gridWidth &&
+            this.hideAllPopups !== true
+          ) {
             let popupBorderColor = this.playerColourRef["player" + plyr.number + ""];
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
@@ -44637,7 +45165,7 @@ class App extends Component {
                     );
 
                     this.drawPopupBubble(
-                      context,
+                      context2,
                       popupDrawCoords.origin.x,
                       popupDrawCoords.origin.y,
                       this.popupSize,
@@ -44651,26 +45179,26 @@ class App extends Component {
 
                     if (showProgress === true && popupProgress === true) {
                       let perc = this.playerPopupProgressCalc(plyr, popup);
-                      context.fillStyle = this.popupProgressImgGradColor2;
-                      context.beginPath();
-                      // context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                      // context.stroke();
-                      context.fillStyle = this.popupProgressImgGradColor1;
-                      context.roundRect(
+                      context2.fillStyle = this.popupProgressImgGradColor2;
+                      context2.beginPath();
+                      // context2.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+                      // context2.stroke();
+                      context2.fillStyle = this.popupProgressImgGradColor1;
+                      context2.roundRect(
                         popupDrawCoords.origin.x,
                         popupDrawCoords.origin.y + this.popupSize,
                         10,
                         this.popupSize * perc,
                         5
                       );
-                      context.fill();
+                      context2.fill();
                       // console.log("playerPopupProgress init", perc);
                     }
 
                     if (writeValue === true) {
-                      context.font = "15px Arial";
-                      context.fillStyle = "black";
-                      context.fillText(
+                      context2.font = "15px Arial";
+                      context2.fillStyle = "black";
+                      context2.fillText(
                         popup.msg.split("_")[1],
                         popupDrawCoords.origin.x +
                           (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
@@ -44678,7 +45206,7 @@ class App extends Component {
                       );
 
                       centerPopupOffset = (this.popupSize - this.popupImgSize * 0.75) / 2;
-                      context.drawImage(
+                      context2.drawImage(
                         popup.img,
                         popupDrawCoords.origin.x + centerPopupOffset,
                         popupDrawCoords.origin.y + (centerPopupOffset + 5),
@@ -44686,7 +45214,7 @@ class App extends Component {
                         this.popupImgSize * 0.75
                       );
                     } else {
-                      context.drawImage(
+                      context2.drawImage(
                         popup.img,
                         popupDrawCoords.origin.x + centerPopupOffset,
                         popupDrawCoords.origin.y + centerPopupOffset,
@@ -44824,7 +45352,7 @@ class App extends Component {
                         plyr.number
                       );
                       this.drawPopupBubble(
-                        context,
+                        context2,
                         popupDrawCoords.origin.x,
                         popupDrawCoords.origin.y,
                         this.popupSize,
@@ -44838,19 +45366,19 @@ class App extends Component {
 
                       if (showProgress === true && popupProgress === true) {
                         let perc = this.playerPopupProgressCalc(plyr, popup);
-                        context.fillStyle = this.popupProgressImgGradColor2;
-                        context.beginPath();
-                        // context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                        // context.stroke();
-                        context.fillStyle = this.popupProgressImgGradColor1;
-                        context.roundRect(
+                        context2.fillStyle = this.popupProgressImgGradColor2;
+                        context2.beginPath();
+                        // context2.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+                        // context2.stroke();
+                        context2.fillStyle = this.popupProgressImgGradColor1;
+                        context2.roundRect(
                           popupDrawCoords.origin.x,
                           popupDrawCoords.origin.y + this.popupSize,
                           10,
                           this.popupSize * perc,
                           5
                         );
-                        context.fill();
+                        context2.fill();
                         // console.log(
                         //   "playerPopupProgress continue",
                         //   perc,
@@ -44859,9 +45387,9 @@ class App extends Component {
                       }
 
                       if (writeValue === true) {
-                        context.font = "15px Arial";
-                        context.fillStyle = "black";
-                        context.fillText(
+                        context2.font = "15px Arial";
+                        context2.fillStyle = "black";
+                        context2.fillText(
                           popup.msg.split("_")[1],
                           popupDrawCoords.origin.x +
                             (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
@@ -44870,7 +45398,7 @@ class App extends Component {
 
                         centerPopupOffset =
                           (this.popupSize - this.popupImgSize * 0.75) / 2;
-                        context.drawImage(
+                        context2.drawImage(
                           popup.img,
                           popupDrawCoords.origin.x + centerPopupOffset,
                           popupDrawCoords.origin.y + (centerPopupOffset + 5),
@@ -44904,7 +45432,7 @@ class App extends Component {
                             popup.img = this.popupImageRef.defending;
                           }
                         }
-                        context.drawImage(
+                        context2.drawImage(
                           popup.img,
                           popupDrawCoords.origin.x + centerPopupOffset,
                           popupDrawCoords.origin.y + centerPopupOffset,
@@ -44923,6 +45451,84 @@ class App extends Component {
         }
 
         // OBSTACLES & BARRIERS
+
+        // OBSTACLE BARRIER DIRECTIONAL ACTION ANIM
+        for (const animAction of this.obstacleBarrierActionAnimationArray) {
+          // for (const point of animAction.points) {
+          //   context.fillStyle = point.color;
+          //   context.beginPath();
+          //   context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+          //   context.fill();
+          // }
+          if (animAction.points.length > 1) {
+            let lastPoint;
+
+            context.beginPath();
+            context.moveTo(animAction.points[0].x, animAction.points[0].y);
+            for (var i = 1; i < animAction.points.length - 1; i++) {
+              context.arcTo(
+                animAction.points[i].x,
+                animAction.points[i].y,
+                animAction.points[i + 1].x,
+                animAction.points[i + 1].y,
+                40
+              );
+            }
+            lastPoint = animAction.points[animAction.points.length - 1];
+            context.lineTo(lastPoint.x, lastPoint.y);
+
+            context.strokeStyle = animAction.points[0].color;
+            context.lineWidth = 5;
+            context.stroke();
+
+            if (animAction.points[0].x2) {
+              context.beginPath();
+              context.moveTo(animAction.points[0].x2, animAction.points[0].y2);
+              for (var i = 1; i < animAction.points.length - 1; i++) {
+                context.arcTo(
+                  animAction.points[i].x2,
+                  animAction.points[i].y2,
+                  animAction.points[i + 1].x2,
+                  animAction.points[i + 1].y2,
+                  30
+                );
+              }
+              lastPoint = animAction.points[animAction.points.length - 1];
+              context.lineTo(lastPoint.x, lastPoint.y);
+
+              context.strokeStyle = animAction.points[0].color;
+              context.lineWidth = 5;
+              context.stroke();
+            }
+
+            if (animAction.points[0].lineArray) {
+              for (var i = 1; i < animAction.points.length - 1; i++) {
+                if (i === animAction.points.length - 1) {
+                  let pointOuter = {
+                    x: animAction.points[i].x,
+                    y: animAction.points[i].y,
+                    // x: animAction.points[i].lineArray[0].x,
+                    // y: animAction.points[i].lineArray[0].y,
+                  };
+                  let pointInner = {
+                    x: animAction.points[i].x2,
+                    y: animAction.points[i].y2,
+                    // x: animAction.points[i].lineArray[length]?.x,
+                    // y: animAction.points[i].lineArray[length]?.y,
+                  };
+                  context.beginPath();
+                  context.moveTo(pointInner.x, pointInner.y);
+                  context.lineTo(pointOuter.x, pointOuter.y);
+
+                  context.strokeStyle = animAction.points[i].color;
+                  context.lineWidth = 5;
+                  context.stroke();
+                }
+              }
+            }
+          }
+        }
+
         // FALLING
         // IN BOUNDS
         if (
@@ -45006,14 +45612,14 @@ class App extends Component {
             let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type];
 
             if (gridInfoCell.obstacle.moving.state !== true) {
-              context.drawImage(
+              context2.drawImage(
                 obstacleImg,
                 iso.x - offset.x,
                 iso.y - obstacleImg.height
               );
             } else {
               // console.log('x/y',x,y);
-              // context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
+              // context2.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
             }
           }
         }
@@ -45065,7 +45671,7 @@ class App extends Component {
               // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
 
               let obstacleImg = this.obstacleImgs[cell.obstacle.type];
-              context.drawImage(
+              context2.drawImage(
                 obstacleImg,
                 cell.obstacle.moving.nextPosition.x - offset.x,
                 cell.obstacle.moving.nextPosition.y -
@@ -45090,7 +45696,7 @@ class App extends Component {
             //       drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
             //       console.log('drawCell1',drawCell);
             //       if (x === drawCell.x && y === drawCell.y) {
-            //           context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+            //           context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
             //       }
             //
             //     }
@@ -45100,7 +45706,7 @@ class App extends Component {
             //       drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
             //       console.log('drawCell2',drawCell);
             //       if (x === drawCell.x && y === drawCell.y) {
-            //           context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+            //           context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
             //       }
             //     }
             //   }
@@ -45118,14 +45724,14 @@ class App extends Component {
                       x: iso.x - offset.x,
                       y: iso.y - obstacleImg.height,
                     };
-                    context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+                    context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
                   } else {
                     obs.coords = this.calcElasticCountCoords(
                       "halfPushBack",
                       "obstacle",
                       obs
                     ).coords;
-                    context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+                    context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
                   }
                 }
               }
@@ -45143,7 +45749,7 @@ class App extends Component {
             if (cell.count % 3 === 0) {
               if (cell.type === "obstacle" && cell.cell.obstacle.type) {
                 let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
-                context.drawImage(
+                context2.drawImage(
                   obstacleImg,
                   iso.x - offset.x,
                   iso.y - obstacleImg.height
@@ -45152,7 +45758,7 @@ class App extends Component {
               if (cell.type === "barrier" && cell.cell.barrier.type) {
                 let barrierImg =
                   this.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
-                context.drawImage(
+                context2.drawImage(
                   barrierImg,
                   iso.x - offset.x,
                   iso.y - barrierImg.height,
@@ -45177,7 +45783,7 @@ class App extends Component {
               if (cell.item.type === "weapon" || cell.item.type === "armor") {
                 itemImg = this.itemImgs[cell.item.subType];
               }
-              context.drawImage(itemImg, center.x - 15, center.y - 15);
+              context2.drawImage(itemImg, center.x - 15, center.y - 15);
             }
           }
         }
@@ -45202,7 +45808,7 @@ class App extends Component {
           if (hide !== true) {
             let barrierImg =
               this.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
-            context.drawImage(
+            context2.drawImage(
               barrierImg,
               iso.x - offset.x,
               iso.y - barrierImg.height,
@@ -45238,13 +45844,309 @@ class App extends Component {
             // context2.fillStyle = "black";
             // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
             // this.testDraw.push({color:'green',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y})
-            context.drawImage(
+            context2.drawImage(
               boltImg,
               bolt.currentPosition.center.x - 15,
               bolt.currentPosition.center.y - 15,
               35,
               35
             );
+          }
+        }
+
+        // CELL POPUPS
+        if (this.hideAllPopups !== true) {
+          // if (x === 0 && y === 0) {
+          if (x === this.gridWidth && y === this.gridWidth) {
+            // console.log(this.pickupAmmoRef.current);
+
+            for (const popup of this.cellPopups) {
+              let popupBorderColor = "black";
+              if (popup.state === true) {
+                // console.log("drawing a popup", popup.cell.number);
+                // console.log('drawing a popup');
+                let popupDrawCoords;
+                if (popup.position === "" || !popup.position) {
+                  let currentPopups = this.cellPopups.filter((x) => x.state === true);
+                  let currentPopupsThisCell = this.cellPopups.filter(
+                    (x) =>
+                      x.state === true &&
+                      x.cell.number.x === popup.cell.number.x &&
+                      x.cell.number.y === popup.cell.number.y
+                  );
+                  let positions = [
+                    "north",
+                    "east",
+                    "south",
+                    "west",
+                    "northEast",
+                    "northWest",
+                    "southEast",
+                    "southWest",
+                  ];
+
+                  if (popup.color === "") {
+                    popup.color = this.cellColorRef.find(
+                      (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
+                    ).color;
+                  }
+
+                  // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
+                  for (const popup2 of currentPopupsThisCell) {
+                    if (popup2.position && popup2.position !== "") {
+                      let indx = positions.indexOf(popup2.position);
+                      positions.splice(indx, 1);
+                    }
+                  }
+
+                  let dir = undefined;
+                  let dirs = [];
+
+                  for (const plyr2 of this.players) {
+                    if (plyr2.ai.state !== true) {
+                      let myPos = popup.cell.number;
+                      let invalidPos =
+                        this.players[plyr2.number - 1].currentPosition.cell.number;
+                      // let invalidPositions = [invalidPos];
+
+                      // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
+                      dir = this.getDirectionFromCells(myPos, invalidPos);
+
+                      if (dir && positions.includes(dir) === true) {
+                        positions.splice(positions.indexOf(dir), 1);
+                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                      }
+
+                      // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+                      for (const pop of plyr2.popups) {
+                        dir = undefined;
+
+                        if (pop.state === true) {
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          };
+
+                          invalidPos2 = this.getCellFromDirection(
+                            1,
+                            invalidPos,
+                            pop.position
+                          );
+
+                          // let dir = undefined;
+
+                          dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                          if (dir && positions.includes(dir) === true) {
+                            positions.splice(positions.indexOf(dir), 1);
+                            // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
+                  for (const popup2 of currentPopups) {
+                    dir = undefined;
+
+                    if (
+                      popup.cell.number.x !== popup2.cell.number.x &&
+                      popup.cell.number.y !== popup2.cell.number.y &&
+                      popup2.msg !== popup.msg &&
+                      popup2.state === true
+                    ) {
+                      let myPos = popup.cell.number;
+                      let cellPos = popup2.cell.number;
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      };
+
+                      invalidPos2 = this.getCellFromDirection(
+                        1,
+                        cellPos,
+                        popup2.position
+                      );
+
+                      dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                      if (dir && positions.includes(dir) === true) {
+                        positions.splice(positions.indexOf(dir), 1);
+                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                      }
+                    }
+                  }
+
+                  if (!positions[0]) {
+                    // console.log('no open positions for', popup.msg);
+                    popup.state = false;
+                    popup.count = 0;
+                  } else {
+                    popup.position = positions[0];
+                  }
+
+                  popup.img = this.popupImageRef[popup.msg];
+
+                  popupDrawCoords = this.popupDrawCalc(
+                    popup.position,
+                    { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
+                    0
+                  );
+                  this.drawPopupBubble(
+                    context2,
+                    popupDrawCoords.origin.x,
+                    popupDrawCoords.origin.y,
+                    this.popupSize,
+                    this.popupSize,
+                    5,
+                    popupDrawCoords.anchor.x,
+                    popupDrawCoords.anchor.y,
+                    popup.color
+                  );
+                  // context2.fillStyle = 'black';
+                  // context2.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                  // console.log('popup.msg',popup.msg,popup.img);
+                  let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+                  context2.drawImage(
+                    popup.img,
+                    popupDrawCoords.origin.x + centerPopupOffset,
+                    popupDrawCoords.origin.y + centerPopupOffset,
+                    this.popupImgSize,
+                    this.popupImgSize
+                  );
+                } else {
+                  let dir = undefined;
+                  let dirs = [];
+
+                  let currentPopupsNotThis = this.cellPopups.filter(
+                    (x) =>
+                      x.state === true &&
+                      x.msg !== popup.msg &&
+                      x.cell.number.x !== popup.cell.number.x &&
+                      x.cell.number.y !== popup.cell.number.y
+                  );
+
+                  for (const plyr2 of this.players) {
+                    if (plyr2.ai.state !== true) {
+                      let myPos = popup.cell.number;
+                      let invalidPos =
+                        this.players[plyr2.number - 1].currentPosition.cell.number;
+
+                      // invalidpostions2 push plyr2 position
+                      // for player popups
+                      //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+                      //
+
+                      dir = this.getDirectionFromCells(myPos, invalidPos);
+
+                      dirs.push(dir);
+
+                      for (const pop of plyr2.popups) {
+                        if (pop.state === true) {
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          };
+
+                          invalidPos2 = this.getCellFromDirection(
+                            1,
+                            invalidPos,
+                            pop.position
+                          );
+
+                          dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                          // if (dir && positions.includes(dir) === true) {
+                          //   positions.splice(positions.indexOf(dir),1);
+                          //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          // }
+                          dirs.push(dir);
+                        }
+                      }
+                    }
+                  }
+
+                  for (const popup2 of currentPopupsNotThis) {
+                    dir = undefined;
+
+                    if (popup2.msg !== popup.msg && popup2.state === true) {
+                      let myPos = popup.cell.number;
+
+                      let cellPos = popup2.cell.number;
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      };
+
+                      invalidPos2 = this.getCellFromDirection(
+                        1,
+                        cellPos,
+                        popup2.position
+                      );
+
+                      dir = this.getDirectionFromCells(myPos, invalidPos2);
+
+                      dirs.push(dir);
+                    }
+                  }
+
+                  // if (popup.position === dir ) {
+                  if (dirs.find((x) => x === popup.position)) {
+                    // for (const pop of this.cellPopups) {
+                    //   pop.position = '';
+                    //   pop.state = false;
+                    // }
+                    this.cellPopups.find(
+                      (x) =>
+                        x.msg === popup.msg &&
+                        x.cell.number.x === popup.cell.number.x &&
+                        x.cell.number.x === popup.cell.number.x
+                    ).state = false;
+                    this.cellPopups.find(
+                      (x) =>
+                        x.msg === popup.msg &&
+                        x.cell.number.x === popup.cell.number.x &&
+                        x.cell.number.x === popup.cell.number.x
+                    ).position = "";
+                    // console.log('reconsidering...',popup.msg);
+                  } else {
+                    popup.img = this.popupImageRef[popup.msg];
+                    popupDrawCoords = this.popupDrawCalc(
+                      popup.position,
+                      {
+                        x: popup.cell.center.x - 25,
+                        y: popup.cell.center.y - 15,
+                      },
+                      0
+                    );
+                    // this.drawPopupBubble2(context2,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                    this.drawPopupBubble(
+                      context2,
+                      popupDrawCoords.origin.x,
+                      popupDrawCoords.origin.y,
+                      this.popupSize,
+                      this.popupSize,
+                      5,
+                      popupDrawCoords.anchor.x,
+                      popupDrawCoords.anchor.y,
+                      popup.color
+                    );
+                    // context2.fillStyle = 'black';
+                    // context2.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                    // console.log('popup.msg',popup.msg);
+                    let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
+                    context2.drawImage(
+                      popup.img,
+                      popupDrawCoords.origin.x + centerPopupOffset,
+                      popupDrawCoords.origin.y + centerPopupOffset,
+                      this.popupImgSize,
+                      this.popupImgSize
+                    );
+                  }
+                }
+              }
+            }
           }
         }
 
@@ -45260,18 +46162,88 @@ class App extends Component {
 
         // TEST DRAW
 
-        for (const point of this.testDraw) {
+        if (this.testDraw.length > 1) {
           if (x === this.gridWidth && y === this.gridWidth) {
-            context.fillStyle = point.color;
-            context.beginPath();
-            context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-            context.fill();
+            for (const point of this.testDraw) {
+              context.fillStyle = point.color;
+              context.beginPath();
+              context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+              context.fill();
+            }
           }
-          // let indx = this.testDraw.findIndex(
-          //   (x) => x.x === point.x && x.y === point.y && x.color === point.color
-          // );
+          if (this.testDraw[0]?.type === "arcCrementer") {
+            let lastPoint;
+            context.beginPath();
+            context.moveTo(this.testDraw[0].x, this.testDraw[0].y);
+            for (var i = 1; i < this.testDraw.length - 1; i++) {
+              context.arcTo(
+                this.testDraw[i].x,
+                this.testDraw[i].y,
+                this.testDraw[i + 1].x,
+                this.testDraw[i + 1].y,
+                20
+              );
+            }
+            lastPoint = this.testDraw[this.testDraw.length - 1];
+            context.lineTo(lastPoint.x, lastPoint.y);
 
-          // this.testDraw.splice(indx, 1);
+            context.strokeStyle = this.testDraw[0].color;
+            context.lineWidth = 5;
+            context.stroke();
+
+            if (this.testDraw[0].x2) {
+              context.beginPath();
+              context.moveTo(this.testDraw[0].x2, this.testDraw[0].y2);
+              for (var i = 1; i < this.testDraw.length - 1; i++) {
+                context.arcTo(
+                  this.testDraw[i].x2,
+                  this.testDraw[i].y2,
+                  this.testDraw[i + 1].x2,
+                  this.testDraw[i + 1].y2,
+                  30
+                );
+              }
+              lastPoint = this.testDraw[this.testDraw.length - 1];
+              context.lineTo(lastPoint.x, lastPoint.y);
+
+              context.strokeStyle = this.testDraw[0].color;
+              context.lineWidth = 5;
+              context.stroke();
+            }
+
+            if (this.testDraw[0].lineArray?.length > 0) {
+              for (var i = 0; i < this.testDraw.length - 0; i++) {
+                let pointOuter = {
+                  x: this.testDraw[i].x,
+                  y: this.testDraw[i].y,
+                  // x: this.testDraw[i].lineArray[0].x,
+                  // y: this.testDraw[i].lineArray[0].y,
+                };
+                let pointInner = {
+                  x: this.testDraw[i].x2,
+                  y: this.testDraw[i].y2,
+                  // x: this.testDraw[i].lineArray[length]?.x,
+                  // y: this.testDraw[i].lineArray[length]?.y,
+                };
+                context.beginPath();
+                context.moveTo(pointInner.x, pointInner.y);
+                context.lineTo(pointOuter.x, pointOuter.y);
+
+                context.strokeStyle = this.testDraw[i].color;
+                context.lineWidth = 5;
+                context.stroke();
+              }
+            }
+          } else {
+            for (const point of this.testDraw) {
+              if (x === this.gridWidth && y === this.gridWidth) {
+                context.fillStyle = point.color;
+                context.beginPath();
+                context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                context.fill();
+              }
+            }
+          }
         }
       }
     }
@@ -46631,7 +47603,7 @@ class App extends Component {
         while (randomFreeCellChosen !== true) {
           cll.x = this.rnJesus(0, this.gridWidth);
           cll.y = this.rnJesus(0, this.gridWidth);
-          randomFreeCellChosen = this.checkCell(cll);
+          randomFreeCellChosen = this.checkCell(cll, ["all"]);
         }
 
         if (randomFreeCellChosen === true) {
@@ -46668,7 +47640,7 @@ class App extends Component {
         while (randomFreeCellChosen !== true) {
           cll.x = this.rnJesus(0, this.gridWidth);
           cll.y = this.rnJesus(0, this.gridWidth);
-          randomFreeCellChosen = this.checkCell(cll);
+          randomFreeCellChosen = this.checkCell(cll, ["all"]);
         }
 
         if (randomFreeCellChosen === true) {
@@ -46998,7 +47970,7 @@ class App extends Component {
               y: player.nextPosition.y - this.floorImageHeight,
             };
 
-            context.drawImage(
+            context2.drawImage(
               playerImg,
               sx,
               sy,
@@ -47015,7 +47987,7 @@ class App extends Component {
         // OBSTACLES & BARRIERS
         if (cell.barrier.state === true && cell.void.state !== true) {
           let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
-          context.drawImage(
+          context2.drawImage(
             barrierImg,
             iso.x - offset.x,
             iso.y - barrierImg.height,
@@ -47026,7 +47998,7 @@ class App extends Component {
 
         if (cell.obstacle.state === true && cell.void.state !== true) {
           let obstacleImg = this.obstacleImgs[cell.obstacle.type];
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - obstacleImg.height);
+          context2.drawImage(obstacleImg, iso.x - offset.x, iso.y - obstacleImg.height);
         }
 
         this.init = false;
