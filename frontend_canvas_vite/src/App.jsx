@@ -16913,7 +16913,8 @@ class App extends Component {
               target.attacking.directionType === "slash" &&
               target.attacking.direction === this.getOppositeDirection(bolt.direction)
             ) {
-              if (this.rnJesus(1, target.crits.pushBack + bolt.charge) === 1) {
+              // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF ATTACK SUCCESS
+              if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
@@ -17037,7 +17038,8 @@ class App extends Component {
                 target.attacking.directionType === "slash" &&
                 target.attacking.direction === this.getOppositeDirection(bolt.direction)
               ) {
-                // CHANCE TO BE PUSHED BACK INCREASES WITH BOLT CHARGE
+                // PEAK DEFENSE IS GUARANTEED DEFEND SUCCESS
+                // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
                 if (target.defending.peak === true) {
                   console.log(
                     "bolt hit plyr",
@@ -17070,9 +17072,9 @@ class App extends Component {
                       img: "",
                     });
                   }
-                  // CHANCE TO BE PUSHED BACK INCREASES WITH BOLT CHARGE
+                  // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
                   if (this.rnJesus(1, target.crits.pushBack + bolt.charge) !== 1) {
-                    console.log("and were pushed back due to bolt charge");
+                    console.log("and was pushed back due to bolt charge");
                     this.pushBack(target, this.getOppositeDirection(target.direction));
                   }
 
@@ -17082,8 +17084,8 @@ class App extends Component {
                   this.players[target.number - 1] = target;
                   return;
                 }
-                // OFF PEAK DEFEND
 
+                // OFF PEAK DEFEND
                 // CHANCE FOR DEFEND SUCCESS
                 // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF DEFEND SUCCESS
                 if (target.defending.peak !== true) {
@@ -17218,7 +17220,6 @@ class App extends Component {
             this.players[target.number - 1] = target;
             return;
           }
-
           // PLAYER ARMED AND ATTACKING
           // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
           if (
@@ -17264,7 +17265,7 @@ class App extends Component {
           }
 
           // TAKE DAMAGE/BE INJURED
-          else {
+          else if (target.attacking.peak === true && weapon !== "unarmed") {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -17291,6 +17292,7 @@ class App extends Component {
               (target.attacking.direction === this.getOppositeDirection(bolt.direction) ||
                 target.attacking.direction === bolt.direction)
             ) {
+              // UNARMED DEFENSE
               if (weapon === "unarmed") {
                 // UNARMED PEAK DEFEND, BOLT CHRG RNG SUCCESS ?
                 if (target.defending.peak === true) {
@@ -17828,6 +17830,8 @@ class App extends Component {
           }
         }
 
+        // THE HIGHER THE BOLT CHARGE
+        // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
         let doubleHit = this.rnJesus(1, doubleHitChance + bolt.charge);
         let singleHit = this.rnJesus(1, singleHitChance + bolt.charge);
 
@@ -17837,7 +17841,7 @@ class App extends Component {
         if (doubleHit !== 1) {
           damage = 2;
         }
-        // BACK ATTACK
+        // BACK ATTACK ADDS DMG +1
         if (target.direction === bolt.direction) {
           damage += 1;
         }
