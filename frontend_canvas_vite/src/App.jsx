@@ -16955,7 +16955,7 @@ class App extends Component {
                   "from the side. by",
                   bolt.ownerType,
                   bolt.owner,
-                  "but they attacked it unsuccessfully. Damage & Deflect?"
+                  "but they attacked it unsuccessfully due to bolt charge roll. Damage & Deflect?"
                 );
                 this.handleProjectileDamage(bolt, ownerType, "player", target);
                 this.setDeflection(target, "attacked", false);
@@ -16976,7 +16976,7 @@ class App extends Component {
                 "from the side. by",
                 bolt.ownerType,
                 bolt.owner,
-                "but they attacked it unsuccessfully. Damage & Deflect?"
+                "but they attacked it unsuccessfully due to attack direction. Damage & Deflect?"
               );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
@@ -17045,7 +17045,7 @@ class App extends Component {
                     "from the side. by",
                     bolt.ownerType,
                     bolt.owner,
-                    "but they parried"
+                    "but they parried. Pushback?"
                   );
                   target.stamina.current += this.staminaCostRef.defend.peak;
                   target.success.defendSuccess = {
@@ -17072,6 +17072,7 @@ class App extends Component {
                   }
                   // CHANCE TO BE PUSHED BACK INCREASES WITH BOLT CHARGE
                   if (this.rnJesus(1, target.crits.pushBack + bolt.charge) !== 1) {
+                    console.log("and were pushed back due to bolt charge");
                     this.pushBack(target, this.getOppositeDirection(target.direction));
                   }
 
@@ -17093,7 +17094,7 @@ class App extends Component {
                       "from the side. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they off-peak defended successfully"
+                      "but they off-peak defended successfully overcoming bolt charge"
                     );
                     target.success.defendSuccess = {
                       state: true,
@@ -17135,7 +17136,7 @@ class App extends Component {
                       "from the side. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they off-peak defended unsuccessfully. Damage, Deflect, Pushback?"
+                      "but they off-peak defended unsuccessfully due to bolt charge. Damage, Deflect, Pushback?"
                     );
                     this.handleProjectileDamage(bolt, ownerType, "player", target);
 
@@ -17157,7 +17158,7 @@ class App extends Component {
                   "from the side. by",
                   bolt.ownerType,
                   bolt.owner,
-                  "but they attacked it unsuccessfully. Damage & Deflect?"
+                  "but they defended it unsuccessfully due to action direction. Damage & Deflect?"
                 );
                 this.handleProjectileDamage(bolt, ownerType, "player", target);
                 this.setDeflection(target, "attacked", false);
@@ -17245,7 +17246,8 @@ class App extends Component {
                   img: "",
                 });
               }
-              if (this.rnJesus(1, target.crits.pushBack) === 1) {
+              if (this.rnJesus(1, bolt.charge - target.crits.pushBack) <= 1) {
+                console.log("and was pushed back due to bolt charge");
                 this.pushBack(target, this.getOppositeDirection(target.direction));
               }
               target.success.attackSuccess = {
@@ -17269,7 +17271,7 @@ class App extends Component {
               "from the front. by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked successfully but unarmed. Damage, Deflect?"
+              "but they attacked unsuccessfully due to attack direction. Damage, Deflect?"
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
@@ -17283,79 +17285,100 @@ class App extends Component {
 
           // PLAYER DEFENDING
           if (playerDefending === true) {
-            if (weapon === "unarmed") {
-              // UNARMED PEAK DEFEND, SUCCESS
-              if (target.defending.peak === true) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they parried successfully unarmed."
-                );
-                // target.stamina.current += this.staminaCostRef.defend.peak;
-                target.success.defendSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: target.success.defendSuccess.limit,
-                };
-                target.statusDisplay = {
-                  state: true,
-                  status: "Parry!",
-                  count: 1,
-                  limit: target.statusDisplay.limit,
-                };
-                if (!target.popups.find((x) => x.msg === "attackParried")) {
-                  target.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: "",
-                    position: "",
-                    msg: "attackParried",
-                    img: "",
-                  });
+            // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
+            if (
+              target.attacking.directionType === "slash" &&
+              (target.attacking.direction === this.getOppositeDirection(bolt.direction) ||
+                target.attacking.direction === bolt.direction)
+            ) {
+              if (weapon === "unarmed") {
+                // UNARMED PEAK DEFEND, BOLT CHRG RNG SUCCESS ?
+                if (target.defending.peak === true) {
+                  // PARRIED & OVERCOME BOLT CHARGE
+
+                  if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the front. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they parried successfully unarmed overcoming bolt charge."
+                    );
+                    // target.stamina.current += this.staminaCostRef.defend.peak;
+                    target.success.defendSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: target.success.defendSuccess.limit,
+                    };
+                    target.statusDisplay = {
+                      state: true,
+                      status: "Parry!",
+                      count: 1,
+                      limit: target.statusDisplay.limit,
+                    };
+                    if (!target.popups.find((x) => x.msg === "attackParried")) {
+                      target.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: "",
+                        position: "",
+                        msg: "attackParried",
+                        img: "",
+                      });
+                    }
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
+                  // SUCCESSFUL PARRY BUT OVERCOME BY BOLT CHARGE. TAKE DAMAGE
+                  else {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the front. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they peak defended successfully unarmed and overcome by bolt charge. Damage deflect?"
+                    );
+                    this.handleProjectileDamage(bolt, ownerType, "player", target);
+                    this.setDeflection(target, "attacked", false);
+                    deflected = true;
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
                 }
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
+
+                // UNARMED OFF PEAK DEFEND, TAKE DAMAGE
+                if (target.defending.peak !== true) {
+                  console.log(
+                    "bolt hit plyr",
+                    target.number,
+                    "from the front. by",
+                    bolt.ownerType,
+                    bolt.owner,
+                    "but they off-peak defended successfully but unarmed. Damage deflect?"
+                  );
+                  this.handleProjectileDamage(bolt, ownerType, "player", target);
+                  this.setDeflection(target, "attacked", false);
+                  deflected = true;
+                  // FINISH
+                  x = this.projectiles.find((x) => x.id === bolt.id);
+                  x = bolt;
+                  this.players[target.number - 1] = target;
+                  return;
+                }
               }
 
-              // UNARMED OFF PEAK DEFEND, Take DAMAGE
-              // if (target.defending.decay.state === true && target.defending.peak !== true) {
-              if (target.defending.peak !== true) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they off-peak defended successfully unarmed. Damage deflect?"
-                );
-                this.handleProjectileDamage(bolt, ownerType, "player", target);
-                this.setDeflection(target, "attacked", false);
-                deflected = true;
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
-              }
-            }
-
-            // PLAYER DEFENDING AND ARMED, GUARANTEED DEFEND W/ CHANCE TO PUSH BACK
-            else {
-              // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
-              if (
-                target.attacking.directionType === "slash" &&
-                (target.attacking.direction ===
-                  this.getOppositeDirection(bolt.direction) ||
-                  target.attacking.direction === bolt.direction)
-              ) {
-                // PEAK DEFEND
+              // ARMED DEFENSE
+              else {
+                // ARMED PEAK DEFEND
                 if (target.defending.peak === true) {
                   console.log(
                     "bolt hit plyr",
@@ -17363,7 +17386,7 @@ class App extends Component {
                     "from the front. by",
                     bolt.ownerType,
                     bolt.owner,
-                    "but they parried successfully armed."
+                    "but they parried successfully armed. Pushback?"
                   );
                   target.stamina.current += this.staminaCostRef.defend.peak;
                   target.success.defendSuccess = {
@@ -17388,7 +17411,8 @@ class App extends Component {
                       img: "",
                     });
                   }
-                  if (this.rnJesus(1, target.crits.pushBack) === 1) {
+                  if (this.rnJesus(1, target.crits.pushBack + bolt.charge) === 1) {
+                    console.log("and was pushed back due to bolt charge");
                     this.pushBack(target, this.getOppositeDirection(target.direction));
                   }
                   // FINISH
@@ -17398,7 +17422,8 @@ class App extends Component {
                   return;
                 }
 
-                // IF BOLT CHARGE PERC IS OVER 90%, CHANCE TO DEFEND BREAK/TAKE DMG***
+                // ARMED OFF PEAK DEFEND
+                // IF BOLT CHARGE PERC IS OVER 90%, CHANCE TO DEFEND BREAK/TAKE DMG
                 if (target.defending.peak !== true) {
                   if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
                     console.log(
@@ -17407,7 +17432,7 @@ class App extends Component {
                       "from the front. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they off-peak defended successfully armed. Pushback?"
+                      "but they off-peak defended successfully armed overcoming bolt charge. Pushback?"
                     );
                     target.success.defendSuccess = {
                       state: true,
@@ -17449,7 +17474,7 @@ class App extends Component {
                       "from the front. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they defended. Damage, Deflect?"
+                      "but they defended overcome by bolt charge. Damage, Deflect?"
                     );
                     this.handleProjectileDamage(bolt, ownerType, "player", target);
                     this.setDeflection(target, "attacked", false);
@@ -17462,26 +17487,26 @@ class App extends Component {
                   }
                 }
               }
+            }
 
-              // TAKE DAMAGE/BE INJURED
-              else {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they attacked successfully but unarmed. Damage, Deflect?"
-                );
-                this.handleProjectileDamage(bolt, ownerType, "player", target);
-                this.setDeflection(target, "attacked", false);
-                deflected = true;
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
-              }
+            // TAKE DAMAGE/BE INJURED
+            else {
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the front. by",
+                bolt.ownerType,
+                bolt.owner,
+                "but they defended unsuccessfully & unarmed due to action direction . Damage, Deflect?"
+              );
+              this.handleProjectileDamage(bolt, ownerType, "player", target);
+              this.setDeflection(target, "attacked", false);
+              deflected = true;
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
             }
           }
 
@@ -17762,19 +17787,20 @@ class App extends Component {
     let doubleHitChance;
     let singleHitChance;
 
-    // FIX ME
-    // estimate maximum charge
-    // calc damage using bolt charge
-    // directionalInputThresh = Math.ceil(
-    //   player[action].animRef.peak.unarmed.thrust.normal / 2
-    // );
-    // % charge = charge/(actionpeak-inputthesh)
-    // percentage determine chance to double atak
-
     if (ownerType === "player") {
       if (targetType === "player") {
         boltOwner = this.players[bolt.owner - 1];
         damage = 0;
+        let boltChargePercentage = 0;
+
+        const directionalInputThresh = Math.ceil(
+          boltOwner.attacking.animRef.peak.crossbow.slash.normal / 2
+        );
+        boltChargePercentage =
+          (bolt.charge /
+            (this.players[bolt.owner - 1].attacking.peakCount - directionalInputThresh)) *
+          100;
+
         doubleHitChance = boltOwner.crits.doubleHit;
         singleHitChance = boltOwner.crits.singleHit;
 
@@ -17802,19 +17828,18 @@ class App extends Component {
           }
         }
 
-        let doubleHit = this.rnJesus(1, doubleHitChance);
-        let singleHit = this.rnJesus(1, singleHitChance);
-
-        // BACK ATTACK
-        if (target.direction === bolt.direction) {
-          damage = 2;
-        }
+        let doubleHit = this.rnJesus(1, doubleHitChance + bolt.charge);
+        let singleHit = this.rnJesus(1, singleHitChance + bolt.charge);
 
         if (singleHit === 1) {
           damage = 1;
         }
-        if (doubleHit === 1) {
+        if (doubleHit !== 1) {
           damage = 2;
+        }
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          damage += 1;
         }
         boltOwner.success.attackSuccess = {
           state: true,
