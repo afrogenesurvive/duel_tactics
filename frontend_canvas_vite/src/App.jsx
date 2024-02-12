@@ -15924,6 +15924,11 @@ class App extends Component {
           adv = 0;
         }
       }
+
+      // FIX ME
+      // if one player is blunt and the other isn't
+      //   give the advantage to the non blunt
+
       return adv;
     };
     const executeAttack = () => {
@@ -16691,8 +16696,50 @@ class App extends Component {
           return;
         }
 
+        let simultaneousAttack = false;
+        // console.log(
+        //   "here",
+        //   owner.attacking.count,
+        //   targetPlayerRef.attacking.count,
+        //   targetPlayerRef.attacking.animRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance
+        // );
+
+        // FIX ME
+        // check for target attacking peak
+        //   if target attack dir is opposite plyr dir
+
+        // -------
+        // if (
+        //   targetPlayerRef.attacking.peak === true ||
+        //   (targetPlayerRef.attacking.count >=
+        //     targetPlayerRef.attacking.animRef.peak[defenderWeaponType] -
+        //       this.simultaneousAttackAllowance &&
+        //     targetPlayerRef.attacking.count <=
+        //       targetPlayerRef.attacking.animRef.peak[defenderWeaponType])
+        // ) {
+        //   simultaneousAttack = true;
+        // }
+        // ------
+
+        //   if simultaneous attack
+        //     if plyr dir is opposite axis target atk dir
+        //       handle attacking
+        //     if plyr dir is same axis target atk dir
+        //       trade/ handle attacking
+        // else (incompatible dirs)
+        //   take target take dmg/ execute atk
+
+        if (targetPlayerRef.attacking.peak === true) {
+        }
+
         // TARGET PLAYER DEFENDING
-        if (targetDefending === true) {
+        else if (targetDefending === true) {
+          // FIX ME
+          //   if target attack dir is opposite plyr dir
+          //     if plyr dir is opposite axis target atk dir
+          //        defend
+          //     else, execute attack
+          //   else, execute attack
           handleTargetDefending();
 
           if (ownerType === "player") {
@@ -16703,7 +16750,14 @@ class App extends Component {
         }
 
         // TARGET PLAYER NOT DODGING OR DEFENDING
-        else {
+        // FIX ME
+        // if not defending, dodging or siumltaneous attacking
+        if (
+          targetPlayerRef.dodging.state !== true &&
+          // targetPlayerRef.attacking.peak !== true &&
+          simultaneousAttack !== true &&
+          targetDefending !== true
+        ) {
           executeAttack();
 
           if (ownerType === "player") {
@@ -16750,7 +16804,11 @@ class App extends Component {
         ) {
           simultaneousAttack = true;
         }
+
         // TARGET ALSO ATTACKING
+        // FIX ME
+        // plyr and target attack DIRECTION MUST MATCH
+
         if (simultaneousAttack === true) {
           handleTargetAttacking();
 
@@ -16761,8 +16819,15 @@ class App extends Component {
           return;
         }
 
+        // FIX ME
+        // if simultaneous, but dirs don't match
+        //   trade/ executeattack(trade)
+
         // TARGET DEFENDING
         if (targetDefending === true) {
+          // FIX ME
+          // if dirs match handle defend
+          // if dirs don't match, execute attack
           handleTargetDefending();
 
           if (ownerType === "player") {
