@@ -16857,10 +16857,10 @@ class App extends Component {
         if (
           targetPlayerRef.attacking.peak === true ||
           (targetPlayerRef.attacking.count >=
-            targetPlayerRef.attacking.animRef.peak[defenderWeaponType] -
+            targetPlayerRef.attacking.animRef.peak[defendType] -
               this.simultaneousAttackAllowance &&
             targetPlayerRef.attacking.count <=
-              targetPlayerRef.attacking.animRef.peak[defenderWeaponType])
+              targetPlayerRef.attacking.animRef.peak[defendType])
         ) {
           simultaneousAttack = true;
         }
