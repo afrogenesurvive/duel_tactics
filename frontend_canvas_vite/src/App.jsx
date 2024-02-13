@@ -15759,6 +15759,8 @@ class App extends Component {
     let ownerWeaponName;
     let ownerWeaponType;
     let ownerDirection;
+    let ownerActionDirection;
+    let ownerActionDirectionType;
     let cell1Item;
     let cell1Rubble;
     let cell2Item;
@@ -15790,6 +15792,8 @@ class App extends Component {
           x.number.y === owner.target.cell2.number.y
       );
       ownerDirection = owner.direction;
+      ownerActionDirection = owner.attacking.direction;
+      ownerActionDirectionType = owner.attacking.directionType;
       ownerWeaponType = owner.currentWeapon.type;
       ownerWeaponName = owner.currentWeapon.name;
       cell1Item = owner.target.cell1.occupant.type === "item";
@@ -15801,6 +15805,8 @@ class App extends Component {
         (x) => x[ownerType].state === true && x[ownerType].id === owner.id
       );
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+      ownerActionDirection = owner.trap.acting.direction;
+      ownerActionDirectionType = owner.trap.acting.directionType;
       let cell1 = this.getCellFromDirection(1, myCell.number, ownerDirection);
       let cell2 = this.getCellFromDirection(2, myCell.number, ownerDirection);
       targetCell1 = this.gridInfo.find(
@@ -15924,10 +15930,6 @@ class App extends Component {
           adv = 0;
         }
       }
-
-      // FIX ME
-      // if one player is blunt and the other isn't
-      //   give the advantage to the non blunt
 
       return adv;
     };
@@ -16181,8 +16183,12 @@ class App extends Component {
                 });
               }
 
+              // LATERAL: IF ATTACKER CHARGE > 25% PUSHBACK TARGET
+              // FRONTAL: IF ATTACKER CHARGE > 50% PUSHBACK TARGET
+              let attackerCharge = calcChargePercentage("defending")?.result;
               if (sideAttack === true) {
-                if (this.rnJesus(0, 4) === 1) {
+                // IF ATTACKER CHARGE > 50% PUSHBACK TARGET
+                if (attackerCharge > 25) {
                   this.pushBack(
                     targetPlayerRef,
                     this.getOppositeDirection(targetPlayerRef.direction)
@@ -16190,7 +16196,8 @@ class App extends Component {
                 }
               }
               if (faceToFace === true) {
-                if (this.rnJesus(0, 6) === 1) {
+                // IF ATTACKER CHARGE > 25% PUSHBACK TARGET
+                if (attackerCharge > 50) {
                   this.pushBack(
                     targetPlayerRef,
                     this.getOppositeDirection(targetPlayerRef.direction)
@@ -16340,6 +16347,7 @@ class App extends Component {
                   img: "",
                 });
               }
+              // PUSHBACK PLAYER
               if (this.rnJesus(0, 2) === 1) {
                 this.pushBack(
                   targetPlayerRef,
@@ -16374,8 +16382,62 @@ class App extends Component {
         }
       }
     };
+    const calcChargePercentage = (targetAction) => {
+      let result1 = 0;
+      let result2 = 0;
+      let attackerDirectionalInputThresh;
+      let targetDirectionalInputThresh;
+      let attackerArmed;
+      let targetArmed;
 
-    const handleTargetAttacking = () => {
+      if (ownerType === "player") {
+        attackerArmed = owner.currentWeapon.type;
+
+        if (owner.currentWeapon.name === "") {
+          attackerArmed = unarmed;
+        }
+
+        attackerDirectionalInputThresh = Math.ceil(
+          owner.attacking.animRef.peak[attackerArmed][owner.attacking.directionType]
+            .normal / 2
+        );
+
+        result1 =
+          (owner.attacking.charge /
+            (owner.attacking.peakCount - attackerDirectionalInputThresh)) *
+          100;
+      }
+
+      targetArmed = targetPlayerRef.currentWeapon.type;
+      if (targetPlayerRef.currentWeapon.name === "") {
+        targetArmed = unarmed;
+      }
+      targetDirectionalInputThresh = Math.ceil(
+        targetPlayerRef[targetAction].animRef.peak[targetArmed][
+          targetPlayerRef[targetAction].directionType
+        ].normal / 2
+      );
+      if (targetAction === "attacking") {
+        result2 =
+          (targetPlayerRef[targetAction].charge /
+            (targetPlayerRef[targetAction].peakCount - targetDirectionalInputThresh)) *
+          100;
+      }
+
+      if (result1 < 0) {
+        result1 = 0;
+      }
+      if (result2 < 0) {
+        result2 = 0;
+      }
+
+      return {
+        result1: result1.toFixed(0),
+        result2: result2.toFixed(0),
+      };
+    };
+
+    const handleTargetAttacking = (additional) => {
       // EVENLY MATCHED. CLASHING
       if (advantage === 0) {
         console.log(
@@ -16388,47 +16450,141 @@ class App extends Component {
           "are evenly matched in combat advantage. clashing!! pushback one or both players w/o damage"
         );
 
-        if (ownerType === "player") {
-          targetPlayerRef.attacking.clashing.state = true;
-          owner.attacking.clashing.state = true;
-        }
+        if (additional === "clash") {
+          if (ownerType === "player") {
+            targetPlayerRef.attacking.clashing.state = true;
+            owner.attacking.clashing.state = true;
+          } else {
+            targetPlayerRef.attacking.clashing.state = true;
+          }
 
-        // PUSHBACK ATTACKER/PLAYER
-        let set = false;
-        let pushWho = this.rnJesus(0, 2);
-        if (pushWho === 0 && set !== true) {
-          if (ownerType === "obstacle") {
-            this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
-            set = true;
-          }
-          if (ownerType === "player") {
-            this.pushBack(owner, this.getOppositeDirection(owner.direction));
-            set = true;
-          }
-        }
-        // PUSHBACK DEFENDER/TARGET
-        if (pushWho === 1 && set !== true) {
-          this.pushBack(
-            targetPlayerRef,
-            this.getOppositeDirection(targetPlayerRef.direction)
+          console.log(
+            ownerType,
+            owner.number,
+            owner.id,
+            "clashed with player",
+            targetPlayerRef.number,
+            "from the",
+            attackPosition,
+            " w/ ",
+            ownerWeaponType,
+            "@",
+            logCellNo,
+            ". pushback 1 or both players"
           );
-          set = true;
+
+          let attackerCharge = calcChargePercentage("attacking").result1;
+          let targetCharge = calcChargePercentage("attacking").result2;
+
+          if (
+            set !== true &&
+            (attackerCharge - targetCharge === 10 ||
+              attackerCharge - targetCharge === -10 ||
+              attackerCharge === targetCharge)
+          ) {
+            if (ownerType === "obstacle") {
+              this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+              set = true;
+            }
+            if (ownerType === "player") {
+              this.pushBack(owner, this.getOppositeDirection(owner.direction));
+              set = true;
+            }
+            this.pushBack(
+              targetPlayerRef,
+              this.getOppositeDirection(targetPlayerRef.direction)
+            );
+            set = true;
+          } else if (set !== true) {
+            if (attackerCharge > targetCharge) {
+              this.pushBack(
+                targetPlayerRef,
+                this.getOppositeDirection(targetPlayerRef.direction)
+              );
+              set = true;
+            }
+            if (attackerCharge < targetCharge) {
+              if (ownerType === "obstacle") {
+                this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+                set = true;
+              }
+              if (ownerType === "player") {
+                this.pushBack(owner, this.getOppositeDirection(owner.direction));
+                set = true;
+              }
+            }
+          }
+
+          // // PUSHBACK ATTACKER/PLAYER
+          // let set = false;
+          // let pushWho = this.rnJesus(0, 2);
+          // if (pushWho === 0 && set !== true) {
+          //   if (ownerType === "obstacle") {
+          //     this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+          //     set = true;
+          //   }
+          //   if (ownerType === "player") {
+          //     this.pushBack(owner, this.getOppositeDirection(owner.direction));
+          //     set = true;
+          //   }
+          // }
+          // // PUSHBACK DEFENDER/TARGET
+          // if (pushWho === 1 && set !== true) {
+          //   this.pushBack(
+          //     targetPlayerRef,
+          //     this.getOppositeDirection(targetPlayerRef.direction)
+          //   );
+          //   set = true;
+          // }
+          // // PUSHBACK BOTH PLAYERS
+          // if (pushWho === 2 && set !== true) {
+          //   if (ownerType === "obstacle") {
+          //     this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+          //     set = true;
+          //   }
+          //   if (ownerType === "player") {
+          //     this.pushBack(owner, this.getOppositeDirection(owner.direction));
+          //     set = true;
+          //   }
+          //   this.pushBack(
+          //     targetPlayerRef,
+          //     this.getOppositeDirection(targetPlayerRef.direction)
+          //   );
+          //   set = true;
+          // }
         }
-        // PUSHBACK BOTH PLAYERS
-        if (pushWho === 2 && set !== true) {
-          if (ownerType === "obstacle") {
-            this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
-            set = true;
-          }
-          if (ownerType === "player") {
-            this.pushBack(owner, this.getOppositeDirection(owner.direction));
-            set = true;
-          }
-          this.pushBack(
-            targetPlayerRef,
-            this.getOppositeDirection(targetPlayerRef.direction)
+        if (additional === "trade") {
+          console.log(
+            ownerType,
+            owner.number,
+            owner.id,
+            "traded blows with player",
+            targetPlayerRef.number,
+            "from the",
+            attackPosition,
+            " w/ ",
+            ownerWeaponType,
+            "@",
+            logCellNo,
+            ". damage both players, deflect both players"
           );
-          set = true;
+          this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+          this.setDeflection(targetPlayerRef, "attacked", false);
+
+          if (ownerType === "player") {
+            this.handleMeleeDamage("player", targetPlayerRef, owner);
+            this.setDeflection(owner, "attacked", false);
+          } else {
+            this.attackCellContents(
+              "melee",
+              "player",
+              targetPlayerRef,
+              targetCell,
+              targetCell2,
+              myCell,
+              undefined
+            );
+          }
         }
       }
 
@@ -16697,50 +16853,129 @@ class App extends Component {
         }
 
         let simultaneousAttack = false;
-        // console.log(
-        //   "here",
-        //   owner.attacking.count,
-        //   targetPlayerRef.attacking.count,
-        //   targetPlayerRef.attacking.animRef.peak[defenderWeaponType] - this.simultaneousAttackAllowance
-        // );
 
-        // FIX ME
-        // check for target attacking peak
-        //   if target attack dir is opposite plyr dir
+        if (
+          targetPlayerRef.attacking.peak === true ||
+          (targetPlayerRef.attacking.count >=
+            targetPlayerRef.attacking.animRef.peak[defenderWeaponType] -
+              this.simultaneousAttackAllowance &&
+            targetPlayerRef.attacking.count <=
+              targetPlayerRef.attacking.animRef.peak[defenderWeaponType])
+        ) {
+          simultaneousAttack = true;
+        }
 
-        // -------
-        // if (
-        //   targetPlayerRef.attacking.peak === true ||
-        //   (targetPlayerRef.attacking.count >=
-        //     targetPlayerRef.attacking.animRef.peak[defenderWeaponType] -
-        //       this.simultaneousAttackAllowance &&
-        //     targetPlayerRef.attacking.count <=
-        //       targetPlayerRef.attacking.animRef.peak[defenderWeaponType])
-        // ) {
-        //   simultaneousAttack = true;
-        // }
-        // ------
-
-        //   if simultaneous attack
-        //     if plyr dir is opposite axis target atk dir
-        //       handle attacking
-        //     if plyr dir is same axis target atk dir
-        //       trade/ handle attacking
-        // else (incompatible dirs)
-        //   take target take dmg/ execute atk
-
-        if (targetPlayerRef.attacking.peak === true) {
+        if (simultaneousAttack === true) {
+          if (
+            targetPlayerRef.attacking.directionType === "slash" &&
+            targetPlayerRef.attacking.direction ===
+              this.getOppositeDirection(ownerDirection)
+          ) {
+            if (
+              targetPlayerRef.attacking.direction === ownerActionDirection ||
+              targetPlayerRef.attacking.direction ===
+                this.getOppositeDirection(ownerActionDirection)
+            ) {
+              console.log(
+                "Compatible lateral attack directions: opposite axis",
+                ownerType,
+                owner.number,
+                owner.id,
+                ownerActionDirection,
+                ". Target -",
+                targetPlayerRef.number,
+                targetPlayerRef.attacking.direction,
+                " They may trade blows"
+              );
+              handleTargetAttacking("trade");
+            }
+            if (
+              targetPlayerRef.attacking.direction !== ownerActionDirection &&
+              targetPlayerRef.attacking.direction !==
+                this.getOppositeDirection(ownerActionDirection)
+            ) {
+              console.log(
+                "Compatible lateral attack directions: same axis",
+                ownerType,
+                owner.number,
+                owner.id,
+                ownerActionDirection,
+                ". Target -",
+                targetPlayerRef.number,
+                targetPlayerRef.attacking.direction,
+                " They may clash"
+              );
+              handleTargetAttacking("clash");
+            }
+          } else {
+            console.log(
+              "Incompatible lateral attack directions: target attack direction does face attacker",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.attacking.direction
+            );
+            executeAttack();
+          }
         }
 
         // TARGET PLAYER DEFENDING
         else if (targetDefending === true) {
-          // FIX ME
-          //   if target attack dir is opposite plyr dir
-          //     if plyr dir is opposite axis target atk dir
-          //        defend
-          //     else, execute attack
-          //   else, execute attack
-          handleTargetDefending();
+          if (
+            targetPlayerRef.defending.directionType === "slash" &&
+            targetPlayerRef.defending.direction ===
+              this.getOppositeDirection(ownerDirection)
+          ) {
+            if (
+              targetPlayerRef.defending.direction === ownerActionDirection ||
+              targetPlayerRef.defending.direction ===
+                this.getOppositeDirection(ownerActionDirection)
+            ) {
+              console.log(
+                "Incompatible lateral defend directions: opposite axis",
+                ownerType,
+                owner.number,
+                owner.id,
+                ownerActionDirection,
+                ". Target -",
+                targetPlayerRef.number,
+                targetPlayerRef.defending.direction
+              );
+              executeAttack();
+            }
+            if (
+              targetPlayerRef.attacking.direction !== ownerActionDirection &&
+              targetPlayerRef.attacking.direction !==
+                this.getOppositeDirection(ownerActionDirection)
+            ) {
+              console.log(
+                "Compatible lateral defend directions: same axis",
+                ownerType,
+                owner.number,
+                owner.id,
+                ownerActionDirection,
+                ". Target -",
+                targetPlayerRef.number,
+                targetPlayerRef.defending.direction
+              );
+              handleTargetDefending();
+            }
+          } else {
+            console.log(
+              "Incompatible lateral defend directions: target defend direction does not face attacker",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.defending.direction
+            );
+            executeAttack();
+          }
 
           if (ownerType === "player") {
             this.players[owner.number - 1] = owner;
@@ -16750,8 +16985,6 @@ class App extends Component {
         }
 
         // TARGET PLAYER NOT DODGING OR DEFENDING
-        // FIX ME
-        // if not defending, dodging or siumltaneous attacking
         if (
           targetPlayerRef.dodging.state !== true &&
           // targetPlayerRef.attacking.peak !== true &&
@@ -16806,11 +17039,35 @@ class App extends Component {
         }
 
         // TARGET ALSO ATTACKING
-        // FIX ME
-        // plyr and target attack DIRECTION MUST MATCH
 
         if (simultaneousAttack === true) {
-          handleTargetAttacking();
+          if (ownerActionDirection === targetPlayerRef.attacking.direction) {
+            console.log(
+              "Compatible frontal attack directions: same direction. Perfect!",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.attacking.direction,
+              " They may clash"
+            );
+            handleTargetAttacking("clash");
+          } else {
+            console.log(
+              "Incompatible frontal attack directions: different directions.",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.attacking.direction,
+              " They may trade"
+            );
+            handleTargetAttacking("trade");
+          }
 
           if (ownerType === "player") {
             this.players[owner.number - 1] = owner;
@@ -16819,16 +17076,33 @@ class App extends Component {
           return;
         }
 
-        // FIX ME
-        // if simultaneous, but dirs don't match
-        //   trade/ executeattack(trade)
-
         // TARGET DEFENDING
         if (targetDefending === true) {
-          // FIX ME
-          // if dirs match handle defend
-          // if dirs don't match, execute attack
-          handleTargetDefending();
+          if (ownerActionDirection === targetPlayerRef.defending.direction) {
+            console.log(
+              "Compatible frontal defend directions: same direction. Perfect!",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.defending.direction
+            );
+            handleTargetDefending();
+          } else {
+            console.log(
+              "Incompatible lateral defend directions: different directions.",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.defending.direction
+            );
+            executeAttack();
+          }
 
           if (ownerType === "player") {
             this.players[owner.number - 1] = owner;
@@ -16863,6 +17137,9 @@ class App extends Component {
   };
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
     // console.log("projectileAttackParse");
+
+    // the higher your pb or gb,
+    // the lower your chance of being pushed back or having your guard broken.
 
     let deflected = false;
     let x;
@@ -17312,7 +17589,8 @@ class App extends Component {
                   img: "",
                 });
               }
-              if (this.rnJesus(1, bolt.charge - target.crits.pushBack) <= 1) {
+              // HIGHER BOLT CHARGE AND LOWER PUSBACK INCREASES CHANCE OF PUSHBACK
+              if (this.rnJesus(1, target.crits.pushBack - bolt.charge) >= 1) {
                 console.log("and was pushed back due to bolt charge");
                 this.pushBack(target, this.getOppositeDirection(target.direction));
               }
@@ -17731,8 +18009,10 @@ class App extends Component {
       }
     }
 
-    let doubleHit = this.rnJesus(1, doubleHitChance);
-    let singleHit = this.rnJesus(1, singleHitChance);
+    // THE HIGHER THE ATTACK CHARGE
+    // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
+    let doubleHit = this.rnJesus(1, doubleHitChance + owner.attacking.charge);
+    let singleHit = this.rnJesus(1, singleHitChance + owner.attacking.charge);
 
     // BACK ATTACK
     if (ownerDirection === targetPlayer.direction) {
@@ -17747,7 +18027,7 @@ class App extends Component {
     if (singleHit === 1) {
       damage = 1;
     }
-    if (doubleHit === 1) {
+    if (doubleHit !== 1) {
       damage = 2;
     }
 
@@ -18334,6 +18614,14 @@ class App extends Component {
     }
     if (player2.currentWeapon.name !== "") {
       players[1] += 1;
+    }
+    if (player1.attacking.state === true && player2.attacking.state === true) {
+      if (player1.attacking.blunt !== true && player1.currentWeapon.name !== "") {
+        players[0] += 1;
+      }
+      if (player2.attacking.blunt !== true && player2.currentWeapon.name !== "") {
+        players[1] += 1;
+      }
     }
     if (players[0] === players[1]) {
       advantage = 0;
