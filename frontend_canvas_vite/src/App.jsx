@@ -17970,6 +17970,7 @@ class App extends Component {
     let ownerDirection;
     let doubleHitChance;
     let singleHitChance;
+    let ownerAttackCharge = 0;
 
     if (ownerType === "player") {
       ownerDirection = owner.direction;
@@ -17977,6 +17978,7 @@ class App extends Component {
       ownerWeaponName = owner.currentWeapon.name;
       doubleHitChance = owner.crits.doubleHit;
       singleHitChance = owner.crits.singleHit;
+      ownerAttackCharge = owner.attacking.charge;
     } else {
       let myCell = this.gridInfo.find(
         (x) => x[ownerType].state === true && x[ownerType].id === owner.id
@@ -18012,15 +18014,29 @@ class App extends Component {
       }
     }
 
-    // THE HIGHER THE ATTACK CHARGE
-    // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
-    let doubleHit = this.rnJesus(1, doubleHitChance + owner.attacking.charge);
-    let singleHit = this.rnJesus(1, singleHitChance + owner.attacking.charge);
-
+    let positionalDamagaMod = 0;
     // BACK ATTACK
-    if (ownerDirection === targetPlayer.direction) {
-      damage = 2;
+    if (targetPlayer.direction === owner.direction) {
+      positionalDamagaMod = 10;
     }
+    // SIDE ATTACK
+    if (
+      targetPlayer.direction !== owner.direction &&
+      targetPlayer.direction !== this.getOppositeDirection(owner.direction)
+    ) {
+      positionalDamagaMod = 20;
+    }
+
+    // THE HIGHER THE ATTACK CHARGE & POSITIONAL DAMAGE MOD
+    // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
+    let doubleHit = this.rnJesus(
+      1,
+      doubleHitChance + ownerAttackCharge + positionalDamagaMod
+    );
+    let singleHit = this.rnJesus(
+      1,
+      singleHitChance + ownerAttackCharge + positionalDamagaMod
+    );
 
     if (ownerWeaponName === "") {
       singleHit = 1;
@@ -18032,6 +18048,11 @@ class App extends Component {
     }
     if (doubleHit !== 1) {
       damage = 2;
+    }
+
+    // BACK ATTACK DMG
+    if (ownerDirection === targetPlayer.direction) {
+      damage += 1;
     }
 
     if (ownerType === "player") {
@@ -18178,10 +18199,29 @@ class App extends Component {
           }
         }
 
-        // THE HIGHER THE BOLT CHARGE
+        let positionalDamagaMod = 0;
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          positionalDamagaMod = 10;
+        }
+        // SIDE ATTACK
+        if (
+          target.direction !== bolt.direction &&
+          target.direction !== this.getOppositeDirection(bolt.direction)
+        ) {
+          positionalDamagaMod = 20;
+        }
+
+        // THE HIGHER THE BOLT CHARGE &  POSITIONAL DAMAGE MOD
         // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
-        let doubleHit = this.rnJesus(1, doubleHitChance + bolt.charge);
-        let singleHit = this.rnJesus(1, singleHitChance + bolt.charge);
+        let doubleHit = this.rnJesus(
+          1,
+          doubleHitChance + bolt.charge + positionalDamagaMod
+        );
+        let singleHit = this.rnJesus(
+          1,
+          singleHitChance + bolt.charge + positionalDamagaMod
+        );
 
         if (singleHit === 1) {
           damage = 1;
@@ -18284,7 +18324,7 @@ class App extends Component {
     } else {
       if (targetType === "player") {
         damage = 0;
-        doubleHitChance = 2;
+        doubleHitChance = 1;
         singleHitChance = 1;
 
         if (target.currentArmor.name !== "") {
@@ -18311,18 +18351,31 @@ class App extends Component {
           }
         }
 
-        let doubleHit = this.rnJesus(1, doubleHitChance);
-        let singleHit = this.rnJesus(1, singleHitChance);
+        let positionalDamagaMod = 0;
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          positionalDamagaMod = 10;
+        }
+        // SIDE ATTACK
+        if (
+          target.direction !== bolt.direction &&
+          target.direction !== this.getOppositeDirection(bolt.direction)
+        ) {
+          positionalDamagaMod = 20;
+        }
+
+        let doubleHit = this.rnJesus(1, doubleHitChance + positionalDamagaMod);
+        let singleHit = this.rnJesus(1, singleHitChance + positionalDamagaMod);
 
         // BACK ATTACK
         if (target.direction === bolt.direction) {
-          damage = 2;
+          damage = +1;
         }
 
         if (singleHit === 1) {
           damage = 1;
         }
-        if (doubleHit === 1) {
+        if (doubleHit !== 1) {
           damage = 2;
         }
         if (!target.popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
