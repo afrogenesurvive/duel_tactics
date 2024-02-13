@@ -3894,7 +3894,7 @@ class App extends Component {
     this.showPlayerOutlines = false;
     this.showGridIsoGuide = false;
     this.showDirectionalActionAnimation = true;
-    this.hideAllPopups = true;
+    this.hideAllPopups = false;
     this.hideDirectionalActionPopus = true;
     this.directionalAnimShape = "ringSection";
 
@@ -22807,14 +22807,16 @@ class App extends Component {
         ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       }
 
-      // FIX ME
+      // THE HIGHER THE ATTACK CHARGE
+      // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
       let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
       let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
 
+      if (singleHit === 1) {
+        damage = 1;
+      }
       if (doubleHit !== 1) {
         damage = 2;
-      } else {
-        damage = 1;
       }
       let shouldDamage = 0;
       if (ownerType === "player") {
@@ -23024,15 +23026,17 @@ class App extends Component {
         doubleHitChance = 2;
         singleHitChance = 1;
       }
+      // THE HIGHER THE ATTACK CHARGE
+      // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
       ownerAttackCharge = bolt.charge;
-      // FIX ME
       let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
       let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
 
+      if (singleHit === 1) {
+        damage = 1;
+      }
       if (doubleHit !== 1) {
         damage = 2;
-      } else {
-        damage = 1;
       }
 
       let myCellBarrier = false;
@@ -23147,13 +23151,15 @@ class App extends Component {
       }
       ownerAttackCharge = bolt.charge;
 
-      // FIX ME
+      // THE HIGHER THE ATTACK CHARGE
+      // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
       let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
       let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
+      if (singleHit === 1) {
+        damage = 1;
+      }
       if (doubleHit !== 1) {
         damage = 2;
-      } else {
-        damage = 1;
       }
 
       // (targetCell.obstacle.height + targetCell.elevation.number) < bolt.elevation;
@@ -35108,17 +35114,17 @@ class App extends Component {
       }
     }
     // POPUP TESTING
-    if (this.time === 250 || this.time === 500) {
-      // let newArray = [];
-      // let x = 0;
-      // let y = 0;
-      // for (const [key, value] of Object.entries(this.popupImageRef)) {
-      //   newArray.push(key);
-      // }
+    if (this.time === 100 && player.number === 1) {
+      let newArray = [];
+      let x = 0;
+      let y = 0;
+      for (const [key, value] of Object.entries(this.popupImageRef)) {
+        newArray.push(key);
+      }
       // player.popups.push({
       //   state: false,
       //   count: 0,
-      //   limit: 30,
+      //   limit: 50,
       //   type: "",
       //   position: "",
       //   msg: "hpUp" + "_-5",
@@ -35129,7 +35135,7 @@ class App extends Component {
       //       x.number.y === player.currentPosition.cell.number.y
       //   ),
       // });
-      // for (var i = 0; i < 10; i++) {
+      // for (var i = 0; i < 12; i++) {
       //   if (
       //     !player.popups.find((x) => x.msg === newArray[i])
       //     // player.number === 2 &&
@@ -35140,7 +35146,7 @@ class App extends Component {
       //       player.popups.push({
       //         state: false,
       //         count: 0,
-      //         limit: 30,
+      //         limit: 50,
       //         type: "",
       //         position: "",
       //         msg: newArray[i] + "_-5",
@@ -35155,7 +35161,7 @@ class App extends Component {
       //       player.popups.push({
       //         state: false,
       //         count: 0,
-      //         limit: 30,
+      //         limit: 50,
       //         type: "",
       //         position: "",
       //         msg: newArray[i],
@@ -42720,16 +42726,16 @@ class App extends Component {
                   plyr.moving.step
                 );
                 finalAnimIndex = moveAnimIndex + 1;
-                // console.log(
-                //   "anim testing mv spd",
-                //   plyr.speed.move,
-                //   "step",
-                //   plyr.moving.step,
-                //   "plyr",
-                //   plyr.number,
-                //   "index",
-                //   finalAnimIndex
-                // );
+                console.log(
+                  "anim testing mv spd",
+                  plyr.speed.move,
+                  "step",
+                  plyr.moving.step,
+                  "plyr",
+                  plyr.number,
+                  "index",
+                  finalAnimIndex
+                );
                 if (plyr.target.cell1.void == true) {
                   // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
                 }
@@ -42749,7 +42755,14 @@ class App extends Component {
                     plyr.moving.step
                   );
                   finalAnimIndex = moveAnimIndex3;
-                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                  console.log(
+                    "anim testing pushback spd",
+                    plyr.speed.move,
+                    "step",
+                    plyr.moving.step,
+                    "indx",
+                    finalAnimIndex
+                  );
                 } else {
                   let moveSpeed = plyr.speed.move;
                   // if (plyr.pushing.state === true) {
@@ -42769,7 +42782,14 @@ class App extends Component {
                     plyr.moving.step
                   );
                   finalAnimIndex = moveAnimIndex2;
-                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                  console.log(
+                    "anim testing strafe mv spd",
+                    plyr.speed.move,
+                    "step",
+                    plyr.moving.step,
+                    "indx",
+                    finalAnimIndex
+                  );
                 }
                 break;
               case "flanking":
@@ -42778,7 +42798,14 @@ class App extends Component {
                   plyr.moving.step
                 );
                 finalAnimIndex = moveAnimIndex6;
-                // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+                console.log(
+                  "flanking step",
+                  plyr.flanking.step,
+                  "step",
+                  plyr.moving.step,
+                  "anim indx",
+                  finalAnimIndex
+                );
                 // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
                 break;
               case "attacking":
@@ -42981,12 +43008,12 @@ class App extends Component {
                 //   }
                 // }
                 finalAnimIndex = animIndex7;
-                // console.log(
-                //   "anim testing dodge",
-                //   plyr.dodging.count,
-                //   "plyr",
-                //   plyr.number
-                // );
+                console.log(
+                  "anim testing dodge",
+                  plyr.dodging.count,
+                  "indx",
+                  finalAnimIndex
+                );
                 break;
             }
           }
@@ -44732,7 +44759,10 @@ class App extends Component {
             }
           }
           // FLANKING
-          if (plyr.flanking.state === true && plyr.falling.state !== true) {
+          if (
+            (plyr.flanking.state === true || plyr.action === "flanking") &&
+            plyr.falling.state !== true
+          ) {
             // if (plyr.flanking.step === 1) {
             //   if (plyr.flanking.direction === "north") {
             //     if (
@@ -44893,8 +44923,8 @@ class App extends Component {
             //   }
             // }
             if (
-              x === plyr.moving.origin.number.x &&
-              y === plyr.moving.origin.number.y
+              x === plyr.currentPosition.cell.number.x &&
+              y === plyr.currentPosition.cell.number.y
               // plyr.success.deflected.state === false
             ) {
               setCurrentPlayerDrawCell(x, y, "non-elastic");
@@ -45606,10 +45636,10 @@ class App extends Component {
                     // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
 
                     if (!positions[0]) {
-                      console.log(
-                        "no open positions for new or postponed popup",
-                        popup.msg
-                      );
+                      // console.log(
+                      //   "no open positions for new or postponed popup",
+                      //   popup.msg
+                      // );
                       popup.state = false;
                       popup.count = 0;
                     } else {
