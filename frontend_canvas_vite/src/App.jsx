@@ -21022,8 +21022,7 @@ class App extends Component {
     let ownerWeaponName;
     let ownerWeaponType;
     let ownerDirection;
-
-    // factor attack charge, into dmg calc
+    let ownerAttackCharge = 0;
 
     const handleObstacleDamage = (calcedDamage, range) => {
       if (range === 1) {
@@ -22800,6 +22799,7 @@ class App extends Component {
         doubleHitChance = owner.crits.doubleHit;
         singleHitChance = owner.crits.singleHit;
         ownerDirection = owner.direction;
+        ownerAttackCharge = owner.attacking.charge;
       } else {
         ownerWeaponType = owner.trap.item.subType;
         doubleHitChance = 2;
@@ -22807,10 +22807,11 @@ class App extends Component {
         ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       }
 
-      let doubleHit = this.rnJesus(1, doubleHitChance);
-      let singleHit = this.rnJesus(1, singleHitChance);
+      // FIX ME
+      let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
+      let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
 
-      if (doubleHit === 1) {
+      if (doubleHit !== 1) {
         damage = 2;
       } else {
         damage = 1;
@@ -23023,10 +23024,12 @@ class App extends Component {
         doubleHitChance = 2;
         singleHitChance = 1;
       }
-      let doubleHit = this.rnJesus(1, doubleHitChance);
-      let singleHit = this.rnJesus(1, singleHitChance);
+      ownerAttackCharge = bolt.charge;
+      // FIX ME
+      let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
+      let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
 
-      if (doubleHit === 1) {
+      if (doubleHit !== 1) {
         damage = 2;
       } else {
         damage = 1;
@@ -23142,9 +23145,12 @@ class App extends Component {
         doubleHitChance = 2;
         singleHitChance = 1;
       }
-      let doubleHit = this.rnJesus(1, doubleHitChance);
-      let singleHit = this.rnJesus(1, singleHitChance);
-      if (doubleHit === 1) {
+      ownerAttackCharge = bolt.charge;
+
+      // FIX ME
+      let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
+      let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
+      if (doubleHit !== 1) {
         damage = 2;
       } else {
         damage = 1;
@@ -44429,7 +44435,12 @@ class App extends Component {
           // DIRECTIONAL ACTION INDICATION
           if (plyr.actionDirectionAnimationArray.length > 0) {
             // console.log("b", x, y);
+
             for (const animAction of plyr.actionDirectionAnimationArray) {
+              let lnWdth = 5;
+              if (animAction.actionDirectionType === "thrust") {
+                lnWdth = 8;
+              }
               let lastPoint;
               for (const point of animAction.points) {
                 // if (x === this.gridWidth && y === this.gridWidth) {
@@ -44456,7 +44467,7 @@ class App extends Component {
                 context.lineTo(lastPoint.x, lastPoint.y);
 
                 context.strokeStyle = animAction.points[0].color;
-                context.lineWidth = 5;
+                context.lineWidth = lnWdth;
                 context.stroke();
 
                 if (animAction.points[0].x2) {
@@ -44475,7 +44486,7 @@ class App extends Component {
                   context.lineTo(lastPoint.x2, lastPoint.y2);
 
                   context.strokeStyle = animAction.points[0].color;
-                  context.lineWidth = 5;
+                  context.lineWidth = lnWdth;
                   context.stroke();
                 }
 
@@ -44500,7 +44511,7 @@ class App extends Component {
                       context.lineTo(pointOuter.x, pointOuter.y);
 
                       context.strokeStyle = animAction.points[i].color;
-                      context.lineWidth = 5;
+                      context.lineWidth = lnWdth;
                       context.stroke();
                     }
                   }
@@ -45944,6 +45955,10 @@ class App extends Component {
 
         // OBSTACLE BARRIER DIRECTIONAL ACTION ANIM
         for (const animAction of this.obstacleBarrierActionAnimationArray) {
+          let lnWdth = 5;
+          if (animAction.actionDirectionType === "thrust") {
+            lnWdth = 8;
+          }
           // for (const point of animAction.points) {
           //   context.fillStyle = point.color;
           //   context.beginPath();
@@ -45968,7 +45983,7 @@ class App extends Component {
             context.lineTo(lastPoint.x, lastPoint.y);
 
             context.strokeStyle = animAction.points[0].color;
-            context.lineWidth = 5;
+            context.lineWidth = lnWdth;
             context.stroke();
 
             if (animAction.points[0].x2) {
@@ -45987,7 +46002,7 @@ class App extends Component {
               context.lineTo(lastPoint.x, lastPoint.y);
 
               context.strokeStyle = animAction.points[0].color;
-              context.lineWidth = 5;
+              context.lineWidth = lnWdth;
               context.stroke();
             }
 
@@ -46011,7 +46026,7 @@ class App extends Component {
                   context.lineTo(pointOuter.x, pointOuter.y);
 
                   context.strokeStyle = animAction.points[i].color;
-                  context.lineWidth = 5;
+                  context.lineWidth = lnWdth;
                   context.stroke();
                 }
               }
