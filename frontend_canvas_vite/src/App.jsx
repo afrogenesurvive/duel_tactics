@@ -17141,9 +17141,6 @@ class App extends Component {
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
     // console.log("projectileAttackParse");
 
-    // the higher your pb or gb,
-    // the lower your chance of being pushed back or having your guard broken.
-
     let deflected = false;
     let x;
     let boltChargePercentage = 0;
@@ -17889,17 +17886,95 @@ class App extends Component {
         " by",
         bolt.ownerType,
         bolt.owner,
-        "attack cell contents"
+        "."
       );
-      this.attackCellContents(
-        "bolt",
-        bolt.ownerType,
-        cell[targetType],
-        cell,
-        undefined,
-        undefined,
-        bolt
+
+      boltOwner = this.gridInfo.find(
+        (x) =>
+          x[bolt.ownerType].state === true &&
+          x[bolt.ownerType].trap?.state === true &&
+          x[bolt.ownerType].id === bolt.owner
       );
+      if (
+        boltOwner.trap.action === "attack" &&
+        boltOwner.trap.acting.state === true &&
+        boltOwner.trap.acting.directionType === "slash"
+      ) {
+        // LATERAL/SIDE ATTACK
+        if (
+          boltOwner.trap.direction !== bolt.direction &&
+          boltOwner.trap.direction !== this.getOppositeDirection(bolt.direction)
+        ) {
+          if (boltOwner.acting.direction === this.getOppositeDirection(bolt.direction)) {
+            console.log(
+              targetType,
+              "hit by bolt from the side by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked it successfully."
+            );
+          } else {
+            console.log(
+              targetType,
+              "hit by bolt from the side by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked it unsuccessfully. Attack cell contents."
+            );
+            this.attackCellContents(
+              "bolt",
+              bolt.ownerType,
+              cell[targetType],
+              cell,
+              undefined,
+              undefined,
+              bolt
+            );
+          }
+        }
+        // FRONTAL ATTACK
+        if (bolt.direction === this.getOppositeDirection(target.direction)) {
+          if (
+            boltOwner.acting.direction === this.getOppositeDirection(bolt.direction) ||
+            boltOwner.acting.direction === bolt.direction
+          ) {
+            console.log(
+              targetType,
+              "hit by bolt from the front by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked it successfully."
+            );
+          } else {
+            console.log(
+              targetType,
+              "hit by bolt from the front by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked it unsuccessfully. Attack cell contents."
+            );
+            this.attackCellContents(
+              "bolt",
+              bolt.ownerType,
+              cell[targetType],
+              cell,
+              undefined,
+              undefined,
+              bolt
+            );
+          }
+        }
+      } else {
+        this.attackCellContents(
+          "bolt",
+          bolt.ownerType,
+          cell[targetType],
+          cell,
+          undefined,
+          undefined,
+          bolt
+        );
+      }
 
       let x = this.projectiles.find((x) => x.id === bolt.id);
       x = bolt;
@@ -20947,6 +21022,9 @@ class App extends Component {
     let ownerWeaponName;
     let ownerWeaponType;
     let ownerDirection;
+
+    // factor attack charge, into dmg calc
+
     const handleObstacleDamage = (calcedDamage, range) => {
       if (range === 1) {
         if (targetCell.obstacle.destructible.state === true) {
