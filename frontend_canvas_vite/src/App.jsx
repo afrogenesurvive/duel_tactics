@@ -3894,7 +3894,7 @@ class App extends Component {
     this.showPlayerOutlines = false;
     this.showGridIsoGuide = false;
     this.showDirectionalActionAnimation = true;
-    this.hideAllPopups = true;
+    this.hideAllPopups = false;
     this.hideDirectionalActionPopus = true;
     this.directionalAnimShape = "ringSection";
 
@@ -15759,6 +15759,8 @@ class App extends Component {
     let ownerWeaponName;
     let ownerWeaponType;
     let ownerDirection;
+    let ownerActionDirection;
+    let ownerActionDirectionType;
     let cell1Item;
     let cell1Rubble;
     let cell2Item;
@@ -15790,6 +15792,8 @@ class App extends Component {
           x.number.y === owner.target.cell2.number.y
       );
       ownerDirection = owner.direction;
+      ownerActionDirection = owner.attacking.direction;
+      ownerActionDirectionType = owner.attacking.directionType;
       ownerWeaponType = owner.currentWeapon.type;
       ownerWeaponName = owner.currentWeapon.name;
       cell1Item = owner.target.cell1.occupant.type === "item";
@@ -15801,6 +15805,8 @@ class App extends Component {
         (x) => x[ownerType].state === true && x[ownerType].id === owner.id
       );
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+      ownerActionDirection = owner.trap.acting.direction;
+      ownerActionDirectionType = owner.trap.acting.directionType;
       let cell1 = this.getCellFromDirection(1, myCell.number, ownerDirection);
       let cell2 = this.getCellFromDirection(2, myCell.number, ownerDirection);
       targetCell1 = this.gridInfo.find(
@@ -15924,6 +15930,7 @@ class App extends Component {
           adv = 0;
         }
       }
+
       return adv;
     };
     const executeAttack = () => {
@@ -16176,8 +16183,12 @@ class App extends Component {
                 });
               }
 
+              // LATERAL: IF ATTACKER CHARGE > 25% PUSHBACK TARGET
+              // FRONTAL: IF ATTACKER CHARGE > 50% PUSHBACK TARGET
+              let attackerCharge = calcChargePercentage("defending")?.result;
               if (sideAttack === true) {
-                if (this.rnJesus(0, 4) === 1) {
+                // IF ATTACKER CHARGE > 50% PUSHBACK TARGET
+                if (attackerCharge > 25) {
                   this.pushBack(
                     targetPlayerRef,
                     this.getOppositeDirection(targetPlayerRef.direction)
@@ -16185,7 +16196,8 @@ class App extends Component {
                 }
               }
               if (faceToFace === true) {
-                if (this.rnJesus(0, 6) === 1) {
+                // IF ATTACKER CHARGE > 25% PUSHBACK TARGET
+                if (attackerCharge > 50) {
                   this.pushBack(
                     targetPlayerRef,
                     this.getOppositeDirection(targetPlayerRef.direction)
@@ -16335,6 +16347,7 @@ class App extends Component {
                   img: "",
                 });
               }
+              // PUSHBACK PLAYER
               if (this.rnJesus(0, 2) === 1) {
                 this.pushBack(
                   targetPlayerRef,
@@ -16369,8 +16382,62 @@ class App extends Component {
         }
       }
     };
+    const calcChargePercentage = (targetAction) => {
+      let result1 = 0;
+      let result2 = 0;
+      let attackerDirectionalInputThresh;
+      let targetDirectionalInputThresh;
+      let attackerArmed;
+      let targetArmed;
 
-    const handleTargetAttacking = () => {
+      if (ownerType === "player") {
+        attackerArmed = owner.currentWeapon.type;
+
+        if (owner.currentWeapon.name === "") {
+          attackerArmed = unarmed;
+        }
+
+        attackerDirectionalInputThresh = Math.ceil(
+          owner.attacking.animRef.peak[attackerArmed][owner.attacking.directionType]
+            .normal / 2
+        );
+
+        result1 =
+          (owner.attacking.charge /
+            (owner.attacking.peakCount - attackerDirectionalInputThresh)) *
+          100;
+      }
+
+      targetArmed = targetPlayerRef.currentWeapon.type;
+      if (targetPlayerRef.currentWeapon.name === "") {
+        targetArmed = unarmed;
+      }
+      targetDirectionalInputThresh = Math.ceil(
+        targetPlayerRef[targetAction].animRef.peak[targetArmed][
+          targetPlayerRef[targetAction].directionType
+        ].normal / 2
+      );
+      if (targetAction === "attacking") {
+        result2 =
+          (targetPlayerRef[targetAction].charge /
+            (targetPlayerRef[targetAction].peakCount - targetDirectionalInputThresh)) *
+          100;
+      }
+
+      if (result1 < 0) {
+        result1 = 0;
+      }
+      if (result2 < 0) {
+        result2 = 0;
+      }
+
+      return {
+        result1: result1.toFixed(0),
+        result2: result2.toFixed(0),
+      };
+    };
+
+    const handleTargetAttacking = (additional) => {
       // EVENLY MATCHED. CLASHING
       if (advantage === 0) {
         console.log(
@@ -16383,47 +16450,141 @@ class App extends Component {
           "are evenly matched in combat advantage. clashing!! pushback one or both players w/o damage"
         );
 
-        if (ownerType === "player") {
-          targetPlayerRef.attacking.clashing.state = true;
-          owner.attacking.clashing.state = true;
-        }
+        if (additional === "clash") {
+          if (ownerType === "player") {
+            targetPlayerRef.attacking.clashing.state = true;
+            owner.attacking.clashing.state = true;
+          } else {
+            targetPlayerRef.attacking.clashing.state = true;
+          }
 
-        // PUSHBACK ATTACKER/PLAYER
-        let set = false;
-        let pushWho = this.rnJesus(0, 2);
-        if (pushWho === 0 && set !== true) {
-          if (ownerType === "obstacle") {
-            this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
-            set = true;
-          }
-          if (ownerType === "player") {
-            this.pushBack(owner, this.getOppositeDirection(owner.direction));
-            set = true;
-          }
-        }
-        // PUSHBACK DEFENDER/TARGET
-        if (pushWho === 1 && set !== true) {
-          this.pushBack(
-            targetPlayerRef,
-            this.getOppositeDirection(targetPlayerRef.direction)
+          console.log(
+            ownerType,
+            owner.number,
+            owner.id,
+            "clashed with player",
+            targetPlayerRef.number,
+            "from the",
+            attackPosition,
+            " w/ ",
+            ownerWeaponType,
+            "@",
+            logCellNo,
+            ". pushback 1 or both players"
           );
-          set = true;
+
+          let attackerCharge = calcChargePercentage("attacking").result1;
+          let targetCharge = calcChargePercentage("attacking").result2;
+
+          if (
+            set !== true &&
+            (attackerCharge - targetCharge === 10 ||
+              attackerCharge - targetCharge === -10 ||
+              attackerCharge === targetCharge)
+          ) {
+            if (ownerType === "obstacle") {
+              this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+              set = true;
+            }
+            if (ownerType === "player") {
+              this.pushBack(owner, this.getOppositeDirection(owner.direction));
+              set = true;
+            }
+            this.pushBack(
+              targetPlayerRef,
+              this.getOppositeDirection(targetPlayerRef.direction)
+            );
+            set = true;
+          } else if (set !== true) {
+            if (attackerCharge > targetCharge) {
+              this.pushBack(
+                targetPlayerRef,
+                this.getOppositeDirection(targetPlayerRef.direction)
+              );
+              set = true;
+            }
+            if (attackerCharge < targetCharge) {
+              if (ownerType === "obstacle") {
+                this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+                set = true;
+              }
+              if (ownerType === "player") {
+                this.pushBack(owner, this.getOppositeDirection(owner.direction));
+                set = true;
+              }
+            }
+          }
+
+          // // PUSHBACK ATTACKER/PLAYER
+          // let set = false;
+          // let pushWho = this.rnJesus(0, 2);
+          // if (pushWho === 0 && set !== true) {
+          //   if (ownerType === "obstacle") {
+          //     this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+          //     set = true;
+          //   }
+          //   if (ownerType === "player") {
+          //     this.pushBack(owner, this.getOppositeDirection(owner.direction));
+          //     set = true;
+          //   }
+          // }
+          // // PUSHBACK DEFENDER/TARGET
+          // if (pushWho === 1 && set !== true) {
+          //   this.pushBack(
+          //     targetPlayerRef,
+          //     this.getOppositeDirection(targetPlayerRef.direction)
+          //   );
+          //   set = true;
+          // }
+          // // PUSHBACK BOTH PLAYERS
+          // if (pushWho === 2 && set !== true) {
+          //   if (ownerType === "obstacle") {
+          //     this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
+          //     set = true;
+          //   }
+          //   if (ownerType === "player") {
+          //     this.pushBack(owner, this.getOppositeDirection(owner.direction));
+          //     set = true;
+          //   }
+          //   this.pushBack(
+          //     targetPlayerRef,
+          //     this.getOppositeDirection(targetPlayerRef.direction)
+          //   );
+          //   set = true;
+          // }
         }
-        // PUSHBACK BOTH PLAYERS
-        if (pushWho === 2 && set !== true) {
-          if (ownerType === "obstacle") {
-            this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
-            set = true;
-          }
-          if (ownerType === "player") {
-            this.pushBack(owner, this.getOppositeDirection(owner.direction));
-            set = true;
-          }
-          this.pushBack(
-            targetPlayerRef,
-            this.getOppositeDirection(targetPlayerRef.direction)
+        if (additional === "trade") {
+          console.log(
+            ownerType,
+            owner.number,
+            owner.id,
+            "traded blows with player",
+            targetPlayerRef.number,
+            "from the",
+            attackPosition,
+            " w/ ",
+            ownerWeaponType,
+            "@",
+            logCellNo,
+            ". damage both players, deflect both players"
           );
-          set = true;
+          this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+          this.setDeflection(targetPlayerRef, "attacked", false);
+
+          if (ownerType === "player") {
+            this.handleMeleeDamage("player", targetPlayerRef, owner);
+            this.setDeflection(owner, "attacked", false);
+          } else {
+            this.attackCellContents(
+              "melee",
+              "player",
+              targetPlayerRef,
+              targetCell,
+              targetCell2,
+              myCell,
+              undefined
+            );
+          }
         }
       }
 
@@ -16691,9 +16852,133 @@ class App extends Component {
           return;
         }
 
+        let simultaneousAttack = false;
+
+        if (
+          targetPlayerRef.attacking.peak === true ||
+          (targetPlayerRef.attacking.count >=
+            targetPlayerRef.attacking.animRef.peak[defendType] -
+              this.simultaneousAttackAllowance &&
+            targetPlayerRef.attacking.count <=
+              targetPlayerRef.attacking.animRef.peak[defendType])
+        ) {
+          simultaneousAttack = true;
+        }
+
+        if (simultaneousAttack === true) {
+          if (
+            targetPlayerRef.attacking.directionType === "slash" &&
+            targetPlayerRef.attacking.direction ===
+              this.getOppositeDirection(ownerDirection)
+          ) {
+            if (
+              targetPlayerRef.attacking.direction === ownerActionDirection ||
+              targetPlayerRef.attacking.direction ===
+                this.getOppositeDirection(ownerActionDirection) ||
+              ownerActionDirectionType === "thrust"
+            ) {
+              console.log(
+                "Compatible lateral attack directions: opposite axis",
+                ownerType,
+                owner.number,
+                owner.id,
+                ownerActionDirection,
+                ". Target -",
+                targetPlayerRef.number,
+                targetPlayerRef.attacking.direction,
+                " They may trade blows"
+              );
+              handleTargetAttacking("trade");
+            }
+            if (
+              targetPlayerRef.attacking.direction !== ownerActionDirection &&
+              targetPlayerRef.attacking.direction !==
+                this.getOppositeDirection(ownerActionDirection) &&
+              ownerActionDirectionType !== "thrust"
+            ) {
+              console.log(
+                "Compatible lateral attack directions: same axis",
+                ownerType,
+                owner.number,
+                owner.id,
+                ownerActionDirection,
+                ". Target -",
+                targetPlayerRef.number,
+                targetPlayerRef.attacking.direction,
+                " They may clash"
+              );
+              handleTargetAttacking("clash");
+            }
+          } else {
+            console.log(
+              "Incompatible lateral attack directions: target attack direction does face attacker",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.attacking.direction
+            );
+            executeAttack();
+          }
+        }
+
         // TARGET PLAYER DEFENDING
-        if (targetDefending === true) {
-          handleTargetDefending();
+        else if (targetDefending === true) {
+          if (
+            targetPlayerRef.defending.directionType === "slash" &&
+            targetPlayerRef.defending.direction ===
+              this.getOppositeDirection(ownerDirection)
+          ) {
+            if (
+              targetPlayerRef.defending.direction === ownerActionDirection ||
+              targetPlayerRef.defending.direction ===
+                this.getOppositeDirection(ownerActionDirection) ||
+              ownerActionDirectionType === "thrust"
+            ) {
+              console.log(
+                "Incompatible lateral defend directions: opposite axis or thrust",
+                ownerType,
+                owner.number,
+                owner.id,
+                ownerActionDirection,
+                ". Target -",
+                targetPlayerRef.number,
+                targetPlayerRef.defending.direction
+              );
+              executeAttack();
+            }
+            if (
+              targetPlayerRef.attacking.direction !== ownerActionDirection &&
+              targetPlayerRef.attacking.direction !==
+                this.getOppositeDirection(ownerActionDirection)
+            ) {
+              console.log(
+                "Compatible lateral defend directions: same axis",
+                ownerType,
+                owner.number,
+                owner.id,
+                ownerActionDirection,
+                ". Target -",
+                targetPlayerRef.number,
+                targetPlayerRef.defending.direction
+              );
+              handleTargetDefending();
+            }
+          } else {
+            console.log(
+              "Incompatible lateral defend directions: target defend direction does not face attacker",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.defending.direction
+            );
+            executeAttack();
+          }
 
           if (ownerType === "player") {
             this.players[owner.number - 1] = owner;
@@ -16703,7 +16988,12 @@ class App extends Component {
         }
 
         // TARGET PLAYER NOT DODGING OR DEFENDING
-        else {
+        if (
+          targetPlayerRef.dodging.state !== true &&
+          // targetPlayerRef.attacking.peak !== true &&
+          simultaneousAttack !== true &&
+          targetDefending !== true
+        ) {
           executeAttack();
 
           if (ownerType === "player") {
@@ -16750,9 +17040,37 @@ class App extends Component {
         ) {
           simultaneousAttack = true;
         }
+
         // TARGET ALSO ATTACKING
+
         if (simultaneousAttack === true) {
-          handleTargetAttacking();
+          if (ownerActionDirection === targetPlayerRef.attacking.direction) {
+            console.log(
+              "Compatible frontal attack directions: same direction. Perfect!",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.attacking.direction,
+              " They may clash"
+            );
+            handleTargetAttacking("clash");
+          } else {
+            console.log(
+              "Incompatible frontal attack directions: different directions.",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.attacking.direction,
+              " They may trade"
+            );
+            handleTargetAttacking("trade");
+          }
 
           if (ownerType === "player") {
             this.players[owner.number - 1] = owner;
@@ -16763,7 +17081,31 @@ class App extends Component {
 
         // TARGET DEFENDING
         if (targetDefending === true) {
-          handleTargetDefending();
+          if (ownerActionDirection === targetPlayerRef.defending.direction) {
+            console.log(
+              "Compatible frontal defend directions: same direction. Perfect!",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.defending.direction
+            );
+            handleTargetDefending();
+          } else {
+            console.log(
+              "Incompatible lateral defend directions: different directions.",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              ". Target -",
+              targetPlayerRef.number,
+              targetPlayerRef.defending.direction
+            );
+            executeAttack();
+          }
 
           if (ownerType === "player") {
             this.players[owner.number - 1] = owner;
@@ -16913,7 +17255,8 @@ class App extends Component {
               target.attacking.directionType === "slash" &&
               target.attacking.direction === this.getOppositeDirection(bolt.direction)
             ) {
-              if (this.rnJesus(1, target.crits.pushBack + bolt.charge) === 1) {
+              // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF ATTACK SUCCESS
+              if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
@@ -17037,7 +17380,8 @@ class App extends Component {
                 target.attacking.directionType === "slash" &&
                 target.attacking.direction === this.getOppositeDirection(bolt.direction)
               ) {
-                // CHANCE TO BE PUSHED BACK INCREASES WITH BOLT CHARGE
+                // PEAK DEFENSE IS GUARANTEED DEFEND SUCCESS
+                // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
                 if (target.defending.peak === true) {
                   console.log(
                     "bolt hit plyr",
@@ -17070,9 +17414,9 @@ class App extends Component {
                       img: "",
                     });
                   }
-                  // CHANCE TO BE PUSHED BACK INCREASES WITH BOLT CHARGE
+                  // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
                   if (this.rnJesus(1, target.crits.pushBack + bolt.charge) !== 1) {
-                    console.log("and were pushed back due to bolt charge");
+                    console.log("and was pushed back due to bolt charge");
                     this.pushBack(target, this.getOppositeDirection(target.direction));
                   }
 
@@ -17082,8 +17426,8 @@ class App extends Component {
                   this.players[target.number - 1] = target;
                   return;
                 }
-                // OFF PEAK DEFEND
 
+                // OFF PEAK DEFEND
                 // CHANCE FOR DEFEND SUCCESS
                 // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF DEFEND SUCCESS
                 if (target.defending.peak !== true) {
@@ -17218,7 +17562,6 @@ class App extends Component {
             this.players[target.number - 1] = target;
             return;
           }
-
           // PLAYER ARMED AND ATTACKING
           // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
           if (
@@ -17246,7 +17589,8 @@ class App extends Component {
                   img: "",
                 });
               }
-              if (this.rnJesus(1, bolt.charge - target.crits.pushBack) <= 1) {
+              // HIGHER BOLT CHARGE AND LOWER PUSBACK INCREASES CHANCE OF PUSHBACK
+              if (this.rnJesus(1, target.crits.pushBack - bolt.charge) >= 1) {
                 console.log("and was pushed back due to bolt charge");
                 this.pushBack(target, this.getOppositeDirection(target.direction));
               }
@@ -17264,7 +17608,7 @@ class App extends Component {
           }
 
           // TAKE DAMAGE/BE INJURED
-          else {
+          else if (target.attacking.peak === true && weapon !== "unarmed") {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -17291,6 +17635,7 @@ class App extends Component {
               (target.attacking.direction === this.getOppositeDirection(bolt.direction) ||
                 target.attacking.direction === bolt.direction)
             ) {
+              // UNARMED DEFENSE
               if (weapon === "unarmed") {
                 // UNARMED PEAK DEFEND, BOLT CHRG RNG SUCCESS ?
                 if (target.defending.peak === true) {
@@ -17541,17 +17886,95 @@ class App extends Component {
         " by",
         bolt.ownerType,
         bolt.owner,
-        "attack cell contents"
+        "."
       );
-      this.attackCellContents(
-        "bolt",
-        bolt.ownerType,
-        cell[targetType],
-        cell,
-        undefined,
-        undefined,
-        bolt
+
+      boltOwner = this.gridInfo.find(
+        (x) =>
+          x[bolt.ownerType].state === true &&
+          x[bolt.ownerType].trap?.state === true &&
+          x[bolt.ownerType].id === bolt.owner
       );
+      if (
+        boltOwner.trap.action === "attack" &&
+        boltOwner.trap.acting.state === true &&
+        boltOwner.trap.acting.directionType === "slash"
+      ) {
+        // LATERAL/SIDE ATTACK
+        if (
+          boltOwner.trap.direction !== bolt.direction &&
+          boltOwner.trap.direction !== this.getOppositeDirection(bolt.direction)
+        ) {
+          if (boltOwner.acting.direction === this.getOppositeDirection(bolt.direction)) {
+            console.log(
+              targetType,
+              "hit by bolt from the side by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked it successfully."
+            );
+          } else {
+            console.log(
+              targetType,
+              "hit by bolt from the side by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked it unsuccessfully. Attack cell contents."
+            );
+            this.attackCellContents(
+              "bolt",
+              bolt.ownerType,
+              cell[targetType],
+              cell,
+              undefined,
+              undefined,
+              bolt
+            );
+          }
+        }
+        // FRONTAL ATTACK
+        if (bolt.direction === this.getOppositeDirection(target.direction)) {
+          if (
+            boltOwner.acting.direction === this.getOppositeDirection(bolt.direction) ||
+            boltOwner.acting.direction === bolt.direction
+          ) {
+            console.log(
+              targetType,
+              "hit by bolt from the front by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked it successfully."
+            );
+          } else {
+            console.log(
+              targetType,
+              "hit by bolt from the front by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked it unsuccessfully. Attack cell contents."
+            );
+            this.attackCellContents(
+              "bolt",
+              bolt.ownerType,
+              cell[targetType],
+              cell,
+              undefined,
+              undefined,
+              bolt
+            );
+          }
+        }
+      } else {
+        this.attackCellContents(
+          "bolt",
+          bolt.ownerType,
+          cell[targetType],
+          cell,
+          undefined,
+          undefined,
+          bolt
+        );
+      }
 
       let x = this.projectiles.find((x) => x.id === bolt.id);
       x = bolt;
@@ -17622,6 +18045,7 @@ class App extends Component {
     let ownerDirection;
     let doubleHitChance;
     let singleHitChance;
+    let ownerAttackCharge = 0;
 
     if (ownerType === "player") {
       ownerDirection = owner.direction;
@@ -17629,6 +18053,7 @@ class App extends Component {
       ownerWeaponName = owner.currentWeapon.name;
       doubleHitChance = owner.crits.doubleHit;
       singleHitChance = owner.crits.singleHit;
+      ownerAttackCharge = owner.attacking.charge;
     } else {
       let myCell = this.gridInfo.find(
         (x) => x[ownerType].state === true && x[ownerType].id === owner.id
@@ -17664,13 +18089,29 @@ class App extends Component {
       }
     }
 
-    let doubleHit = this.rnJesus(1, doubleHitChance);
-    let singleHit = this.rnJesus(1, singleHitChance);
-
+    let positionalDamagaMod = 0;
     // BACK ATTACK
-    if (ownerDirection === targetPlayer.direction) {
-      damage = 2;
+    if (targetPlayer.direction === owner.direction) {
+      positionalDamagaMod = 10;
     }
+    // SIDE ATTACK
+    if (
+      targetPlayer.direction !== owner.direction &&
+      targetPlayer.direction !== this.getOppositeDirection(owner.direction)
+    ) {
+      positionalDamagaMod = 20;
+    }
+
+    // THE HIGHER THE ATTACK CHARGE & POSITIONAL DAMAGE MOD
+    // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
+    let doubleHit = this.rnJesus(
+      1,
+      doubleHitChance + ownerAttackCharge + positionalDamagaMod
+    );
+    let singleHit = this.rnJesus(
+      1,
+      singleHitChance + ownerAttackCharge + positionalDamagaMod
+    );
 
     if (ownerWeaponName === "") {
       singleHit = 1;
@@ -17680,8 +18121,13 @@ class App extends Component {
     if (singleHit === 1) {
       damage = 1;
     }
-    if (doubleHit === 1) {
+    if (doubleHit !== 1) {
       damage = 2;
+    }
+
+    // BACK ATTACK DMG
+    if (ownerDirection === targetPlayer.direction) {
+      damage += 1;
     }
 
     if (ownerType === "player") {
@@ -17828,8 +18274,29 @@ class App extends Component {
           }
         }
 
-        let doubleHit = this.rnJesus(1, doubleHitChance + bolt.charge);
-        let singleHit = this.rnJesus(1, singleHitChance + bolt.charge);
+        let positionalDamagaMod = 0;
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          positionalDamagaMod = 10;
+        }
+        // SIDE ATTACK
+        if (
+          target.direction !== bolt.direction &&
+          target.direction !== this.getOppositeDirection(bolt.direction)
+        ) {
+          positionalDamagaMod = 20;
+        }
+
+        // THE HIGHER THE BOLT CHARGE &  POSITIONAL DAMAGE MOD
+        // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
+        let doubleHit = this.rnJesus(
+          1,
+          doubleHitChance + bolt.charge + positionalDamagaMod
+        );
+        let singleHit = this.rnJesus(
+          1,
+          singleHitChance + bolt.charge + positionalDamagaMod
+        );
 
         if (singleHit === 1) {
           damage = 1;
@@ -17837,7 +18304,7 @@ class App extends Component {
         if (doubleHit !== 1) {
           damage = 2;
         }
-        // BACK ATTACK
+        // BACK ATTACK ADDS DMG +1
         if (target.direction === bolt.direction) {
           damage += 1;
         }
@@ -17932,7 +18399,7 @@ class App extends Component {
     } else {
       if (targetType === "player") {
         damage = 0;
-        doubleHitChance = 2;
+        doubleHitChance = 1;
         singleHitChance = 1;
 
         if (target.currentArmor.name !== "") {
@@ -17959,18 +18426,31 @@ class App extends Component {
           }
         }
 
-        let doubleHit = this.rnJesus(1, doubleHitChance);
-        let singleHit = this.rnJesus(1, singleHitChance);
+        let positionalDamagaMod = 0;
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          positionalDamagaMod = 10;
+        }
+        // SIDE ATTACK
+        if (
+          target.direction !== bolt.direction &&
+          target.direction !== this.getOppositeDirection(bolt.direction)
+        ) {
+          positionalDamagaMod = 20;
+        }
+
+        let doubleHit = this.rnJesus(1, doubleHitChance + positionalDamagaMod);
+        let singleHit = this.rnJesus(1, singleHitChance + positionalDamagaMod);
 
         // BACK ATTACK
         if (target.direction === bolt.direction) {
-          damage = 2;
+          damage = +1;
         }
 
         if (singleHit === 1) {
           damage = 1;
         }
-        if (doubleHit === 1) {
+        if (doubleHit !== 1) {
           damage = 2;
         }
         if (!target.popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
@@ -18265,6 +18745,14 @@ class App extends Component {
     }
     if (player2.currentWeapon.name !== "") {
       players[1] += 1;
+    }
+    if (player1.attacking.state === true && player2.attacking.state === true) {
+      if (player1.attacking.blunt !== true && player1.currentWeapon.name !== "") {
+        players[0] += 1;
+      }
+      if (player2.attacking.blunt !== true && player2.currentWeapon.name !== "") {
+        players[1] += 1;
+      }
     }
     if (players[0] === players[1]) {
       advantage = 0;
@@ -20534,6 +21022,8 @@ class App extends Component {
     let ownerWeaponName;
     let ownerWeaponType;
     let ownerDirection;
+    let ownerAttackCharge = 0;
+
     const handleObstacleDamage = (calcedDamage, range) => {
       if (range === 1) {
         if (targetCell.obstacle.destructible.state === true) {
@@ -22309,6 +22799,7 @@ class App extends Component {
         doubleHitChance = owner.crits.doubleHit;
         singleHitChance = owner.crits.singleHit;
         ownerDirection = owner.direction;
+        ownerAttackCharge = owner.attacking.charge;
       } else {
         ownerWeaponType = owner.trap.item.subType;
         doubleHitChance = 2;
@@ -22316,13 +22807,16 @@ class App extends Component {
         ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       }
 
-      let doubleHit = this.rnJesus(1, doubleHitChance);
-      let singleHit = this.rnJesus(1, singleHitChance);
+      // THE HIGHER THE ATTACK CHARGE
+      // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
+      let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
+      let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
 
-      if (doubleHit === 1) {
-        damage = 2;
-      } else {
+      if (singleHit === 1) {
         damage = 1;
+      }
+      if (doubleHit !== 1) {
+        damage = 2;
       }
       let shouldDamage = 0;
       if (ownerType === "player") {
@@ -22532,13 +23026,17 @@ class App extends Component {
         doubleHitChance = 2;
         singleHitChance = 1;
       }
-      let doubleHit = this.rnJesus(1, doubleHitChance);
-      let singleHit = this.rnJesus(1, singleHitChance);
+      // THE HIGHER THE ATTACK CHARGE
+      // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
+      ownerAttackCharge = bolt.charge;
+      let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
+      let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
 
-      if (doubleHit === 1) {
-        damage = 2;
-      } else {
+      if (singleHit === 1) {
         damage = 1;
+      }
+      if (doubleHit !== 1) {
+        damage = 2;
       }
 
       let myCellBarrier = false;
@@ -22651,12 +23149,17 @@ class App extends Component {
         doubleHitChance = 2;
         singleHitChance = 1;
       }
-      let doubleHit = this.rnJesus(1, doubleHitChance);
-      let singleHit = this.rnJesus(1, singleHitChance);
-      if (doubleHit === 1) {
-        damage = 2;
-      } else {
+      ownerAttackCharge = bolt.charge;
+
+      // THE HIGHER THE ATTACK CHARGE
+      // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
+      let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
+      let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
+      if (singleHit === 1) {
         damage = 1;
+      }
+      if (doubleHit !== 1) {
+        damage = 2;
       }
 
       // (targetCell.obstacle.height + targetCell.elevation.number) < bolt.elevation;
@@ -34612,17 +35115,17 @@ class App extends Component {
       }
     }
     // POPUP TESTING
-    if (this.time === 250 || this.time === 500) {
-      // let newArray = [];
-      // let x = 0;
-      // let y = 0;
-      // for (const [key, value] of Object.entries(this.popupImageRef)) {
-      //   newArray.push(key);
-      // }
+    if (this.time === 100 && player.number === 1) {
+      let newArray = [];
+      let x = 0;
+      let y = 0;
+      for (const [key, value] of Object.entries(this.popupImageRef)) {
+        newArray.push(key);
+      }
       // player.popups.push({
       //   state: false,
       //   count: 0,
-      //   limit: 30,
+      //   limit: 50,
       //   type: "",
       //   position: "",
       //   msg: "hpUp" + "_-5",
@@ -34633,7 +35136,7 @@ class App extends Component {
       //       x.number.y === player.currentPosition.cell.number.y
       //   ),
       // });
-      // for (var i = 0; i < 10; i++) {
+      // for (var i = 0; i < 12; i++) {
       //   if (
       //     !player.popups.find((x) => x.msg === newArray[i])
       //     // player.number === 2 &&
@@ -34644,7 +35147,7 @@ class App extends Component {
       //       player.popups.push({
       //         state: false,
       //         count: 0,
-      //         limit: 30,
+      //         limit: 50,
       //         type: "",
       //         position: "",
       //         msg: newArray[i] + "_-5",
@@ -34659,7 +35162,7 @@ class App extends Component {
       //       player.popups.push({
       //         state: false,
       //         count: 0,
-      //         limit: 30,
+      //         limit: 50,
       //         type: "",
       //         position: "",
       //         msg: newArray[i],
@@ -42224,16 +42727,16 @@ class App extends Component {
                   plyr.moving.step
                 );
                 finalAnimIndex = moveAnimIndex + 1;
-                // console.log(
-                //   "anim testing mv spd",
-                //   plyr.speed.move,
-                //   "step",
-                //   plyr.moving.step,
-                //   "plyr",
-                //   plyr.number,
-                //   "index",
-                //   finalAnimIndex
-                // );
+                console.log(
+                  "anim testing mv spd",
+                  plyr.speed.move,
+                  "step",
+                  plyr.moving.step,
+                  "plyr",
+                  plyr.number,
+                  "index",
+                  finalAnimIndex
+                );
                 if (plyr.target.cell1.void == true) {
                   // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
                 }
@@ -42253,7 +42756,14 @@ class App extends Component {
                     plyr.moving.step
                   );
                   finalAnimIndex = moveAnimIndex3;
-                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                  console.log(
+                    "anim testing pushback spd",
+                    plyr.speed.move,
+                    "step",
+                    plyr.moving.step,
+                    "indx",
+                    finalAnimIndex
+                  );
                 } else {
                   let moveSpeed = plyr.speed.move;
                   // if (plyr.pushing.state === true) {
@@ -42273,7 +42783,14 @@ class App extends Component {
                     plyr.moving.step
                   );
                   finalAnimIndex = moveAnimIndex2;
-                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                  console.log(
+                    "anim testing strafe mv spd",
+                    plyr.speed.move,
+                    "step",
+                    plyr.moving.step,
+                    "indx",
+                    finalAnimIndex
+                  );
                 }
                 break;
               case "flanking":
@@ -42282,7 +42799,14 @@ class App extends Component {
                   plyr.moving.step
                 );
                 finalAnimIndex = moveAnimIndex6;
-                // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+                console.log(
+                  "flanking step",
+                  plyr.flanking.step,
+                  "step",
+                  plyr.moving.step,
+                  "anim indx",
+                  finalAnimIndex
+                );
                 // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
                 break;
               case "attacking":
@@ -42485,12 +43009,12 @@ class App extends Component {
                 //   }
                 // }
                 finalAnimIndex = animIndex7;
-                // console.log(
-                //   "anim testing dodge",
-                //   plyr.dodging.count,
-                //   "plyr",
-                //   plyr.number
-                // );
+                console.log(
+                  "anim testing dodge",
+                  plyr.dodging.count,
+                  "indx",
+                  finalAnimIndex
+                );
                 break;
             }
           }
@@ -43939,7 +44463,12 @@ class App extends Component {
           // DIRECTIONAL ACTION INDICATION
           if (plyr.actionDirectionAnimationArray.length > 0) {
             // console.log("b", x, y);
+
             for (const animAction of plyr.actionDirectionAnimationArray) {
+              let lnWdth = 5;
+              if (animAction.actionDirectionType === "thrust") {
+                lnWdth = 8;
+              }
               let lastPoint;
               for (const point of animAction.points) {
                 // if (x === this.gridWidth && y === this.gridWidth) {
@@ -43966,7 +44495,7 @@ class App extends Component {
                 context.lineTo(lastPoint.x, lastPoint.y);
 
                 context.strokeStyle = animAction.points[0].color;
-                context.lineWidth = 5;
+                context.lineWidth = lnWdth;
                 context.stroke();
 
                 if (animAction.points[0].x2) {
@@ -43985,7 +44514,7 @@ class App extends Component {
                   context.lineTo(lastPoint.x2, lastPoint.y2);
 
                   context.strokeStyle = animAction.points[0].color;
-                  context.lineWidth = 5;
+                  context.lineWidth = lnWdth;
                   context.stroke();
                 }
 
@@ -44010,7 +44539,7 @@ class App extends Component {
                       context.lineTo(pointOuter.x, pointOuter.y);
 
                       context.strokeStyle = animAction.points[i].color;
-                      context.lineWidth = 5;
+                      context.lineWidth = lnWdth;
                       context.stroke();
                     }
                   }
@@ -44231,7 +44760,10 @@ class App extends Component {
             }
           }
           // FLANKING
-          if (plyr.flanking.state === true && plyr.falling.state !== true) {
+          if (
+            (plyr.flanking.state === true || plyr.action === "flanking") &&
+            plyr.falling.state !== true
+          ) {
             // if (plyr.flanking.step === 1) {
             //   if (plyr.flanking.direction === "north") {
             //     if (
@@ -44392,8 +44924,8 @@ class App extends Component {
             //   }
             // }
             if (
-              x === plyr.moving.origin.number.x &&
-              y === plyr.moving.origin.number.y
+              x === plyr.currentPosition.cell.number.x &&
+              y === plyr.currentPosition.cell.number.y
               // plyr.success.deflected.state === false
             ) {
               setCurrentPlayerDrawCell(x, y, "non-elastic");
@@ -45105,10 +45637,10 @@ class App extends Component {
                     // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
 
                     if (!positions[0]) {
-                      console.log(
-                        "no open positions for new or postponed popup",
-                        popup.msg
-                      );
+                      // console.log(
+                      //   "no open positions for new or postponed popup",
+                      //   popup.msg
+                      // );
                       popup.state = false;
                       popup.count = 0;
                     } else {
@@ -45454,6 +45986,10 @@ class App extends Component {
 
         // OBSTACLE BARRIER DIRECTIONAL ACTION ANIM
         for (const animAction of this.obstacleBarrierActionAnimationArray) {
+          let lnWdth = 5;
+          if (animAction.actionDirectionType === "thrust") {
+            lnWdth = 8;
+          }
           // for (const point of animAction.points) {
           //   context.fillStyle = point.color;
           //   context.beginPath();
@@ -45478,7 +46014,7 @@ class App extends Component {
             context.lineTo(lastPoint.x, lastPoint.y);
 
             context.strokeStyle = animAction.points[0].color;
-            context.lineWidth = 5;
+            context.lineWidth = lnWdth;
             context.stroke();
 
             if (animAction.points[0].x2) {
@@ -45497,7 +46033,7 @@ class App extends Component {
               context.lineTo(lastPoint.x, lastPoint.y);
 
               context.strokeStyle = animAction.points[0].color;
-              context.lineWidth = 5;
+              context.lineWidth = lnWdth;
               context.stroke();
             }
 
@@ -45521,7 +46057,7 @@ class App extends Component {
                   context.lineTo(pointOuter.x, pointOuter.y);
 
                   context.strokeStyle = animAction.points[i].color;
-                  context.lineWidth = 5;
+                  context.lineWidth = lnWdth;
                   context.stroke();
                 }
               }
