@@ -16874,7 +16874,8 @@ class App extends Component {
             if (
               targetPlayerRef.attacking.direction === ownerActionDirection ||
               targetPlayerRef.attacking.direction ===
-                this.getOppositeDirection(ownerActionDirection)
+                this.getOppositeDirection(ownerActionDirection) ||
+              ownerActionDirectionType === "thrust"
             ) {
               console.log(
                 "Compatible lateral attack directions: opposite axis",
@@ -16892,7 +16893,8 @@ class App extends Component {
             if (
               targetPlayerRef.attacking.direction !== ownerActionDirection &&
               targetPlayerRef.attacking.direction !==
-                this.getOppositeDirection(ownerActionDirection)
+                this.getOppositeDirection(ownerActionDirection) &&
+              ownerActionDirectionType !== "thrust"
             ) {
               console.log(
                 "Compatible lateral attack directions: same axis",
@@ -16932,10 +16934,11 @@ class App extends Component {
             if (
               targetPlayerRef.defending.direction === ownerActionDirection ||
               targetPlayerRef.defending.direction ===
-                this.getOppositeDirection(ownerActionDirection)
+                this.getOppositeDirection(ownerActionDirection) ||
+              ownerActionDirectionType === "thrust"
             ) {
               console.log(
-                "Incompatible lateral defend directions: opposite axis",
+                "Incompatible lateral defend directions: opposite axis or thrust",
                 ownerType,
                 owner.number,
                 owner.id,
