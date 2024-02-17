@@ -14925,14 +14925,6 @@ class App extends Component {
         phase = "release";
       }
 
-      if (phase === "pullback") {
-        arcAngle = 90;
-      }
-      if (phase === "release") {
-        arcAngle = 180;
-        // color = "blue";
-      }
-
       if (ownerDirection === "north") {
         if (actionDirection === "north") {
           face = "side";
@@ -15128,6 +15120,17 @@ class App extends Component {
             startAngle = 270;
             direction = "counterClockwise";
           }
+        }
+      }
+
+      if (phase === "pullback") {
+        arcAngle = 90;
+      }
+      if (phase === "release") {
+        arcAngle = 180;
+        // color = "blue";
+        if (face === "top") {
+          arcAngle = 270; //270;
         }
       }
 
@@ -18046,6 +18049,7 @@ class App extends Component {
     let doubleHitChance;
     let singleHitChance;
     let ownerAttackCharge = 0;
+    let ownerAttackDirectionType;
 
     if (ownerType === "player") {
       ownerDirection = owner.direction;
@@ -18054,6 +18058,7 @@ class App extends Component {
       doubleHitChance = owner.crits.doubleHit;
       singleHitChance = owner.crits.singleHit;
       ownerAttackCharge = owner.attacking.charge;
+      ownerAttackDirectionType = owner.attacking.directionType;
     } else {
       let myCell = this.gridInfo.find(
         (x) => x[ownerType].state === true && x[ownerType].id === owner.id
@@ -18063,6 +18068,7 @@ class App extends Component {
       ownerWeaponType = owner.trap.item.name;
       doubleHitChance = 2;
       singleHitChance = 1;
+      ownerAttackDirection = owner.trap.acting.directionType;
     }
 
     if (targetPlayer.currentArmor.name !== "") {
@@ -18101,16 +18107,23 @@ class App extends Component {
     ) {
       positionalDamagaMod = 20;
     }
+    let atkDirMod = 0;
+    if (ownerAttackDirectionType === "thrust") {
+      atkDirMod -= 10;
+    }
+    if (ownerAttackDirectionType === "slash") {
+      atkDirMod += 10;
+    }
 
     // THE HIGHER THE ATTACK CHARGE & POSITIONAL DAMAGE MOD
     // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
     let doubleHit = this.rnJesus(
       1,
-      doubleHitChance + ownerAttackCharge + positionalDamagaMod
+      doubleHitChance + ownerAttackCharge + positionalDamagaMod + atkDirMod
     );
     let singleHit = this.rnJesus(
       1,
-      singleHitChance + ownerAttackCharge + positionalDamagaMod
+      singleHitChance + ownerAttackCharge + positionalDamagaMod + atkDirMod
     );
 
     if (ownerWeaponName === "") {
@@ -18118,7 +18131,7 @@ class App extends Component {
       doubleHit = 0;
     }
 
-    if (singleHit === 1) {
+    if (singleHit <= 1) {
       damage = 1;
     }
     if (doubleHit !== 1) {
@@ -21023,6 +21036,7 @@ class App extends Component {
     let ownerWeaponType;
     let ownerDirection;
     let ownerAttackCharge = 0;
+    let ownerAttackDirectionType;
 
     const handleObstacleDamage = (calcedDamage, range) => {
       if (range === 1) {
@@ -22800,19 +22814,28 @@ class App extends Component {
         singleHitChance = owner.crits.singleHit;
         ownerDirection = owner.direction;
         ownerAttackCharge = owner.attacking.charge;
+        ownerAttackDirectionType = owner.attacking.directionType;
       } else {
         ownerWeaponType = owner.trap.item.subType;
         doubleHitChance = 2;
         singleHitChance = 1;
         ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+        ownerAttackDirection = owner.trap.acting.directionType;
       }
 
+      let atkDirMod = 0;
+      if (ownerAttackDirectionType === "thrust") {
+        atkDirMod -= 10;
+      }
+      if (ownerAttackDirectionType === "slash") {
+        atkDirMod += 10;
+      }
       // THE HIGHER THE ATTACK CHARGE
       // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
-      let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge);
-      let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge);
+      let doubleHit = this.rnJesus(1, doubleHitChance + ownerAttackCharge + atkDirMod);
+      let singleHit = this.rnJesus(1, singleHitChance + ownerAttackCharge + atkDirMod);
 
-      if (singleHit === 1) {
+      if (singleHit <= 1) {
         damage = 1;
       }
       if (doubleHit !== 1) {
