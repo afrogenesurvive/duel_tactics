@@ -16805,7 +16805,7 @@ class App extends Component {
         }
       }
     }
-    if (targetPlayerRef) {
+    if (targetPlayerRef && targetPlayerRef?.dead.state !== true) {
       // IS TARGET DEFENDING?
       let targetDefending = setTargetDefending();
       advantage = setAdvantage();
@@ -17136,6 +17136,13 @@ class App extends Component {
 
       // this.players[targetPlayerRef.number - 1] = targetPlayerRef;
     }
+    if (targetPlayerRef && targetPlayerRef?.dead.state === true) {
+      console.log(
+        "player ",
+        targetPlayerRef.number,
+        " is already dead. Cant parse melee attack"
+      );
+    }
 
     // if (ownerType === "player") {
     //   this.players[owner.number - 1] = owner;
@@ -17168,182 +17175,71 @@ class App extends Component {
     });
 
     if (targetType === "player") {
-      let weapon = target.currentWeapon.type;
+      if (target.dead.state !== true) {
+        let weapon = target.currentWeapon.type;
 
-      // ATTACK STAM UNARMED CHECK & AND POPUPS SET
-      let playerAttackStamType;
+        // ATTACK STAM UNARMED CHECK & AND POPUPS SET
+        let playerAttackStamType;
 
-      if (target.currentWeapon.name !== "") {
-        playerAttackStamType =
-          this.staminaCostRef.attack[target.currentWeapon.type].normal;
-      }
-
-      if (target.attacking.blunt === true && target.currentWeapon.name !== "") {
-        playerAttackStamType =
-          this.staminaCostRef.attack[target.currentWeapon.type].blunt;
-      }
-      if (target.currentWeapon.name === "") {
-        playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
-        if (target.attacking.blunt === true) {
-          playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+        if (target.currentWeapon.name !== "") {
+          playerAttackStamType =
+            this.staminaCostRef.attack[target.currentWeapon.type].normal;
         }
-        weapon = "unarmed";
-      }
 
-      // IS TARGET DEFENDING?
-      let playerDefending = false;
-      let defendType = target.currentWeapon.type;
-      if (target.currentWeapon.name === "") {
-        defendType = "unarmed";
-      }
-      let defendPeak = target.defending.peakCount;
-      if (
-        (target.defending.count > 0 && target.defending.count === defendPeak) ||
-        target.defending.decay.state === true
-      ) {
-        playerDefending = true;
-      }
+        if (target.attacking.blunt === true && target.currentWeapon.name !== "") {
+          playerAttackStamType =
+            this.staminaCostRef.attack[target.currentWeapon.type].blunt;
+        }
+        if (target.currentWeapon.name === "") {
+          playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
+          if (target.attacking.blunt === true) {
+            playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+          }
+          weapon = "unarmed";
+        }
 
-      //BOLT TARGET DODGING
-      if (target.dodging.state === true) {
-        console.log(
-          "player ",
-          target.number,
-          " just dodged a bolt from ",
-          bolt.ownerType,
-          bolt.owner
-        );
-        target.stamina.current += this.staminaCostRef.dodge.pre;
-        // FINISH
-        x = this.projectiles.find((x) => x.id === bolt.id);
-        x = bolt;
-        this.players[target.number - 1] = target;
-        return;
-      } else {
-        // BOLT NOT DODGED MUST HIT PLAYER
-        bolt.kill = true;
-        // BOLT TARGET NOT DODGING
-        // BACK ATTACK
-        if (target.direction === bolt.direction && deflected !== true) {
+        // IS TARGET DEFENDING?
+        let playerDefending = false;
+        let defendType = target.currentWeapon.type;
+        if (target.currentWeapon.name === "") {
+          defendType = "unarmed";
+        }
+        let defendPeak = target.defending.peakCount;
+        if (
+          (target.defending.count > 0 && target.defending.count === defendPeak) ||
+          target.defending.decay.state === true
+        ) {
+          playerDefending = true;
+        }
+
+        //BOLT TARGET DODGING
+        if (target.dodging.state === true) {
           console.log(
-            "bolt hit plyr",
+            "player ",
             target.number,
-            "from the back by",
+            " just dodged a bolt from ",
             bolt.ownerType,
-            bolt.owner,
-            "Damage & Deflect"
+            bolt.owner
           );
-          this.handleProjectileDamage(bolt, ownerType, "player", target);
-          this.setDeflection(target, "attacked", false);
-          deflected = true;
+          target.stamina.current += this.staminaCostRef.dodge.pre;
           // FINISH
           x = this.projectiles.find((x) => x.id === bolt.id);
           x = bolt;
           this.players[target.number - 1] = target;
           return;
-        }
-
-        // SIDE ATTACK
-        if (
-          target.direction !== bolt.direction &&
-          target.direction !== this.getOppositeDirection(bolt.direction) &&
-          deflected !== true
-        ) {
-          // PLAYER IS ATTACKING ARMED
-
-          if (target.attacking.peak === true && weapon !== "unarmed") {
-            // CHANCE TO KILL BOLT & PUSHBACK
-            // ONLY SLASH IN OPPOSITE DIRECTION CAN KILL BOLT
-            if (
-              target.attacking.directionType === "slash" &&
-              target.attacking.direction === this.getOppositeDirection(bolt.direction)
-            ) {
-              // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF ATTACK SUCCESS
-              if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the side. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they attacked it successfully. Pushback?"
-                );
-                if (!target.popups.find((x) => x.msg === "boltKilled")) {
-                  target.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: "",
-                    position: "",
-                    msg: "boltKilled",
-                    img: "",
-                  });
-                }
-                this.pushBack(target, this.getOppositeDirection(target.direction));
-                target.success.attackSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: target.success.attackSuccess.limit,
-                };
-
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
-              }
-
-              // OR BE INJURED
-              else {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the side. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they attacked it unsuccessfully due to bolt charge roll. Damage & Deflect?"
-                );
-                this.handleProjectileDamage(bolt, ownerType, "player", target);
-                this.setDeflection(target, "attacked", false);
-                deflected = true;
-                // FINISH
-                x = this.projectiles.find((x) => x.id === bolt.id);
-                x = bolt;
-                this.players[target.number - 1] = target;
-                return;
-              }
-            }
-
-            // OR BE INJURED
-            else {
-              console.log(
-                "bolt hit plyr",
-                target.number,
-                "from the side. by",
-                bolt.ownerType,
-                bolt.owner,
-                "but they attacked it unsuccessfully due to attack direction. Damage & Deflect?"
-              );
-              this.handleProjectileDamage(bolt, ownerType, "player", target);
-              this.setDeflection(target, "attacked", false);
-              deflected = true;
-              // FINISH
-              x = this.projectiles.find((x) => x.id === bolt.id);
-              x = bolt;
-              this.players[target.number - 1] = target;
-              return;
-            }
-          }
-
-          // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-          if (target.attacking.peak === true && weapon === "unarmed") {
+        } else {
+          // BOLT NOT DODGED MUST HIT PLAYER
+          bolt.kill = true;
+          // BOLT TARGET NOT DODGING
+          // BACK ATTACK
+          if (target.direction === bolt.direction && deflected !== true) {
             console.log(
               "bolt hit plyr",
               target.number,
-              "from the side. by",
+              "from the back by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked successfully but unarmed. Damage, Deflect?"
+              "Damage & Deflect"
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
@@ -17355,73 +17251,48 @@ class App extends Component {
             return;
           }
 
-          // PLAYER DEFENDING
-          if (playerDefending === true) {
-            // UNARMED DEFENSE = DAMAGE.
-            if (weapon === "unarmed" || defendType === "unarmed") {
-              console.log(
-                "bolt hit plyr",
-                target.number,
-                "from the side. by",
-                bolt.ownerType,
-                bolt.owner,
-                "but they defended unarmed. Damage & Deflect"
-              );
-              this.handleProjectileDamage(bolt, ownerType, "player", target);
-              this.setDeflection(target, "attacked", false);
-              deflected = true;
-              // FINISH
-              x = this.projectiles.find((x) => x.id === bolt.id);
-              x = bolt;
-              this.players[target.number - 1] = target;
-              return;
-            }
-            // ARMED DEFENSE
-            else {
-              // ONLY SLASH IN OPPOSITE DIRECTION CAN DEFEND BOLT
+          // SIDE ATTACK
+          if (
+            target.direction !== bolt.direction &&
+            target.direction !== this.getOppositeDirection(bolt.direction) &&
+            deflected !== true
+          ) {
+            // PLAYER IS ATTACKING ARMED
+
+            if (target.attacking.peak === true && weapon !== "unarmed") {
+              // CHANCE TO KILL BOLT & PUSHBACK
+              // ONLY SLASH IN OPPOSITE DIRECTION CAN KILL BOLT
               if (
                 target.attacking.directionType === "slash" &&
                 target.attacking.direction === this.getOppositeDirection(bolt.direction)
               ) {
-                // PEAK DEFENSE IS GUARANTEED DEFEND SUCCESS
-                // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
-                if (target.defending.peak === true) {
+                // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF ATTACK SUCCESS
+                if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
                   console.log(
                     "bolt hit plyr",
                     target.number,
                     "from the side. by",
                     bolt.ownerType,
                     bolt.owner,
-                    "but they parried. Pushback?"
+                    "but they attacked it successfully. Pushback?"
                   );
-                  target.stamina.current += this.staminaCostRef.defend.peak;
-                  target.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: target.success.defendSuccess.limit,
-                  };
-                  target.statusDisplay = {
-                    state: true,
-                    status: "Parry!",
-                    count: 1,
-                    limit: target.statusDisplay.limit,
-                  };
-                  if (!target.popups.find((x) => x.msg === "attackParried")) {
+                  if (!target.popups.find((x) => x.msg === "boltKilled")) {
                     target.popups.push({
                       state: false,
                       count: 0,
                       limit: 30,
                       type: "",
                       position: "",
-                      msg: "attackParried",
+                      msg: "boltKilled",
                       img: "",
                     });
                   }
-                  // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
-                  if (this.rnJesus(1, target.crits.pushBack + bolt.charge) !== 1) {
-                    console.log("and was pushed back due to bolt charge");
-                    this.pushBack(target, this.getOppositeDirection(target.direction));
-                  }
+                  this.pushBack(target, this.getOppositeDirection(target.direction));
+                  target.success.attackSuccess = {
+                    state: true,
+                    count: 1,
+                    limit: target.success.attackSuccess.limit,
+                  };
 
                   // FINISH
                   x = this.projectiles.find((x) => x.id === bolt.id);
@@ -17430,70 +17301,24 @@ class App extends Component {
                   return;
                 }
 
-                // OFF PEAK DEFEND
-                // CHANCE FOR DEFEND SUCCESS
-                // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF DEFEND SUCCESS
-                if (target.defending.peak !== true) {
-                  if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
-                    console.log(
-                      "bolt hit plyr",
-                      target.number,
-                      "from the side. by",
-                      bolt.ownerType,
-                      bolt.owner,
-                      "but they off-peak defended successfully overcoming bolt charge"
-                    );
-                    target.success.defendSuccess = {
-                      state: true,
-                      count: 1,
-                      limit: target.success.defendSuccess.limit,
-                    };
-                    target.statusDisplay = {
-                      state: true,
-                      status: "Defend",
-                      count: 1,
-                      limit: target.statusDisplay.limit,
-                    };
-                    if (!target.popups.find((x) => x.msg === "defendSuccess")) {
-                      target.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: "",
-                        position: "",
-                        msg: "defendSuccess",
-                        img: "",
-                      });
-                    }
-                    if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                      this.pushBack(target, this.getOppositeDirection(target.direction));
-                    }
-                    // FINISH
-                    x = this.projectiles.find((x) => x.id === bolt.id);
-                    x = bolt;
-                    this.players[target.number - 1] = target;
-                    return;
-                  }
-
-                  // DEFEND FAILURE DAMAGE, DEFLECT || DEFLECT + PUSHBACK
-                  else {
-                    console.log(
-                      "bolt hit plyr",
-                      target.number,
-                      "from the side. by",
-                      bolt.ownerType,
-                      bolt.owner,
-                      "but they off-peak defended unsuccessfully due to bolt charge. Damage, Deflect, Pushback?"
-                    );
-                    this.handleProjectileDamage(bolt, ownerType, "player", target);
-
-                    deflected = true;
-                    // FINISH
-                    x = this.projectiles.find((x) => x.id === bolt.id);
-                    x = bolt;
-                    this.players[target.number - 1] = target;
-                    return;
-                  }
+                // OR BE INJURED
+                else {
+                  console.log(
+                    "bolt hit plyr",
+                    target.number,
+                    "from the side. by",
+                    bolt.ownerType,
+                    bolt.owner,
+                    "but they attacked it unsuccessfully due to bolt charge roll. Damage & Deflect?"
+                  );
+                  this.handleProjectileDamage(bolt, ownerType, "player", target);
+                  this.setDeflection(target, "attacked", false);
+                  deflected = true;
+                  // FINISH
+                  x = this.projectiles.find((x) => x.id === bolt.id);
+                  x = bolt;
+                  this.players[target.number - 1] = target;
+                  return;
                 }
               }
 
@@ -17505,7 +17330,7 @@ class App extends Component {
                   "from the side. by",
                   bolt.ownerType,
                   bolt.owner,
-                  "but they defended it unsuccessfully due to action direction. Damage & Deflect?"
+                  "but they attacked it unsuccessfully due to attack direction. Damage & Deflect?"
                 );
                 this.handleProjectileDamage(bolt, ownerType, "player", target);
                 this.setDeflection(target, "attacked", false);
@@ -17517,143 +17342,67 @@ class App extends Component {
                 return;
               }
             }
-          }
 
-          //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-          if (playerDefending !== true && target.attacking.peak !== true) {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the side. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but theyre not defending or attacking or dodging. Damage, Deflect?"
-            );
-
-            this.handleProjectileDamage(bolt, ownerType, "player", target);
-            this.setDeflection(target, "attacked", false);
-            deflected = true;
-            // FINISH
-            x = this.projectiles.find((x) => x.id === bolt.id);
-            x = bolt;
-            this.players[target.number - 1] = target;
-            return;
-          }
-        }
-
-        // FRONTAL ATTACK
-        if (
-          bolt.direction === this.getOppositeDirection(target.direction) &&
-          deflected !== true
-        ) {
-          // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-          if (target.attacking.peak === true && weapon === "unarmed") {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the front. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they attacked successfully but unarmed. Damage, Deflect?"
-            );
-            this.handleProjectileDamage(bolt, ownerType, "player", target);
-            this.setDeflection(target, "attacked", false);
-            deflected = true;
-            // FINISH
-            x = this.projectiles.find((x) => x.id === bolt.id);
-            x = bolt;
-            this.players[target.number - 1] = target;
-            return;
-          }
-          // PLAYER ARMED AND ATTACKING
-          // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
-          if (
-            target.attacking.directionType === "slash" &&
-            (target.attacking.direction === this.getOppositeDirection(bolt.direction) ||
-              target.attacking.direction === bolt.direction)
-          ) {
-            if (target.attacking.peak === true && weapon !== "unarmed") {
+            // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
+            if (target.attacking.peak === true && weapon === "unarmed") {
               console.log(
                 "bolt hit plyr",
                 target.number,
-                "from the front. by",
+                "from the side. by",
                 bolt.ownerType,
                 bolt.owner,
-                "but they attacked successfully. pushback target?"
+                "but they attacked successfully but unarmed. Damage, Deflect?"
               );
-              if (!target.popups.find((x) => x.msg === "boltKilled")) {
-                target.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 30,
-                  type: "",
-                  position: "",
-                  msg: "boltKilled",
-                  img: "",
-                });
-              }
-              // HIGHER BOLT CHARGE AND LOWER PUSBACK INCREASES CHANCE OF PUSHBACK
-              if (this.rnJesus(1, target.crits.pushBack - bolt.charge) >= 1) {
-                console.log("and was pushed back due to bolt charge");
-                this.pushBack(target, this.getOppositeDirection(target.direction));
-              }
-              target.success.attackSuccess = {
-                state: true,
-                count: 1,
-                limit: target.success.attackSuccess.limit,
-              };
+              this.handleProjectileDamage(bolt, ownerType, "player", target);
+              this.setDeflection(target, "attacked", false);
+              deflected = true;
               // FINISH
               x = this.projectiles.find((x) => x.id === bolt.id);
               x = bolt;
               this.players[target.number - 1] = target;
               return;
             }
-          }
 
-          // TAKE DAMAGE/BE INJURED
-          else if (target.attacking.peak === true && weapon !== "unarmed") {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the front. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they attacked unsuccessfully due to attack direction. Damage, Deflect?"
-            );
-            this.handleProjectileDamage(bolt, ownerType, "player", target);
-            this.setDeflection(target, "attacked", false);
-            deflected = true;
-            // FINISH
-            x = this.projectiles.find((x) => x.id === bolt.id);
-            x = bolt;
-            this.players[target.number - 1] = target;
-            return;
-          }
-
-          // PLAYER DEFENDING
-          if (playerDefending === true) {
-            // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
-            if (
-              target.attacking.directionType === "slash" &&
-              (target.attacking.direction === this.getOppositeDirection(bolt.direction) ||
-                target.attacking.direction === bolt.direction)
-            ) {
-              // UNARMED DEFENSE
-              if (weapon === "unarmed") {
-                // UNARMED PEAK DEFEND, BOLT CHRG RNG SUCCESS ?
-                if (target.defending.peak === true) {
-                  // PARRIED & OVERCOME BOLT CHARGE
-
-                  if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+            // PLAYER DEFENDING
+            if (playerDefending === true) {
+              // UNARMED DEFENSE = DAMAGE.
+              if (weapon === "unarmed" || defendType === "unarmed") {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the side. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they defended unarmed. Damage & Deflect"
+                );
+                this.handleProjectileDamage(bolt, ownerType, "player", target);
+                this.setDeflection(target, "attacked", false);
+                deflected = true;
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
+              }
+              // ARMED DEFENSE
+              else {
+                // ONLY SLASH IN OPPOSITE DIRECTION CAN DEFEND BOLT
+                if (
+                  target.attacking.directionType === "slash" &&
+                  target.attacking.direction === this.getOppositeDirection(bolt.direction)
+                ) {
+                  // PEAK DEFENSE IS GUARANTEED DEFEND SUCCESS
+                  // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
+                  if (target.defending.peak === true) {
                     console.log(
                       "bolt hit plyr",
                       target.number,
-                      "from the front. by",
+                      "from the side. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they parried successfully unarmed overcoming bolt charge."
+                      "but they parried. Pushback?"
                     );
-                    // target.stamina.current += this.staminaCostRef.defend.peak;
+                    target.stamina.current += this.staminaCostRef.defend.peak;
                     target.success.defendSuccess = {
                       state: true,
                       count: 1,
@@ -17676,42 +17425,98 @@ class App extends Component {
                         img: "",
                       });
                     }
+                    // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
+                    if (this.rnJesus(1, target.crits.pushBack + bolt.charge) !== 1) {
+                      console.log("and was pushed back due to bolt charge");
+                      this.pushBack(target, this.getOppositeDirection(target.direction));
+                    }
+
                     // FINISH
                     x = this.projectiles.find((x) => x.id === bolt.id);
                     x = bolt;
                     this.players[target.number - 1] = target;
                     return;
                   }
-                  // SUCCESSFUL PARRY BUT OVERCOME BY BOLT CHARGE. TAKE DAMAGE
-                  else {
-                    console.log(
-                      "bolt hit plyr",
-                      target.number,
-                      "from the front. by",
-                      bolt.ownerType,
-                      bolt.owner,
-                      "but they peak defended successfully unarmed and overcome by bolt charge. Damage deflect?"
-                    );
-                    this.handleProjectileDamage(bolt, ownerType, "player", target);
-                    this.setDeflection(target, "attacked", false);
-                    deflected = true;
-                    // FINISH
-                    x = this.projectiles.find((x) => x.id === bolt.id);
-                    x = bolt;
-                    this.players[target.number - 1] = target;
-                    return;
+
+                  // OFF PEAK DEFEND
+                  // CHANCE FOR DEFEND SUCCESS
+                  // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF DEFEND SUCCESS
+                  if (target.defending.peak !== true) {
+                    if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+                      console.log(
+                        "bolt hit plyr",
+                        target.number,
+                        "from the side. by",
+                        bolt.ownerType,
+                        bolt.owner,
+                        "but they off-peak defended successfully overcoming bolt charge"
+                      );
+                      target.success.defendSuccess = {
+                        state: true,
+                        count: 1,
+                        limit: target.success.defendSuccess.limit,
+                      };
+                      target.statusDisplay = {
+                        state: true,
+                        status: "Defend",
+                        count: 1,
+                        limit: target.statusDisplay.limit,
+                      };
+                      if (!target.popups.find((x) => x.msg === "defendSuccess")) {
+                        target.popups.push({
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: "",
+                          position: "",
+                          msg: "defendSuccess",
+                          img: "",
+                        });
+                      }
+                      if (this.rnJesus(1, target.crits.pushBack) === 1) {
+                        this.pushBack(
+                          target,
+                          this.getOppositeDirection(target.direction)
+                        );
+                      }
+                      // FINISH
+                      x = this.projectiles.find((x) => x.id === bolt.id);
+                      x = bolt;
+                      this.players[target.number - 1] = target;
+                      return;
+                    }
+
+                    // DEFEND FAILURE DAMAGE, DEFLECT || DEFLECT + PUSHBACK
+                    else {
+                      console.log(
+                        "bolt hit plyr",
+                        target.number,
+                        "from the side. by",
+                        bolt.ownerType,
+                        bolt.owner,
+                        "but they off-peak defended unsuccessfully due to bolt charge. Damage, Deflect, Pushback?"
+                      );
+                      this.handleProjectileDamage(bolt, ownerType, "player", target);
+
+                      deflected = true;
+                      // FINISH
+                      x = this.projectiles.find((x) => x.id === bolt.id);
+                      x = bolt;
+                      this.players[target.number - 1] = target;
+                      return;
+                    }
                   }
                 }
 
-                // UNARMED OFF PEAK DEFEND, TAKE DAMAGE
-                if (target.defending.peak !== true) {
+                // OR BE INJURED
+                else {
                   console.log(
                     "bolt hit plyr",
                     target.number,
-                    "from the front. by",
+                    "from the side. by",
                     bolt.ownerType,
                     bolt.owner,
-                    "but they off-peak defended successfully but unarmed. Damage deflect?"
+                    "but they defended it unsuccessfully due to action direction. Damage & Deflect?"
                   );
                   this.handleProjectileDamage(bolt, ownerType, "player", target);
                   this.setDeflection(target, "attacked", false);
@@ -17723,130 +17528,19 @@ class App extends Component {
                   return;
                 }
               }
-
-              // ARMED DEFENSE
-              else {
-                // ARMED PEAK DEFEND
-                if (target.defending.peak === true) {
-                  console.log(
-                    "bolt hit plyr",
-                    target.number,
-                    "from the front. by",
-                    bolt.ownerType,
-                    bolt.owner,
-                    "but they parried successfully armed. Pushback?"
-                  );
-                  target.stamina.current += this.staminaCostRef.defend.peak;
-                  target.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: target.success.defendSuccess.limit,
-                  };
-                  target.statusDisplay = {
-                    state: true,
-                    status: "Parry!",
-                    count: 1,
-                    limit: target.statusDisplay.limit,
-                  };
-                  if (!target.popups.find((x) => x.msg === "attackParried")) {
-                    target.popups.push({
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: "",
-                      position: "",
-                      msg: "attackParried",
-                      img: "",
-                    });
-                  }
-                  if (this.rnJesus(1, target.crits.pushBack + bolt.charge) === 1) {
-                    console.log("and was pushed back due to bolt charge");
-                    this.pushBack(target, this.getOppositeDirection(target.direction));
-                  }
-                  // FINISH
-                  x = this.projectiles.find((x) => x.id === bolt.id);
-                  x = bolt;
-                  this.players[target.number - 1] = target;
-                  return;
-                }
-
-                // ARMED OFF PEAK DEFEND
-                // IF BOLT CHARGE PERC IS OVER 90%, CHANCE TO DEFEND BREAK/TAKE DMG
-                if (target.defending.peak !== true) {
-                  if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
-                    console.log(
-                      "bolt hit plyr",
-                      target.number,
-                      "from the front. by",
-                      bolt.ownerType,
-                      bolt.owner,
-                      "but they off-peak defended successfully armed overcoming bolt charge. Pushback?"
-                    );
-                    target.success.defendSuccess = {
-                      state: true,
-                      count: 1,
-                      limit: target.success.defendSuccess.limit,
-                    };
-                    target.statusDisplay = {
-                      state: true,
-                      status: "Defend",
-                      count: 1,
-                      limit: target.statusDisplay.limit,
-                    };
-                    if (!target.popups.find((x) => x.msg === "defendSuccess")) {
-                      target.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: "",
-                        position: "",
-                        msg: "defendSuccess",
-                        img: "",
-                      });
-                    }
-                    if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                      this.pushBack(target, this.getOppositeDirection(target.direction));
-                    }
-                    // FINISH
-                    x = this.projectiles.find((x) => x.id === bolt.id);
-                    x = bolt;
-                    this.players[target.number - 1] = target;
-                    return;
-                  }
-
-                  // TAKE DAMAGE/BE INJURED
-                  else {
-                    console.log(
-                      "bolt hit plyr",
-                      target.number,
-                      "from the front. by",
-                      bolt.ownerType,
-                      bolt.owner,
-                      "but they defended overcome by bolt charge. Damage, Deflect?"
-                    );
-                    this.handleProjectileDamage(bolt, ownerType, "player", target);
-                    this.setDeflection(target, "attacked", false);
-                    deflected = true;
-                    // FINISH
-                    x = this.projectiles.find((x) => x.id === bolt.id);
-                    x = bolt;
-                    this.players[target.number - 1] = target;
-                    return;
-                  }
-                }
-              }
             }
 
-            // TAKE DAMAGE/BE INJURED
-            else {
+            //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
+            if (playerDefending !== true && target.attacking.peak !== true) {
               console.log(
                 "bolt hit plyr",
                 target.number,
-                "from the front. by",
+                "from the side. by",
                 bolt.ownerType,
                 bolt.owner,
-                "but they defended unsuccessfully & unarmed due to action direction . Damage, Deflect?"
+                "but theyre not defending or attacking or dodging. Damage, Deflect?"
               );
+
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
               deflected = true;
@@ -17858,26 +17552,354 @@ class App extends Component {
             }
           }
 
-          //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-          if (playerDefending !== true && target.attacking.peak !== true) {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the front. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but arent defending or attacking. Damage Deflect?"
-            );
-            this.handleProjectileDamage(bolt, ownerType, "player", target);
-            this.setDeflection(target, "attacked", false);
-            deflected = true;
-            // FINISH
-            x = this.projectiles.find((x) => x.id === bolt.id);
-            x = bolt;
-            this.players[target.number - 1] = target;
-            return;
+          // FRONTAL ATTACK
+          if (
+            bolt.direction === this.getOppositeDirection(target.direction) &&
+            deflected !== true
+          ) {
+            // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
+            if (target.attacking.peak === true && weapon === "unarmed") {
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the front. by",
+                bolt.ownerType,
+                bolt.owner,
+                "but they attacked successfully but unarmed. Damage, Deflect?"
+              );
+              this.handleProjectileDamage(bolt, ownerType, "player", target);
+              this.setDeflection(target, "attacked", false);
+              deflected = true;
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
+            }
+            // PLAYER ARMED AND ATTACKING
+            // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
+            if (
+              target.attacking.directionType === "slash" &&
+              (target.attacking.direction === this.getOppositeDirection(bolt.direction) ||
+                target.attacking.direction === bolt.direction)
+            ) {
+              if (target.attacking.peak === true && weapon !== "unarmed") {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the front. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they attacked successfully. pushback target?"
+                );
+                if (!target.popups.find((x) => x.msg === "boltKilled")) {
+                  target.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "boltKilled",
+                    img: "",
+                  });
+                }
+                // HIGHER BOLT CHARGE AND LOWER PUSBACK INCREASES CHANCE OF PUSHBACK
+                if (this.rnJesus(1, target.crits.pushBack - bolt.charge) >= 1) {
+                  console.log("and was pushed back due to bolt charge");
+                  this.pushBack(target, this.getOppositeDirection(target.direction));
+                }
+                target.success.attackSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: target.success.attackSuccess.limit,
+                };
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
+              }
+            }
+
+            // TAKE DAMAGE/BE INJURED
+            else if (target.attacking.peak === true && weapon !== "unarmed") {
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the front. by",
+                bolt.ownerType,
+                bolt.owner,
+                "but they attacked unsuccessfully due to attack direction. Damage, Deflect?"
+              );
+              this.handleProjectileDamage(bolt, ownerType, "player", target);
+              this.setDeflection(target, "attacked", false);
+              deflected = true;
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
+            }
+
+            // PLAYER DEFENDING
+            if (playerDefending === true) {
+              // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
+              if (
+                target.attacking.directionType === "slash" &&
+                (target.attacking.direction ===
+                  this.getOppositeDirection(bolt.direction) ||
+                  target.attacking.direction === bolt.direction)
+              ) {
+                // UNARMED DEFENSE
+                if (weapon === "unarmed") {
+                  // UNARMED PEAK DEFEND, BOLT CHRG RNG SUCCESS ?
+                  if (target.defending.peak === true) {
+                    // PARRIED & OVERCOME BOLT CHARGE
+
+                    if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+                      console.log(
+                        "bolt hit plyr",
+                        target.number,
+                        "from the front. by",
+                        bolt.ownerType,
+                        bolt.owner,
+                        "but they parried successfully unarmed overcoming bolt charge."
+                      );
+                      // target.stamina.current += this.staminaCostRef.defend.peak;
+                      target.success.defendSuccess = {
+                        state: true,
+                        count: 1,
+                        limit: target.success.defendSuccess.limit,
+                      };
+                      target.statusDisplay = {
+                        state: true,
+                        status: "Parry!",
+                        count: 1,
+                        limit: target.statusDisplay.limit,
+                      };
+                      if (!target.popups.find((x) => x.msg === "attackParried")) {
+                        target.popups.push({
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: "",
+                          position: "",
+                          msg: "attackParried",
+                          img: "",
+                        });
+                      }
+                      // FINISH
+                      x = this.projectiles.find((x) => x.id === bolt.id);
+                      x = bolt;
+                      this.players[target.number - 1] = target;
+                      return;
+                    }
+                    // SUCCESSFUL PARRY BUT OVERCOME BY BOLT CHARGE. TAKE DAMAGE
+                    else {
+                      console.log(
+                        "bolt hit plyr",
+                        target.number,
+                        "from the front. by",
+                        bolt.ownerType,
+                        bolt.owner,
+                        "but they peak defended successfully unarmed and overcome by bolt charge. Damage deflect?"
+                      );
+                      this.handleProjectileDamage(bolt, ownerType, "player", target);
+                      this.setDeflection(target, "attacked", false);
+                      deflected = true;
+                      // FINISH
+                      x = this.projectiles.find((x) => x.id === bolt.id);
+                      x = bolt;
+                      this.players[target.number - 1] = target;
+                      return;
+                    }
+                  }
+
+                  // UNARMED OFF PEAK DEFEND, TAKE DAMAGE
+                  if (target.defending.peak !== true) {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the front. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they off-peak defended successfully but unarmed. Damage deflect?"
+                    );
+                    this.handleProjectileDamage(bolt, ownerType, "player", target);
+                    this.setDeflection(target, "attacked", false);
+                    deflected = true;
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
+                }
+
+                // ARMED DEFENSE
+                else {
+                  // ARMED PEAK DEFEND
+                  if (target.defending.peak === true) {
+                    console.log(
+                      "bolt hit plyr",
+                      target.number,
+                      "from the front. by",
+                      bolt.ownerType,
+                      bolt.owner,
+                      "but they parried successfully armed. Pushback?"
+                    );
+                    target.stamina.current += this.staminaCostRef.defend.peak;
+                    target.success.defendSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: target.success.defendSuccess.limit,
+                    };
+                    target.statusDisplay = {
+                      state: true,
+                      status: "Parry!",
+                      count: 1,
+                      limit: target.statusDisplay.limit,
+                    };
+                    if (!target.popups.find((x) => x.msg === "attackParried")) {
+                      target.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: "",
+                        position: "",
+                        msg: "attackParried",
+                        img: "",
+                      });
+                    }
+                    if (this.rnJesus(1, target.crits.pushBack + bolt.charge) === 1) {
+                      console.log("and was pushed back due to bolt charge");
+                      this.pushBack(target, this.getOppositeDirection(target.direction));
+                    }
+                    // FINISH
+                    x = this.projectiles.find((x) => x.id === bolt.id);
+                    x = bolt;
+                    this.players[target.number - 1] = target;
+                    return;
+                  }
+
+                  // ARMED OFF PEAK DEFEND
+                  // IF BOLT CHARGE PERC IS OVER 90%, CHANCE TO DEFEND BREAK/TAKE DMG
+                  if (target.defending.peak !== true) {
+                    if (this.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+                      console.log(
+                        "bolt hit plyr",
+                        target.number,
+                        "from the front. by",
+                        bolt.ownerType,
+                        bolt.owner,
+                        "but they off-peak defended successfully armed overcoming bolt charge. Pushback?"
+                      );
+                      target.success.defendSuccess = {
+                        state: true,
+                        count: 1,
+                        limit: target.success.defendSuccess.limit,
+                      };
+                      target.statusDisplay = {
+                        state: true,
+                        status: "Defend",
+                        count: 1,
+                        limit: target.statusDisplay.limit,
+                      };
+                      if (!target.popups.find((x) => x.msg === "defendSuccess")) {
+                        target.popups.push({
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: "",
+                          position: "",
+                          msg: "defendSuccess",
+                          img: "",
+                        });
+                      }
+                      if (this.rnJesus(1, target.crits.pushBack) === 1) {
+                        this.pushBack(
+                          target,
+                          this.getOppositeDirection(target.direction)
+                        );
+                      }
+                      // FINISH
+                      x = this.projectiles.find((x) => x.id === bolt.id);
+                      x = bolt;
+                      this.players[target.number - 1] = target;
+                      return;
+                    }
+
+                    // TAKE DAMAGE/BE INJURED
+                    else {
+                      console.log(
+                        "bolt hit plyr",
+                        target.number,
+                        "from the front. by",
+                        bolt.ownerType,
+                        bolt.owner,
+                        "but they defended overcome by bolt charge. Damage, Deflect?"
+                      );
+                      this.handleProjectileDamage(bolt, ownerType, "player", target);
+                      this.setDeflection(target, "attacked", false);
+                      deflected = true;
+                      // FINISH
+                      x = this.projectiles.find((x) => x.id === bolt.id);
+                      x = bolt;
+                      this.players[target.number - 1] = target;
+                      return;
+                    }
+                  }
+                }
+              }
+
+              // TAKE DAMAGE/BE INJURED
+              else {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the front. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they defended unsuccessfully & unarmed due to action direction . Damage, Deflect?"
+                );
+                this.handleProjectileDamage(bolt, ownerType, "player", target);
+                this.setDeflection(target, "attacked", false);
+                deflected = true;
+                // FINISH
+                x = this.projectiles.find((x) => x.id === bolt.id);
+                x = bolt;
+                this.players[target.number - 1] = target;
+                return;
+              }
+            }
+
+            //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
+            if (playerDefending !== true && target.attacking.peak !== true) {
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the front. by",
+                bolt.ownerType,
+                bolt.owner,
+                "but arent defending or attacking. Damage Deflect?"
+              );
+              this.handleProjectileDamage(bolt, ownerType, "player", target);
+              this.setDeflection(target, "attacked", false);
+              deflected = true;
+              // FINISH
+              x = this.projectiles.find((x) => x.id === bolt.id);
+              x = bolt;
+              this.players[target.number - 1] = target;
+              return;
+            }
           }
         }
+      } else {
+        console.log(
+          "player ",
+          target.number,
+          " is already dead. Cant parse projectile attack"
+        );
       }
     } else {
       let cell = this.gridInfo.find((x) => x[targetType].id === target.id);
@@ -36768,7 +36790,7 @@ class App extends Component {
         if (player.newMoveDelay.state === true) {
           if (player.newMoveDelay.count < player.newMoveDelay.limit) {
             player.newMoveDelay.count++;
-            // console.log("newMoveDelay.count", player.newMoveDelay.count);
+            console.log("newMoveDelay.count", player.newMoveDelay.count);
           }
           if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
             player.newMoveDelay = {
