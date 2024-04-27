@@ -18044,7 +18044,9 @@ class App extends Component {
     this.players[player.number - 1] = player;
   };
   unsetDeflection = (player) => {
-    this.players[player.number - 1].success.deflected = {
+    player.stamina.current -=
+      this.staminaCostRef.deflected[player.success.deflected.type];
+    player.success.deflected = {
       state: false,
       count: 0,
       limit: player.success.deflected.limit,
@@ -18059,6 +18061,8 @@ class App extends Component {
       this.aiDeflectedCheck = newArr;
       console.log("this.aiDeflectedCheck", this.aiDeflectedCheck);
     }
+
+    this.players[player.number - 1] = player;
   };
   handleMeleeDamage = (ownerType, owner, targetPlayer) => {
     // console.log('handleMeleeDamage');
@@ -23930,7 +23934,7 @@ class App extends Component {
 
       if (player.prePush.state === true) {
         if (player.prePush.count >= player.prePush.limit) {
-          // console.log('pre push limit. check can push');
+          // console.log("pre push limit. check can push");
           this.players[player.number - 1].prePush = player.prePush;
           this.players[player.number - 1].pushing = player.pushing;
 
@@ -23960,7 +23964,7 @@ class App extends Component {
                 img: "",
               });
             }
-            // console.log('pre pushing the same obstacle. Continue',player.prePush.count);
+            // console.log("pre pushing the same obstacle. Continue", player.prePush.count);
           } else {
             // console.log('pre push player, target or direction has changed. Reset prepush');
             player.prePush = {
@@ -24389,25 +24393,30 @@ class App extends Component {
       }
 
       if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
-        // console.log("ready to push");
+        console.log("ready to push", this.players[owner.number - 1].popups);
         if (ownerType === "player") {
+          console.log("a");
           if (!this.players[owner.number - 1].popups.find((x) => x.msg === "canPush")) {
-            this.players[owner.number - 1].popups.push({
-              state: false,
-              count: 0,
-              limit: 25,
-              type: "",
-              position: "",
-              msg: "canPush",
-              img: "",
-            });
+            // this.players[owner.number - 1].popups.push({
+            //   state: false,
+            //   count: 0,
+            //   limit: 25,
+            //   type: "",
+            //   position: "",
+            //   msg: "canPush",
+            //   img: "",
+            // });
           }
 
           if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
-            this.players[owner.number - 1].popups.splice(
-              this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-              1
+            console.log(
+              "1",
+              this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")
             );
+            // this.players[owner.number - 1].popups.splice(
+            //   this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
+            //   1
+            // );
           }
           if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
             this.players[owner.number - 1].popups.splice(
@@ -24581,6 +24590,11 @@ class App extends Component {
         return false;
       }
     }
+
+    console.log(
+      "22",
+      this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")
+    );
   };
   prePlayerPushCheck = (pusher, target) => {
     // console.log('prePlayerPushCheck');
@@ -35129,7 +35143,7 @@ class App extends Component {
       // this.pushBack(player, "east");
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
-      let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
+      // let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
     }
     if (this.time === 120 && player.number === 1) {
       // this.setDeflection(player, "defended", true);
@@ -36790,7 +36804,7 @@ class App extends Component {
         if (player.newMoveDelay.state === true) {
           if (player.newMoveDelay.count < player.newMoveDelay.limit) {
             player.newMoveDelay.count++;
-            console.log("newMoveDelay.count", player.newMoveDelay.count);
+            // console.log("newMoveDelay.count", player.newMoveDelay.count);
           }
           if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
             player.newMoveDelay = {
