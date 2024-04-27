@@ -38594,6 +38594,7 @@ class App extends Component {
             player.elasticCounter.state === true &&
             player.elasticCounter.type === "dodging"
           ) {
+            console.log("cancel dodge eleastic counter 2");
             player.elasticCounter.state = false;
             player.elasticCounter.type = "";
             player.elasticCounter.subType = "";
@@ -38747,6 +38748,7 @@ class App extends Component {
                 player.flanking.target2 = target.cell1.number;
                 // player.action = 'moving';
                 player.action = "flanking";
+                console.log('action = "flanking 2"');
                 player.moving = {
                   state: true,
                   step: 0,
@@ -38872,9 +38874,10 @@ class App extends Component {
                   player.elasticCounter.state === true &&
                   player.elasticCounter.type === "dodging"
                 ) {
-                  player.elasticCounter.state = false;
-                  player.elasticCounter.type = "";
-                  player.elasticCounter.subType = "";
+                  console.log("cancel dodge eleastic counter 1");
+                  // player.elasticCounter.state = false;
+                  // player.elasticCounter.type = "";
+                  // player.elasticCounter.subType = "";
                 }
               };
 
@@ -38883,18 +38886,6 @@ class App extends Component {
               };
               let canFlank1 = false;
 
-              if (player.dodging.countState === true && player.dodging.state !== true) {
-                if (
-                  player.dodging.count <=
-                  player.dodging.peak.start - player.crits.dodge
-                ) {
-                  canFlank1 = true;
-                  // console.log("can flank before dodge peak start");
-                } else {
-                  console.log("too late in dodge windup to flank");
-                  continueDodge();
-                }
-              }
               if (player.dodging.countState === true && player.dodging.state === true) {
                 // console.log("peak dodging. can't flank");
               }
@@ -38902,9 +38893,21 @@ class App extends Component {
                 console.log("highly unlikely. can flank anyway");
                 canFlank1 = true;
               }
+              if (player.dodging.countState === true && player.dodging.state !== true) {
+                if (
+                  player.dodging.count <=
+                  player.dodging.peak.start - player.crits.dodge
+                ) {
+                  canFlank1 = true;
+                  console.log("can flank before dodge peak start");
+                  cancelDodge();
+                } else {
+                  console.log("too late in dodge windup to flank");
+                  continueDodge();
+                }
+              }
 
               if (canFlank1 === true) {
-                cancelDodge();
                 if (keyPressedDirection !== player.direction) {
                   let canFlank2 = false;
                   switch (player.direction) {
@@ -38995,6 +38998,7 @@ class App extends Component {
                         }
 
                         player.action = "flanking";
+                        console.log('action = "flanking 1"');
                         player.moving = {
                           state: true,
                           step: 0,
@@ -42785,16 +42789,16 @@ class App extends Component {
                   plyr.moving.step
                 );
                 finalAnimIndex = moveAnimIndex + 1;
-                console.log(
-                  "anim testing mv spd",
-                  plyr.speed.move,
-                  "step",
-                  plyr.moving.step,
-                  "plyr",
-                  plyr.number,
-                  "index",
-                  finalAnimIndex
-                );
+                // console.log(
+                //   "anim testing mv spd",
+                //   plyr.speed.move,
+                //   "step",
+                //   plyr.moving.step,
+                //   "plyr",
+                //   plyr.number,
+                //   "index",
+                //   finalAnimIndex
+                // );
                 if (plyr.target.cell1.void == true) {
                   // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
                 }
@@ -42857,6 +42861,9 @@ class App extends Component {
                   plyr.moving.step
                 );
                 finalAnimIndex = moveAnimIndex6;
+                if (plyr.flanking.step === 2) {
+                  finalAnimIndex += 4;
+                }
                 console.log(
                   "flanking step",
                   plyr.flanking.step,
@@ -43067,12 +43074,12 @@ class App extends Component {
                 //   }
                 // }
                 finalAnimIndex = animIndex7;
-                console.log(
-                  "anim testing dodge",
-                  plyr.dodging.count,
-                  "indx",
-                  finalAnimIndex
-                );
+                // console.log(
+                //   "anim testing dodge",
+                //   plyr.dodging.count,
+                //   "indx",
+                //   finalAnimIndex
+                // );
                 break;
             }
           }
@@ -43149,6 +43156,9 @@ class App extends Component {
                 plyr.moving.step
               );
               finalAnimIndex = moveAnimIndex6;
+              if (plyr.flanking.step === 2) {
+                finalAnimIndex += 4;
+              }
               // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               break;
@@ -44822,6 +44832,9 @@ class App extends Component {
             (plyr.flanking.state === true || plyr.action === "flanking") &&
             plyr.falling.state !== true
           ) {
+            // if (x === 9 && y === 9) {
+            //   console.log("rugguh ragga");
+            // }
             // if (plyr.flanking.step === 1) {
             //   if (plyr.flanking.direction === "north") {
             //     if (
@@ -44986,18 +44999,18 @@ class App extends Component {
               y === plyr.currentPosition.cell.number.y
               // plyr.success.deflected.state === false
             ) {
-              setCurrentPlayerDrawCell(x, y, "non-elastic");
-              context2.drawImage(
-                updatedPlayerImg,
-                sx,
-                sy,
-                sWidth,
-                sHeight,
-                newCharDrawPoint.x - 5,
-                newCharDrawPoint.y - 10,
-                this.playerDrawWidth2,
-                this.playerDrawHeight2
-              );
+              // setCurrentPlayerDrawCell(x, y, "non-elastic");
+              // context2.drawImage(
+              //   updatedPlayerImg,
+              //   sx,
+              //   sy,
+              //   sWidth,
+              //   sHeight,
+              //   newCharDrawPoint.x - 5,
+              //   newCharDrawPoint.y - 10,
+              //   this.playerDrawWidth2,
+              //   this.playerDrawHeight2
+              // );
             }
           }
           // FALLING
@@ -45198,10 +45211,16 @@ class App extends Component {
           }
           // DODGING
           if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
+            if (x === 9 && y === 9) {
+              console.log("bugguh yagga");
+            }
             if (
               plyr.elasticCounter.state === true &&
               plyr.elasticCounter.type === "dodging"
             ) {
+              if (x === 9 && y === 9) {
+                console.log("bugguh yagga 2", finalAnimIndex);
+              }
               let finalCoords = this.calcElasticCountCoords(
                 "dodging",
                 "player",
