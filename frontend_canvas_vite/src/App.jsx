@@ -15843,66 +15843,6 @@ class App extends Component {
         }
         defendType = "unarmed";
         ownerWeaponType = "unarmed";
-
-        if (owner.attacking.blunt === true) {
-          if (!owner.popups.find((x) => x.msg === "attackingBlunt")) {
-            owner.popups.push({
-              state: false,
-              count: 0,
-              limit:
-                owner.attacking.animRef.limit[ownerWeaponType] -
-                owner.attacking.animRef.peak[ownerWeaponType],
-              type: "",
-              position: "",
-              msg: "attackingBlunt",
-              img: "",
-            });
-          }
-        } else {
-          if (!owner.popups.find((x) => x.msg === "attackingUnarmed")) {
-            owner.popups.push({
-              state: false,
-              count: 0,
-              limit:
-                owner.attacking.animRef.limit.unarmed -
-                owner.attacking.animRef.peak.unarmed,
-              type: "",
-              position: "",
-              msg: "attackingUnarmed",
-              img: "",
-            });
-          }
-        }
-      } else {
-        if (owner.attacking.blunt === true) {
-          if (!owner.popups.find((x) => x.msg === "attackingBlunt")) {
-            owner.popups.push({
-              state: false,
-              count: 0,
-              limit:
-                owner.attacking.animRef.limit[ownerWeaponType] -
-                owner.attacking.animRef.peak[ownerWeaponType],
-              type: "",
-              position: "",
-              msg: "attackingBlunt",
-              img: "",
-            });
-          }
-        } else {
-          if (!owner.popups.find((x) => x.msg === "attacking")) {
-            owner.popups.push({
-              state: false,
-              count: 0,
-              limit:
-                owner.attacking.animRef.limit[ownerWeaponType] -
-                owner.attacking.animRef.peak[ownerWeaponType],
-              type: "",
-              position: "",
-              msg: "attacking",
-              img: "",
-            });
-          }
-        }
       }
     }
 
@@ -35870,14 +35810,16 @@ class App extends Component {
       }
       // DON'T READ INPUTS. JUST MOVE!!
       if (player.moving.state === true) {
-        // console.log(
-        //   "player ",
-        //   player.number,
-        //   " ",
-        //   player.action,
-        //   " : ",
-        //   player.moving.step
-        // );
+        console.log(
+          "player ",
+          player.number,
+          " ",
+          player.action,
+          " : ",
+          player.moving.step,
+          "time: ",
+          this.time
+        );
 
         nextPosition = this.lineCrementer(player);
         player.nextPosition = nextPosition;
@@ -35914,6 +35856,9 @@ class App extends Component {
 
         if (player.jumping.state !== true) {
           let destRngIndx = undefined;
+          if (player.flanking.state === true) {
+            // console.log("flanking movement. move step: ", player.moving.step, this.time);
+          }
 
           if (
             nextPosition.x >= player.target.cell1.center.x - 1 &&
@@ -36730,6 +36675,8 @@ class App extends Component {
               "southDirection",
               "eastDirection",
               "westDirection",
+              "attackingBlunt",
+              "attackingUnarmed",
             ];
             for (const pop of popupsToRemove) {
               popup = player.popups.find((x) => x.msg === pop);
@@ -36839,9 +36786,10 @@ class App extends Component {
             let blunt = "normal";
             if (player.attacking.blunt === true) {
               blunt = "blunt";
-              // console.log("blunt attack");
+              console.log("blunt attack");
             }
 
+            // SET ATTACK PEAK FOR CHARGING
             if (player.attacking.directionType === "") {
               attackPeak = 0;
             } else {
@@ -36909,7 +36857,7 @@ class App extends Component {
                 player.dodging.state === true ||
                 this.keyPressed[player.number - 1].dodge === true
               ) {
-                // console.log("was attacking then pressed dodging. blunt attack");
+                console.log("was attacking then pressed dodging. blunt attack");
 
                 if (player.attacking.blunt !== true) {
                   player.dodging = {
@@ -37038,7 +36986,7 @@ class App extends Component {
                 }
               }
 
-              // SHOW ATTACKING POPUP
+              // SHOW ATTACKING POPUPS
               if (player.attacking.count > 2) {
                 if (!player.popups.find((x) => x.msg === "attacking")) {
                   let limit = player.attackinglimit - player.attacking.count;
@@ -37053,6 +37001,37 @@ class App extends Component {
                       type: "",
                       position: "",
                       msg: "attacking",
+                      img: "",
+                    });
+                  }
+                }
+
+                if (player.currentWeapon.type === "") {
+                  if (!player.popups.find((x) => x.msg === "attackingUnarmed")) {
+                    player.popups.push({
+                      state: false,
+                      count: 0,
+                      limit:
+                        player.attacking.animRef.limit.unarmed -
+                        player.attacking.animRef.peak.unarmed,
+                      type: "",
+                      position: "",
+                      msg: "attackingUnarmed",
+                      img: "",
+                    });
+                  }
+                }
+                if (player.attacking.blunt === true) {
+                  if (!player.popups.find((x) => x.msg === "attackingBlunt")) {
+                    player.popups.push({
+                      state: false,
+                      count: 0,
+                      limit:
+                        player.attacking.animRef.limit[player.currentWeapon.type] -
+                        player.attacking.animRef.peak[player.currentWeapon.type],
+                      type: "",
+                      position: "",
+                      msg: "attackingBlunt",
                       img: "",
                     });
                   }
@@ -37181,17 +37160,17 @@ class App extends Component {
 
                 let melee = true;
 
-                // console.log(
-                //   "atk peak:",
-                //   player.attacking.direction,
-                //   "counts:",
-                //   player.attacking.count,
-                //   player.attacking.peakCount,
-                //   player.attacking.limit,
-                //   chargeType === "charged",
-                //   "blunt:",
-                //   player.attacking.blunt
-                // );
+                console.log(
+                  "atk peak:",
+                  player.attacking.direction,
+                  "counts:",
+                  player.attacking.count,
+                  player.attacking.peakCount,
+                  player.attacking.limit,
+                  chargeType === "charged",
+                  "blunt:",
+                  player.attacking.blunt
+                );
 
                 player = this.setElasticCounter("attacking", "peak", false, player);
 
@@ -37348,13 +37327,6 @@ class App extends Component {
                 // console.log("no setting auto cam: attackFocusBreak");
               }
 
-              if (player.popups.find((x) => x.msg === "attacking")) {
-                player.popups.splice(
-                  player.popups.findIndex((x) => x.msg === "attacking"),
-                  1
-                );
-              }
-
               let popup;
               let popupsToRemove = [
                 "noDirection3",
@@ -37362,6 +37334,9 @@ class App extends Component {
                 "southDirection",
                 "eastDirection",
                 "westDirection",
+                "attacking",
+                "attackingBlunt",
+                "attackingUnarmed",
               ];
               for (const pop of popupsToRemove) {
                 popup = player.popups.find((x) => x.msg === pop);
@@ -37872,6 +37847,7 @@ class App extends Component {
           if (player.crits.dodge > 5) {
             player.crits.dodge = 5;
           }
+
           // START & ENDMODS CAN'T MAKE DODGE WIND UP & COOLDOWN < 2
           if (player.dodging.peak.start - startMod < 2) {
             startMod = player.dodging.peak.start - 2;
@@ -37887,7 +37863,7 @@ class App extends Component {
                 player.stamina.current - this.staminaCostRef.dodge.peak;
               player.dodging.count++;
               player.action = "dodging";
-              // console.log("dodge count a", player.dodging.count);
+              console.log("dodge count a", player.dodging.count, this.time);
 
               // CHOOSE DODGE DIRECTION
               let whichDirection = this.rnJesus(1, 2);
@@ -37934,7 +37910,7 @@ class App extends Component {
                 });
               }
 
-              console.log("set dodge elastic counter", this.time);
+              // console.log("set dodge elastic counter", this.time);
               player = this.setElasticCounter("dodging", "", true, player);
             } else {
               player.stamina.current = 0;
@@ -37977,7 +37953,7 @@ class App extends Component {
           }
           // PEAK START
           if (player.dodging.count === player.dodging.peak.start - startMod) {
-            // console.log("dodge count c", player.dodging.count);
+            console.log("dodge count c", player.dodging.count, this.time);
             // player.popups.push(
             //   {
             //     state: false,
@@ -37999,7 +37975,7 @@ class App extends Component {
           ) {
             player.dodging.state = true;
 
-            console.log("dodge peak", player.dodging.count);
+            console.log("dodge peak count", player.dodging.count, this.time);
           }
 
           // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
@@ -38009,7 +37985,7 @@ class App extends Component {
           ) {
             player.dodging.state = false;
             player.dodging.direction = "";
-            // console.log('dodge peak off');
+            console.log("dodge peak off", this.time);
           }
           if (player.dodging.count >= player.dodging.limit) {
             player.action = "idle";
@@ -38136,6 +38112,13 @@ class App extends Component {
               }
 
               player.elasticCounter.countUp.count++;
+              if (player.elasticCounter.type === "dodging") {
+                console.log(
+                  "dodging elastic counter count up: ",
+                  player.elasticCounter.countUp.count,
+                  this.time
+                );
+              }
               // console.log("elastic counting up: ", player.elasticCounter.countUp.count);
             }
 
@@ -38180,6 +38163,13 @@ class App extends Component {
               }
 
               player.elasticCounter.pause.count++;
+              if (player.elasticCounter.type === "dodging") {
+                console.log(
+                  "dodging elastic counter pause: ",
+                  player.elasticCounter.pause.count,
+                  this.time
+                );
+              }
               // console.log("pause counting: ", player.elasticCounter.pause.count);
             }
 
@@ -38232,6 +38222,13 @@ class App extends Component {
               //   "elastic counting down: ",
               //   player.elasticCounter.countDown.count
               // );
+              if (player.elasticCounter.type === "dodging") {
+                console.log(
+                  "dodging elastic counter count down: ",
+                  player.elasticCounter.countDown.count,
+                  this.time
+                );
+              }
             }
 
             // FINISH COUNT DOWN
@@ -38591,12 +38588,13 @@ class App extends Component {
             },
             direction: "",
           };
+          // console.log("cancel dodge 2", this.time);
 
           if (
             player.elasticCounter.state === true &&
             player.elasticCounter.type === "dodging"
           ) {
-            console.log("cancel dodge eleastic counter 2");
+            console.log("flanking. cancel dodge & dodge elastic counter", this.time);
             player.elasticCounter.state = false;
             player.elasticCounter.type = "";
             player.elasticCounter.subType = "";
@@ -38659,6 +38657,12 @@ class App extends Component {
                 1
               );
             }
+
+            console.log(
+              "flanking phase 2. Flanking false. move step: ",
+              player.moving.step,
+              this.time
+            );
           }
           if (player.flanking.step === 1) {
             // console.log(
@@ -38675,7 +38679,7 @@ class App extends Component {
             //   " move step: ",
             //   player.moving.step
             // );
-            // console.log("flanking step 1: ");
+            console.log("flanking phase 1. move step: ", player.moving.step, this.time);
             // console.log("2", player.currentPosition.cell.number);
             let continueFlank = false;
             if (
@@ -38753,7 +38757,7 @@ class App extends Component {
                 player.flanking.target2 = target.cell1.number;
                 // player.action = 'moving';
                 player.action = "flanking";
-                console.log('action = "flanking 2"', this.time);
+                // console.log('action = "flanking 2"', this.time);
                 player.moving = {
                   state: true,
                   step: 0,
@@ -38773,6 +38777,11 @@ class App extends Component {
                 nextPosition = this.lineCrementer(player);
                 player.nextPosition = nextPosition;
 
+                console.log(
+                  "flanking phase 1 -> 2. move step: ",
+                  player.moving.step,
+                  this.time
+                );
                 if (player.ai.state === true) {
                   this.keyPressed[player.number - 1].dodge = false;
                 }
@@ -38860,7 +38869,7 @@ class App extends Component {
           ) {
             if (player.strafing.state !== true && player.flanking.state !== true) {
               const cancelDodge = () => {
-                console.log("cancel dodge 1", this.time);
+                console.log("flanking start: cancel dodge", this.time);
                 // RESET DODGING
                 this.players[player.number - 1].stamina.current +=
                   this.staminaCostRef.dodge.pre;
@@ -38907,7 +38916,7 @@ class App extends Component {
                   player.elasticCounter.state === true &&
                   player.elasticCounter.type === "dodging"
                 ) {
-                  console.log("cancel dodge eleastic counter 1", this.time);
+                  console.log("flanking start: cancel dodge elastic counter", this.time);
                   player.elasticCounter.state = false;
                   player.elasticCounter.type = "";
                   player.elasticCounter.subType = "";
@@ -38923,10 +38932,10 @@ class App extends Component {
               let canFlank1 = false;
 
               if (player.dodging.countState === true && player.dodging.state === true) {
-                console.log("peak dodging. can't flank");
+                console.log("peak dodging. can't flank", this.time);
               }
               if (player.dodging.countState !== true && player.dodging.state !== true) {
-                console.log("highly unlikely. can flank anyway");
+                console.log("highly unlikely. can flank anyway", this.time);
                 canFlank1 = true;
               }
               if (player.dodging.countState === true && player.dodging.state !== true) {
@@ -38938,7 +38947,7 @@ class App extends Component {
                   console.log("can flank before dodge peak start", this.time);
                   // cancelDodge();
                 } else {
-                  console.log("too late in dodge windup to flank");
+                  console.log("too late in dodge windup to flank", this.time);
                   continueDodge();
                 }
               }
@@ -39038,7 +39047,7 @@ class App extends Component {
                         player.action = "flanking";
                         player.moving = {
                           state: true,
-                          step: 0,
+                          step: 0.2,
                           course: "",
                           origin: {
                             number: {
@@ -39054,6 +39063,11 @@ class App extends Component {
                         };
                         nextPosition = this.lineCrementer(player);
                         player.nextPosition = nextPosition;
+                        console.log(
+                          "flanking start: set moving",
+                          player.direction,
+                          this.time
+                        );
                         // console.log("1", player.currentPosition.cell.number);
                         if (
                           this.mouseOverCell.state === true &&
@@ -39644,14 +39658,15 @@ class App extends Component {
 
                 // BLUNT ATTACK!!
                 if (this.keyPressed[player.number - 1].dodge === true) {
-                  // console.log('start blunt attack');
+                  // console.log("start blunt attack", this.time);
                   if (
                     player.dodging.countState === true ||
                     player.dodging.state === true ||
                     this.keyPressed[player.number - 1].dodge === true
                   ) {
                     console.log(
-                      "was dodging, now blunt attacking. cancel dodge. return dodge stamina"
+                      "was dodging, now blunt attacking. cancel dodge. return dodge stamina",
+                      this.time
                     );
                     player.stamina.current += this.staminaCostRef.dodge.peak;
                     player.dodging = {
@@ -43117,7 +43132,6 @@ class App extends Component {
                 //   "indx",
                 //   finalAnimIndex
                 // );
-                console.log("hh", finalAnimIndex);
                 break;
             }
           }
@@ -43662,12 +43676,12 @@ class App extends Component {
                 );
               } else {
                 if (plyr.strafing.state === true || plyr.action === "flanking") {
-                  console.log(
-                    "moving + flanking anim",
-                    newCharDrawPoint.x,
-                    newCharDrawPoint.y,
-                    this.time
-                  );
+                  // console.log(
+                  //   "moving + flanking anim",
+                  //   newCharDrawPoint.x,
+                  //   newCharDrawPoint.y,
+                  //   this.time
+                  // );
                   // this.testDraw.push({
                   //   color: "red",
                   //   x: newCharDrawPoint.x,
@@ -43675,6 +43689,7 @@ class App extends Component {
                   // });
                 }
 
+                console.log("drawing: non-edge movement ", this.time);
                 context2.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -44866,6 +44881,7 @@ class App extends Component {
               y === plyr.moving.origin.number.y
               // plyr.success.deflected.state === false
             ) {
+              console.log("drawing strafe movement", this.time);
               setCurrentPlayerDrawCell(x, y, "non-elastic");
               context2.drawImage(
                 updatedPlayerImg,
@@ -44904,6 +44920,7 @@ class App extends Component {
               // );
             }
           }
+
           // FALLING
           if (plyr.falling.state === true) {
             // IN BOUNDS
@@ -45139,13 +45156,14 @@ class App extends Component {
                   //   finalCoords,
                   //   plyr.elasticCounter.direction
                   // );
-                  console.log(
-                    "dodging anim elastic a",
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.time,
-                    plyr.direction
-                  );
+                  // console.log(
+                  //   "dodging anim elastic a",
+                  //   finalCoords.x,
+                  //   finalCoords.y,
+                  //   this.time,
+                  //   plyr.direction
+                  // );
+                  // console.log("drawing dodging (elastic countup)", this.time);
                 }
                 if (plyr.elasticCounter.countDown.state === true) {
                   // this.testDraw.push({
@@ -45159,13 +45177,14 @@ class App extends Component {
                   //   finalCoords,
                   //   plyr.elasticCounter.direction
                   // );
-                  console.log(
-                    "dodging anim elastic b",
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.time,
-                    plyr.direction
-                  );
+                  // console.log(
+                  //   "dodging anim elastic b",
+                  //   finalCoords.x,
+                  //   finalCoords.y,
+                  //   this.time,
+                  //   plyr.direction
+                  // );
+                  // console.log("drawing dodging (elastic coutn down)", this.time);
                 }
                 if (plyr.elasticCounter.pause.state === true) {
                   // this.testDraw.push({
@@ -45179,13 +45198,14 @@ class App extends Component {
                   //   finalCoords,
                   //   plyr.elasticCounter.direction
                   // );
-                  console.log(
-                    "dodging anim elastic c",
-                    finalCoords.x,
-                    finalCoords.y,
-                    this.time,
-                    plyr.direction
-                  );
+                  // console.log(
+                  //   "dodging anim elastic c",
+                  //   finalCoords.x,
+                  //   finalCoords.y,
+                  //   this.time,
+                  //   plyr.direction
+                  // );
+                  // console.log("drawing dodging (elastic pause)", this.time);
                 }
               }
 
@@ -45193,6 +45213,8 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x &&
                 y === plyr.currentPosition.cell.number.y
               ) {
+                // console.log("drawing dodging ", this.time);
+
                 context2.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -45206,12 +45228,12 @@ class App extends Component {
                 );
               }
             } else {
-              console.log(
-                "dodging non elastic anim: ",
-                newCharDrawPoint.x,
-                newCharDrawPoint.y,
-                this.time
-              );
+              // console.log(
+              //   "dodging non elastic anim: ",
+              //   newCharDrawPoint.x,
+              //   newCharDrawPoint.y,
+              //   this.time
+              // );
             }
           }
 
