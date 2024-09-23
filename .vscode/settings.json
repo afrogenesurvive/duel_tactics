@@ -1,5 +1,8 @@
 {
-  "prettier.printWidth": 90
+  "prettier.printWidth": 90,
+  "editor.formatOnSave": false,
+  "editor.fontVariations": false,
+  "editor.fontLigatures": false
 } // {
 //   "editor.foldingStrategy": "indentation",
 //   "editor.folding": true,

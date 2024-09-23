@@ -14830,7 +14830,7 @@ class App extends Component {
     let delay = 20;
 
     if (ownerType === "player" || ownerType === "obstacle" || ownerType === "barrier") {
-      console.log("directional action anim count", xCount);
+      // console.log("directional action anim count", xCount);
       countLimit = xCount;
       if (countLimit > 18) {
         countLimit = 18;
@@ -17963,7 +17963,12 @@ class App extends Component {
       predeflect: player.success.deflected.predeflect,
       type: type,
     };
-    player.stamina.current -= this.staminaCostRef.deflected[type];
+    if (type !== "outOfStamina") {
+      player.stamina.current -= this.staminaCostRef.deflected[type];
+      if (player.stamina.current < 0) {
+        player.stamina.current = 0;
+      }
+    }
 
     if (pushBack === true) {
       player.success.deflected.state = false;
@@ -21298,6 +21303,7 @@ class App extends Component {
             targetCell.number,
             " but it is indestructible. pushback obstacle. Deflect, pushback attacker?"
           );
+          // POPUP
           if (
             !this.cellPopups.find(
               (x) =>
@@ -23949,6 +23955,7 @@ class App extends Component {
     this.players[player.number - 1].prePush = player.prePush;
     this.players[player.number - 1].pushing = player.pushing;
   };
+
   canPushObstacle = (ownerType, owner, obstacleCell, type) => {
     // console.log("canPushObstacle");
     // let pusherCellRef = this.gridInfo.find(x=> x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
@@ -24530,11 +24537,6 @@ class App extends Component {
         return false;
       }
     }
-
-    console.log(
-      "22",
-      this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")
-    );
   };
   prePlayerPushCheck = (pusher, target) => {
     // console.log('prePlayerPushCheck');
@@ -35084,11 +35086,14 @@ class App extends Component {
       // this.setDeflection(player, "parried", false);
       // let testTraps = this.customObstacleBarrierTrapSet("refreshActive", "");
       // let testTraps = this.customObstacleBarrierTrapSet("activateInactive", "");
+      // player.stamina.current = 0;
     }
-    if (this.time === 120 && player.number === 1) {
+    if (this.time === 102 && player.number === 1) {
+      // if (this.time % 150 === 0 && player.number === 1) {
       // this.setDeflection(player, "defended", true);
       // this.setDeflection(player, "attacked", false);
       // this.pushBack(player, this.getOppositeDirection(player.direction));
+      // player.stamina.current = 0;
     }
     // CIRCLE ARC CREMENTER TESTING
     if (this.testCount.state === true && player.number === 1) {
@@ -35293,12 +35298,16 @@ class App extends Component {
       if (player.stamina.current >= player.stamina.max) {
         player.stamina.current = player.stamina.max;
       }
-      if (player.stamina.current < 0) {
+      if (player.stamina.current <= 0) {
         // console.log('stamina lower limit reset for player ',player.number);
-        player.stamina.current = 0;
+        player.stamina.current = 1;
       }
       if (player.stamina.current === 1) {
-        // console.log('OUT OF STAMINA @ player update');
+        // player.stamina.current = 0;
+        console.log("OUT OF STAMINA @ player update");
+        if (player.moving.state === true) {
+          console.log("bung bang");
+        }
         player.flanking = {
           checking: false,
           preFlankDirection: "",
@@ -35320,6 +35329,9 @@ class App extends Component {
           direction: "",
         };
 
+        // FIX ME!!
+        // check for other delfections and elastic Counters and reset them before setting its own...outOfStam should also checked for movement and cancel it
+
         this.attackedCancel(player);
 
         if (player.success.deflected.state !== true) {
@@ -35340,7 +35352,7 @@ class App extends Component {
       }
 
       // AI RETREAT ON LOW STAMINA
-      if (player.stamina.current <= 4) {
+      if (player.stamina.current <= 4 && player.stamina.current > 0) {
         if (player.ai.state === true) {
           console.log("ai player", player.number, " almost out of stamina. Retreat");
           player.ai.mission = "retreat";
@@ -35810,16 +35822,16 @@ class App extends Component {
       }
       // DON'T READ INPUTS. JUST MOVE!!
       if (player.moving.state === true) {
-        console.log(
-          "player ",
-          player.number,
-          " ",
-          player.action,
-          " : ",
-          player.moving.step,
-          "time: ",
-          this.time
-        );
+        // console.log(
+        //   "player ",
+        //   player.number,
+        //   " ",
+        //   player.action,
+        //   " : ",
+        //   player.moving.step,
+        //   "time: ",
+        //   this.time
+        // );
 
         nextPosition = this.lineCrementer(player);
         player.nextPosition = nextPosition;
@@ -43689,7 +43701,7 @@ class App extends Component {
                   // });
                 }
 
-                console.log("drawing: non-edge movement ", this.time);
+                // console.log("drawing: non-edge movement ", this.time);
                 context2.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -43703,135 +43715,6 @@ class App extends Component {
                 );
               }
             }
-
-            // if (direction === "north") {
-            //   if (
-            //     x === plyr.moving.origin.number.x &&
-            //     y === plyr.moving.origin.number.y
-            //   ) {
-            //     if (plyr.jumping.state === true) {
-            //       context2.drawImage(
-            //         updatedPlayerImg,
-            //         sx,
-            //         sy,
-            //         sWidth,
-            //         sHeight,
-            //         newCharDrawPoint.x - 5,
-            //         newCharDrawPoint.y - 10 - jumpYCalc * 3,
-            //         this.playerDrawWidth2,
-            //         this.playerDrawHeight2
-            //       );
-            //     } else {
-            //       context2.drawImage(
-            //         updatedPlayerImg,
-            //         sx,
-            //         sy,
-            //         sWidth,
-            //         sHeight,
-            //         newCharDrawPoint.x - 5,
-            //         newCharDrawPoint.y - 10,
-            //         this.playerDrawWidth2,
-            //         this.playerDrawHeight2
-            //       );
-            //     }
-            //   }
-            // }
-            // if (direction === "west") {
-            //   if (
-            //     x === plyr.moving.origin.number.x &&
-            //     y === plyr.moving.origin.number.y
-            //   ) {
-            //     if (plyr.jumping.state === true) {
-            //       context2.drawImage(
-            //         updatedPlayerImg,
-            //         sx,
-            //         sy,
-            //         sWidth,
-            //         sHeight,
-            //         newCharDrawPoint.x - 5,
-            //         newCharDrawPoint.y - 10 - jumpYCalc * 3,
-            //         this.playerDrawWidth2,
-            //         this.playerDrawHeight2
-            //       );
-            //     } else {
-            //       context2.drawImage(
-            //         updatedPlayerImg,
-            //         sx,
-            //         sy,
-            //         sWidth,
-            //         sHeight,
-            //         newCharDrawPoint.x - 5,
-            //         newCharDrawPoint.y - 10,
-            //         this.playerDrawWidth2,
-            //         this.playerDrawHeight2
-            //       );
-            //     }
-            //   }
-            // }
-            // if (direction === "east") {
-            //   if (
-            //     x === plyr.moving.origin.number.x + 1 &&
-            //     y === plyr.moving.origin.number.y
-            //   ) {
-            //     if (plyr.jumping.state === true) {
-            //       context2.drawImage(
-            //         updatedPlayerImg,
-            //         sx,
-            //         sy,
-            //         sWidth,
-            //         sHeight,
-            //         newCharDrawPoint.x - 5,
-            //         newCharDrawPoint.y - 10 - jumpYCalc * 3,
-            //         this.playerDrawWidth2,
-            //         this.playerDrawHeight2
-            //       );
-            //     } else {
-            //       context2.drawImage(
-            //         updatedPlayerImg,
-            //         sx,
-            //         sy,
-            //         sWidth,
-            //         sHeight,
-            //         newCharDrawPoint.x - 5,
-            //         newCharDrawPoint.y - 10,
-            //         this.playerDrawWidth2,
-            //         this.playerDrawHeight2
-            //       );
-            //     }
-            //   }
-            // }
-            // if (direction === "south") {
-            //   if (
-            //     x === plyr.moving.origin.number.x &&
-            //     y === plyr.moving.origin.number.y + 1
-            //   ) {
-            //     if (plyr.jumping.state === true) {
-            //       context2.drawImage(
-            //         updatedPlayerImg,
-            //         sx,
-            //         sy,
-            //         sWidth,
-            //         sHeight,
-            //         newCharDrawPoint.x - 5,
-            //         newCharDrawPoint.y - 10 - jumpYCalc * 3,
-            //         this.playerDrawWidth2,
-            //         this.playerDrawHeight2
-            //       );
-            //     } else {
-            //       context2.drawImage(
-            //         updatedPlayerImg,
-            //         sx,
-            //         sy,
-            //         sWidth,
-            //         sHeight,
-            //         newCharDrawPoint.x - 5,
-            //         newCharDrawPoint.y - 10,
-            //         this.playerDrawWidth2,
-            //         this.playerDrawHeight2
-            //       );
-            //     }
-            //   }
-            // }
 
             if (plyr.pushBack.state === true) {
               // context2.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
