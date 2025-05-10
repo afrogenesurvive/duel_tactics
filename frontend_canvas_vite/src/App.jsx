@@ -244,6 +244,8 @@ import Helper from "./helper";
 
 import pointInPolygon from "point-in-polygon";
 
+import { GameContext } from "./gameContext";
+
 class App extends Component {
   state = {
     showSettings: true,
@@ -4464,7 +4466,7 @@ class App extends Component {
 
     let keyPressed = [];
     let connectedGamepadIndexB = 0;
-    console.log("xxx", this.gamepadConfig);
+    console.log("this.gamepadConfig", this.gamepadConfig);
     for (const elem of this.gamepadConfig) {
       let indx = this.gamepadConfig.indexOf((x) => x.plyrNo === elem.plyrNo);
 
@@ -5501,6 +5503,12 @@ class App extends Component {
           this.keyPressed[0].kick = state;
           this.currentPlayer = 1;
         }
+
+        if (event.code === "ShiftRight") {
+          this.keyPressed[1].playerMenu = state;
+          this.currentPlayer = 2;
+        }
+
         break;
       case " ":
         if (
@@ -5655,12 +5663,6 @@ class App extends Component {
       case "9":
         this.keyPressed[1].discardArmor = state;
         this.currentPlayer = 2;
-        break;
-      case "Shift":
-        if (event.code === "ShiftRight") {
-          this.keyPressed[1].playerMenu = state;
-          this.currentPlayer = 2;
-        }
         break;
       case "0":
         this.keyPressed[1].uiMenu = state;
@@ -8056,7 +8058,7 @@ class App extends Component {
             endCell.x = 0;
             endCell.y = bolt.origin.number.y;
             break;
-          case "west":
+          case "east":
             endCell.x = this.gridWidth;
             endCell.y = bolt.origin.number.y;
             break;
@@ -47550,8 +47552,6 @@ class App extends Component {
       pickupAmmo: this.pickupAmmoIndicateRef.current,
       inventoryFull: this.inventoryFullIndicateRef.current,
       stop: this.boltDefendIndicateRef.current,
-      dropWeapon: this.dropWeaponIndicateRef.current,
-      dropArmor: this.dropArmorIndicateRef.current,
       drowning: this.drowningIndicateRef.current,
       terrainSlowdown: this.terrainSlowdownIndicateRef.current,
       terrainSpeedup: this.terrainSpeedupIndicateRef.current,
