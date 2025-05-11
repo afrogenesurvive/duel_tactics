@@ -68,7 +68,7 @@ export const GameProvider = ({ children }) => {
 
     // GRIND INFO, LEVEL DATA & MAPPING
     init: false,
-    openVoid: true,
+    // openVoid: true,
     openVoid: false,
     cellToVoid: {
         state: false,
@@ -3757,7 +3757,7 @@ export const GameProvider = ({ children }) => {
     settingAutoCameraFollowBolt: false,
     highlightZoomPanFocusCell: true,
     zoomThresh: -0.05,
-    zoomThresh: -0.15,
+    // zoomThresh: -0.15,
     autoCamPanWaitingForPath: false,
 
     // AI
