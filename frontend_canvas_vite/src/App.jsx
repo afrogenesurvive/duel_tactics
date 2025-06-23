@@ -48547,1491 +48547,1490 @@ class App extends Component {
 
   render() {
     return (
-      <GameContext>
-        {(context) => (
-          <>
-            {this.state.loading === true && <Loading />}
+        <>
+          {this.state.loading === true && <Loading />}
 
-            <div className="containerTop">
-              <div className="timer">
-                <p className="timerText">{this.time}</p>
-                {this.cursorCoords.x && (
-                  <p className="timerText">
-                    Cursor: x {this.cursorCoords.x.toFixed(2)}, y{" "}
-                    {this.cursorCoords.y.toFixed(2)}
-                  </p>
-                )}
+          <div className="containerTop">
+            <div className="timer">
+              <p className="timerText">{this.time}</p>
+              {this.cursorCoords.x && (
+                <p className="timerText">
+                  Cursor: x {this.cursorCoords.x.toFixed(2)}, y{" "}
+                  {this.cursorCoords.y.toFixed(2)}
+                </p>
+              )}
+            </div>
+            <Helper players={this.players} />
+            <div className={this.state.containerInnerClass}>
+              <canvas
+                width={this.canvasWidth}
+                height={this.canvasHeight}
+                ref={this.canvasRef}
+                className="canvas"
+              />
+              <canvas
+                width={this.canvasWidth}
+                height={this.canvasHeight}
+                ref={this.canvasRef2}
+                className="canvas2"
+              />
+              {/* // DEBUB BOX */}
+              <div className={this.debugBoxStyle}>
+                <DebugBox
+                  player={this.players[0]}
+                  expand={this.expandDebugBox}
+                  minimize={this.minimizeDebugBox}
+                />
               </div>
-              <Helper players={this.players} />
-              <div className={this.state.containerInnerClass}>
-                <canvas
-                  width={this.canvasWidth}
-                  height={this.canvasHeight}
-                  ref={this.canvasRef}
-                  className="canvas"
-                />
-                <canvas
-                  width={this.canvasWidth}
-                  height={this.canvasHeight}
-                  ref={this.canvasRef2}
-                  className="canvas2"
-                />
-                {/* // DEBUB BOX */}
-                <div className={this.debugBoxStyle}>
+              {this.players.length > 1 && (
+                <div className={this.debugBoxStyle2}>
                   <DebugBox
-                    player={this.players[0]}
+                    player={this.players[1]}
                     expand={this.expandDebugBox}
                     minimize={this.minimizeDebugBox}
                   />
                 </div>
-                {this.players.length > 1 && (
-                  <div className={this.debugBoxStyle2}>
-                    <DebugBox
-                      player={this.players[1]}
-                      expand={this.expandDebugBox}
-                      minimize={this.minimizeDebugBox}
-                    />
-                  </div>
-                )}
-                {/* //BACKGROUND COMPASS */}
-                <img
-                  src={bgCompass}
-                  className="bgCompass"
-                  ref={this.bgCompassRef}
-                  alt="logo"
-                />
-                {/* // SETTINGS BOX */}
-                <div className="settingsSwitch">
-                  <a className="setSwitchLink" onClick={this.openSettings}>
-                    <OverlayTrigger
-                      placement={"top"}
-                      overlay={
-                        <Popover id={`popover-positioned-${"top"}`}>
-                          <Popover.Body>
-                            <strong>Show Settings</strong>
-                          </Popover.Body>
-                        </Popover>
-                      }>
-                      <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon" />
-                    </OverlayTrigger>
-                  </a>
-                  {this.aiPlayers[0] && (
-                    // {this.updateSettingsFormAiDataData.random &&(
-                    <a
-                      className="setSwitchLink cameraModeHighlighted"
-                      onClick={this.toggleAiDisplay}>
-                      <OverlayTrigger
-                        placement={"top"}
-                        overlay={
-                          <Popover id={`popover-positioned-${"top"}`}>
-                            <Popover.Body>
-                              <strong>Toggle Ai Sub-menu</strong>
-                            </Popover.Body>
-                          </Popover>
-                        }>
-                        <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon" />
-                      </OverlayTrigger>
-                    </a>
-                  )}
-                  {!this.aiPlayers[0] && (
-                    // {!this.updateSettingsFormAiDataData.random &&(
-                    <a className="setSwitchLink" onClick={this.toggleAiDisplay}>
-                      <OverlayTrigger
-                        placement={"top"}
-                        overlay={
-                          <Popover id={`popover-positioned-${"top"}`}>
-                            <Popover.Body>
-                              <strong>Toggle Ai Sub-menu</strong>
-                            </Popover.Body>
-                          </Popover>
-                        }>
-                        <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon" />
-                      </OverlayTrigger>
-                    </a>
-                  )}
-                  {this.camera.state === false && (
-                    <a className="setSwitchLink" onClick={this.menuToggleCamera}>
-                      <OverlayTrigger
-                        placement={"top"}
-                        overlay={
-                          <Popover id={`popover-positioned-${"top"}`}>
-                            <Popover.Body>
-                              {this.camera.customView.state !== true && (
-                                <strong>Toggle Camera Sub-menu</strong>
-                              )}
-                              {this.camera.customView.state === true && (
-                                <strong>Toggle Camera Sub-menu (Custom View is set)</strong>
-                              )}
-                            </Popover.Body>
-                          </Popover>
-                        }>
-                        <div className="icon-container">
-                          <FontAwesomeIcon
-                            icon={faVideo}
-                            size="sm"
-                            className="setSwitchIcon"
-                          />
-                          {this.camera.customView.state === true && (
-                            <FontAwesomeIcon
-                              icon={faCheckSquare}
-                              size="sm"
-                              className="setSwitchIcon top-right-icon"
-                            />
-                          )}
-                        </div>
-                      </OverlayTrigger>
-                    </a>
-                  )}
-                  <a className="setSwitchLink" onClick={this.gameReset.bind(this, "soft")}>
-                    <OverlayTrigger
-                      placement={"top"}
-                      overlay={
-                        <Popover id={`popover-positioned-${"top"}`}>
-                          <Popover.Body>
-                            <strong>Reset Game (w/ last settings)</strong>
-                          </Popover.Body>
-                        </Popover>
-                      }>
-                      <FontAwesomeIcon icon={faUndo} size="sm" className="setSwitchIcon" />
-                    </OverlayTrigger>
-                  </a>
-                </div>
-                {/* // CAMERA BOX */}
-                {this.camera.state === true && (
-                  <div className="cameraBox">
-                    <CameraControl
-                      camera={this.camera}
-                      close={this.closeCamera}
-                      toggleMode={this.toggleCameraModeUI}
-                      preReset={this.preResetCamera}
-                      toggleCustomView={this.toggleCameraCustomView}
-                    />
-                  </div>
-                )}
-                {/* // CELL INFO */}
-                {this.showCellInfoBox !== true && (
-                  <div className="cellInfoSwitch">
-                    <OverlayTrigger
-                      placement={"top"}
-                      overlay={
-                        <Popover id={`popover-positioned-${"top"}`}>
-                          <Popover.Body>
-                            <strong>Click or mouse over a cell to get more info</strong>
-                          </Popover.Body>
-                        </Popover>
-                      }>
-                      <FontAwesomeIcon
-                        icon={faChessBoard}
-                        size="sm"
-                        className="setSwitchIcon"
-                      />
-                    </OverlayTrigger>
-                  </div>
-                )}
-                {this.showCellInfoBox === true && (
-                  <CellInfo
-                    ref={this.cellInfoBoxRef}
-                    clicked={this.clicked}
-                    close={this.closeCellInfoBox}
-                    cellInfoMouseOver={this.cellInfoMouseOver}
-                    setCellInfoMouseOver={this.setCellInfoMouseOver}
-                    cursorCoords={this.cursorCoords}
-                  />
-                )}
-                {/* // AI STATUS BOX */}
-                {this.state.showAiStatus === true && (
-                  <AiStatus
-                    players={this.players}
-                    aiPlayers={this.aiPlayers}
-                    onAiAdd={this.addAiRandomPlayer}
-                  />
-                )}
-              </div>
-              {this.state.showSettings === true && (
-                <Settings
-                  gridWidth={this.gridWidth}
-                  onConfirm={this.loadSettings}
-                  onCancel={this.cancelSettings}
-                  getCustomAiStartPosList={this.getCustomAiStartPosList}
-                  aiStartPosList={this.settingsFormAiStartPosList}
-                  aiSettingsFormHandler={this.aiSettingsFormHandler}
-                  updateSettingsFormAiDataData={this.updateSettingsFormAiDataData}
-                  updateSettingsFormAiData={this.updateSettingsFormAiData}
-                  rnJesus={this.rnJesus}
-                  settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
-                  plyrStartPosList={this.settingsFormPlyrStartPosList}
-                  getCustomPlyrStartPosList={this.getCustomPlyrStartPosList}
-                  gamepad={this.gamepad}
-                  canvasRef={this.canvasRef3}
-                  canvasRef2={this.canvasRef4}
-                  canvasHeight={this.settingsCanvasHeight}
-                  canvasWidth={this.settingsCanvasWidth}
-                  gridInfo={this.settingsGridInfo}
-                  clickedCell={this.settingsClicked}
-                  showCanvasData={this.showSettingsCanvasData}
-                  updateSettingsCanvasData={this.updateSettingsCanvasData}
-                  disableInitItems={this.disableInitItems}
-                  settingsFormPlayerData={this.settingsFormPlayerData}
-                  updateSettingsFormPlayerData={this.updateSettingsFormPlayerData}
-                />
               )}
-              <svg
-                className="popupProgressSvg hidden"
-                ref={this.popupProgressSvgRef}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 -0.5 30 30"
-                shapeRendering="crispEdges">
-                <metadata>
-                  Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj
-                </metadata>
-                <path
-                  id="border"
-                  stroke="yellow"
-                  strokeWidth="5px"
-                  d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21"
-                />
-                <rect
-                  id="rect"
-                  x="1"
-                  y="1"
-                  rx="5"
-                  ry="5"
-                  width="95%"
-                  height="0%"
-                  fill="url(#grad)"
-                />
-                <defs>
-                  <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop
-                      offset="0%"
-                      stopColor={this.popupProgressSvgGradColor1}
-                      stopOpacity="100%"
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor={this.popupProgressSvgGradColor2}
-                      stopOpacity="100%"
-                    />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <img
-                src=""
-                className="hidden"
-                height={this.popupImgSize}
-                width={this.popupImgSize}
-                ref={this.popupProgressImgRef}
-                alt="logo"
-              />
+              {/* //BACKGROUND COMPASS */}
               <img
                 src={bgCompass}
-                className="hidden bgCompass"
+                className="bgCompass"
                 ref={this.bgCompassRef}
                 alt="logo"
               />
-
-              <img
-                src={backgroundField1}
-                className="hidden"
-                ref={this.backgroundField1Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundField2}
-                className="hidden"
-                ref={this.backgroundField2Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundField3}
-                className="hidden"
-                ref={this.backgroundField3Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundNorthernLights1}
-                className="hidden"
-                ref={this.backgroundNorthernLights1Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundSeaClouds1}
-                className="hidden"
-                ref={this.backgroundSeaClouds1Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundSeaClouds2}
-                className="hidden"
-                ref={this.backgroundSeaClouds2Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundSeaClouds3}
-                className="hidden"
-                ref={this.backgroundSeaClouds3Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundSeaClouds4}
-                className="hidden"
-                ref={this.backgroundSeaClouds4Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundSeaCloudsNight1}
-                className="hidden"
-                ref={this.backgroundSeaCloudsNight1Ref}
-                alt="logo"
-              />
-              <img
-                src={backgroundSeaCoast1}
-                className="hidden"
-                ref={this.backgroundSeaCoast1Ref}
-                alt="logo"
-              />
-
-              <img src={floorGrass} className="hidden" ref={this.floorGrassRef} alt="logo" />
-              <img src={floorDirt} className="hidden" ref={this.floorDirtRef} alt="logo" />
-              <img src={floorIce} className="hidden" ref={this.floorIceRef} alt="logo" />
-              <img src={floorStone} className="hidden" ref={this.floorStoneRef} alt="logo" />
-              <img src={floorSand} className="hidden" ref={this.floorSandRef} alt="logo" />
-              <img src={floorMud} className="hidden" ref={this.floorMudRef} alt="logo" />
-              <img src={floorPond} className="hidden" ref={this.floorPondRef} alt="logo" />
-              <img src={floorRiver} className="hidden" ref={this.floorRiverRef} alt="logo" />
-              <img
-                src={floorBramble}
-                className="hidden"
-                ref={this.floorBrambleRef}
-                alt="logo"
-              />
-              <img src={floorLava} className="hidden" ref={this.floorLavaRef} alt="logo" />
-              <img
-                src={floorAttack}
-                className="hidden"
-                ref={this.floorAttackRef}
-                alt="logo"
-              />
-              <img
-                src={floorAttack2}
-                className="hidden"
-                ref={this.floorAttack2Ref}
-                alt="logo"
-              />
-              <img src={floorVoid} className="hidden" ref={this.floorVoidRef} alt="logo" />
-              <img src={floorVoid2} className="hidden" ref={this.floorVoid2Ref} alt="logo" />
-              <img src={floorVoid3} className="hidden" ref={this.floorVoid3Ref} alt="logo" />
-              <img
-                src={floorHighlight}
-                className="hidden"
-                ref={this.floorHighlightRef}
-                alt="logo"
-              />
-              <img
-                src={floorRubble}
-                className="hidden"
-                ref={this.floorRubbleRef}
-                alt="logo"
-              />
-              <img src={wall} className="hidden" ref={this.wallRef} alt="logo" />
-              <img src={wall2} className="hidden" ref={this.wall2Ref} alt="logo" />
-              <img src={wall3} className="hidden" ref={this.wall3Ref} alt="logo" />
-              <img
-                src={obstacleAHalf}
-                className="hidden"
-                ref={this.obstacleAHalfRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleAFull}
-                className="hidden"
-                ref={this.obstacleAFullRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleBHalf}
-                className="hidden"
-                ref={this.obstacleBHalfRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleBFull}
-                className="hidden"
-                ref={this.obstacleBFullRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleCHalf}
-                className="hidden"
-                ref={this.obstacleCHalfRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleCFull}
-                className="hidden"
-                ref={this.obstacleCFullRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleDHalf}
-                className="hidden"
-                ref={this.obstacleDHalfRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleDFull}
-                className="hidden"
-                ref={this.obstacleDFullRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleEHalf}
-                className="hidden"
-                ref={this.obstacleEHalfRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleEFull}
-                className="hidden"
-                ref={this.obstacleEFullRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleCrate}
-                className="hidden"
-                ref={this.obstacleCrateRef}
-                alt="logo"
-              />
-              <img
-                src={obstacleBarrel}
-                className="hidden"
-                ref={this.obstacleBarrelRef}
-                alt="logo"
-              />
-              <img
-                src={barrierANorth}
-                className="hidden"
-                ref={this.barrierANorthRef}
-                alt="logo"
-              />
-              <img
-                src={barrierASouth}
-                className="hidden"
-                ref={this.barrierASouthRef}
-                alt="logo"
-              />
-              <img
-                src={barrierAEast}
-                className="hidden"
-                ref={this.barrierAEastRef}
-                alt="logo"
-              />
-              <img
-                src={barrierAWest}
-                className="hidden"
-                ref={this.barrierAWestRef}
-                alt="logo"
-              />
-
-              <img
-                src={attack1Indicate}
-                className="hidden playerImgs"
-                ref={this.attack1IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attack2Indicate}
-                className="hidden playerImgs"
-                ref={this.attack2IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attack3Indicate}
-                className="hidden playerImgs"
-                ref={this.attack3IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attackUnarmedIndicate}
-                className="hidden playerImgs"
-                ref={this.attackUnarmedIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attackBluntIndicate}
-                className="hidden playerImgs"
-                ref={this.attackBluntIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attackSuccessIndicate}
-                className="hidden playerImgs"
-                ref={this.attackSuccessIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendIndicate}
-                className="hidden playerImgs"
-                ref={this.defendIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendIndicate1}
-                className="hidden playerImgs"
-                ref={this.defendIndicate1Ref}
-                alt="logo"
-              />
-              <img
-                src={defendIndicate2}
-                className="hidden playerImgs"
-                ref={this.defendIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={defendIndicate3}
-                className="hidden playerImgs"
-                ref={this.defendIndicate3Ref}
-                alt="logo"
-              />
-              <img
-                src={defendIndicate4}
-                className="hidden playerImgs"
-                ref={this.defendIndicate4Ref}
-                alt="logo"
-              />
-              <img
-                src={deflectIndicate}
-                className="hidden playerImgs"
-                ref={this.deflectIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={deflectIndicate2}
-                className="hidden playerImgs"
-                ref={this.deflectIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={deflectInjuredIndicate}
-                className="hidden playerImgs"
-                ref={this.deflectInjuredIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={deflectInjuredIndicate2}
-                className="hidden playerImgs"
-                ref={this.deflectInjuredIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={deflectBluntIndicate}
-                className="hidden playerImgs"
-                ref={this.deflectBluntIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pushbackIndicate}
-                className="hidden playerImgs"
-                ref={this.pushbackIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={ghostIndicate}
-                className="hidden playerImgs"
-                ref={this.ghostIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={deathIndicate}
-                className="hidden playerImgs"
-                ref={this.deathIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={preAttackIndicate}
-                className="hidden playerImgs"
-                ref={this.preAttackIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={preAttack2Indicate}
-                className="hidden playerImgs"
-                ref={this.preAttack2IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attackBreakIndicate}
-                className="hidden playerImgs"
-                ref={this.attackBreakIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendBreakIndicate}
-                className="hidden playerImgs"
-                ref={this.defendBreakIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendSuccessIndicate}
-                className="hidden playerImgs"
-                ref={this.defendSuccessIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={boltDefendIndicate}
-                className="hidden playerImgs"
-                ref={this.boltDefendIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={dodgeIndicate}
-                className="hidden playerImgs"
-                ref={this.dodgeIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={preAction1Indicate}
-                className="hidden playerImgs"
-                ref={this.preAction1IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={preAction2Indicate}
-                className="hidden playerImgs"
-                ref={this.preAction2IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={fallingIndicate}
-                className="hidden playerImgs"
-                ref={this.fallingIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={completeMissionIndicate}
-                className="hidden playerImgs"
-                ref={this.completeMissionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={flankIndicate}
-                className="hidden playerImgs"
-                ref={this.flankIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attackBluntIndicate2}
-                className="hidden playerImgs"
-                ref={this.attackBluntIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={enrouteIndicate}
-                className="hidden playerImgs"
-                ref={this.enrouteIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={targetSwitchIndicate}
-                className="hidden playerImgs"
-                ref={this.targetSwitchIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pathSwitchIndicate}
-                className="hidden playerImgs"
-                ref={this.pathSwitchIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={retreatIndicate}
-                className="hidden playerImgs"
-                ref={this.retreatIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendSuccessIndicate}
-                className="hidden playerImgs"
-                ref={this.defendSuccessIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={healIndicate}
-                className="hidden playerImgs"
-                ref={this.healIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={preAttack2Indicate}
-                className="hidden playerImgs"
-                ref={this.preAttack2IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={preAction1Indicate}
-                className="hidden playerImgs"
-                ref={this.preAction1IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={preAction2Indicate}
-                className="hidden playerImgs"
-                ref={this.preAction2IndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attackBreakIndicate}
-                className="hidden playerImgs"
-                ref={this.attackBreakIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={missedIndicate}
-                className="hidden playerImgs"
-                ref={this.missedIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendBreakIndicate}
-                className="hidden playerImgs"
-                ref={this.defendBreakIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={boltDefendIndicate}
-                className="hidden playerImgs"
-                ref={this.boltDefendIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={dodgeIndicate}
-                className="hidden playerImgs"
-                ref={this.dodgeIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={fallingIndicate}
-                className="hidden playerImgs"
-                ref={this.fallingIndicateRef}
-                alt="logo"
-              />
-
-              <img
-                src={completeMissionIndicate}
-                className="hidden playerImgs"
-                ref={this.completeMissionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={flankIndicate}
-                className="hidden playerImgs"
-                ref={this.flankIndicateRef}
-                alt="log"
-              />
-              <img
-                src={attackBluntIndicate2}
-                className="hidden playerImgs"
-                ref={this.attackBluntIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={enrouteIndicate}
-                className="hidden playerImgs"
-                ref={this.enrouteIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={targetSwitchIndicate}
-                className="hidden playerImgs"
-                ref={this.targetSwitchIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pathSwitchIndicate}
-                className="hidden playerImgs"
-                ref={this.pathSwitchIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={retreatIndicate}
-                className="hidden playerImgs"
-                ref={this.retreatIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendSuccessIndicate}
-                className="hidden playerImgs"
-                ref={this.defendSuccessIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={aggressiveModeIndicate}
-                className="hidden playerImgs"
-                ref={this.aggressiveModeIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={passiveModeIndicate}
-                className="hidden playerImgs"
-                ref={this.passiveModeIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={thinkingIndicate}
-                className="hidden playerImgs"
-                ref={this.thinkingIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendMissionIndicate}
-                className="hidden playerImgs"
-                ref={this.defendMissionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={patrolMissionIndicate}
-                className="hidden playerImgs"
-                ref={this.patrolMissionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pursueMissionIndicate}
-                className="hidden playerImgs"
-                ref={this.pursueMissionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pursueMissionIndicate2}
-                className="hidden playerImgs"
-                ref={this.pursueMissionIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={retrieveMissionIndicate}
-                className="hidden playerImgs"
-                ref={this.retrieveMissionIndicateRef}
-                alt="logo"
-              />
-
-              <img
-                src={drowningIndicate}
-                className="hidden playerImgs"
-                ref={this.drowningIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={destroyedItemIndicate}
-                className="hidden playerImgs"
-                ref={this.destroyedItemIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pickupBuffIndicate}
-                className="hidden playerImgs"
-                ref={this.pickupBuffIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pickupDebuffIndicate}
-                className="hidden playerImgs"
-                ref={this.pickupDebuffIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pickupWeaponIndicate}
-                className="hidden playerImgs"
-                ref={this.pickupWeaponIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={dropWeaponIndicate}
-                className="hidden playerImgs"
-                ref={this.dropWeaponIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={dropArmorIndicate}
-                className="hidden playerImgs"
-                ref={this.dropArmorIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pickupArmorIndicate}
-                className="hidden playerImgs"
-                ref={this.pickupArmorIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pickupAmmoIndicate}
-                className="hidden playerImgs"
-                ref={this.pickupAmmoIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={terrainSpeedupIndicate}
-                className="hidden playerImgs"
-                ref={this.terrainSpeedupIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={terrainSlowdownIndicate}
-                className="hidden playerImgs"
-                ref={this.terrainSlowdownIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={terrainInjuredIndicate}
-                className="hidden playerImgs"
-                ref={this.terrainInjuredIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={outOfStaminaIndicate}
-                className="hidden playerImgs"
-                ref={this.outOfStaminaIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={boltKilledIndicate}
-                className="hidden playerImgs"
-                ref={this.boltKilledIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attackParriedIndicate}
-                className="hidden playerImgs"
-                ref={this.attackParriedIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={inventoryFullIndicate}
-                className="hidden playerImgs"
-                ref={this.inventoryFullIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={outOfAmmoIndicate}
-                className="hidden playerImgs"
-                ref={this.outOfAmmoIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={missedIndicate2}
-                className="hidden playerImgs"
-                ref={this.missedIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={prePushIndicate}
-                className="hidden playerImgs"
-                ref={this.prePushIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={canPushIndicate}
-                className="hidden playerImgs"
-                ref={this.canPushIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={noPushingIndicate}
-                className="hidden playerImgs"
-                ref={this.noPushingIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pushingIndicate}
-                className="hidden playerImgs"
-                ref={this.pushingIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={prePullIndicate}
-                className="hidden playerImgs"
-                ref={this.prePullIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={canPullIndicate}
-                className="hidden playerImgs"
-                ref={this.canPullIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={noPullingIndicate}
-                className="hidden playerImgs"
-                ref={this.noPullingIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pullingIndicate}
-                className="hidden playerImgs"
-                ref={this.pullingIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={pushedPulledIndicate}
-                className="hidden playerImgs"
-                ref={this.pushedPulledIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={unbreakableIndicate}
-                className="hidden playerImgs"
-                ref={this.unbreakableIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={dodgeIndicate2}
-                className="hidden playerImgs"
-                ref={this.dodgeIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={attackFeintIndicate}
-                className="hidden playerImgs"
-                ref={this.attackFeintIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={attackFeintIndicate2}
-                className="hidden playerImgs"
-                ref={this.attackFeintIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={attackFeintIndicate3}
-                className="hidden playerImgs"
-                ref={this.attackFeintIndicate3Ref}
-                alt="logo"
-              />
-              <img
-                src={defendFeintIndicate}
-                className="hidden playerImgs"
-                ref={this.defendFeintIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={defendFeintIndicate2}
-                className="hidden playerImgs"
-                ref={this.defendFeintIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={defendFeintIndicate3}
-                className="hidden playerImgs"
-                ref={this.defendFeintIndicate3Ref}
-                alt="logo"
-              />
-              <img
-                src={dodgeFeintIndicate}
-                className="hidden playerImgs"
-                ref={this.dodgeFeintIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={dodgeFeintIndicate2}
-                className="hidden playerImgs"
-                ref={this.dodgeFeintIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={boltDefendIndicate2}
-                className="hidden playerImgs"
-                ref={this.boltDefendIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={flankIndicate2}
-                className="hidden playerImgs"
-                ref={this.flankIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={noFlankIndicate}
-                className="hidden playerImgs"
-                ref={this.noFlankIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={cellVoidingIndicate}
-                className="hidden playerImgs"
-                ref={this.cellVoidingIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={cellVoidingIndicate2}
-                className="hidden playerImgs"
-                ref={this.cellVoidingIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={timerIndicate}
-                className="hidden playerImgs"
-                ref={this.timerIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={chargeIndicate}
-                className="hidden playerImgs"
-                ref={this.chargeIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={noDirectionIndicate}
-                className="hidden playerImgs"
-                ref={this.noDirectionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={noDirectionIndicate2}
-                className="hidden playerImgs"
-                ref={this.noDirectionIndicate2Ref}
-                alt="logo"
-              />
-              <img
-                src={noDirectionIndicate3}
-                className="hidden playerImgs"
-                ref={this.noDirectionIndicate3Ref}
-                alt="logo"
-              />
-              <img
-                src={northDirectionIndicate}
-                className="hidden playerImgs"
-                ref={this.northDirectionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={southDirectionIndicate}
-                className="hidden playerImgs"
-                ref={this.southDirectionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={eastDirectionIndicate}
-                className="hidden playerImgs"
-                ref={this.eastDirectionIndicateRef}
-                alt="logo"
-              />
-              <img
-                src={westDirectionIndicate}
-                className="hidden playerImgs"
-                ref={this.westDirectionIndicateRef}
-                alt="logo"
-              />
-
-              <img
-                src={sword}
-                className="hidden playerImgs"
-                ref={this.itemSwordRef}
-                alt="logo"
-              />
-              <img
-                src={spear}
-                className="hidden playerImgs"
-                ref={this.itemSpearRef}
-                alt="logo"
-              />
-              <img src={bow} className="hidden playerImgs" ref={this.itemBowRef} alt="logo" />
-              <img
-                src={crossbow}
-                className="hidden playerImgs"
-                ref={this.itemCrossbowRef}
-                alt="logo"
-              />
-              <img
-                src={boltNorth}
-                className="hidden playerImgs"
-                ref={this.itemBoltNorthRef}
-                alt="logo"
-              />
-              <img
-                src={boltSouth}
-                className="hidden playerImgs"
-                ref={this.itemBoltSouthRef}
-                alt="logo"
-              />
-              <img
-                src={boltEast}
-                className="hidden playerImgs"
-                ref={this.itemBoltEastRef}
-                alt="logo"
-              />
-              <img
-                src={boltWest}
-                className="hidden playerImgs"
-                ref={this.itemBoltWestRef}
-                alt="logo"
-              />
-              <img
-                src={ammo}
-                className="hidden playerImgs"
-                ref={this.itemAmmoRef}
-                alt="logo"
-              />
-              <img
-                src={mail1}
-                className="hidden playerImgs"
-                ref={this.itemMail1Ref}
-                alt="logo"
-              />
-              <img
-                src={mail2}
-                className="hidden playerImgs"
-                ref={this.itemMail2Ref}
-                alt="logo"
-              />
-              <img
-                src={mail3}
-                className="hidden playerImgs"
-                ref={this.itemMail3Ref}
-                alt="logo"
-              />
-              <img
-                src={greaves1}
-                className="hidden playerImgs"
-                ref={this.itemGreaves1Ref}
-                alt="logo"
-              />
-
-              <img
-                src={greaves2}
-                className="hidden playerImgs"
-                ref={this.itemGreaves2Ref}
-                alt="logo"
-              />
-              <img
-                src={greaves3}
-                className="hidden playerImgs"
-                ref={this.itemGreaves3Ref}
-                alt="logo"
-              />
-              <img
-                src={helmet1}
-                className="hidden playerImgs"
-                ref={this.itemHelmet1Ref}
-                alt="logo"
-              />
-              <img
-                src={hpUp}
-                className="hidden playerImgs"
-                ref={this.itemHpUpRef}
-                alt="logo"
-              />
-              <img
-                src={hpDown}
-                className="hidden playerImgs"
-                ref={this.itemHpDownRef}
-                alt="logo"
-              />
-              <img
-                src={spdUp}
-                className="hidden playerImgs"
-                ref={this.itemSpdUpRef}
-                alt="logo"
-              />
-              <img
-                src={spdDown}
-                className="hidden playerImgs"
-                ref={this.itemSpdDownRef}
-                alt="logo"
-              />
-              <img
-                src={strUp}
-                className="hidden playerImgs"
-                ref={this.itemStrUpRef}
-                alt="logo"
-              />
-              <img
-                src={strDown}
-                className="hidden playerImgs"
-                ref={this.itemStrDownRef}
-                alt="logo"
-              />
-              <img
-                src={focusUp}
-                className="hidden playerImgs"
-                ref={this.itemFocusUpRef}
-                alt="logo"
-              />
-              <img
-                src={focusDown}
-                className="hidden playerImgs"
-                ref={this.itemFocusDownRef}
-                alt="logo"
-              />
-
-              <img
-                src={playerImgIdleSheet}
-                className="hidden playerImgs"
-                ref={this.playerImgIdleSheetRef}
-                alt="logo"
-              />
-              <img
-                src={player2ImgIdleSheet}
-                className="hidden playerImgs"
-                ref={this.player2ImgIdleSheetRef}
-                alt="logo"
-              />
-              <img
-                src={playerComAImgIdleSheet}
-                className="hidden playerImgs"
-                ref={this.playerComAImgIdleSheetRef}
-                alt="logo"
-              />
-              <img
-                src={playerComBImgIdleSheet}
-                className="hidden playerImgs"
-                ref={this.playerComBImgIdleSheetRef}
-                alt="logo"
-              />
-              <img
-                src={playerImgMoveSheet}
-                className="hidden playerImgs"
-                ref={this.playerImgMoveSheetRef}
-                alt="logo"
-              />
-              <img
-                src={player2ImgMoveSheet}
-                className="hidden playerImgs"
-                ref={this.player2ImgMoveSheetRef}
-                alt="logo"
-              />
-              <img
-                src={comAImgMoveSheet}
-                className="hidden playerImgs"
-                ref={this.comAImgMoveSheetRef}
-                alt="logo"
-              />
-              <img
-                src={comBImgMoveSheet}
-                className="hidden playerImgs"
-                ref={this.comBImgMoveSheetRef}
-                alt="logo"
-              />
-              <img
-                src={player1DefendSheet}
-                className="hidden playerImgs"
-                ref={this.player1ImgDefendSheetRef}
-                alt="logo"
-              />
-              <img
-                src={player2DefendSheet}
-                className="hidden playerImgs"
-                ref={this.player2ImgDefendSheetRef}
-                alt="logo"
-              />
-              <img
-                src={comADefendSheet}
-                className="hidden playerImgs"
-                ref={this.comAImgDefendSheetRef}
-                alt="logo"
-              />
-              <img
-                src={comBDefendSheet}
-                className="hidden playerImgs"
-                ref={this.comBImgDefendSheetRef}
-                alt="logo"
-              />
-              <img
-                src={player1AttackSheet}
-                className="hidden playerImgs"
-                ref={this.player1ImgAttackSheetRef}
-                alt="logo"
-              />
-              <img
-                src={player2AttackSheet}
-                className="hidden playerImgs"
-                ref={this.player2ImgAttackSheetRef}
-                alt="logo"
-              />
-              <img
-                src={comAAttackSheet}
-                className="hidden playerImgs"
-                ref={this.comAImgAttackSheetRef}
-                alt="logo"
-              />
-              <img
-                src={comBAttackSheet}
-                className="hidden playerImgs"
-                ref={this.comBImgAttackSheetRef}
-                alt="logo"
-              />
-              <img
-                src={testSpriteNorth}
-                className="hidden playerImgs"
-                ref={this.testRefNorth}
-                alt="logo"
-              />
-              <img
-                src={testSpriteSouth}
-                className="hidden playerImgs"
-                ref={this.testRefSouth}
-                alt="logo"
-              />
-              <img
-                src={testSpriteEast}
-                className="hidden playerImgs"
-                ref={this.testRefEast}
-                alt="logo"
-              />
-              <img
-                src={testSpriteWest}
-                className="hidden playerImgs"
-                ref={this.testRefWest}
-                alt="logo"
-              />
-              <img
-                src={moveSheetNew}
-                className="hidden playerImgs"
-                ref={this.moveSheetNewRef}
-                alt="logo"
-              />
-              <img
-                src={idleSheetNew}
-                className="hidden playerImgs"
-                ref={this.idleSheetNewRef}
-                alt="logo"
-              />
-              <img
-                src={idleSheetNew2}
-                className="hidden playerImgs"
-                ref={this.idleSheetNew2Ref}
-                alt="logo"
-              />
-              <img
-                src={attackSheetNew}
-                className="hidden playerImgs"
-                ref={this.attackSheetNewRef}
-                alt="logo"
-              />
-              <img
-                src={defendSheetNew}
-                className="hidden playerImgs"
-                ref={this.defendSheetNewRef}
-                alt="logo"
-              />
-              <img
-                src={dodgeSheetNew}
-                className="hidden playerImgs"
-                ref={this.dodgeSheetNewRef}
-                alt="logo"
-              />
-              <img
-                src={deflectedFallingSheetNew}
-                className="hidden playerImgs"
-                ref={this.deflectedFallingSheetNewRef}
-                alt="logo"
-              />
+              {/* // SETTINGS BOX */}
+              <div className="settingsSwitch">
+                <a className="setSwitchLink" onClick={this.openSettings}>
+                  <OverlayTrigger
+                    placement={"top"}
+                    overlay={
+                      <Popover id={`popover-positioned-${"top"}`}>
+                        <Popover.Body>
+                          <strong>Show Settings</strong>
+                        </Popover.Body>
+                      </Popover>
+                    }>
+                    <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon" />
+                  </OverlayTrigger>
+                </a>
+                {this.aiPlayers[0] && (
+                  // {this.updateSettingsFormAiDataData.random &&(
+                  <a
+                    className="setSwitchLink cameraModeHighlighted"
+                    onClick={this.toggleAiDisplay}>
+                    <OverlayTrigger
+                      placement={"top"}
+                      overlay={
+                        <Popover id={`popover-positioned-${"top"}`}>
+                          <Popover.Body>
+                            <strong>Toggle Ai Sub-menu</strong>
+                          </Popover.Body>
+                        </Popover>
+                      }>
+                      <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon" />
+                    </OverlayTrigger>
+                  </a>
+                )}
+                {!this.aiPlayers[0] && (
+                  // {!this.updateSettingsFormAiDataData.random &&(
+                  <a className="setSwitchLink" onClick={this.toggleAiDisplay}>
+                    <OverlayTrigger
+                      placement={"top"}
+                      overlay={
+                        <Popover id={`popover-positioned-${"top"}`}>
+                          <Popover.Body>
+                            <strong>Toggle Ai Sub-menu</strong>
+                          </Popover.Body>
+                        </Popover>
+                      }>
+                      <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon" />
+                    </OverlayTrigger>
+                  </a>
+                )}
+                {this.camera.state === false && (
+                  <a className="setSwitchLink" onClick={this.menuToggleCamera}>
+                    <OverlayTrigger
+                      placement={"top"}
+                      overlay={
+                        <Popover id={`popover-positioned-${"top"}`}>
+                          <Popover.Body>
+                            {this.camera.customView.state !== true && (
+                              <strong>Toggle Camera Sub-menu</strong>
+                            )}
+                            {this.camera.customView.state === true && (
+                              <strong>Toggle Camera Sub-menu (Custom View is set)</strong>
+                            )}
+                          </Popover.Body>
+                        </Popover>
+                      }>
+                      <div className="icon-container">
+                        <FontAwesomeIcon
+                          icon={faVideo}
+                          size="sm"
+                          className="setSwitchIcon"
+                        />
+                        {this.camera.customView.state === true && (
+                          <FontAwesomeIcon
+                            icon={faCheckSquare}
+                            size="sm"
+                            className="setSwitchIcon top-right-icon"
+                          />
+                        )}
+                      </div>
+                    </OverlayTrigger>
+                  </a>
+                )}
+                <a className="setSwitchLink" onClick={this.gameReset.bind(this, "soft")}>
+                  <OverlayTrigger
+                    placement={"top"}
+                    overlay={
+                      <Popover id={`popover-positioned-${"top"}`}>
+                        <Popover.Body>
+                          <strong>Reset Game (w/ last settings)</strong>
+                        </Popover.Body>
+                      </Popover>
+                    }>
+                    <FontAwesomeIcon icon={faUndo} size="sm" className="setSwitchIcon" />
+                  </OverlayTrigger>
+                </a>
+              </div>
+              {/* // CAMERA BOX */}
+              {this.camera.state === true && (
+                <div className="cameraBox">
+                  <CameraControl
+                    camera={this.camera}
+                    close={this.closeCamera}
+                    toggleMode={this.toggleCameraModeUI}
+                    preReset={this.preResetCamera}
+                    toggleCustomView={this.toggleCameraCustomView}
+                  />
+                </div>
+              )}
+              {/* // CELL INFO */}
+              {this.showCellInfoBox !== true && (
+                <div className="cellInfoSwitch">
+                  <OverlayTrigger
+                    placement={"top"}
+                    overlay={
+                      <Popover id={`popover-positioned-${"top"}`}>
+                        <Popover.Body>
+                          <strong>Click or mouse over a cell to get more info</strong>
+                        </Popover.Body>
+                      </Popover>
+                    }>
+                    <FontAwesomeIcon
+                      icon={faChessBoard}
+                      size="sm"
+                      className="setSwitchIcon"
+                    />
+                  </OverlayTrigger>
+                </div>
+              )}
+              {this.showCellInfoBox === true && (
+                <CellInfo
+                  ref={this.cellInfoBoxRef}
+                  clicked={this.clicked}
+                  close={this.closeCellInfoBox}
+                  cellInfoMouseOver={this.cellInfoMouseOver}
+                  setCellInfoMouseOver={this.setCellInfoMouseOver}
+                  cursorCoords={this.cursorCoords}
+                />
+              )}
+              {/* // AI STATUS BOX */}
+              {this.state.showAiStatus === true && (
+                <AiStatus
+                  players={this.players}
+                  aiPlayers={this.aiPlayers}
+                  onAiAdd={this.addAiRandomPlayer}
+                />
+              )}
             </div>
+            {this.state.showSettings === true && (
+              <Settings
+                gridWidth={this.gridWidth}
+                onConfirm={this.loadSettings}
+                onCancel={this.cancelSettings}
+                getCustomAiStartPosList={this.getCustomAiStartPosList}
+                aiStartPosList={this.settingsFormAiStartPosList}
+                aiSettingsFormHandler={this.aiSettingsFormHandler}
+                updateSettingsFormAiDataData={this.updateSettingsFormAiDataData}
+                updateSettingsFormAiData={this.updateSettingsFormAiData}
+                rnJesus={this.rnJesus}
+                settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
+                plyrStartPosList={this.settingsFormPlyrStartPosList}
+                getCustomPlyrStartPosList={this.getCustomPlyrStartPosList}
+                gamepad={this.gamepad}
+                canvasRef={this.canvasRef3}
+                canvasRef2={this.canvasRef4}
+                canvasHeight={this.settingsCanvasHeight}
+                canvasWidth={this.settingsCanvasWidth}
+                gridInfo={this.settingsGridInfo}
+                clickedCell={this.settingsClicked}
+                showCanvasData={this.showSettingsCanvasData}
+                updateSettingsCanvasData={this.updateSettingsCanvasData}
+                disableInitItems={this.disableInitItems}
+                settingsFormPlayerData={this.settingsFormPlayerData}
+                updateSettingsFormPlayerData={this.updateSettingsFormPlayerData}
+              />
+            )}
+            <svg
+              className="popupProgressSvg hidden"
+              ref={this.popupProgressSvgRef}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -0.5 30 30"
+              shapeRendering="crispEdges">
+              <metadata>
+                Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj
+              </metadata>
+              <path
+                id="border"
+                stroke="yellow"
+                strokeWidth="5px"
+                d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21"
+              />
+              <rect
+                id="rect"
+                x="1"
+                y="1"
+                rx="5"
+                ry="5"
+                width="95%"
+                height="0%"
+                fill="url(#grad)"
+              />
+              <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop
+                    offset="0%"
+                    stopColor={this.popupProgressSvgGradColor1}
+                    stopOpacity="100%"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={this.popupProgressSvgGradColor2}
+                    stopOpacity="100%"
+                  />
+                </linearGradient>
+              </defs>
+            </svg>
+            <img
+              src=""
+              className="hidden"
+              height={this.popupImgSize}
+              width={this.popupImgSize}
+              ref={this.popupProgressImgRef}
+              alt="logo"
+            />
+            <img
+              src={bgCompass}
+              className="hidden bgCompass"
+              ref={this.bgCompassRef}
+              alt="logo"
+            />
 
-            <GameEngine />
-          </>
-          
-        )}
-      </GameContext>
+            <img
+              src={backgroundField1}
+              className="hidden"
+              ref={this.backgroundField1Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundField2}
+              className="hidden"
+              ref={this.backgroundField2Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundField3}
+              className="hidden"
+              ref={this.backgroundField3Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundNorthernLights1}
+              className="hidden"
+              ref={this.backgroundNorthernLights1Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundSeaClouds1}
+              className="hidden"
+              ref={this.backgroundSeaClouds1Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundSeaClouds2}
+              className="hidden"
+              ref={this.backgroundSeaClouds2Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundSeaClouds3}
+              className="hidden"
+              ref={this.backgroundSeaClouds3Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundSeaClouds4}
+              className="hidden"
+              ref={this.backgroundSeaClouds4Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundSeaCloudsNight1}
+              className="hidden"
+              ref={this.backgroundSeaCloudsNight1Ref}
+              alt="logo"
+            />
+            <img
+              src={backgroundSeaCoast1}
+              className="hidden"
+              ref={this.backgroundSeaCoast1Ref}
+              alt="logo"
+            />
+
+            <img src={floorGrass} className="hidden" ref={this.floorGrassRef} alt="logo" />
+            <img src={floorDirt} className="hidden" ref={this.floorDirtRef} alt="logo" />
+            <img src={floorIce} className="hidden" ref={this.floorIceRef} alt="logo" />
+            <img src={floorStone} className="hidden" ref={this.floorStoneRef} alt="logo" />
+            <img src={floorSand} className="hidden" ref={this.floorSandRef} alt="logo" />
+            <img src={floorMud} className="hidden" ref={this.floorMudRef} alt="logo" />
+            <img src={floorPond} className="hidden" ref={this.floorPondRef} alt="logo" />
+            <img src={floorRiver} className="hidden" ref={this.floorRiverRef} alt="logo" />
+            <img
+              src={floorBramble}
+              className="hidden"
+              ref={this.floorBrambleRef}
+              alt="logo"
+            />
+            <img src={floorLava} className="hidden" ref={this.floorLavaRef} alt="logo" />
+            <img
+              src={floorAttack}
+              className="hidden"
+              ref={this.floorAttackRef}
+              alt="logo"
+            />
+            <img
+              src={floorAttack2}
+              className="hidden"
+              ref={this.floorAttack2Ref}
+              alt="logo"
+            />
+            <img src={floorVoid} className="hidden" ref={this.floorVoidRef} alt="logo" />
+            <img src={floorVoid2} className="hidden" ref={this.floorVoid2Ref} alt="logo" />
+            <img src={floorVoid3} className="hidden" ref={this.floorVoid3Ref} alt="logo" />
+            <img
+              src={floorHighlight}
+              className="hidden"
+              ref={this.floorHighlightRef}
+              alt="logo"
+            />
+            <img
+              src={floorRubble}
+              className="hidden"
+              ref={this.floorRubbleRef}
+              alt="logo"
+            />
+            <img src={wall} className="hidden" ref={this.wallRef} alt="logo" />
+            <img src={wall2} className="hidden" ref={this.wall2Ref} alt="logo" />
+            <img src={wall3} className="hidden" ref={this.wall3Ref} alt="logo" />
+            <img
+              src={obstacleAHalf}
+              className="hidden"
+              ref={this.obstacleAHalfRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleAFull}
+              className="hidden"
+              ref={this.obstacleAFullRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleBHalf}
+              className="hidden"
+              ref={this.obstacleBHalfRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleBFull}
+              className="hidden"
+              ref={this.obstacleBFullRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleCHalf}
+              className="hidden"
+              ref={this.obstacleCHalfRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleCFull}
+              className="hidden"
+              ref={this.obstacleCFullRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleDHalf}
+              className="hidden"
+              ref={this.obstacleDHalfRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleDFull}
+              className="hidden"
+              ref={this.obstacleDFullRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleEHalf}
+              className="hidden"
+              ref={this.obstacleEHalfRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleEFull}
+              className="hidden"
+              ref={this.obstacleEFullRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleCrate}
+              className="hidden"
+              ref={this.obstacleCrateRef}
+              alt="logo"
+            />
+            <img
+              src={obstacleBarrel}
+              className="hidden"
+              ref={this.obstacleBarrelRef}
+              alt="logo"
+            />
+            <img
+              src={barrierANorth}
+              className="hidden"
+              ref={this.barrierANorthRef}
+              alt="logo"
+            />
+            <img
+              src={barrierASouth}
+              className="hidden"
+              ref={this.barrierASouthRef}
+              alt="logo"
+            />
+            <img
+              src={barrierAEast}
+              className="hidden"
+              ref={this.barrierAEastRef}
+              alt="logo"
+            />
+            <img
+              src={barrierAWest}
+              className="hidden"
+              ref={this.barrierAWestRef}
+              alt="logo"
+            />
+
+            <img
+              src={attack1Indicate}
+              className="hidden playerImgs"
+              ref={this.attack1IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attack2Indicate}
+              className="hidden playerImgs"
+              ref={this.attack2IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attack3Indicate}
+              className="hidden playerImgs"
+              ref={this.attack3IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attackUnarmedIndicate}
+              className="hidden playerImgs"
+              ref={this.attackUnarmedIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attackBluntIndicate}
+              className="hidden playerImgs"
+              ref={this.attackBluntIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attackSuccessIndicate}
+              className="hidden playerImgs"
+              ref={this.attackSuccessIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendIndicate}
+              className="hidden playerImgs"
+              ref={this.defendIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendIndicate1}
+              className="hidden playerImgs"
+              ref={this.defendIndicate1Ref}
+              alt="logo"
+            />
+            <img
+              src={defendIndicate2}
+              className="hidden playerImgs"
+              ref={this.defendIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={defendIndicate3}
+              className="hidden playerImgs"
+              ref={this.defendIndicate3Ref}
+              alt="logo"
+            />
+            <img
+              src={defendIndicate4}
+              className="hidden playerImgs"
+              ref={this.defendIndicate4Ref}
+              alt="logo"
+            />
+            <img
+              src={deflectIndicate}
+              className="hidden playerImgs"
+              ref={this.deflectIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={deflectIndicate2}
+              className="hidden playerImgs"
+              ref={this.deflectIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={deflectInjuredIndicate}
+              className="hidden playerImgs"
+              ref={this.deflectInjuredIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={deflectInjuredIndicate2}
+              className="hidden playerImgs"
+              ref={this.deflectInjuredIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={deflectBluntIndicate}
+              className="hidden playerImgs"
+              ref={this.deflectBluntIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pushbackIndicate}
+              className="hidden playerImgs"
+              ref={this.pushbackIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={ghostIndicate}
+              className="hidden playerImgs"
+              ref={this.ghostIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={deathIndicate}
+              className="hidden playerImgs"
+              ref={this.deathIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={preAttackIndicate}
+              className="hidden playerImgs"
+              ref={this.preAttackIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={preAttack2Indicate}
+              className="hidden playerImgs"
+              ref={this.preAttack2IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attackBreakIndicate}
+              className="hidden playerImgs"
+              ref={this.attackBreakIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendBreakIndicate}
+              className="hidden playerImgs"
+              ref={this.defendBreakIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendSuccessIndicate}
+              className="hidden playerImgs"
+              ref={this.defendSuccessIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={boltDefendIndicate}
+              className="hidden playerImgs"
+              ref={this.boltDefendIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={dodgeIndicate}
+              className="hidden playerImgs"
+              ref={this.dodgeIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={preAction1Indicate}
+              className="hidden playerImgs"
+              ref={this.preAction1IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={preAction2Indicate}
+              className="hidden playerImgs"
+              ref={this.preAction2IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={fallingIndicate}
+              className="hidden playerImgs"
+              ref={this.fallingIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={completeMissionIndicate}
+              className="hidden playerImgs"
+              ref={this.completeMissionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={flankIndicate}
+              className="hidden playerImgs"
+              ref={this.flankIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attackBluntIndicate2}
+              className="hidden playerImgs"
+              ref={this.attackBluntIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={enrouteIndicate}
+              className="hidden playerImgs"
+              ref={this.enrouteIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={targetSwitchIndicate}
+              className="hidden playerImgs"
+              ref={this.targetSwitchIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pathSwitchIndicate}
+              className="hidden playerImgs"
+              ref={this.pathSwitchIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={retreatIndicate}
+              className="hidden playerImgs"
+              ref={this.retreatIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendSuccessIndicate}
+              className="hidden playerImgs"
+              ref={this.defendSuccessIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={healIndicate}
+              className="hidden playerImgs"
+              ref={this.healIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={preAttack2Indicate}
+              className="hidden playerImgs"
+              ref={this.preAttack2IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={preAction1Indicate}
+              className="hidden playerImgs"
+              ref={this.preAction1IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={preAction2Indicate}
+              className="hidden playerImgs"
+              ref={this.preAction2IndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attackBreakIndicate}
+              className="hidden playerImgs"
+              ref={this.attackBreakIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={missedIndicate}
+              className="hidden playerImgs"
+              ref={this.missedIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendBreakIndicate}
+              className="hidden playerImgs"
+              ref={this.defendBreakIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={boltDefendIndicate}
+              className="hidden playerImgs"
+              ref={this.boltDefendIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={dodgeIndicate}
+              className="hidden playerImgs"
+              ref={this.dodgeIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={fallingIndicate}
+              className="hidden playerImgs"
+              ref={this.fallingIndicateRef}
+              alt="logo"
+            />
+
+            <img
+              src={completeMissionIndicate}
+              className="hidden playerImgs"
+              ref={this.completeMissionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={flankIndicate}
+              className="hidden playerImgs"
+              ref={this.flankIndicateRef}
+              alt="log"
+            />
+            <img
+              src={attackBluntIndicate2}
+              className="hidden playerImgs"
+              ref={this.attackBluntIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={enrouteIndicate}
+              className="hidden playerImgs"
+              ref={this.enrouteIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={targetSwitchIndicate}
+              className="hidden playerImgs"
+              ref={this.targetSwitchIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pathSwitchIndicate}
+              className="hidden playerImgs"
+              ref={this.pathSwitchIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={retreatIndicate}
+              className="hidden playerImgs"
+              ref={this.retreatIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendSuccessIndicate}
+              className="hidden playerImgs"
+              ref={this.defendSuccessIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={aggressiveModeIndicate}
+              className="hidden playerImgs"
+              ref={this.aggressiveModeIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={passiveModeIndicate}
+              className="hidden playerImgs"
+              ref={this.passiveModeIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={thinkingIndicate}
+              className="hidden playerImgs"
+              ref={this.thinkingIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendMissionIndicate}
+              className="hidden playerImgs"
+              ref={this.defendMissionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={patrolMissionIndicate}
+              className="hidden playerImgs"
+              ref={this.patrolMissionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pursueMissionIndicate}
+              className="hidden playerImgs"
+              ref={this.pursueMissionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pursueMissionIndicate2}
+              className="hidden playerImgs"
+              ref={this.pursueMissionIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={retrieveMissionIndicate}
+              className="hidden playerImgs"
+              ref={this.retrieveMissionIndicateRef}
+              alt="logo"
+            />
+
+            <img
+              src={drowningIndicate}
+              className="hidden playerImgs"
+              ref={this.drowningIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={destroyedItemIndicate}
+              className="hidden playerImgs"
+              ref={this.destroyedItemIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pickupBuffIndicate}
+              className="hidden playerImgs"
+              ref={this.pickupBuffIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pickupDebuffIndicate}
+              className="hidden playerImgs"
+              ref={this.pickupDebuffIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pickupWeaponIndicate}
+              className="hidden playerImgs"
+              ref={this.pickupWeaponIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={dropWeaponIndicate}
+              className="hidden playerImgs"
+              ref={this.dropWeaponIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={dropArmorIndicate}
+              className="hidden playerImgs"
+              ref={this.dropArmorIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pickupArmorIndicate}
+              className="hidden playerImgs"
+              ref={this.pickupArmorIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pickupAmmoIndicate}
+              className="hidden playerImgs"
+              ref={this.pickupAmmoIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={terrainSpeedupIndicate}
+              className="hidden playerImgs"
+              ref={this.terrainSpeedupIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={terrainSlowdownIndicate}
+              className="hidden playerImgs"
+              ref={this.terrainSlowdownIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={terrainInjuredIndicate}
+              className="hidden playerImgs"
+              ref={this.terrainInjuredIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={outOfStaminaIndicate}
+              className="hidden playerImgs"
+              ref={this.outOfStaminaIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={boltKilledIndicate}
+              className="hidden playerImgs"
+              ref={this.boltKilledIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attackParriedIndicate}
+              className="hidden playerImgs"
+              ref={this.attackParriedIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={inventoryFullIndicate}
+              className="hidden playerImgs"
+              ref={this.inventoryFullIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={outOfAmmoIndicate}
+              className="hidden playerImgs"
+              ref={this.outOfAmmoIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={missedIndicate2}
+              className="hidden playerImgs"
+              ref={this.missedIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={prePushIndicate}
+              className="hidden playerImgs"
+              ref={this.prePushIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={canPushIndicate}
+              className="hidden playerImgs"
+              ref={this.canPushIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={noPushingIndicate}
+              className="hidden playerImgs"
+              ref={this.noPushingIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pushingIndicate}
+              className="hidden playerImgs"
+              ref={this.pushingIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={prePullIndicate}
+              className="hidden playerImgs"
+              ref={this.prePullIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={canPullIndicate}
+              className="hidden playerImgs"
+              ref={this.canPullIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={noPullingIndicate}
+              className="hidden playerImgs"
+              ref={this.noPullingIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pullingIndicate}
+              className="hidden playerImgs"
+              ref={this.pullingIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={pushedPulledIndicate}
+              className="hidden playerImgs"
+              ref={this.pushedPulledIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={unbreakableIndicate}
+              className="hidden playerImgs"
+              ref={this.unbreakableIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={dodgeIndicate2}
+              className="hidden playerImgs"
+              ref={this.dodgeIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={attackFeintIndicate}
+              className="hidden playerImgs"
+              ref={this.attackFeintIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={attackFeintIndicate2}
+              className="hidden playerImgs"
+              ref={this.attackFeintIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={attackFeintIndicate3}
+              className="hidden playerImgs"
+              ref={this.attackFeintIndicate3Ref}
+              alt="logo"
+            />
+            <img
+              src={defendFeintIndicate}
+              className="hidden playerImgs"
+              ref={this.defendFeintIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={defendFeintIndicate2}
+              className="hidden playerImgs"
+              ref={this.defendFeintIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={defendFeintIndicate3}
+              className="hidden playerImgs"
+              ref={this.defendFeintIndicate3Ref}
+              alt="logo"
+            />
+            <img
+              src={dodgeFeintIndicate}
+              className="hidden playerImgs"
+              ref={this.dodgeFeintIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={dodgeFeintIndicate2}
+              className="hidden playerImgs"
+              ref={this.dodgeFeintIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={boltDefendIndicate2}
+              className="hidden playerImgs"
+              ref={this.boltDefendIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={flankIndicate2}
+              className="hidden playerImgs"
+              ref={this.flankIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={noFlankIndicate}
+              className="hidden playerImgs"
+              ref={this.noFlankIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={cellVoidingIndicate}
+              className="hidden playerImgs"
+              ref={this.cellVoidingIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={cellVoidingIndicate2}
+              className="hidden playerImgs"
+              ref={this.cellVoidingIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={timerIndicate}
+              className="hidden playerImgs"
+              ref={this.timerIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={chargeIndicate}
+              className="hidden playerImgs"
+              ref={this.chargeIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={noDirectionIndicate}
+              className="hidden playerImgs"
+              ref={this.noDirectionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={noDirectionIndicate2}
+              className="hidden playerImgs"
+              ref={this.noDirectionIndicate2Ref}
+              alt="logo"
+            />
+            <img
+              src={noDirectionIndicate3}
+              className="hidden playerImgs"
+              ref={this.noDirectionIndicate3Ref}
+              alt="logo"
+            />
+            <img
+              src={northDirectionIndicate}
+              className="hidden playerImgs"
+              ref={this.northDirectionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={southDirectionIndicate}
+              className="hidden playerImgs"
+              ref={this.southDirectionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={eastDirectionIndicate}
+              className="hidden playerImgs"
+              ref={this.eastDirectionIndicateRef}
+              alt="logo"
+            />
+            <img
+              src={westDirectionIndicate}
+              className="hidden playerImgs"
+              ref={this.westDirectionIndicateRef}
+              alt="logo"
+            />
+
+            <img
+              src={sword}
+              className="hidden playerImgs"
+              ref={this.itemSwordRef}
+              alt="logo"
+            />
+            <img
+              src={spear}
+              className="hidden playerImgs"
+              ref={this.itemSpearRef}
+              alt="logo"
+            />
+            <img src={bow} className="hidden playerImgs" ref={this.itemBowRef} alt="logo" />
+            <img
+              src={crossbow}
+              className="hidden playerImgs"
+              ref={this.itemCrossbowRef}
+              alt="logo"
+            />
+            <img
+              src={boltNorth}
+              className="hidden playerImgs"
+              ref={this.itemBoltNorthRef}
+              alt="logo"
+            />
+            <img
+              src={boltSouth}
+              className="hidden playerImgs"
+              ref={this.itemBoltSouthRef}
+              alt="logo"
+            />
+            <img
+              src={boltEast}
+              className="hidden playerImgs"
+              ref={this.itemBoltEastRef}
+              alt="logo"
+            />
+            <img
+              src={boltWest}
+              className="hidden playerImgs"
+              ref={this.itemBoltWestRef}
+              alt="logo"
+            />
+            <img
+              src={ammo}
+              className="hidden playerImgs"
+              ref={this.itemAmmoRef}
+              alt="logo"
+            />
+            <img
+              src={mail1}
+              className="hidden playerImgs"
+              ref={this.itemMail1Ref}
+              alt="logo"
+            />
+            <img
+              src={mail2}
+              className="hidden playerImgs"
+              ref={this.itemMail2Ref}
+              alt="logo"
+            />
+            <img
+              src={mail3}
+              className="hidden playerImgs"
+              ref={this.itemMail3Ref}
+              alt="logo"
+            />
+            <img
+              src={greaves1}
+              className="hidden playerImgs"
+              ref={this.itemGreaves1Ref}
+              alt="logo"
+            />
+
+            <img
+              src={greaves2}
+              className="hidden playerImgs"
+              ref={this.itemGreaves2Ref}
+              alt="logo"
+            />
+            <img
+              src={greaves3}
+              className="hidden playerImgs"
+              ref={this.itemGreaves3Ref}
+              alt="logo"
+            />
+            <img
+              src={helmet1}
+              className="hidden playerImgs"
+              ref={this.itemHelmet1Ref}
+              alt="logo"
+            />
+            <img
+              src={hpUp}
+              className="hidden playerImgs"
+              ref={this.itemHpUpRef}
+              alt="logo"
+            />
+            <img
+              src={hpDown}
+              className="hidden playerImgs"
+              ref={this.itemHpDownRef}
+              alt="logo"
+            />
+            <img
+              src={spdUp}
+              className="hidden playerImgs"
+              ref={this.itemSpdUpRef}
+              alt="logo"
+            />
+            <img
+              src={spdDown}
+              className="hidden playerImgs"
+              ref={this.itemSpdDownRef}
+              alt="logo"
+            />
+            <img
+              src={strUp}
+              className="hidden playerImgs"
+              ref={this.itemStrUpRef}
+              alt="logo"
+            />
+            <img
+              src={strDown}
+              className="hidden playerImgs"
+              ref={this.itemStrDownRef}
+              alt="logo"
+            />
+            <img
+              src={focusUp}
+              className="hidden playerImgs"
+              ref={this.itemFocusUpRef}
+              alt="logo"
+            />
+            <img
+              src={focusDown}
+              className="hidden playerImgs"
+              ref={this.itemFocusDownRef}
+              alt="logo"
+            />
+
+            <img
+              src={playerImgIdleSheet}
+              className="hidden playerImgs"
+              ref={this.playerImgIdleSheetRef}
+              alt="logo"
+            />
+            <img
+              src={player2ImgIdleSheet}
+              className="hidden playerImgs"
+              ref={this.player2ImgIdleSheetRef}
+              alt="logo"
+            />
+            <img
+              src={playerComAImgIdleSheet}
+              className="hidden playerImgs"
+              ref={this.playerComAImgIdleSheetRef}
+              alt="logo"
+            />
+            <img
+              src={playerComBImgIdleSheet}
+              className="hidden playerImgs"
+              ref={this.playerComBImgIdleSheetRef}
+              alt="logo"
+            />
+            <img
+              src={playerImgMoveSheet}
+              className="hidden playerImgs"
+              ref={this.playerImgMoveSheetRef}
+              alt="logo"
+            />
+            <img
+              src={player2ImgMoveSheet}
+              className="hidden playerImgs"
+              ref={this.player2ImgMoveSheetRef}
+              alt="logo"
+            />
+            <img
+              src={comAImgMoveSheet}
+              className="hidden playerImgs"
+              ref={this.comAImgMoveSheetRef}
+              alt="logo"
+            />
+            <img
+              src={comBImgMoveSheet}
+              className="hidden playerImgs"
+              ref={this.comBImgMoveSheetRef}
+              alt="logo"
+            />
+            <img
+              src={player1DefendSheet}
+              className="hidden playerImgs"
+              ref={this.player1ImgDefendSheetRef}
+              alt="logo"
+            />
+            <img
+              src={player2DefendSheet}
+              className="hidden playerImgs"
+              ref={this.player2ImgDefendSheetRef}
+              alt="logo"
+            />
+            <img
+              src={comADefendSheet}
+              className="hidden playerImgs"
+              ref={this.comAImgDefendSheetRef}
+              alt="logo"
+            />
+            <img
+              src={comBDefendSheet}
+              className="hidden playerImgs"
+              ref={this.comBImgDefendSheetRef}
+              alt="logo"
+            />
+            <img
+              src={player1AttackSheet}
+              className="hidden playerImgs"
+              ref={this.player1ImgAttackSheetRef}
+              alt="logo"
+            />
+            <img
+              src={player2AttackSheet}
+              className="hidden playerImgs"
+              ref={this.player2ImgAttackSheetRef}
+              alt="logo"
+            />
+            <img
+              src={comAAttackSheet}
+              className="hidden playerImgs"
+              ref={this.comAImgAttackSheetRef}
+              alt="logo"
+            />
+            <img
+              src={comBAttackSheet}
+              className="hidden playerImgs"
+              ref={this.comBImgAttackSheetRef}
+              alt="logo"
+            />
+            <img
+              src={testSpriteNorth}
+              className="hidden playerImgs"
+              ref={this.testRefNorth}
+              alt="logo"
+            />
+            <img
+              src={testSpriteSouth}
+              className="hidden playerImgs"
+              ref={this.testRefSouth}
+              alt="logo"
+            />
+            <img
+              src={testSpriteEast}
+              className="hidden playerImgs"
+              ref={this.testRefEast}
+              alt="logo"
+            />
+            <img
+              src={testSpriteWest}
+              className="hidden playerImgs"
+              ref={this.testRefWest}
+              alt="logo"
+            />
+            <img
+              src={moveSheetNew}
+              className="hidden playerImgs"
+              ref={this.moveSheetNewRef}
+              alt="logo"
+            />
+            <img
+              src={idleSheetNew}
+              className="hidden playerImgs"
+              ref={this.idleSheetNewRef}
+              alt="logo"
+            />
+            <img
+              src={idleSheetNew2}
+              className="hidden playerImgs"
+              ref={this.idleSheetNew2Ref}
+              alt="logo"
+            />
+            <img
+              src={attackSheetNew}
+              className="hidden playerImgs"
+              ref={this.attackSheetNewRef}
+              alt="logo"
+            />
+            <img
+              src={defendSheetNew}
+              className="hidden playerImgs"
+              ref={this.defendSheetNewRef}
+              alt="logo"
+            />
+            <img
+              src={dodgeSheetNew}
+              className="hidden playerImgs"
+              ref={this.dodgeSheetNewRef}
+              alt="logo"
+            />
+            <img
+              src={deflectedFallingSheetNew}
+              className="hidden playerImgs"
+              ref={this.deflectedFallingSheetNewRef}
+              alt="logo"
+            />
+          </div>
+
+          <GameEngine />
+        </>
     );
   }
 }
 
 export default App;
+
+
+
+

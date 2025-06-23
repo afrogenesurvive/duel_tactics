@@ -4,15 +4,11 @@ import Easystar from "easystarjs";
 
 const GameEngine = () => {
   const {
-    state,
+    context,
     setState,
-    gamepadConfig,
-    players,
-    setPlayers,
-    stepper,
-    showSettingsKeyPress,
-    setShowSettingsKeyPress,
   } = useContext(GameContext);
+  console.log("Game Context state:", context);
+  
 
   const animationFrameRef = useRef();
 
@@ -55,41 +51,52 @@ const GameEngine = () => {
     };
   }, []);
 
-  const gameLoop = () => {
+    const gameLoop = () => {
     // Handle settings key press
-    if (showSettingsKeyPress.state) {
-      if (showSettingsKeyPress.count < showSettingsKeyPress.limit) {
-        setShowSettingsKeyPress((prev) => ({
-          ...prev,
-          count: prev.count + 1,
+    if (context.showSettingsKeyPress.state) {
+      if (context.showSettingsKeyPress.count < context.showSettingsKeyPress.limit) {
+        setState((prevState) => ({
+          ...prevState,
+          showSettingsKeyPress: {
+            ...prevState.showSettingsKeyPress,
+            count: prevState.showSettingsKeyPress.count + 1,
+          }
         }));
       } else {
         setState((prevState) => ({
           ...prevState,
           showSettings: !prevState.showSettings,
+          showSettingsKeyPress: {
+            state: false,
+            count: 0,
+            limit: prevState.showSettingsKeyPress.limit,
+          }
         }));
-        setShowSettingsKeyPress({
-          state: false,
-          count: 0,
-          limit: showSettingsKeyPress.limit,
-        });
       }
     }
 
-    if (!state.showSettings) {
+    if (!context.state.showSettings) {
       const currentTime = new Date().getTime();
-      const deltaTime = currentTime - stepper.lastTime;
+      const deltaTime = currentTime - context.stepper.lastTime;
 
-      if (deltaTime > stepper.interval) {
-        // Update game state
-        setPlayers((prevPlayers) =>
-          prevPlayers.map((player) => {
+      if (deltaTime > context.stepper.interval) {
+        // Update game state - properly use setState for players
+        setState((prevState) => ({
+          ...prevState,
+          players: prevState.players.map((player) => {
             // Update player logic here
             return player;
           })
-        );
+        }));
 
-        stepper.lastTime = currentTime - (deltaTime % stepper.interval);
+        // Update the stepper last time
+        setState((prevState) => ({
+          ...prevState,
+          stepper: {
+            ...prevState.stepper,
+            lastTime: currentTime - (deltaTime % prevState.stepper.interval)
+          }
+        }));
       }
     }
   };

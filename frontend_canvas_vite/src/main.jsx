@@ -16,8 +16,8 @@ window.$RefreshSig$ = () => (type) => type;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* <GameProvider> */}
+    <GameProvider>
       <App />
-    {/* </GameProvider>, */}
+    </GameProvider>,
   </React.StrictMode>
 );

@@ -3817,7 +3817,19 @@ export const GameProvider = ({ children }) => {
   });
 
   return (
-    <GameContext.Provider value={{ state, setState }}>
+    // <GameContext.Provider value={{ state, setState }}>
+    <GameContext.Provider
+      value={{
+        context: state,
+        setState,
+        // players,
+        // setPlayers,
+        // showSettingsKeyPress,
+        // setShowSettingsKeyPress,
+        // gamepadConfig,
+        // stepper,
+      }}
+    >
       {children}
     </GameContext.Provider>
   );
