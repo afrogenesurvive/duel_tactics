@@ -57,6 +57,8 @@ class App extends Component {
   static contextType = GameContext;
 
   componentDidMount() {
+    console.log('componentDidMount');
+    
     // Helper.init()
 
     this.easyStar = new Easystar.js();

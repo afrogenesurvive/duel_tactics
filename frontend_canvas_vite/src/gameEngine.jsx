@@ -10,7 +10,7 @@ const GameEngine = ({
     context,
     setState,
   } = useContext(GameContext);
-  console.log("Game Context state:", context);
+  console.log("gamEngine: Game Context state:", context);
   
 
   const animationFrameRef = useRef();
@@ -41,7 +41,7 @@ const GameEngine = ({
   ]);
 
   const gameLoop = () => {
-    console.log("Game loop running...");
+    console.log("Game loop running...",context.time);
     
     // Handle settings key press
     if (context.showSettingsKeyPress.state) {

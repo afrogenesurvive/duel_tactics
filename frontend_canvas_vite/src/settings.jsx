@@ -1218,7 +1218,7 @@ const Settings = (props) => {
           <Row className="multiAiFormBox">
 
           {props.settingsFormPlayerData.input.map((plyr) => (
-            <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+            <Col key={plyr.plyrNo} className="multiAiFormAi" sm={plyrStartPosWidth}>
             <Row>
               <Form.Group as={Col} controlId="playerInput" className="formGroup">
                 <Form.Label className="formLabel">Player {plyr.plyrNo} Input</Form.Label>
