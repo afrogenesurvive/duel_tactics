@@ -291,7 +291,7 @@ export const indicators = {
   deflectIndicate2,
   deflectInjuredIndicate,
   deflectInjuredIndicate2,
-  deflect,
+//   deflect,
   deflectBluntIndicate,
   pushbackIndicate,
   ghostIndicate,
@@ -439,11 +439,11 @@ export const playerSprites = {
 };
 
 export default {
-  backgrounds,
-  terrain,
-  walls,
-  obstacles,
-  indicators,
-  items,
-  playerSprites
+  backgrounds_assets: backgrounds,
+  terrain_assets: terrain,
+  walls_assets: walls,
+  obstacles_assets: obstacles,
+  indicators_assets: indicators,
+  items_assets: items,
+  playerSprites_assets: playerSprites
 };

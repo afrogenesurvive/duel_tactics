@@ -2,6 +2,16 @@ import React, { useContext } from "react";
 import { GameContext } from "./gameContext";
 import assets from "./assets";
 
+const {
+  backgrounds_assets,
+  terrain_assets,
+  walls_assets,
+  obstacles_assets,
+  indicators_assets,
+  items_assets,
+  playerSprites_assets
+} = assets;
+
 // Create refs for all images you need
 export const imageRefs = {
 
@@ -82,8 +92,6 @@ export const imageRefs = {
 
     preAction1IndicateRef: React.createRef(),
     preAction2IndicateRef: React.createRef(),
-    preAction1IndicateRef: React.createRef(),
-    preAction2IndicateRef: React.createRef(),
 
     preAttackIndicateRef: React.createRef(),
     preAttack2IndicateRef: React.createRef(),
@@ -118,7 +126,6 @@ export const imageRefs = {
 
     defendBreakIndicateRef: React.createRef(),
     defendSuccessIndicateRef: React.createRef(),
-    defendBreakIndicateRef: React.createRef(),
 
     defendFeintIndicateRef: React.createRef(),
     defendFeintIndicate2Ref: React.createRef(),
@@ -136,7 +143,6 @@ export const imageRefs = {
 
     pushbackIndicateRef: React.createRef(),
 
-    dodgeIndicateRef: React.createRef(),
     dodgeIndicateRef: React.createRef(),
     dodgeFeintIndicateRef: React.createRef(),
     dodgeFeintIndicate2Ref: React.createRef(),
@@ -200,7 +206,6 @@ export const imageRefs = {
     itemStrDownRef: React.createRef(),
     itemHelmet1Ref: React.createRef(),
     itemAmmoRef: React.createRef(),
-    itemAmmoRef: React.createRef(),
     itemMail1Ref: React.createRef(),
     itemGreaves1Ref: React.createRef(),
     itemBoltNorthRef: React.createRef(),
@@ -250,11 +255,6 @@ export const imageRefs = {
     comBImgAttackSheetRef: React.createRef(),
 
     // AI
-    completeMissionIndicateRef: React.createRef(),
-    enrouteIndicateRef: React.createRef(),
-    targetSwitchIndicateRef: React.createRef(),
-    pathSwitchIndicateRef: React.createRef(),
-    retreatIndicateRef: React.createRef(),
 
     completeMissionIndicateRef: React.createRef(),
     enrouteIndicateRef: React.createRef(),
@@ -304,1201 +304,1201 @@ export function ImageRefs() {
         alt="logo"
         />
         <img
-        src={backgrounds.bgCompass}
+        src={backgrounds_assets.bgCompass}
         className="hidden bgCompass"
         ref={imageRefs.bgCompassRef}
         alt="logo"
         />
 
         <img
-        src={backgrounds.backgroundField1}
+        src={backgrounds_assets.backgroundField1}
         className="hidden"
         ref={imageRefs.backgroundField1Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundField2}
+        src={backgrounds_assets.backgroundField2}
         className="hidden"
         ref={imageRefs.backgroundField2Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundField3}
+        src={backgrounds_assets.backgroundField3}
         className="hidden"
         ref={imageRefs.backgroundField3Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundNorthernLights1}
+        src={backgrounds_assets.backgroundNorthernLights1}
         className="hidden"
         ref={imageRefs.backgroundNorthernLights1Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundSeaClouds1}
+        src={backgrounds_assets.backgroundSeaClouds1}
         className="hidden"
         ref={imageRefs.backgroundSeaClouds1Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundSeaClouds2}
+        src={backgrounds_assets.backgroundSeaClouds2}
         className="hidden"
         ref={imageRefs.backgroundSeaClouds2Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundSeaClouds3}
+        src={backgrounds_assets.backgroundSeaClouds3}
         className="hidden"
         ref={imageRefs.backgroundSeaClouds3Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundSeaClouds4}
+        src={backgrounds_assets.backgroundSeaClouds4}
         className="hidden"
         ref={imageRefs.backgroundSeaClouds4Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundSeaCloudsNight1}
+        src={backgrounds_assets.backgroundSeaCloudsNight1}
         className="hidden"
         ref={imageRefs.backgroundSeaCloudsNight1Ref}
         alt="logo"
         />
         <img
-        src={backgrounds.backgroundSeaCoast1}
+        src={backgrounds_assets.backgroundSeaCoast1}
         className="hidden"
         ref={imageRefs.backgroundSeaCoast1Ref}
         alt="logo"
         />
 
-        <img src={terrain.floorGrass} className="hidden" ref={imageRefs.floorGrassRef} alt="logo" />
-        <img src={terrain.floorDirt} className="hidden" ref={imageRefs.floorDirtRef} alt="logo" />
-        <img src={terrain.floorIce} className="hidden" ref={imageRefs.floorIceRef} alt="logo" />
-        <img src={terrain.floorStone} className="hidden" ref={imageRefs.floorStoneRef} alt="logo" />
-        <img src={terrain.floorSand} className="hidden" ref={imageRefs.floorSandRef} alt="logo" />
-        <img src={terrain.floorMud} className="hidden" ref={imageRefs.floorMudRef} alt="logo" />
-        <img src={terrain.floorPond} className="hidden" ref={imageRefs.floorPondRef} alt="logo" />
-        <img src={terrain.floorRiver} className="hidden" ref={imageRefs.floorRiverRef} alt="logo" />
+        <img src={terrain_assets.floorGrass} className="hidden" ref={imageRefs.floorGrassRef} alt="logo" />
+        <img src={terrain_assets.floorDirt} className="hidden" ref={imageRefs.floorDirtRef} alt="logo" />
+        <img src={terrain_assets.floorIce} className="hidden" ref={imageRefs.floorIceRef} alt="logo" />
+        <img src={terrain_assets.floorStone} className="hidden" ref={imageRefs.floorStoneRef} alt="logo" />
+        <img src={terrain_assets.floorSand} className="hidden" ref={imageRefs.floorSandRef} alt="logo" />
+        <img src={terrain_assets.floorMud} className="hidden" ref={imageRefs.floorMudRef} alt="logo" />
+        <img src={terrain_assets.floorPond} className="hidden" ref={imageRefs.floorPondRef} alt="logo" />
+        <img src={terrain_assets.floorRiver} className="hidden" ref={imageRefs.floorRiverRef} alt="logo" />
         <img
-        src={terrain.floorBramble}
+        src={terrain_assets.floorBramble}
         className="hidden"
         ref={imageRefs.floorBrambleRef}
         alt="logo"
         />
-        <img src={terrain.floorLava} className="hidden" ref={imageRefs.floorLavaRef} alt="logo" />
+        <img src={terrain_assets.floorLava} className="hidden" ref={imageRefs.floorLavaRef} alt="logo" />
         <img
-        src={terrain.floorAttack}
+        src={terrain_assets.floorAttack}
         className="hidden"
         ref={imageRefs.floorAttackRef}
         alt="logo"
         />
         <img
-        src={terrain.floorAttack2}
+        src={terrain_assets.floorAttack2}
         className="hidden"
         ref={imageRefs.floorAttack2Ref}
         alt="logo"
         />
-        <img src={terrain.floorVoid} className="hidden" ref={imageRefs.floorVoidRef} alt="logo" />
-        <img src={terrain.floorVoid2} className="hidden" ref={imageRefs.floorVoid2Ref} alt="logo" />
-        <img src={terrain.floorVoid3} className="hidden" ref={imageRefs.floorVoid3Ref} alt="logo" />
+        <img src={terrain_assets.floorVoid} className="hidden" ref={imageRefs.floorVoidRef} alt="logo" />
+        <img src={terrain_assets.floorVoid2} className="hidden" ref={imageRefs.floorVoid2Ref} alt="logo" />
+        <img src={terrain_assets.floorVoid3} className="hidden" ref={imageRefs.floorVoid3Ref} alt="logo" />
         <img
-        src={terrain.floorHighlight}
+        src={terrain_assets.floorHighlight}
         className="hidden"
         ref={imageRefs.floorHighlightRef}
         alt="logo"
         />
         <img
-        src={terrain.floorRubble}
+        src={terrain_assets.floorRubble}
         className="hidden"
         ref={imageRefs.floorRubbleRef}
         alt="logo"
         />
-        <img src={walls.wall} className="hidden" ref={imageRefs.wallRef} alt="logo" />
-        <img src={walls.wall2} className="hidden" ref={imageRefs.wall2Ref} alt="logo" />
-        <img src={walls.wall3} className="hidden" ref={imageRefs.wall3Ref} alt="logo" />
+        <img src={walls_assets.wall} className="hidden" ref={imageRefs.wallRef} alt="logo" />
+        <img src={walls_assets.wall2} className="hidden" ref={imageRefs.wall2Ref} alt="logo" />
+        <img src={walls_assets.wall3} className="hidden" ref={imageRefs.wall3Ref} alt="logo" />
         <img
-        src={obstacles.obstacleAHalf}
+        src={obstacles_assets.obstacleAHalf}
         className="hidden"
         ref={imageRefs.obstacleAHalfRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleAFull}
+        src={obstacles_assets.obstacleAFull}
         className="hidden"
         ref={imageRefs.obstacleAFullRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleBHalf}
+        src={obstacles_assets.obstacleBHalf}
         className="hidden"
         ref={imageRefs.obstacleBHalfRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleBFull}
+        src={obstacles_assets.obstacleBFull}
         className="hidden"
         ref={imageRefs.obstacleBFullRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleCHalf}
+        src={obstacles_assets.obstacleCHalf}
         className="hidden"
         ref={imageRefs.obstacleCHalfRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleCFull}
+        src={obstacles_assets.obstacleCFull}
         className="hidden"
         ref={imageRefs.obstacleCFullRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleDHalf}
+        src={obstacles_assets.obstacleDHalf}
         className="hidden"
         ref={imageRefs.obstacleDHalfRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleDFull}
+        src={obstacles_assets.obstacleDFull}
         className="hidden"
         ref={imageRefs.obstacleDFullRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleEHalf}
+        src={obstacles_assets.obstacleEHalf}
         className="hidden"
         ref={imageRefs.obstacleEHalfRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleEFull}
+        src={obstacles_assets.obstacleEFull}
         className="hidden"
         ref={imageRefs.obstacleEFullRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleCrate}
+        src={obstacles_assets.obstacleCrate}
         className="hidden"
         ref={imageRefs.obstacleCrateRef}
         alt="logo"
         />
         <img
-        src={obstacles.obstacleBarrel}
+        src={obstacles_assets.obstacleBarrel}
         className="hidden"
         ref={imageRefs.obstacleBarrelRef}
         alt="logo"
         />
         <img
-        src={obstacles.barrierANorth}
+        src={obstacles_assets.barrierANorth}
         className="hidden"
         ref={imageRefs.barrierANorthRef}
         alt="logo"
         />
         <img
-        src={obstacles.barrierASouth}
+        src={obstacles_assets.barrierASouth}
         className="hidden"
         ref={imageRefs.barrierASouthRef}
         alt="logo"
         />
         <img
-        src={obstacles.barrierAEast}
+        src={obstacles_assets.barrierAEast}
         className="hidden"
         ref={imageRefs.barrierAEastRef}
         alt="logo"
         />
         <img
-        src={obstacles.barrierAWest}
+        src={obstacles_assets.barrierAWest}
         className="hidden"
         ref={imageRefs.barrierAWestRef}
         alt="logo"
         />
 
         <img
-        src={indicators.attack1Indicate}
+        src={indicators_assets.attack1Indicate}
         className="hidden playerImgs"
         ref={imageRefs.attack1IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attack2Indicate}
+        src={indicators_assets.attack2Indicate}
         className="hidden playerImgs"
         ref={imageRefs.attack2IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attack3Indicate}
+        src={indicators_assets.attack3Indicate}
         className="hidden playerImgs"
         ref={imageRefs.attack3IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attackUnarmedIndicate}
+        src={indicators_assets.attackUnarmedIndicate}
         className="hidden playerImgs"
         ref={imageRefs.attackUnarmedIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attackBluntIndicate}
+        src={indicators_assets.attackBluntIndicate}
         className="hidden playerImgs"
         ref={imageRefs.attackBluntIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attackSuccessIndicate}
+        src={indicators_assets.attackSuccessIndicate}
         className="hidden playerImgs"
         ref={imageRefs.attackSuccessIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendIndicate}
+        src={indicators_assets.defendIndicate}
         className="hidden playerImgs"
         ref={imageRefs.defendIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendIndicate1}
+        src={indicators_assets.defendIndicate1}
         className="hidden playerImgs"
         ref={imageRefs.defendIndicate1Ref}
         alt="logo"
         />
         <img
-        src={indicators.defendIndicate2}
+        src={indicators_assets.defendIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.defendIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.defendIndicate3}
+        src={indicators_assets.defendIndicate3}
         className="hidden playerImgs"
         ref={imageRefs.defendIndicate3Ref}
         alt="logo"
         />
         <img
-        src={indicators.defendIndicate4}
+        src={indicators_assets.defendIndicate4}
         className="hidden playerImgs"
         ref={imageRefs.defendIndicate4Ref}
         alt="logo"
         />
         <img
-        src={indicators.deflectIndicate}
+        src={indicators_assets.deflectIndicate}
         className="hidden playerImgs"
         ref={imageRefs.deflectIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.deflectIndicate2}
+        src={indicators_assets.deflectIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.deflectIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.deflectInjuredIndicate}
+        src={indicators_assets.deflectInjuredIndicate}
         className="hidden playerImgs"
         ref={imageRefs.deflectInjuredIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.deflectInjuredIndicate2}
+        src={indicators_assets.deflectInjuredIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.deflectInjuredIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.deflectBluntIndicate}
+        src={indicators_assets.deflectBluntIndicate}
         className="hidden playerImgs"
         ref={imageRefs.deflectBluntIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pushbackIndicate}
+        src={indicators_assets.pushbackIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pushbackIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.ghostIndicate}
+        src={indicators_assets.ghostIndicate}
         className="hidden playerImgs"
         ref={imageRefs.ghostIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.deathIndicate}
+        src={indicators_assets.deathIndicate}
         className="hidden playerImgs"
         ref={imageRefs.deathIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.preAttackIndicate}
+        src={indicators_assets.preAttackIndicate}
         className="hidden playerImgs"
         ref={imageRefs.preAttackIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.preAttack2Indicate}
+        src={indicators_assets.preAttack2Indicate}
         className="hidden playerImgs"
         ref={imageRefs.preAttack2IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attackBreakIndicate}
+        src={indicators_assets.attackBreakIndicate}
         className="hidden playerImgs"
         ref={imageRefs.attackBreakIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendBreakIndicate}
+        src={indicators_assets.defendBreakIndicate}
         className="hidden playerImgs"
         ref={imageRefs.defendBreakIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendSuccessIndicate}
+        src={indicators_assets.defendSuccessIndicate}
         className="hidden playerImgs"
         ref={imageRefs.defendSuccessIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.boltDefendIndicate}
+        src={indicators_assets.boltDefendIndicate}
         className="hidden playerImgs"
         ref={imageRefs.boltDefendIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.dodgeIndicate}
+        src={indicators_assets.dodgeIndicate}
         className="hidden playerImgs"
         ref={imageRefs.dodgeIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.preAction1Indicate}
+        src={indicators_assets.preAction1Indicate}
         className="hidden playerImgs"
         ref={imageRefs.preAction1IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.preAction2Indicate}
+        src={indicators_assets.preAction2Indicate}
         className="hidden playerImgs"
         ref={imageRefs.preAction2IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.fallingIndicate}
+        src={indicators_assets.fallingIndicate}
         className="hidden playerImgs"
         ref={imageRefs.fallingIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.completeMissionIndicate}
+        src={indicators_assets.completeMissionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.completeMissionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.flankIndicate}
+        src={indicators_assets.flankIndicate}
         className="hidden playerImgs"
         ref={imageRefs.flankIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attackBluntIndicate2}
+        src={indicators_assets.attackBluntIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.attackBluntIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.enrouteIndicate}
+        src={indicators_assets.enrouteIndicate}
         className="hidden playerImgs"
         ref={imageRefs.enrouteIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.targetSwitchIndicate}
+        src={indicators_assets.targetSwitchIndicate}
         className="hidden playerImgs"
         ref={imageRefs.targetSwitchIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pathSwitchIndicate}
+        src={indicators_assets.pathSwitchIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pathSwitchIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.retreatIndicate}
+        src={indicators_assets.retreatIndicate}
         className="hidden playerImgs"
         ref={imageRefs.retreatIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendSuccessIndicate}
+        src={indicators_assets.defendSuccessIndicate}
         className="hidden playerImgs"
         ref={imageRefs.defendSuccessIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.healIndicate}
+        src={indicators_assets.healIndicate}
         className="hidden playerImgs"
         ref={imageRefs.healIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.preAttack2Indicate}
+        src={indicators_assets.preAttack2Indicate}
         className="hidden playerImgs"
         ref={imageRefs.preAttack2IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.preAction1Indicate}
+        src={indicators_assets.preAction1Indicate}
         className="hidden playerImgs"
         ref={imageRefs.preAction1IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.preAction2Indicate}
+        src={indicators_assets.preAction2Indicate}
         className="hidden playerImgs"
         ref={imageRefs.preAction2IndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attackBreakIndicate}
+        src={indicators_assets.attackBreakIndicate}
         className="hidden playerImgs"
         ref={imageRefs.attackBreakIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.missedIndicate}
+        src={indicators_assets.missedIndicate}
         className="hidden playerImgs"
         ref={imageRefs.missedIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendBreakIndicate}
+        src={indicators_assets.defendBreakIndicate}
         className="hidden playerImgs"
         ref={imageRefs.defendBreakIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.boltDefendIndicate}
+        src={indicators_assets.boltDefendIndicate}
         className="hidden playerImgs"
         ref={imageRefs.boltDefendIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.dodgeIndicate}
+        src={indicators_assets.dodgeIndicate}
         className="hidden playerImgs"
         ref={imageRefs.dodgeIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.fallingIndicate}
+        src={indicators_assets.fallingIndicate}
         className="hidden playerImgs"
         ref={imageRefs.fallingIndicateRef}
         alt="logo"
         />
 
         <img
-        src={indicators.completeMissionIndicate}
+        src={indicators_assets.completeMissionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.completeMissionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.flankIndicate}
+        src={indicators_assets.flankIndicate}
         className="hidden playerImgs"
         ref={imageRefs.flankIndicateRef}
         alt="log"
         />
         <img
-        src={indicators.attackBluntIndicate2}
+        src={indicators_assets.attackBluntIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.attackBluntIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.enrouteIndicate}
+        src={indicators_assets.enrouteIndicate}
         className="hidden playerImgs"
         ref={imageRefs.enrouteIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.targetSwitchIndicate}
+        src={indicators_assets.targetSwitchIndicate}
         className="hidden playerImgs"
         ref={imageRefs.targetSwitchIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pathSwitchIndicate}
+        src={indicators_assets.pathSwitchIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pathSwitchIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.retreatIndicate}
+        src={indicators_assets.retreatIndicate}
         className="hidden playerImgs"
         ref={imageRefs.retreatIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendSuccessIndicate}
+        src={indicators_assets.defendSuccessIndicate}
         className="hidden playerImgs"
         ref={imageRefs.defendSuccessIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.aggressiveModeIndicate}
+        src={indicators_assets.aggressiveModeIndicate}
         className="hidden playerImgs"
         ref={imageRefs.aggressiveModeIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.passiveModeIndicate}
+        src={indicators_assets.passiveModeIndicate}
         className="hidden playerImgs"
         ref={imageRefs.passiveModeIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.thinkingIndicate}
+        src={indicators_assets.thinkingIndicate}
         className="hidden playerImgs"
         ref={imageRefs.thinkingIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendMissionIndicate}
+        src={indicators_assets.defendMissionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.defendMissionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.patrolMissionIndicate}
+        src={indicators_assets.patrolMissionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.patrolMissionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pursueMissionIndicate}
+        src={indicators_assets.pursueMissionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pursueMissionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pursueMissionIndicate2}
+        src={indicators_assets.pursueMissionIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.pursueMissionIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.retrieveMissionIndicate}
+        src={indicators_assets.retrieveMissionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.retrieveMissionIndicateRef}
         alt="logo"
         />
 
         <img
-        src={indicators.drowningIndicate}
+        src={indicators_assets.drowningIndicate}
         className="hidden playerImgs"
         ref={imageRefs.drowningIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.destroyedItemIndicate}
+        src={indicators_assets.destroyedItemIndicate}
         className="hidden playerImgs"
         ref={imageRefs.destroyedItemIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pickupBuffIndicate}
+        src={indicators_assets.pickupBuffIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pickupBuffIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pickupDebuffIndicate}
+        src={indicators_assets.pickupDebuffIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pickupDebuffIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pickupWeaponIndicate}
+        src={indicators_assets.pickupWeaponIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pickupWeaponIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.dropWeaponIndicate}
+        src={indicators_assets.dropWeaponIndicate}
         className="hidden playerImgs"
         ref={imageRefs.dropWeaponIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.dropArmorIndicate}
+        src={indicators_assets.dropArmorIndicate}
         className="hidden playerImgs"
         ref={imageRefs.dropArmorIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pickupArmorIndicate}
+        src={indicators_assets.pickupArmorIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pickupArmorIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pickupAmmoIndicate}
+        src={indicators_assets.pickupAmmoIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pickupAmmoIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.terrainSpeedupIndicate}
+        src={indicators_assets.terrainSpeedupIndicate}
         className="hidden playerImgs"
         ref={imageRefs.terrainSpeedupIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.terrainSlowdownIndicate}
+        src={indicators_assets.terrainSlowdownIndicate}
         className="hidden playerImgs"
         ref={imageRefs.terrainSlowdownIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.terrainInjuredIndicate}
+        src={indicators_assets.terrainInjuredIndicate}
         className="hidden playerImgs"
         ref={imageRefs.terrainInjuredIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.outOfStaminaIndicate}
+        src={indicators_assets.outOfStaminaIndicate}
         className="hidden playerImgs"
         ref={imageRefs.outOfStaminaIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.boltKilledIndicate}
+        src={indicators_assets.boltKilledIndicate}
         className="hidden playerImgs"
         ref={imageRefs.boltKilledIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attackParriedIndicate}
+        src={indicators_assets.attackParriedIndicate}
         className="hidden playerImgs"
         ref={imageRefs.attackParriedIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.inventoryFullIndicate}
+        src={indicators_assets.inventoryFullIndicate}
         className="hidden playerImgs"
         ref={imageRefs.inventoryFullIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.outOfAmmoIndicate}
+        src={indicators_assets.outOfAmmoIndicate}
         className="hidden playerImgs"
         ref={imageRefs.outOfAmmoIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.missedIndicate2}
+        src={indicators_assets.missedIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.missedIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.prePushIndicate}
+        src={indicators_assets.prePushIndicate}
         className="hidden playerImgs"
         ref={imageRefs.prePushIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.canPushIndicate}
+        src={indicators_assets.canPushIndicate}
         className="hidden playerImgs"
         ref={imageRefs.canPushIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.noPushingIndicate}
+        src={indicators_assets.noPushingIndicate}
         className="hidden playerImgs"
         ref={imageRefs.noPushingIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pushingIndicate}
+        src={indicators_assets.pushingIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pushingIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.prePullIndicate}
+        src={indicators_assets.prePullIndicate}
         className="hidden playerImgs"
         ref={imageRefs.prePullIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.canPullIndicate}
+        src={indicators_assets.canPullIndicate}
         className="hidden playerImgs"
         ref={imageRefs.canPullIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.noPullingIndicate}
+        src={indicators_assets.noPullingIndicate}
         className="hidden playerImgs"
         ref={imageRefs.noPullingIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pullingIndicate}
+        src={indicators_assets.pullingIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pullingIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.pushedPulledIndicate}
+        src={indicators_assets.pushedPulledIndicate}
         className="hidden playerImgs"
         ref={imageRefs.pushedPulledIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.unbreakableIndicate}
+        src={indicators_assets.unbreakableIndicate}
         className="hidden playerImgs"
         ref={imageRefs.unbreakableIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.dodgeIndicate2}
+        src={indicators_assets.dodgeIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.dodgeIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.attackFeintIndicate}
+        src={indicators_assets.attackFeintIndicate}
         className="hidden playerImgs"
         ref={imageRefs.attackFeintIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.attackFeintIndicate2}
+        src={indicators_assets.attackFeintIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.attackFeintIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.attackFeintIndicate3}
+        src={indicators_assets.attackFeintIndicate3}
         className="hidden playerImgs"
         ref={imageRefs.attackFeintIndicate3Ref}
         alt="logo"
         />
         <img
-        src={indicators.defendFeintIndicate}
+        src={indicators_assets.defendFeintIndicate}
         className="hidden playerImgs"
         ref={imageRefs.defendFeintIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.defendFeintIndicate2}
+        src={indicators_assets.defendFeintIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.defendFeintIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.defendFeintIndicate3}
+        src={indicators_assets.defendFeintIndicate3}
         className="hidden playerImgs"
         ref={imageRefs.defendFeintIndicate3Ref}
         alt="logo"
         />
         <img
-        src={indicators.dodgeFeintIndicate}
+        src={indicators_assets.dodgeFeintIndicate}
         className="hidden playerImgs"
         ref={imageRefs.dodgeFeintIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.dodgeFeintIndicate2}
+        src={indicators_assets.dodgeFeintIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.dodgeFeintIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.boltDefendIndicate2}
+        src={indicators_assets.boltDefendIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.boltDefendIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.flankIndicate2}
+        src={indicators_assets.flankIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.flankIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.noFlankIndicate}
+        src={indicators_assets.noFlankIndicate}
         className="hidden playerImgs"
         ref={imageRefs.noFlankIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.cellVoidingIndicate}
+        src={indicators_assets.cellVoidingIndicate}
         className="hidden playerImgs"
         ref={imageRefs.cellVoidingIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.cellVoidingIndicate2}
+        src={indicators_assets.cellVoidingIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.cellVoidingIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.timerIndicate}
+        src={indicators_assets.timerIndicate}
         className="hidden playerImgs"
         ref={imageRefs.timerIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.chargeIndicate}
+        src={indicators_assets.chargeIndicate}
         className="hidden playerImgs"
         ref={imageRefs.chargeIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.noDirectionIndicate}
+        src={indicators_assets.noDirectionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.noDirectionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.noDirectionIndicate2}
+        src={indicators_assets.noDirectionIndicate2}
         className="hidden playerImgs"
         ref={imageRefs.noDirectionIndicate2Ref}
         alt="logo"
         />
         <img
-        src={indicators.noDirectionIndicate3}
+        src={indicators_assets.noDirectionIndicate3}
         className="hidden playerImgs"
         ref={imageRefs.noDirectionIndicate3Ref}
         alt="logo"
         />
         <img
-        src={indicators.northDirectionIndicate}
+        src={indicators_assets.northDirectionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.northDirectionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.southDirectionIndicate}
+        src={indicators_assets.southDirectionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.southDirectionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.eastDirectionIndicate}
+        src={indicators_assets.eastDirectionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.eastDirectionIndicateRef}
         alt="logo"
         />
         <img
-        src={indicators.westDirectionIndicate}
+        src={indicators_assets.westDirectionIndicate}
         className="hidden playerImgs"
         ref={imageRefs.westDirectionIndicateRef}
         alt="logo"
         />
 
         <img
-        src={items.sword}
+        src={items_assets.sword}
         className="hidden playerImgs"
         ref={imageRefs.itemSwordRef}
         alt="logo"
         />
         <img
-        src={items.spear}
+        src={items_assets.spear}
         className="hidden playerImgs"
         ref={imageRefs.itemSpearRef}
         alt="logo"
         />
-        <img src={bow} className="hidden playerImgs" ref={imageRefs.itemBowRef} alt="logo" />
+        <img src={items_assets.bow} className="hidden playerImgs" ref={imageRefs.itemBowRef} alt="logo" />
         <img
-        src={items.crossbow}
+        src={items_assets.crossbow}
         className="hidden playerImgs"
         ref={imageRefs.itemCrossbowRef}
         alt="logo"
         />
         <img
-        src={items.boltNorth}
+        src={items_assets.boltNorth}
         className="hidden playerImgs"
         ref={imageRefs.itemBoltNorthRef}
         alt="logo"
         />
         <img
-        src={items.boltSouth}
+        src={items_assets.boltSouth}
         className="hidden playerImgs"
         ref={imageRefs.itemBoltSouthRef}
         alt="logo"
         />
         <img
-        src={items.boltEast}
+        src={items_assets.boltEast}
         className="hidden playerImgs"
         ref={imageRefs.itemBoltEastRef}
         alt="logo"
         />
         <img
-        src={items.boltWest}
+        src={items_assets.boltWest}
         className="hidden playerImgs"
         ref={imageRefs.itemBoltWestRef}
         alt="logo"
         />
         <img
-        src={items.ammo}
+        src={items_assets.ammo}
         className="hidden playerImgs"
         ref={imageRefs.itemAmmoRef}
         alt="logo"
         />
         <img
-        src={items.mail1}
+        src={items_assets.mail1}
         className="hidden playerImgs"
         ref={imageRefs.itemMail1Ref}
         alt="logo"
         />
         <img
-        src={items.mail2}
+        src={items_assets.mail2}
         className="hidden playerImgs"
         ref={imageRefs.itemMail2Ref}
         alt="logo"
         />
         <img
-        src={items.mail3}
+        src={items_assets.mail3}
         className="hidden playerImgs"
         ref={imageRefs.itemMail3Ref}
         alt="logo"
         />
         <img
-        src={items.greaves1}
+        src={items_assets.greaves1}
         className="hidden playerImgs"
         ref={imageRefs.itemGreaves1Ref}
         alt="logo"
         />
 
         <img
-        src={items.greaves2}
+        src={items_assets.greaves2}
         className="hidden playerImgs"
         ref={imageRefs.itemGreaves2Ref}
         alt="logo"
         />
         <img
-        src={items.greaves3}
+        src={items_assets.greaves3}
         className="hidden playerImgs"
         ref={imageRefs.itemGreaves3Ref}
         alt="logo"
         />
         <img
-        src={items.helmet1}
+        src={items_assets.helmet1}
         className="hidden playerImgs"
         ref={imageRefs.itemHelmet1Ref}
         alt="logo"
         />
         <img
-        src={items.hpUp}
+        src={items_assets.hpUp}
         className="hidden playerImgs"
         ref={imageRefs.itemHpUpRef}
         alt="logo"
         />
         <img
-        src={items.hpDown}
+        src={items_assets.hpDown}
         className="hidden playerImgs"
         ref={imageRefs.itemHpDownRef}
         alt="logo"
         />
         <img
-        src={items.spdUp}
+        src={items_assets.spdUp}
         className="hidden playerImgs"
         ref={imageRefs.itemSpdUpRef}
         alt="logo"
         />
         <img
-        src={items.spdDown}
+        src={items_assets.spdDown}
         className="hidden playerImgs"
         ref={imageRefs.itemSpdDownRef}
         alt="logo"
         />
         <img
-        src={items.strUp}
+        src={items_assets.strUp}
         className="hidden playerImgs"
         ref={imageRefs.itemStrUpRef}
         alt="logo"
         />
         <img
-        src={items.strDown}
+        src={items_assets.strDown}
         className="hidden playerImgs"
         ref={imageRefs.itemStrDownRef}
         alt="logo"
         />
         <img
-        src={items.focusUp}
+        src={items_assets.focusUp}
         className="hidden playerImgs"
         ref={imageRefs.itemFocusUpRef}
         alt="logo"
         />
         <img
-        src={items.focusDown}
+        src={items_assets.focusDown}
         className="hidden playerImgs"
         ref={imageRefs.itemFocusDownRef}
         alt="logo"
         />
 
         <img
-        src={playerSprites.playerImgIdleSheet}
+        src={playerSprites_assets.playerImgIdleSheet}
         className="hidden playerImgs"
         ref={imageRefs.playerImgIdleSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.player2ImgIdleSheet}
+        src={playerSprites_assets.player2ImgIdleSheet}
         className="hidden playerImgs"
         ref={imageRefs.player2ImgIdleSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.playerComAImgIdleSheet}
+        src={playerSprites_assets.playerComAImgIdleSheet}
         className="hidden playerImgs"
         ref={imageRefs.playerComAImgIdleSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.playerComBImgIdleSheet}
+        src={playerSprites_assets.playerComBImgIdleSheet}
         className="hidden playerImgs"
         ref={imageRefs.playerComBImgIdleSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.playerImgMoveSheet}
+        src={playerSprites_assets.playerImgMoveSheet}
         className="hidden playerImgs"
         ref={imageRefs.playerImgMoveSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.player2ImgMoveSheet}
+        src={playerSprites_assets.player2ImgMoveSheet}
         className="hidden playerImgs"
         ref={imageRefs.player2ImgMoveSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.comAImgMoveSheet}
+        src={playerSprites_assets.comAImgMoveSheet}
         className="hidden playerImgs"
         ref={imageRefs.comAImgMoveSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.comBImgMoveSheet}
+        src={playerSprites_assets.comBImgMoveSheet}
         className="hidden playerImgs"
         ref={imageRefs.comBImgMoveSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.player1DefendSheet}
+        src={playerSprites_assets.player1DefendSheet}
         className="hidden playerImgs"
         ref={imageRefs.player1ImgDefendSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.player2DefendSheet}
+        src={playerSprites_assets.player2DefendSheet}
         className="hidden playerImgs"
         ref={imageRefs.player2ImgDefendSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.comADefendSheet}
+        src={playerSprites_assets.comADefendSheet}
         className="hidden playerImgs"
         ref={imageRefs.comAImgDefendSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.comBDefendSheet}
+        src={playerSprites_assets.comBDefendSheet}
         className="hidden playerImgs"
         ref={imageRefs.comBImgDefendSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.player1AttackSheet}
+        src={playerSprites_assets.player1AttackSheet}
         className="hidden playerImgs"
         ref={imageRefs.player1ImgAttackSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.player2AttackSheet}
+        src={playerSprites_assets.player2AttackSheet}
         className="hidden playerImgs"
         ref={imageRefs.player2ImgAttackSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.comAAttackSheet}
+        src={playerSprites_assets.comAAttackSheet}
         className="hidden playerImgs"
         ref={imageRefs.comAImgAttackSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.comBAttackSheet}
+        src={playerSprites_assets.comBAttackSheet}
         className="hidden playerImgs"
         ref={imageRefs.comBImgAttackSheetRef}
         alt="logo"
         />
         <img
-        src={playerSprites.testSpriteNorth}
+        src={playerSprites_assets.testSpriteNorth}
         className="hidden playerImgs"
         ref={imageRefs.testRefNorth}
         alt="logo"
         />
         <img
-        src={playerSprites.testSpriteSouth}
+        src={playerSprites_assets.testSpriteSouth}
         className="hidden playerImgs"
         ref={imageRefs.testRefSouth}
         alt="logo"
         />
         <img
-        src={playerSprites.testSpriteEast}
+        src={playerSprites_assets.testSpriteEast}
         className="hidden playerImgs"
         ref={imageRefs.testRefEast}
         alt="logo"
         />
         <img
-        src={playerSprites.testSpriteWest}
+        src={playerSprites_assets.testSpriteWest}
         className="hidden playerImgs"
         ref={imageRefs.testRefWest}
         alt="logo"
         />
         <img
-        src={playerSprites.moveSheetNew}
+        src={playerSprites_assets.moveSheetNew}
         className="hidden playerImgs"
         ref={imageRefs.moveSheetNewRef}
         alt="logo"
         />
         <img
-        src={playerSprites.idleSheetNew}
+        src={playerSprites_assets.idleSheetNew}
         className="hidden playerImgs"
         ref={imageRefs.idleSheetNewRef}
         alt="logo"
         />
         <img
-        src={playerSprites.idleSheetNew2}
+        src={playerSprites_assets.idleSheetNew2}
         className="hidden playerImgs"
         ref={imageRefs.idleSheetNew2Ref}
         alt="logo"
         />
         <img
-        src={playerSprites.attackSheetNew}
+        src={playerSprites_assets.attackSheetNew}
         className="hidden playerImgs"
         ref={imageRefs.attackSheetNewRef}
         alt="logo"
         />
         <img
-        src={playerSprites.defendSheetNew}
+        src={playerSprites_assets.defendSheetNew}
         className="hidden playerImgs"
         ref={imageRefs.defendSheetNewRef}
         alt="logo"
         />
         <img
-        src={playerSprites.dodgeSheetNew}
+        src={playerSprites_assets.dodgeSheetNew}
         className="hidden playerImgs"
         ref={imageRefs.dodgeSheetNewRef}
         alt="logo"
         />
         <img
-        src={playerSprites.deflectedFallingSheetNew}
+        src={playerSprites_assets.deflectedFallingSheetNew}
         className="hidden playerImgs"
         ref={imageRefs.deflectedFallingSheetNewRef}
         alt="logo"

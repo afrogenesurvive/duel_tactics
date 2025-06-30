@@ -1,8 +1,8 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const GameContext = createContext();
 
-export const GameProvider = ({ children }) => {
+export const GameContextProvider = ({ children }) => {
   const [state, setState] = useState({
     state: {
         showSettings: true,
@@ -17,10 +17,10 @@ export const GameProvider = ({ children }) => {
         context4: undefined,
         containerInnerClass: "containerInner",
         sceneY: {
-        three: 400,
-        six: 300,
-        nine: 220,
-        twelve: 150,
+            three: 400,
+            six: 300,
+            nine: 220,
+            twelve: 150,
         },
         loading: true,
         stateUpdater: "",
@@ -3815,6 +3815,10 @@ export const GameProvider = ({ children }) => {
         limit: 0,
     },
   });
+
+  useEffect(() => {
+    console.log("GameContext state changed:", state);
+  }, [state]);
 
   return (
     // <GameContext.Provider value={{ state, setState }}>

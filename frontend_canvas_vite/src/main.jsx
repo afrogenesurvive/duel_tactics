@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-import { GameContext } from "./gameContext";
+import { GameContextProvider } from "./gameContext";
 
 import "bootstrap/dist/css/bootstrap.css";
 
@@ -16,8 +16,8 @@ window.$RefreshSig$ = () => (type) => type;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <GameContext>
+    <GameContextProvider>
       <App />
-    </GameContext>
+    </GameContextProvider>
   </React.StrictMode>
 );

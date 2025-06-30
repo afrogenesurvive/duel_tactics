@@ -28,13 +28,13 @@ import "./App.css";
 
 import assets from "./assets";
 const {
-  backgrounds,
-  terrain,
-  walls,
-  obstacles,
-  indicators,
-  items,
-  playerSprites
+  backgrounds_assets,
+  terrain_assets,
+  walls_assets,
+  obstacles_assets,
+  indicators_assets,
+  items_assets,
+  playerSprites_assets
 } = assets;
 
 import { ImageRefs, imageRefs } from "./imageRefs";
@@ -55,7 +55,6 @@ import GameEngine from "./gameEngine";
 class App extends Component {
 
   static contextType = GameContext;
-
 
   componentDidMount() {
     // Helper.init()
@@ -151,13 +150,14 @@ class App extends Component {
           { plyrNo: 2, selected: undefined, posArray: [] },
         ]);
 
-        window.requestAnimationFrame(this.gameLoop);
+        // window.requestAnimationFrame(this.gameLoop);
       };
     }
 
   }
+
   componentWillUnmount() {
-    window.cancelAnimationFrame(this.stepper.currentTime);
+    // window.cancelAnimationFrame(this.stepper.currentTime);
   }
 
   pollGamepads = () => {
@@ -30650,92 +30650,93 @@ class App extends Component {
     this.pathArray = pathArray;
   };
 
-  gameLoop = () => {
-    // IF PRESSED SETTINGS KEY, COUNT
-    // PAUSE GAME IF SETTINGS OPENED
-    if (this.showSettingsKeyPress.state === true) {
-      if (this.showSettingsKeyPress.count < this.showSettingsKeyPress.limit) {
-        this.showSettingsKeyPress.count++;
-      }
-      if (this.showSettingsKeyPress.count >= this.showSettingsKeyPress.limit) {
-        if (this.state.showSettings !== true) {
-          this.setState({
-            showSettings: true,
-          });
-          if (this.showSettingsCanvasData.state === true) {
-            this.settingsFormGridWidthUpdate(this.settingsGridWidth);
-          }
+  // gameLoop = () => {
+  //   // IF PRESSED SETTINGS KEY, COUNT
+  //   // PAUSE GAME IF SETTINGS OPENED
+  //   if (this.showSettingsKeyPress.state === true) {
+  //     if (this.showSettingsKeyPress.count < this.showSettingsKeyPress.limit) {
+  //       this.showSettingsKeyPress.count++;
+  //     }
+  //     if (this.showSettingsKeyPress.count >= this.showSettingsKeyPress.limit) {
+  //       if (this.state.showSettings !== true) {
+  //         this.setState({
+  //           showSettings: true,
+  //         });
+  //         if (this.showSettingsCanvasData.state === true) {
+  //           this.settingsFormGridWidthUpdate(this.settingsGridWidth);
+  //         }
 
-          // this.redrawSettingsGrid();
-        } else {
-          // this.updateSettingsFormAiDataData = {};
-          this.settingsFormAiStartPosList = [];
-          this.setState({
-            showSettings: false,
-          });
-        }
-        this.showSettingsKeyPress = {
-          state: false,
-          count: 0,
-          limit: this.showSettingsKeyPress.limit,
-        };
-      }
-    }
+  //         // this.redrawSettingsGrid();
+  //       } else {
+  //         // this.updateSettingsFormAiDataData = {};
+  //         this.settingsFormAiStartPosList = [];
+  //         this.setState({
+  //           showSettings: false,
+  //         });
+  //       }
+  //       this.showSettingsKeyPress = {
+  //         state: false,
+  //         count: 0,
+  //         limit: this.showSettingsKeyPress.limit,
+  //       };
+  //     }
+  //   }
 
-    if (this.state.showSettings !== true) {
-      // let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-      this.stepper.currentTime = new Date().getTime();
-      this.stepper.deltaTime = this.stepper.currentTime - this.stepper.lastTime;
+  //   if (this.state.showSettings !== true) {
+  //     // let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+  //     this.stepper.currentTime = new Date().getTime();
+  //     this.stepper.deltaTime = this.stepper.currentTime - this.stepper.lastTime;
 
-      if (this.stepper.deltaTime > this.stepper.interval) {
-        this.time++;
+  //     if (this.stepper.deltaTime > this.stepper.interval) {
+  //       this.time++;
 
-        if (this.time === 300) {
-          //   this.openVoid = true;
-          // OR
-          //   this.customCellToVoid({x:2,y:2})
-          // this.players[1].ai.retreating.state = false;
-          // this.players[1].ai.retreating.checkin = undefined;
-          // this.players[1].ai.mission = 'retreat';
-          // this.players[1].ai.retreating.safe = false;
-        }
+  //       if (this.time === 300) {
+  //         //   this.openVoid = true;
+  //         // OR
+  //         //   this.customCellToVoid({x:2,y:2})
+  //         // this.players[1].ai.retreating.state = false;
+  //         // this.players[1].ai.retreating.checkin = undefined;
+  //         // this.players[1].ai.mission = 'retreat';
+  //         // this.players[1].ai.retreating.safe = false;
+  //       }
 
-        this.setState({
-          stateUpdater: "..",
-        });
+  //       this.setState({
+  //         stateUpdater: "..",
+  //       });
 
-        if (this.gamepad === true) {
-          this.pollGamepads();
-        }
+  //       if (this.gamepad === true) {
+  //         this.pollGamepads();
+  //       }
 
-        // REMOVE AI PLAYER!
-        if (this.removeAi && this.addAiCount.state !== true) {
-          let aiPlayer = this.players[this.removeAi - 1];
-          let newArray = this.players.filter((x) => x !== aiPlayer);
-          this.players = [];
-          this.players = newArray;
-          this.removeAi = undefined;
-        }
+  //       // REMOVE AI PLAYER!
+  //       if (this.removeAi && this.addAiCount.state !== true) {
+  //         let aiPlayer = this.players[this.removeAi - 1];
+  //         let newArray = this.players.filter((x) => x !== aiPlayer);
+  //         this.players = [];
+  //         this.players = newArray;
+  //         this.removeAi = undefined;
+  //       }
 
-        for (const player of this.players) {
-          this.playerUpdate(
-            player,
-            this.state.canvas,
-            this.state.context,
-            this.state.canvas2,
-            this.state.context2,
-            this.state.canvas3,
-            this.state.context3
-          );
-        }
+  //       for (const player of this.players) {
+  //         this.playerUpdate(
+  //           player,
+  //           this.state.canvas,
+  //           this.state.context,
+  //           this.state.canvas2,
+  //           this.state.context2,
+  //           this.state.canvas3,
+  //           this.state.context3
+  //         );
+  //       }
 
-        this.stepper.lastTime =
-          this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
-      }
-    }
+  //       this.stepper.lastTime =
+  //         this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
+  //     }
+  //   }
 
-    requestAnimationFrame(this.gameLoop);
-  };
+  //   requestAnimationFrame(this.gameLoop);
+  // };
+
   playerUpdate = (player, canvas, context, canvas2, context2, canvas3, context3) => {
     // console.log('updating player',player.number,this.currentPlayer);
 
@@ -44279,44 +44280,44 @@ class App extends Component {
   render() {
     return (
         <>
-          {this.state.loading === true && <Loading />}
+          {this.context.context.state.loading === true && <Loading />}
 
           <div className="containerTop">
             <div className="timer">
-              <p className="timerText">{this.time}</p>
-              {this.cursorCoords.x && (
+              <p className="timerText">{this.context.context.time}</p>
+              {this.context.context.cursorCoords.x && (
                 <p className="timerText">
-                  Cursor: x {this.cursorCoords.x.toFixed(2)}, y{" "}
-                  {this.cursorCoords.y.toFixed(2)}
+                  Cursor: x {this.context.context.cursorCoords.x.toFixed(2)}, y{" "}
+                  {this.context.context.cursorCoords.y.toFixed(2)}
                 </p>
               )}
             </div>
-            <Helper players={this.players} />
-            <div className={this.state.containerInnerClass}>
+            {/* <Helper players={this.players} /> */}
+            <div className={this.context.context.state.containerInnerClass}>
               <canvas
-                width={this.canvasWidth}
-                height={this.canvasHeight}
-                ref={this.canvasRef}
+                width={this.context.context.canvasWidth}
+                height={this.context.context.canvasHeight}
+                ref={imageRefs.canvasRef}
                 className="canvas"
               />
               <canvas
-                width={this.canvasWidth}
-                height={this.canvasHeight}
-                ref={this.canvasRef2}
+                width={this.context.context.canvasWidth}
+                height={this.context.context.canvasHeight}
+                ref={imageRefs.canvasRef2}
                 className="canvas2"
               />
               {/* // DEBUB BOX */}
-              <div className={this.debugBoxStyle}>
+              <div className={this.context.context.debugBoxStyle}>
                 <DebugBox
-                  player={this.players[0]}
+                  player={this.context.context.players[0]}
                   expand={this.expandDebugBox}
                   minimize={this.minimizeDebugBox}
                 />
               </div>
-              {this.players.length > 1 && (
-                <div className={this.debugBoxStyle2}>
+              {this.context.context.players.length > 1 && (
+                <div className={this.context.context.debugBoxStyle2}>
                   <DebugBox
-                    player={this.players[1]}
+                    player={this.context.context.players[1]}
                     expand={this.expandDebugBox}
                     minimize={this.minimizeDebugBox}
                   />
@@ -44324,9 +44325,9 @@ class App extends Component {
               )}
               {/* //BACKGROUND COMPASS */}
               <img
-                src={bgCompass}
+                src={backgrounds_assets.bgCompass}
                 className="bgCompass"
-                ref={this.bgCompassRef}
+                ref={imageRefs.bgCompassRef}
                 alt="logo"
               />
               {/* // SETTINGS BOX */}
@@ -44344,7 +44345,7 @@ class App extends Component {
                     <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon" />
                   </OverlayTrigger>
                 </a>
-                {this.aiPlayers[0] && (
+                {this.context.context.aiPlayers[0] && (
                   // {this.updateSettingsFormAiDataData.random &&(
                   <a
                     className="setSwitchLink cameraModeHighlighted"
@@ -44362,7 +44363,7 @@ class App extends Component {
                     </OverlayTrigger>
                   </a>
                 )}
-                {!this.aiPlayers[0] && (
+                {!this.context.context.aiPlayers[0] && (
                   // {!this.updateSettingsFormAiDataData.random &&(
                   <a className="setSwitchLink" onClick={this.toggleAiDisplay}>
                     <OverlayTrigger
@@ -44378,17 +44379,17 @@ class App extends Component {
                     </OverlayTrigger>
                   </a>
                 )}
-                {this.camera.state === false && (
+                {this.context.context.camera.state === false && (
                   <a className="setSwitchLink" onClick={this.menuToggleCamera}>
                     <OverlayTrigger
                       placement={"top"}
                       overlay={
                         <Popover id={`popover-positioned-${"top"}`}>
                           <Popover.Body>
-                            {this.camera.customView.state !== true && (
+                            {this.context.context.camera.customView.state !== true && (
                               <strong>Toggle Camera Sub-menu</strong>
                             )}
-                            {this.camera.customView.state === true && (
+                            {this.context.context.camera.customView.state === true && (
                               <strong>Toggle Camera Sub-menu (Custom View is set)</strong>
                             )}
                           </Popover.Body>
@@ -44400,7 +44401,7 @@ class App extends Component {
                           size="sm"
                           className="setSwitchIcon"
                         />
-                        {this.camera.customView.state === true && (
+                        {this.context.context.camera.customView.state === true && (
                           <FontAwesomeIcon
                             icon={faCheckSquare}
                             size="sm"
@@ -44426,10 +44427,10 @@ class App extends Component {
                 </a>
               </div>
               {/* // CAMERA BOX */}
-              {this.camera.state === true && (
+              {this.context.context.camera.state === true && (
                 <div className="cameraBox">
                   <CameraControl
-                    camera={this.camera}
+                    camera={this.context.context.camera}
                     close={this.closeCamera}
                     toggleMode={this.toggleCameraModeUI}
                     preReset={this.preResetCamera}
@@ -44438,7 +44439,7 @@ class App extends Component {
                 </div>
               )}
               {/* // CELL INFO */}
-              {this.showCellInfoBox !== true && (
+              {this.context.context.showCellInfoBox !== true && (
                 <div className="cellInfoSwitch">
                   <OverlayTrigger
                     placement={"top"}
@@ -44457,56 +44458,56 @@ class App extends Component {
                   </OverlayTrigger>
                 </div>
               )}
-              {this.showCellInfoBox === true && (
+              {this.context.context.showCellInfoBox === true && (
                 <CellInfo
-                  ref={this.cellInfoBoxRef}
-                  clicked={this.clicked}
+                  ref={this.context.context.cellInfoBoxRef}
+                  clicked={this.context.context.clicked}
                   close={this.closeCellInfoBox}
-                  cellInfoMouseOver={this.cellInfoMouseOver}
+                  cellInfoMouseOver={this.context.context.cellInfoMouseOver}
                   setCellInfoMouseOver={this.setCellInfoMouseOver}
-                  cursorCoords={this.cursorCoords}
+                  cursorCoords={this.context.context.cursorCoords}
                 />
               )}
               {/* // AI STATUS BOX */}
-              {this.state.showAiStatus === true && (
+              {this.context.context.state.showAiStatus === true && (
                 <AiStatus
-                  players={this.players}
-                  aiPlayers={this.aiPlayers}
+                  players={this.context.context.players}
+                  aiPlayers={this.context.context.aiPlayers}
                   onAiAdd={this.addAiRandomPlayer}
                 />
               )}
             </div>
-            {this.state.showSettings === true && (
+            {this.context.context.state.showSettings === true && (
               <Settings
-                gridWidth={this.gridWidth}
+                gridWidth={this.context.context.gridWidth}
                 onConfirm={this.loadSettings}
                 onCancel={this.cancelSettings}
                 getCustomAiStartPosList={this.getCustomAiStartPosList}
-                aiStartPosList={this.settingsFormAiStartPosList}
-                aiSettingsFormHandler={this.aiSettingsFormHandler}
-                updateSettingsFormAiDataData={this.updateSettingsFormAiDataData}
+                aiStartPosList={this.context.context.settingsFormAiStartPosList}
+                aiSettingsFormHandler={this.context.context.aiSettingsFormHandler}
+                updateSettingsFormAiDataData={this.context.context.updateSettingsFormAiDataData}
                 updateSettingsFormAiData={this.updateSettingsFormAiData}
                 rnJesus={this.rnJesus}
                 settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
-                plyrStartPosList={this.settingsFormPlyrStartPosList}
+                plyrStartPosList={this.context.context.settingsFormPlyrStartPosList}
                 getCustomPlyrStartPosList={this.getCustomPlyrStartPosList}
-                gamepad={this.gamepad}
-                canvasRef={this.canvasRef3}
-                canvasRef2={this.canvasRef4}
-                canvasHeight={this.settingsCanvasHeight}
-                canvasWidth={this.settingsCanvasWidth}
-                gridInfo={this.settingsGridInfo}
-                clickedCell={this.settingsClicked}
-                showCanvasData={this.showSettingsCanvasData}
+                gamepad={this.context.context.gamepad}
+                canvasRef={imageRefs.canvasRef3}
+                canvasRef2={imageRefs.canvasRef4}
+                canvasHeight={this.context.context.settingsCanvasHeight}
+                canvasWidth={this.context.context.settingsCanvasWidth}
+                gridInfo={this.context.context.settingsGridInfo}
+                clickedCell={this.context.context.settingsClicked}
+                showCanvasData={this.context.context.showSettingsCanvasData}
                 updateSettingsCanvasData={this.updateSettingsCanvasData}
-                disableInitItems={this.disableInitItems}
-                settingsFormPlayerData={this.settingsFormPlayerData}
+                disableInitItems={this.context.context.disableInitItems}
+                settingsFormPlayerData={this.context.context.settingsFormPlayerData}
                 updateSettingsFormPlayerData={this.updateSettingsFormPlayerData}
               />
             )}
             <svg
               className="popupProgressSvg hidden"
-              ref={this.popupProgressSvgRef}
+              ref={imageRefs.popupProgressSvgRef}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 -0.5 30 30"
               shapeRendering="crispEdges">
@@ -44533,12 +44534,12 @@ class App extends Component {
                 <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop
                     offset="0%"
-                    stopColor={this.popupProgressSvgGradColor1}
+                    stopColor={this.context.context.popupProgressSvgGradColor1}
                     stopOpacity="100%"
                   />
                   <stop
                     offset="100%"
-                    stopColor={this.popupProgressSvgGradColor2}
+                    stopColor={this.context.context.popupProgressSvgGradColor2}
                     stopOpacity="100%"
                   />
                 </linearGradient>
@@ -44547,7 +44548,12 @@ class App extends Component {
             <ImageRefs />
           </div>
 
-          <GameEngine />
+          {/* <GameEngine /> */}
+          <GameEngine 
+            playerUpdate={this.playerUpdate} 
+            pollGamepads={this.pollGamepads} 
+            settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
+          />
         </>
     );
   }
