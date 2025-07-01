@@ -26,6 +26,14 @@ export const GameContextProvider = ({ children }) => {
         stateUpdater: "",
         settingAiPlayers: 0,
     },
+
+    global_function_component_triggers: {
+        drawGridInit: {
+            main: 0,
+            prop1: 0,
+            prop2: 0,
+        },
+    },
     
 
 
@@ -3820,12 +3828,24 @@ export const GameContextProvider = ({ children }) => {
     console.log("GameContext state changed:", state);
   }, [state]);
 
+  function updateNestedState(obj, path, value) {
+    if (path.length === 1) {
+        return { ...obj, [path[0]]: value };
+    }
+    const [head, ...rest] = path;
+    return {
+        ...obj,
+        [head]: updateNestedState(obj[head] || {}, rest, value),
+    };
+  }
+
   return (
     // <GameContext.Provider value={{ state, setState }}>
     <GameContext.Provider
       value={{
         context: state,
         setState,
+        updateNestedState,
         // players,
         // setPlayers,
         // showSettingsKeyPress,

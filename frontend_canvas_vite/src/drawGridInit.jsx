@@ -11,14 +11,18 @@ import { imageRefs } from "./imageRefs";
 
 
 // const DrawGridInit = React.forwardRef((props, ref) => {
-const DrawGridInit = forwardRef((props, ref) => {
+const DrawGridInit = () => {
   const { context, setState } = useContext(GameContext);
 
   console.log("DrawGridInit: game context", context.state);
   
 
-  useImperativeHandle(ref, () => ({
-    drawGrid: () => {
+    useEffect(() => {
+
+      if (!context.state.canvas || !context.state.canvasContext) return;
+
+      console.log("DrawGridInit: useEffect triggered");
+      
       
       const canvas = context.state.canvas;
       const context2d = context.state.canvasContext;
@@ -40,10 +44,13 @@ const DrawGridInit = forwardRef((props, ref) => {
       }));
 
 
-    }
-  }));
+    }, [context.global_function_component_triggers.drawGridInit.main]); // <--- dependency
+
+    // useEffect(() => {
+    //   // ...logic...
+    // }, [context.global_function_component_triggers.drawGridInit.prop1]);
 
   return null;
-});
+};
 
 export default DrawGridInit;

@@ -153,9 +153,51 @@ class App extends Component {
 
         // this.drawGridInit(canvas, canvasContext, canvas2, canvasContext2);
 
-        if (globalFunctionComponentRefs.drawGridInitRef.current) {
-          globalFunctionComponentRefs.drawGridInitRef.current.drawGrid();
-        }
+        // remove when depandency base drawgrid init is tested!!
+        // if (globalFunctionComponentRefs.drawGridInitRef.current) {
+        //   globalFunctionComponentRefs.drawGridInitRef.current.drawGrid();
+        // }
+
+        setState((prevState) => ({
+          ...prevState,
+          global_function_component_triggers: {
+            ...prevState.global_function_component_triggers,
+            drawGridInit: {
+              ...prevState.global_function_component_triggers.drawGridInit,
+              main: prevState.global_function_component_triggers.drawGridInit.main + 1,
+            }
+          }
+        }));
+
+
+        // function updateNestedState(obj, path, value) {
+        //   if (path.length === 1) {
+        //     return { ...obj, [path[0]]: value };
+        //   }
+        //   const [head, ...rest] = path;
+        //   return {
+        //     ...obj,
+        //     [head]: updateNestedState(obj[head] || {}, rest, value),
+        //   };
+        // }
+
+        setState(prev =>
+          updateNestedState(
+            prev,
+            ['global_function_component_triggers', 'drawGridInit', 'main'],
+            prev.global_function_component_triggers.drawGridInit.main + 1
+          )
+        );
+
+
+        // setState(prevState =>
+        //   updateNestedState(
+        //     prevState,
+        //     ['global_function_component_triggers', 'drawGridInit', 'main'],
+        //     prevState.global_function_component_triggers.drawGridInit.main + 1
+        //   )
+        // );
+
 
         this.getCustomPlyrStartPosList([
           { plyrNo: 1, selected: undefined, posArray: [] },
@@ -44569,7 +44611,6 @@ class App extends Component {
           />
 
           <DrawGridInit
-            ref={globalFunctionComponentRefs.drawGridInitRef}
             processLevelData={this.processLevelData}
           />
         </>
