@@ -153,11 +153,6 @@ class App extends Component {
 
         // this.drawGridInit(canvas, canvasContext, canvas2, canvasContext2);
 
-        // remove when depandency base drawgrid init is tested!!
-        // if (globalFunctionComponentRefs.drawGridInitRef.current) {
-        //   globalFunctionComponentRefs.drawGridInitRef.current.drawGrid();
-        // }
-
         setState((prevState) => ({
           ...prevState,
           global_function_component_triggers: {
@@ -181,22 +176,14 @@ class App extends Component {
         //   };
         // }
 
-        setState(prev =>
+
+        setState(prevState =>
           updateNestedState(
-            prev,
+            prevState,
             ['global_function_component_triggers', 'drawGridInit', 'main'],
-            prev.global_function_component_triggers.drawGridInit.main + 1
+            prevState.global_function_component_triggers.drawGridInit.main + 1
           )
         );
-
-
-        // setState(prevState =>
-        //   updateNestedState(
-        //     prevState,
-        //     ['global_function_component_triggers', 'drawGridInit', 'main'],
-        //     prevState.global_function_component_triggers.drawGridInit.main + 1
-        //   )
-        // );
 
 
         this.getCustomPlyrStartPosList([

@@ -3846,12 +3846,6 @@ export const GameContextProvider = ({ children }) => {
         context: state,
         setState,
         updateNestedState,
-        // players,
-        // setPlayers,
-        // showSettingsKeyPress,
-        // setShowSettingsKeyPress,
-        // gamepadConfig,
-        // stepper,
       }}
     >
       {children}
