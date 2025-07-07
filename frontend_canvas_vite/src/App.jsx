@@ -52,11 +52,21 @@ import pointInPolygon from "point-in-polygon";
 
 import { GameContext } from "./gameContext";
 import GameEngine from "./gameEngine";
+
 import DrawGridInit from "./globalFunctionComponents/drawGridInit";
 import SetBackgroundImage from "./globalFunctionComponents/setBackgroundImage";
 import StartProcessLevelData from "./globalFunctionComponents/startProcessLevelData";
 import ProcessLevelData from "./globalFunctionComponents/processLevelData";
 import UpdatePathArray from "./globalFunctionComponents/updatePathArray";
+import CheckCell from "./globalFunctionComponents/checkCell";
+import FindFocusCell from "./globalFunctionComponents/findFocusCell";
+import GetTarget from "./globalFunctionComponents/getTarget";
+import ObstacleBarrierTrapInitSet from "./globalFunctionComponents/obstacleBarrierTrapInitSet";
+import PlaceItems from "./globalFunctionComponents/placeItems";
+import RnJesus from "./globalFunctionComponents/rnJesus";
+import SettingsFormGridWidthUpdate from "./globalFunctionComponents/settingsFormGridWidthUpdate";
+import SetZoomPan from "./globalFunctionComponents/setZoomPan";
+
 
 
 class App extends Component {
@@ -44609,6 +44619,14 @@ class App extends Component {
           <StartProcessLevelData/>
           <ProcessLevelData/>
           <UpdatePathArray/>
+          <CheckCell/>
+          <FindFocusCell/>
+          <GetTarget/>
+          <ObstacleBarrierTrapInitSet/>
+          <PlaceItems/>
+          <RnJesus/>
+          <SettingsFormGridWidthUpdate/>
+          <SetZoomPan/>
         </>
     );
   }

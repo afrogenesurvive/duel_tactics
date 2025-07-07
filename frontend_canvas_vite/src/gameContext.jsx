@@ -54,7 +54,31 @@ export const GameContextProvider = ({ children }) => {
         },
         updatePathArray: {
             main: 0,
-        }
+        },
+        checkCell: {
+            main: 0,
+        },
+        findFocusCell: {
+            main: 0,
+        },
+        getTarget: {
+            main: 0,
+        },
+        obstacleBarrierTrapInitSet: {
+            main: 0
+        },
+        placeItems: {
+            main: 0,
+        },
+        rnJesus: {
+            main: 0,
+        },
+        settingsFormGridWidthUpdate: {
+            main: 0,
+        },
+        setZoomPan: {
+            main: 0
+        },
     },
     
 
