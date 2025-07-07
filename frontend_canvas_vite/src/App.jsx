@@ -52,7 +52,12 @@ import pointInPolygon from "point-in-polygon";
 
 import { GameContext } from "./gameContext";
 import GameEngine from "./gameEngine";
-import DrawGridInit from "./drawGridInit";
+import DrawGridInit from "./globalFunctionComponents/drawGridInit";
+import SetBackgroundImage from "./globalFunctionComponents/setBackgroundImage";
+import StartProcessLevelData from "./globalFunctionComponents/startProcessLevelData";
+import ProcessLevelData from "./globalFunctionComponents/processLevelData";
+import UpdatePathArray from "./globalFunctionComponents/updatePathArray";
+
 
 class App extends Component {
 
@@ -44600,6 +44605,10 @@ class App extends Component {
           <DrawGridInit
             processLevelData={this.processLevelData}
           />
+          <SetBackgroundImage/>
+          <StartProcessLevelData/>
+          <ProcessLevelData/>
+          <UpdatePathArray/>
         </>
     );
   }

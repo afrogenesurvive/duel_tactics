@@ -33,6 +33,28 @@ export const GameContextProvider = ({ children }) => {
             prop1: 0,
             prop2: 0,
         },
+        setBackgroundImage: {
+            main: 0,
+            image: "",
+        },
+        startProcessLevelData: {
+            main: 0,
+        },
+        processLevelData: {
+            main: 0
+        },
+        setZoomPan: {
+            main: 0
+        },
+        findFocusCell: {
+            main: 0
+        },
+        placeItems: {
+            main: 0
+        },
+        updatePathArray: {
+            main: 0,
+        }
     },
     
 
@@ -3839,6 +3861,22 @@ export const GameContextProvider = ({ children }) => {
     };
   }
 
+  function cartesianToIsometric (cartPt) {
+    console.log("Converting Cartesian to Isometric:", cartPt);
+    
+    class Point {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+      }
+    }
+
+    var tempPt = new Point();
+    tempPt.x = cartPt.x - cartPt.y;
+    tempPt.y = (cartPt.x + cartPt.y) / 2;
+    return tempPt;
+  };
+
   return (
     // <GameContext.Provider value={{ state, setState }}>
     <GameContext.Provider
@@ -3846,6 +3884,7 @@ export const GameContextProvider = ({ children }) => {
         context: state,
         setState,
         updateNestedState,
+        cartesianToIsometric
       }}
     >
       {children}
