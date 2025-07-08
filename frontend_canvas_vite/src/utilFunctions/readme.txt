@@ -1,0 +1,1 @@
+functions in this directory only return values and do not modify global values

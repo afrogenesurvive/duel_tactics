@@ -46,7 +46,6 @@ import CellInfo from "./cellInfo";
 import Loading from "./loading";
 import AiStatus from "./aiStatus";
 import CameraControl from "./cameraControl";
-import Helper from "./helper";
 
 import pointInPolygon from "point-in-polygon";
 
@@ -58,12 +57,10 @@ import SetBackgroundImage from "./globalFunctionComponents/setBackgroundImage";
 import StartProcessLevelData from "./globalFunctionComponents/startProcessLevelData";
 import ProcessLevelData from "./globalFunctionComponents/processLevelData";
 import UpdatePathArray from "./globalFunctionComponents/updatePathArray";
-import CheckCell from "./globalFunctionComponents/checkCell";
 import FindFocusCell from "./globalFunctionComponents/findFocusCell";
 import GetTarget from "./globalFunctionComponents/getTarget";
 import ObstacleBarrierTrapInitSet from "./globalFunctionComponents/obstacleBarrierTrapInitSet";
 import PlaceItems from "./globalFunctionComponents/placeItems";
-import RnJesus from "./globalFunctionComponents/rnJesus";
 import SettingsFormGridWidthUpdate from "./globalFunctionComponents/settingsFormGridWidthUpdate";
 import SetZoomPan from "./globalFunctionComponents/setZoomPan";
 
@@ -44033,6 +44030,7 @@ class App extends Component {
     let preCellColorRef = this.gridInfo.map(
       (x) => (x = { x: x.number.x, y: x.number.y, color: "" })
     );
+
     for (const cell of preCellColorRef) {
       let colorCheckPass = false;
       while (colorCheckPass === false) {
@@ -44619,12 +44617,10 @@ class App extends Component {
           <StartProcessLevelData/>
           <ProcessLevelData/>
           <UpdatePathArray/>
-          <CheckCell/>
           <FindFocusCell/>
           <GetTarget/>
           <ObstacleBarrierTrapInitSet/>
           <PlaceItems/>
-          <RnJesus/>
           <SettingsFormGridWidthUpdate/>
           <SetZoomPan/>
         </>

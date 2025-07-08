@@ -8,12 +8,18 @@ import React, {
 import { GameContext } from "../gameContext";
 import { imageRefs } from "../imageRefs";
 import SetBackgroundImage from "./setBackgroundImage";
+import SetZoomPan from "./setZoomPan";
 
 
 
 // const DrawGridInit = React.forwardRef((props, ref) => {
 const DrawGridInit = () => {
-  const { context, setState } = useContext(GameContext);
+  const { 
+    context, 
+    setState,
+    rnJesus,
+    checkCell,
+   } = useContext(GameContext);
 
   console.log("DrawGridInit: game context", context.state);
   
@@ -700,6 +706,7 @@ const DrawGridInit = () => {
       let sceneY = context.sceneY;
       let tileWidth = context.tileWidth;
 
+      
       setState((prevState) => ({
         ...prevState,
         global_function_component_triggers: {
@@ -717,6 +724,10 @@ const DrawGridInit = () => {
       }));
 
 
+
+      // FIX ME: must run after startProcessLevelData
+
+
       setState((prevState) => ({
         ...prevState,
         global_function_component_triggers: {
@@ -726,15 +737,168 @@ const DrawGridInit = () => {
             main: context.global_function_component_triggers.processLevelData.main + 1,
           }
         },
-        init: false
       }));
+
+
+      // FIX ME: must run after processLevelData
+      
+      players = context.players;
+      gridInfo = context.gridInfo;
+
+      for (const plyr of players) {
+        // if (!this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y)) {
+        if (
+          !this.gridInfo.find(
+            (x) =>
+              x.number.x === plyr.startPosition.cell.number.x &&
+              x.number.y === plyr.startPosition.cell.number.y
+          )
+        ) {
+          let cll = { x: undefined, y: undefined };
+          let randomFreeCellChosen = false;
+
+          while (randomFreeCellChosen !== true) {
+            cll.x = rnJesus(0, this.gridWidth);
+            cll.y = rnJesus(0, this.gridWidth);
+            randomFreeCellChosen = checkCell(cll, ["all"]);
+          }
+
+          if (randomFreeCellChosen === true) {
+            plyr.startPosition.cell.number = cll;
+          }
+        }
+
+        // RECONSIDER/RANDOM CHOOSE START POSTION IF CONFLICTING W/ THIS MAP
+        if (
+          gridInfo.find(
+            (x) =>
+              x.number.x === plyr.startPosition.cell.number.x &&
+              x.number.y === plyr.startPosition.cell.number.y
+          ).terrain.type === "deep" ||
+          gridInfo.find(
+            (x) =>
+              x.number.x === plyr.startPosition.cell.number.x &&
+              x.number.y === plyr.startPosition.cell.number.y
+          ).terrain.type === "void" ||
+          gridInfo.find(
+            (x) =>
+              x.number.x === plyr.startPosition.cell.number.x &&
+              x.number.y === plyr.startPosition.cell.number.y
+          ).void.state === true ||
+          gridInfo.find(
+            (x) =>
+              x.number.x === plyr.startPosition.cell.number.x &&
+              x.number.y === plyr.startPosition.cell.number.y
+          ).obstacle.state === true
+        ) {
+          let cll = { x: undefined, y: undefined };
+          let randomFreeCellChosen = false;
+
+          while (randomFreeCellChosen !== true) {
+            cll.x = rnJesus(0, gridWidth);
+            cll.y = rnJesus(0, gridWidth);
+            randomFreeCellChosen = checkCell(cll, ["all"]);
+          }
+
+          if (randomFreeCellChosen === true) {
+            plyr.startPosition.cell.number = cll;
+          }
+        }
+      }
+
+      setState((prevState) => ({
+        ...prevState,
+        players: players,
+        gridInfo: gridInfo,
+      }));
+
+
+      const gridWidth = context.gridWidth;
+      let newSetInitZoom;
+      const camera = context.camera;
+
+      if (this.camera.fixed !== true) {
+        // this.setCameraFocus('init', canvas, context, canvas2, context2);
+      }
+      // this.findFocusCell('panToCell',{},canvas,context)
+
+      // CENTER LARGER GRIDS
+      if (window.innerWidth < 1100 && gridWidth >= 12) {
+        // this.camera.zoom.x = 0.7;
+        // this.camera.zoom.y = 0.7;
+
+        newSetInitZoom = {
+          state: true,
+          windowWidth: window.innerWidth,
+          gridWidth: gridWidth,
+        };
+      }
+      if (window.innerWidth > 1100 && gridWidth >= 12) {
+        // this.camera.zoom.x = 1;
+        // this.camera.zoom.y = 1;
+
+        newSetInitZoom = {
+          state: true,
+          windowWidth: window.innerWidth,
+          gridWidth: gridWidth,
+        };
+      }
+      if (window.innerWidth < 1100 && gridWidth < 12) {
+        // this.camera.zoom.x = 1;
+        // this.camera.zoom.y = 1;
+        // this.setInitZoom = {
+        //   state: true,
+        //   windowWidth: window.innerWidth,
+        //   gridWidth: this.gridWidth,
+        // };
+      }
+
+      let diff = 1 - camera.zoom.x;
+
+      // FOCUSED ZOOMING INIT SET
+      camera.pan.x = (diff * context.canvasWidth) / 2;
+      camera.pan.y = (diff * context.canvasWidth) / 2 - diff * 350;
+      if (this.camera.pan.x === 0) {
+        camera.pan.x = -1;
+        camera.pan.y = -1;
+      }
+
+      setState((prevState) => ({
+        ...prevState,
+        camera: {
+          ...prevState.camera,
+          pan: {
+            ...prevState.camera.pan,
+            x: camera.pan.x,
+            y: camera.pan.y,
+          }
+        },
+        setInitZoom: newSetInitZoom,
+        global_function_component_triggers: {
+          ...prevState.global_function_component_triggers,
+          findFocusCell: {
+            ...prevState.global_function_component_triggers.findFocusCell,
+            main: context.global_function_component_triggers.findFocusCell.main + 1,
+            inputType: "panToCell",
+            inputSubType: "",
+            focus: {},
+          },
+          setZoomPan: {
+            ...prevState.global_function_component_triggers.setZoomPan,
+            main: context.global_function_component_triggers.setZoomPan.main + 1,
+          }
+        }
+      }));
+
+
 
 
     }, [context.global_function_component_triggers.drawGridInit.main]); // <--- dependency
 
-    // useEffect(() => {
-    //   // ...logic...
-    // }, [context.global_function_component_triggers.drawGridInit.prop1]);
+
+    useEffect(() => {
+      // ...logic.
+    }, [context.gridInfo]);
 
   return null;
 };

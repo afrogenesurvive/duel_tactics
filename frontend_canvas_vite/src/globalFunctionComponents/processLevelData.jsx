@@ -12,6 +12,7 @@ const ProcessLevelData = () => {
 
   console.log("ProcessLevelData: game context", context.state);
   
+  // processLevelData = (allCells) //this.gridInfo
 
     useEffect(() => {
 
