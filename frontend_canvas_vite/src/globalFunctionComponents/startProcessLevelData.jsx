@@ -299,16 +299,6 @@ const StartProcessLevelData = () => {
         ...prev,
         gridInfo,
         settingsGridInfo,
-        global_function_component_triggers: {
-          ...prev.global_function_component_triggers,
-          startProcessLevelData: {
-            ...prev.global_function_component_triggers.startProcessLevelData,
-            next: {
-              ...prev.global_function_component_triggers.startProcessLevelData.next,
-              processLevelData: context.global_function_component_triggers.startProcessLevelData.next.processLevelData + 1,
-            },
-          },
-        }
       }));
 
 

@@ -45,16 +45,11 @@ export const GameContextProvider = ({ children }) => {
         },
         startProcessLevelData: {
             main: 0,
-            next: {
-                processLevelData: 0,
-                drawGridInit: 0,
-            },
+            next: 0,
         },
         processLevelData: {
             main: 0,
-            next: {
-                drawGridInit: 0,
-            },
+            next: 0,
         },
         setZoomPan: {
             main: 0,
