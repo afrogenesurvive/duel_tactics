@@ -26,7 +26,7 @@ const SetZoomPan = () => {
     //     // ...
     //   }));
 
-    }, [context.global_function_component_triggers.setZoomPan]); // <--- dependency
+    }, [context.global_function_component_triggers.updatePathArray]); // <--- dependency
 
 
   return null;

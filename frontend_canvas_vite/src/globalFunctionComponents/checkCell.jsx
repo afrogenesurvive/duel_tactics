@@ -8,17 +8,17 @@ import { imageRefs } from "../imageRefs";
 import path from "path";
 
 
-const CheckCell = () => {
+const UpdatePathArray = () => {
   const { context, setState } = useContext(GameContext);
 
-  console.log("CheckCell: game context", context.state);
+  console.log("UpdatePathArray: game context", context.state);
   
 
     useEffect(() => {
 
       if (!context.state.canvas || !context.state.canvasContext) return;
 
-      console.log("CheckCell useEffect triggered");
+      console.log("UpdatePathArray useEffect triggered");
 
       
     //   setState(prev => ({
@@ -26,10 +26,10 @@ const CheckCell = () => {
     //     // ...
     //   }));
 
-    }, [context.global_function_component_triggers.checkCell]); // <--- dependency
+    }, [context.global_function_component_triggers.updatePathArray]); // <--- dependency
 
 
   return null;
 };
 
-export default CheckCell;
+export default UpdatePathArray;
