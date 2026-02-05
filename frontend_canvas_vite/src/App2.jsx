@@ -22,217 +22,23 @@ import {
 import logo from "./logo.svg";
 import bgCompass from "./assets/bgCompass.png";
 
-import backgroundField1 from "./assets/backgrounds/bg_field_1.png";
-import backgroundField2 from "./assets/backgrounds/bg_field_2.png";
-import backgroundField3 from "./assets/backgrounds/bg_field_3.png";
-import backgroundNorthernLights1 from "./assets/backgrounds/bg_northernLights_1.png";
-import backgroundSeaClouds1 from "./assets/backgrounds/bg_seaClouds_1.png";
-import backgroundSeaClouds2 from "./assets/backgrounds/bg_seaClouds_2.png";
-import backgroundSeaClouds3 from "./assets/backgrounds/bg_seaClouds_3.png";
-import backgroundSeaClouds4 from "./assets/backgrounds/bg_seaClouds_4.png";
-import backgroundSeaCloudsNight1 from "./assets/backgrounds/bg_seaCloudsNight_1.png";
-import backgroundSeaCoast1 from "./assets/backgrounds/bg_seaCoast_1.png";
-
-import floorDirt from "./assets/terrain/floorDirt.png";
-import floorGrass from "./assets/terrain/floorGrass.png";
-import floorIce from "./assets/terrain/floorIce.png";
-import floorMud from "./assets/terrain/floorMud.png";
-import floorPond from "./assets/terrain/floorPond.png";
-import floorRiver from "./assets/terrain/floorRiver.png";
-import floorSand from "./assets/terrain/floorSand.png";
-import floorStone from "./assets/terrain/floorStone.png";
-import floorBramble from "./assets/terrain/floorBramble.png";
-import floorLava from "./assets/terrain/floorLava.png";
-import floorAttack from "./assets/terrain/floorAttacked.png";
-import floorAttack2 from "./assets/terrain/floorAttacked2.png";
-import floorVoid from "./assets/terrain/floorVoid.png";
-import floorVoid2 from "./assets/terrain/floorVoid2.png";
-import floorVoid3 from "./assets/terrain/floorVoid3.png";
-import floorHighlight from "./assets/terrain/floorHighlight.png";
-
-import floorRubble from "./assets/obstacles/floorRubble.png";
-
-import wall from "./assets/obstacles/wall.png";
-import wall2 from "./assets/obstacles/wall2.png";
-import wall3 from "./assets/obstacles/wall3.png";
-import obstacleAHalf from "./assets/obstacles/obstacleA_half.png";
-import obstacleAFull from "./assets/obstacles/obstacleA_full.png";
-import obstacleBHalf from "./assets/obstacles/obstacleB_half.png";
-import obstacleBFull from "./assets/obstacles/obstacleB_full.png";
-import obstacleCHalf from "./assets/obstacles/obstacleC_half.png";
-import obstacleCFull from "./assets/obstacles/obstacleC_full.png";
-import obstacleDHalf from "./assets/obstacles/obstacleD_half.png";
-import obstacleDFull from "./assets/obstacles/obstacleD_full.png";
-import obstacleEHalf from "./assets/obstacles/obstacleE_half.png";
-import obstacleEFull from "./assets/obstacles/obstacleE_full.png";
-import obstacleCrate from "./assets/obstacles/obstacle_crate.png";
-import obstacleBarrel from "./assets/obstacles/obstacle_barrel.png";
-import barrierANorth from "./assets/obstacles/barrierA_north.png";
-import barrierASouth from "./assets/obstacles/barrierA_south.png";
-import barrierAEast from "./assets/obstacles/barrierA_east.png";
-import barrierAWest from "./assets/obstacles/barrierA_west.png";
-
-import attack1Indicate from "./assets/indicators/attack1.png";
-import attack2Indicate from "./assets/indicators/attack2.png";
-import attack3Indicate from "./assets/indicators/attacky.png";
-import attackUnarmedIndicate from "./assets/items/unarmed.png";
-import attackBluntIndicate from "./assets/indicators/blunt.png";
-import attackSuccessIndicate from "./assets/indicators/attackSuccess.png";
-import missedIndicate from "./assets/indicators/miss.png";
-import missedIndicate2 from "./assets/indicators/miss2.png";
-import defendIndicate from "./assets/indicators/defend.png";
-import defendIndicate1 from "./assets/indicators/defend3.png";
-import defendIndicate2 from "./assets/indicators/defend4.png";
-import defendIndicate3 from "./assets/indicators/defend5.png";
-import defendIndicate4 from "./assets/indicators/defend6.png";
-import deflectIndicate from "./assets/indicators/deflect.png";
-import deflectIndicate2 from "./assets/indicators/deflect2.png";
-import deflectInjuredIndicate from "./assets/indicators/deflectInjured2.png";
-import deflectInjuredIndicate2 from "./assets/indicators/deflectInjured.png";
-import deflectBluntIndicate from "./assets/indicators/death2.png";
-import pushbackIndicate from "./assets/indicators/pushback.png";
-import ghostIndicate from "./assets/indicators/ghost.png";
-import deathIndicate from "./assets/indicators/death.png";
-import preAttackIndicate from "./assets/indicators/preAttack.png";
-import healIndicate from "./assets/indicators/healIndicate.png";
-
-import prePushIndicate from "./assets/indicators/prePush.png";
-import canPushIndicate from "./assets/indicators/canPush.png";
-import noPushingIndicate from "./assets/indicators/noPushing.png";
-import pushingIndicate from "./assets/indicators/pushing.png";
-import prePullIndicate from "./assets/indicators/prePull.png";
-import canPullIndicate from "./assets/indicators/canPull.png";
-import noPullingIndicate from "./assets/indicators/noPulling.png";
-import pullingIndicate from "./assets/indicators/pulling.png";
-import pushedPulledIndicate from "./assets/indicators/pushedPulled.png";
-import unbreakableIndicate from "./assets/indicators/unbreakable.png";
-import attackFeintIndicate from "./assets/indicators/attackFeint.png";
-import attackFeintIndicate2 from "./assets/indicators/attackFeint2.png";
-import defendFeintIndicate from "./assets/indicators/defendFeint.png";
-import defendFeintIndicate2 from "./assets/indicators/defendFeint2.png";
-
-import defendFeintIndicate3 from "./assets/indicators/defendFeint3.png";
-import attackFeintIndicate3 from "./assets/indicators/attackFeint3.png";
-import dodgeFeintIndicate from "./assets/indicators/dodgeFeint.png";
-import dodgeFeintIndicate2 from "./assets/indicators/dodgeFeint2.png";
-
-import cellVoidingIndicate from "./assets/indicators/cellVoiding.png";
-import cellVoidingIndicate2 from "./assets/indicators/cellVoiding2.png";
-import boltDefendIndicate2 from "./assets/indicators/boltDefend2.png";
-import flankIndicate2 from "./assets/indicators/flanking2.png";
-import noFlankIndicate from "./assets/indicators/noFlanking.png";
-
-import preAttack2Indicate from "./assets/indicators/preAttack2.png";
-import preAction1Indicate from "./assets/indicators/preAction1.png";
-import preAction2Indicate from "./assets/indicators/preAction2.png";
-import attackBreakIndicate from "./assets/indicators/attackBreak.png";
-import defendBreakIndicate from "./assets/indicators/defendBreak.png";
-import boltDefendIndicate from "./assets/indicators/boltDefend.png";
-import dodgeIndicate from "./assets/indicators/dodge.png";
-import dodgeIndicate2 from "./assets/indicators/dodge2.png";
-import fallingIndicate from "./assets/indicators/falling.png";
-import completeMissionIndicate from "./assets/indicators/complete.png";
-import flankIndicate from "./assets/indicators/flank.png";
-import attackBluntIndicate2 from "./assets/indicators/blunt2.png";
-import enrouteIndicate from "./assets/indicators/enroute.png";
-import targetSwitchIndicate from "./assets/indicators/targetSwitch.png";
-import pathSwitchIndicate from "./assets/indicators/pathSwitch.svg";
-import retreatIndicate from "./assets/indicators/retreat.png";
-import defendSuccessIndicate from "./assets/indicators/defendSuccess.png";
-import aggressiveModeIndicate from "./assets/indicators/angry.png";
-import passiveModeIndicate from "./assets/indicators/meditation.png";
-import thinkingIndicate from "./assets/indicators/mind.png";
-import defendMissionIndicate from "./assets/indicators/police.png";
-import patrolMissionIndicate from "./assets/indicators/location.png";
-import pursueMissionIndicate from "./assets/indicators/treasure-map.png";
-import pursueMissionIndicate2 from "./assets/indicators/missionPursue.png";
-import retrieveMissionIndicate from "./assets/indicators/treasure.png";
-import drowningIndicate from "./assets/indicators/drown.png";
-import destroyedItemIndicate from "./assets/indicators/destroyedItem.png";
-import pickupBuffIndicate from "./assets/indicators/pickupBuff.png";
-import pickupDebuffIndicate from "./assets/indicators/pickupDebuff.png";
-import pickupWeaponIndicate from "./assets/indicators/pickupWeapon.png";
-import dropWeaponIndicate from "./assets/indicators/dropWeapon.png";
-import dropArmorIndicate from "./assets/indicators/dropArmor.png";
-import pickupArmorIndicate from "./assets/indicators/pickupArmor.png";
-import pickupAmmoIndicate from "./assets/indicators/pickupAmmo.png";
-import terrainSpeedupIndicate from "./assets/indicators/terrainSpeedup.png";
-import terrainSlowdownIndicate from "./assets/indicators/terrainSlowdown.png";
-import terrainInjuredIndicate from "./assets/indicators/terrainInjured.png";
-import outOfStaminaIndicate from "./assets/indicators/outOfStamina.png";
-import boltKilledIndicate from "./assets/indicators/boltKilled.png";
-import attackParriedIndicate from "./assets/indicators/attackParried.png";
-import inventoryFullIndicate from "./assets/indicators/inventoryFull.png";
-import outOfAmmoIndicate from "./assets/indicators/outOfAmmo.png";
-import timerIndicate from "./assets/indicators/timer.png";
-
-import chargeIndicate from "./assets/indicators/charge.png";
-import noDirectionIndicate from "./assets/indicators/noDirection1.png";
-import noDirectionIndicate2 from "./assets/indicators/noDirection2.png";
-import noDirectionIndicate3 from "./assets/indicators/noDirection3.png";
-import northDirectionIndicate from "./assets/indicators/northDirection.png";
-import southDirectionIndicate from "./assets/indicators/southDirection.png";
-import eastDirectionIndicate from "./assets/indicators/eastDirection.png";
-import westDirectionIndicate from "./assets/indicators/westDirection.png";
-
-import mail1 from "./assets/items/mail1.png";
-import mail2 from "./assets/items/mail2.png";
-import mail3 from "./assets/items/mail3.png";
-import greaves1 from "./assets/items/greaves1.png";
-import greaves2 from "./assets/items/greaves2.png";
-import greaves3 from "./assets/items/greaves3.png";
-import helmet1 from "./assets/items/helmet1.png";
-import hpUp from "./assets/items/hpUp.png";
-import hpDown from "./assets/items/hpDown.png";
-import spdUp from "./assets/items/spdUp.png";
-import spdDown from "./assets/items/spdDown.png";
-import strUp from "./assets/items/strUp.png";
-import strDown from "./assets/items/strDown.png";
-import focusUp from "./assets/items/focusUp.png";
-import focusDown from "./assets/items/focusDown.png";
-import ammo from "./assets/items/ammo.png";
-import bow from "./assets/items/bow.png";
-import boltNorth from "./assets/items/boltNorth.png";
-import boltSouth from "./assets/items/boltSouth.png";
-import boltEast from "./assets/items/boltEast.png";
-import boltWest from "./assets/items/boltWest.png";
-import spear from "./assets/items/spear.png";
-import sword from "./assets/items/sword.png";
-import crossbow from "./assets/items/crossbow.png";
-
-import playerImgIdleSheet from "./assets/player/sheet1.png";
-import player2ImgIdleSheet from "./assets/player/sheet2.png";
-import playerComAImgIdleSheet from "./assets/player/sheetComA.png";
-import playerComBImgIdleSheet from "./assets/player/sheetComB.png";
-import playerImgMoveSheet from "./assets/player/sheetMoving1.png";
-import player2ImgMoveSheet from "./assets/player/sheetMoving2.png";
-import comAImgMoveSheet from "./assets/player/sheetMovingComA.png";
-import comBImgMoveSheet from "./assets/player/sheetMovingComB.png";
-import player1DefendSheet from "./assets/player/sheetDefend1.png";
-import player2DefendSheet from "./assets/player/sheetDefend2.png";
-import comADefendSheet from "./assets/player/sheetDefendComA.png";
-import comBDefendSheet from "./assets/player/sheetDefendComB.png";
-import player1AttackSheet from "./assets/player/sheetAttack1.png";
-import player2AttackSheet from "./assets/player/sheetAttack2.png";
-import comAAttackSheet from "./assets/player/sheetAttackComA.png";
-import comBAttackSheet from "./assets/player/sheetAttackComB.png";
-
-import testSpriteNorth from "./assets/player/testSpriteNorth.png";
-import testSpriteSouth from "./assets/player/testSpriteSouth.png";
-import testSpriteEast from "./assets/player/testSpriteEast.png";
-import testSpriteWest from "./assets/player/testSpriteWest.png";
-
-import moveSheetNew from "./assets/player/movingSheetNew.png";
-import idleSheetNew from "./assets/player/idleSheetNew.png";
-import idleSheetNew2 from "./assets/player/idleSheetNew2.png";
-import attackSheetNew from "./assets/player/attackSheetNew.png";
-import defendSheetNew from "./assets/player/defendSheetNew.png";
-import dodgeSheetNew from "./assets/player/dodgingSheetNew.png";
-import deflectedFallingSheetNew from "./assets/player/deflectedFallingSheetNew.png";
-
 import bg_1 from "./assets/backgrounds/bg_field_1.png";
 
 import "./App.css";
+
+import assets from "./assets";
+const {
+  backgrounds_assets,
+  terrain_assets,
+  walls_assets,
+  obstacles_assets,
+  indicators_assets,
+  items_assets,
+  playerSprites_assets,
+} = assets;
+
+import { ImageRefs, imageRefs } from "./imageRefs";
+import globalFunctionComponentRefs from "./globalFunctionComponentRefs";
 
 import DebugBox from "./debugBox";
 import Settings from "./settings";
@@ -245,4187 +51,148 @@ import Helper from "./helper";
 import pointInPolygon from "point-in-polygon";
 
 import { GameContext } from "./gameContext";
+import GameEngine from "./gameEngine";
+import DrawGridInit from "./globalFunctionComponents/drawGridInit";
+import SetBackgroundImage from "./globalFunctionComponents/setBackgroundImage";
+import StartProcessLevelData from "./globalFunctionComponents/startProcessLevelData";
+import ProcessLevelData from "./globalFunctionComponents/processLevelData";
+import UpdatePathArray from "./globalFunctionComponents/updatePathArray";
 
 class App extends Component {
-  state = {
-    showSettings: true,
-    showAiStatus: false,
-    canvas: undefined,
-    context: undefined,
-    canvas2: undefined,
-    context2: undefined,
-    canvas3: undefined,
-    context3: undefined,
-    canvas4: undefined,
-    context4: undefined,
-    containerInnerClass: "containerInner",
-    sceneY: {
-      three: 400,
-      six: 300,
-      nine: 220,
-      twelve: 150,
-    },
-    loading: true,
-    stateUpdater: "",
-    settingAiPlayers: 0,
-  };
+  static contextType = GameContext;
 
-  constructor(props) {
-    super(props);
-    this.time = 0;
-
-    this.canvasRef = React.createRef();
-    this.canvasRef2 = React.createRef();
-
-    // SETTINGS CANVASES
-    this.canvasRef3 = React.createRef();
-    this.canvasRef4 = React.createRef();
-
-    this.cellInfoBoxRef = React.createRef();
-
-    this.debugBoxStyle = "debugDisplay closedDebug";
-    this.debugBoxStyle2 = "debugDisplay2 closedDebug";
-
-    // LEVEL DRAW SETUP
-    this.tileColumnOffset = 100; // pixels
-    this.tileRowOffset = 50; // pixels
-    this.originX = 0; // offset from left
-    this.originY = 0; // offset from top
-    this.Xtiles = 10;
-    this.Ytiles = 10;
-    this.showCoordinates = true;
-    this.selectedTileX = -1;
-    this.selectedTileY = -1;
-
-    this.canvasWidth = 1300;
-    this.canvasHeight = 790;
-
-    // this.canvasWidth = 1000;
-    // this.canvasHeight = 600;
-
-    this.floorImageWidth = 103;
-    this.floorImageHeight = 53;
-
-    this.wallImageWidth = 103;
-    this.wallImageHeight = 98;
-    this.sceneY = 220;
-    this.tileWidth = 50;
-    this.gridWidth = 9;
-
-    this.cellCenterOffsetX = 23;
-    this.cellCenterOffsetY = 2;
-
-    // '**_*_0.0_a_0**'
-    // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
-
-    // GRIND INFO, LEVEL DATA & MAPPING
-    this.init = false;
-    // this.openVoid = true;
-    this.openVoid = false;
-    this.cellToVoid = {
-      state: false,
-      x: 0,
-      y: 0,
-      count: 0,
-      limit: 35,
-    };
-    this.voidTimer = {
-      count: 0,
-      limit: 10000,
-    };
-    this.voidCustomCell = false;
-    this.gridInfo = [];
-    this.settingsGridInfo = [];
-    this.gridInfo2D = [];
-    this.gridInfo2 = [];
-    this.gridInfo2D2 = [];
-    this.levelData = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    this.levelData12 = {
-      row0: [
-        "**_*_0.0_a_0a*",
-        "**_*_0.1_a_0a*",
-        "**_*_0.2_a_0a*",
-        "**_*_0.3_a_0a*",
-        "**_*_0.4_a_0a*",
-        "**_*_0.5_a_0a*",
-        "**_*_0.6_a_0a*",
-        "**_*_0.7_a_0a*",
-        "**_*_0.8_a_0a*",
-        "**_*_0.9_a_0a*",
-        "**_*_0.10_a_0a*",
-        "**_*_0.11_a_0a*",
-        "**_*_0.12_a_0a*",
-      ],
-      row1: [
-        "**_*_1.0_a_0a*",
-        "**_*_1.1_a_0a*",
-        "**_*_1.2_a_0a*",
-        "**_*_1.3_a_0a*",
-        "**_*_1.4_a_0a*",
-        "**_*_1.5_a_0a*",
-        "**_*_1.6_a_0a*",
-        "**_*_1.7_a_0a*",
-        "**_*_1.8_a_0a*",
-        "**_*_1.9_a_0a*",
-        "**_*_1.10_a_0a*",
-        "**_*_1.11_a_0a*",
-        "**_*_1.12_a_0a*",
-      ],
-      row2: [
-        "**_*_2.0_a_0a*",
-        "**_*_2.1_a_0a*",
-        "**_b_2.2_a_0a*",
-        "**_*_2.3_a_0a*",
-        "**_*_2.4_a_0a*",
-        "**_*_2.5_a_0a*",
-        "**_*_2.6_a_0a*",
-        "**_*_2.7_a_0a*",
-        "**_*_2.8_a_0a*",
-        "**_*_2.9_a_0a*",
-        "**_*_2.10_a_0a*",
-        "**_*_2.11_a_0a*",
-        "**_*_2.12_a_0a*",
-      ],
-      row3: [
-        "**_c_3.0_a_0a*",
-        "**_*_3.1_a_0a*",
-        "**_c_3.2_a_0a*",
-        "**_*_3.3_a_0a*",
-        "**_*_3.4_a_0a*",
-        "**_*_3.5_a_0a*",
-        "**_h_3.6_a_0a*",
-        "**_*_3.7_a_0a*",
-        "**_*_3.8_a_0a*",
-        "**_*_3.9_a_0a*",
-        "**_*_3.10_a_0a*",
-        "**_*_3.11_a_0a*",
-        "**_*_3.12_a_0a*",
-      ],
-      row4: [
-        "**_*_4.0_a_0a*",
-        "**_*_4.1_a_0a*",
-        "**_*_4.2_a_0a*",
-        "**_*_4.3_a_0a*",
-        "**_*_4.4_a_0a*",
-        "**_*_4.5_a_0a*",
-        "**_h_4.6_a_0a*",
-        "**_*_4.7_a_0a*",
-        "**_*_4.8_a_0a*",
-        "**_*_4.9_a_0a*",
-        "**_*_4.10_a_0a*",
-        "**_*_4.11_a_0a*",
-        "**_*_4.12_a_0a*",
-      ],
-      row5: [
-        "**_*_5.0_a_0a*",
-        "**_*_5.1_a_0a*",
-        "**_*_5.2_a_0a*",
-        "**_*_5.3_a_0a*",
-        "**_*_5.4_a_0a*",
-        "**_*_5.5_a_0a*",
-        "**_*_5.6_a_0a*",
-        "**_*_5.7_a_0a*",
-        "**_*_5.8_a_0a*",
-        "**_*_5.9_a_0a*",
-        "**_*_5.10_a_0a*",
-        "**_*_5.11_a_0a*",
-        "**_*_5.12_a_0a*",
-      ],
-      row6: [
-        "**_*_6.0_a_0a*",
-        "**_*_6.1_a_0a*",
-        "**_*_6.2_a_0a*",
-        "**_*_6.3_a_0a*",
-        "**_*_6.4_a_0a*",
-        "**_*_6.5_a_0a*",
-        "**_*_6.6_a_0a*",
-        "**_*_6.7_a_0a*",
-        "**_*_6.8_a_0a*",
-        "**_*_6.9_a_0a*",
-        "**_*_6.10_a_0a*",
-        "**_*_6.11_a_0a*",
-        "**_*_6.12_a_0a*",
-      ],
-      row7: [
-        "**_*_7.0_a_0a*",
-        "**_*_7.1_a_0a*",
-        "**_*_7.2_a_0a*",
-        "**_*_7.3_a_0a*",
-        "**_*_7.4_a_0a*",
-        "**_*_7.5_a_0a*",
-        "**_*_7.6_a_0a*",
-        "**_*_7.7_a_0a*",
-        "**_*_7.8_a_0a*",
-        "**_*_7.9_a_0a*",
-        "**_*_7.10_a_0a*",
-        "**_*_7.11_a_0a*",
-        "**_*_7.12_a_0a*",
-      ],
-      row8: [
-        "**_*_8.0_a_0a*",
-        "**_*_8.1_a_0a*",
-        "**_*_8.2_a_0a*",
-        "**_*_8.3_a_0a*",
-        "**_*_8.4_a_0a*",
-        "**_*_8.5_a_0a*",
-        "**_*_8.6_a_0a*",
-        "**_*_8.7_a_0a*",
-        "**_*_8.8_a_0a*",
-        "**_*_8.9_a_0a*",
-        "**_*_8.10_a_0a*",
-        "**_*_8.11_a_0a*",
-        "**_*_8.12_a_0a*",
-      ],
-      row9: [
-        "**_*_9.0_a_0a*",
-        "**_*_9.1_a_0a*",
-        "**_*_9.2_a_0a*",
-        "**_*_9.3_a_0a*",
-        "**_*_9.4_a_0a*",
-        "**_*_9.5_a_0a*",
-        "**_*_9.6_a_0a*",
-        "**_*_9.7_a_0a*",
-        "**_*_9.8_a_0a*",
-        "**_*_9.9_a_0a*",
-        "**_*_9.10_a_0a*",
-        "**_*_9.11_a_0a*",
-        "**_*_9.12_a_0a*",
-      ],
-      row10: [
-        "**_*_10.0_a_0a*",
-        "**_*_10.1_a_0a*",
-        "**_*_10.2_a_0a*",
-        "**_*_10.3_a_0a*",
-        "**_*_10.4_a_0a*",
-        "**_*_10.5_a_0a*",
-        "**_*_10.6_a_0a*",
-        "**_*_10.7_a_0a*",
-        "**_*_10.8_a_0a*",
-        "**_*_10.9_a_0a*",
-        "**_*_10.10_a_0a*",
-        "**_*_10.11_a_0a*",
-        "**_*_10.12_a_0a*",
-      ],
-      row11: [
-        "**_*_11.0_a_0a*",
-        "**_*_11.1_a_0a*",
-        "**_*_11.2_a_0a*",
-        "**_*_11.3_a_0a*",
-        "**_*_11.4_a_0a*",
-        "**_*_11.5_a_0a*",
-        "**_*_11.6_a_0a*",
-        "**_*_11.7_a_0a*",
-        "**_*_11.8_a_0a*",
-        "**_*_11.9_a_0a*",
-        "**_*_11.10_a_0a*",
-        "**_*_11.11_a_0a*",
-        "**_*_11.12_a_0a*",
-      ],
-      row12: [
-        "**_*_12.0_a_0a*",
-        "**_*_12.1_a_0a*",
-        "**_*_12.2_a_0a*",
-        "**_*_12.3_a_0a*",
-        "**_*_12.4_a_0a*",
-        "**_*_12.5_a_0a*",
-        "**_*_12.6_a_0a*",
-        "**_*_12.7_a_0a*",
-        "**_*_12.8_a_0a*",
-        "**_*_12.9_a_0a*",
-        "**_*_12.10_a_0a*",
-        "**_*_12.11_a_0a*",
-        "**_*_12.12_a_0a*",
-      ],
-    };
-    this.levelData9 = {
-      row0: [
-        "**_*_0.0_a_0a*",
-        "**_*_0.1_a_0a*",
-        "**_*_0.2_a_0a*",
-        "cw_*_0.3_a_0a*",
-        "**_*_0.4_a_0a*",
-        "**_*_0.5_a_0a*",
-        "**_*_0.6_a_0a*",
-        "**_*_0.7_a_0a*",
-        "**_*_0.8_h_0a*",
-        "**_*_0.9_h_0a*",
-      ],
-      row1: [
-        "**_*_1.0_a_0a*",
-        "**_*_1.1_a_0a*",
-        "**_*_1.2_a_0a*",
-        "**_*_1.3_a_0a*",
-        "**_*_1.4_a_0a*",
-        "**_*_1.5_a_0a*",
-        "**_*_1.6_a_0a*",
-        "**_*_1.7_a_0a*",
-        "**_*_1.8_a_0a*",
-        "**_*_1.9_a_0a*",
-      ],
-      row2: [
-        "**_*_2.0_a_0a*",
-        "**_*_2.1_a_0a*",
-        "**_*_2.2_a_0a*",
-        "**_*_2.3_a_0a*",
-        "**_*_2.4_a_0a*",
-        "**_*_2.5_a_0a*",
-        "**_*_2.6_a_0a*",
-        "**_*_2.7_a_0a*",
-        "**_*_2.8_a_0a*",
-        "**_*_2.9_a_0a*",
-      ],
-      row3: [
-        "**_*_3.0_a_0a*",
-        "**_*_3.1_a_0a*",
-        "**_*_3.2_a_0a*",
-        "**_*_3.3_a_0a*",
-        "**_*_3.4_a_0a*",
-        "**_*_3.5_a_0a*",
-        "**_*_3.6_a_0a*",
-        "**_*_3.7_a_0a*",
-        "**_*_3.8_a_0a*",
-        "**_*_3.9_a_0a*",
-      ],
-      row4: [
-        "**_*_4.0_a_0a*",
-        "**_*_4.1_a_0a*",
-        "**_*_4.2_f_0a*",
-        "**_*_4.3_f_0a*",
-        "**_h_4.4_a_0a*",
-        "**_h_4.5_a_0a*",
-        "**_*_4.6_j_0a*",
-        "**_*_4.7_a_0a*",
-        "**_*_4.8_a_0a*",
-        "**_*_4.9_a_0a*",
-      ],
-      row5: [
-        "**_*_5.0_a_0a*",
-        "**_*_5.1_a_0a*",
-        "**_*_5.2_a_0a*",
-        "**_*_5.3_a_0a*",
-        "**_*_5.4_a_0a*",
-        "**_*_5.5_a_0a*",
-        "**_*_5.6_a_0a*",
-        "**_*_5.7_a_0a*",
-        "**_*_5.8_a_0a*",
-        "**_*_5.9_a_0a*",
-      ],
-      row6: [
-        "**_*_6.0_b_0a*",
-        "**_*_6.1_j_0a*",
-        "**_*_6.2_j_0a*",
-        "**_*_6.3_j_0a*",
-        "**_*_6.4_j_0a*",
-        "**_*_6.5_j_0a*",
-        "**_*_6.6_j_0a*",
-        "**_*_6.7_j_0a*",
-        "**_*_6.8_j_0a*",
-        "**_*_6.9_j_0a*",
-      ],
-      row7: [
-        "**_*_7.0_j_0a*",
-        "**_*_7.1_j_0a*",
-        "**_*_7.2_a_0a*",
-        "**_*_7.3_a_0a*",
-        "**_*_7.4_a_0a*",
-        "**_*_7.5_a_0a*",
-        "**_*_7.6_a_0a*",
-        "**_*_7.7_a_0a*",
-        "**_*_7.8_a_0a*",
-        "**_*_7.9_d_0a*",
-      ],
-      row8: [
-        "**_*_8.0_a_0a*",
-        "**_*_8.1_a_0a*",
-        "**_*_8.2_a_0a*",
-        "**_*_8.3_a_0a*",
-        "**_*_8.4_a_0a*",
-        "**_*_8.5_a_0a*",
-        "**_*_8.6_a_0a*",
-        "**_*_8.7_a_0a*",
-        "**_*_8.8_a_0a*",
-        "**_*_8.9_d_0a*",
-      ],
-      row9: [
-        "**_*_9.0_a_0a*",
-        "**_*_9.1_a_0a*",
-        "**_*_9.2_a_0a*",
-        "**_*_9.3_a_0a*",
-        "**_*_9.4_a_0a*",
-        "**_*_9.5_a_0a*",
-        "**_*_9.6_a_0a*",
-        "**_*_9.7_a_0a*",
-        "**_*_9.8_a_0a*",
-        "**_*_9.9_a_0a*",
-      ],
-    };
-    this.levelData6 = {
-      row0: [
-        "**_a_0.0_a_0a*",
-        "**_*_0.1_a_0a*",
-        "**_*_0.2_a_0a*",
-        "**_*_0.3_a_0a*",
-        "**_*_0.4_a_0a*",
-        "**_*_0.5_a_0a*",
-        "**_*_0.6_a_0a*",
-      ],
-      row1: [
-        "**_*_1.0_a_0a*",
-        "**_*_1.1_a_0a*",
-        "**_*_1.2_a_0a*",
-        "**_*_1.3_a_0a*",
-        "**_*_1.4_a_0a*",
-        "**_*_1.5_a_0a*",
-        "**_*_1.6_a_0a*",
-      ],
-      row2: [
-        "**_h_2.0_a_0a*",
-        "**_*_2.1_j_0a*",
-        "**_*_2.2_j_0a*",
-        "**_*_2.3_j_0a*",
-        "**_*_2.4_j_0a*",
-        "**_*_2.5_j_0a*",
-        "**_*_2.6_a_0a*",
-      ],
-      row3: [
-        "**_h_3.0_a_0a*",
-        "**_*_3.1_j_0a*",
-        "**_*_3.2_b_0a*",
-        "**_*_3.3_j_0a*",
-        "**_*_3.4_b_0a*",
-        "**_*_3.5_j_0a*",
-        "**_*_3.6_a_0a*",
-      ],
-      row4: [
-        "**_*_4.0_a_0a*",
-        "**_*_4.1_j_0a*",
-        "**_*_4.2_j_0a*",
-        "**_*_4.3_j_0a*",
-        "**_*_4.4_j_0a*",
-        "**_*_4.5_j_0a*",
-        "**_*_4.6_a_0a*",
-      ],
-      row5: [
-        "**_*_5.0_a_0a*",
-        "**_*_5.1_a_0a*",
-        "**_*_5.2_a_0a*",
-        "**_*_5.3_a_0a*",
-        "**_*_5.4_a_0a*",
-        "**_*_5.5_a_0a*",
-        "**_*_5.6_a_0a*",
-      ],
-      row6: [
-        "**_*_6.0_a_0a*",
-        "**_*_6.1_a_0a*",
-        "**_*_6.2_a_0a*",
-        "**_*_6.3_a_0a*",
-        "**_*_6.4_a_0a*",
-        "**_*_6.5_a_0a*",
-        "**_*_6.6_a_0a*",
-      ],
-    };
-    this.levelData3 = {
-      row0: ["**_a_0.0_a_0a*", "**_*_0.1_a_0a*", "**_*_0.2_a_0a*", "**_*_0.3_a_0a*"],
-      row1: ["**_*_1.0_a_0a*", "**_*_1.1_a_0a*", "**_*_1.2_a_0a*", "**_*_1.3_a_0a*"],
-      row2: ["**_*_2.0_a_0a*", "**_*_2.1_a_0a*", "**_b_2.2_a_0a*", "**_*_2.3_a_0a*"],
-      row3: ["**_h_3.0_a_0a*", "**_*_3.1_a_0a*", "**_h_3.2_a_0a*", "**_*_3.3_a_0a*"],
-    };
-    this.terrainLevelDataRef = {
-      a: {
-        name: "grass",
-        type: "grass",
-        effect: "",
-      },
-      b: {
-        name: "stone",
-        type: "road",
-        effect: "",
-      },
-      c: {
-        name: "dirt",
-        type: "road",
-        effect: "",
-      },
-      d: {
-        name: "pond",
-        type: "shallow",
-        effect: "",
-      },
-      e: {
-        name: "mud",
-        type: "sticky",
-        effect: "",
-      },
-      f: {
-        name: "sand",
-        type: "sticky",
-        effect: "",
-      },
-      g: {
-        name: "ice",
-        type: "slippery",
-        effect: "",
-      },
-      h: {
-        name: "lava",
-        type: "hazard",
-        effect: "",
-      },
-      i: {
-        name: "bramble",
-        type: "hazard",
-        effect: "",
-      },
-      j: {
-        name: "river",
-        type: "deep",
-        effect: "",
-      },
-      k: {
-        name: "void",
-        type: "void",
-        effect: "void",
-      },
-    };
-    this.terrainMoveSpeedRef = {
-      shallow: 0.1,
-      sticky: 0.05,
-      slippery: 0.2,
-    };
-
-    // OBSTACLES HAVE MAX 5 ITEMS
-    this.obstacleLevelDataRef = {
-      a: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 5,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "sword1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "chest1",
-        type: "chest",
-        hp: 5,
-        destructible: {
-          state: true,
-          weapons: ["sword1", "spear1"],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 0.5,
-        items: [],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-      b: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 5,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "sword1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "table1",
-        type: "table",
-        hp: 1,
-        destructible: {
-          state: true,
-          weapons: ["sword1", "bolt", "spear1"],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 0.5,
-        items: [
-          {
-            name: "sword1",
-            type: "weapon",
-            subType: "sword",
-            effect: "",
-          },
-        ],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-      c: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 5,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "closet1",
-        type: "barrel",
-        hp: 2,
-        destructible: {
-          state: false,
-          weapons: ["sword1", "bolt", "spear1"],
-          leaveRubble: true,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 0.5,
-        height: 1,
-        items: [
-          {
-            name: "hpUp",
-            type: "item",
-            subType: "",
-            effect: "hpUp",
-          },
-          {
-            name: "sword1",
-            type: "weapon",
-            subType: "sword",
-            effect: "",
-          },
-        ],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-      d: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 0,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "chair1",
-        type: "chair",
-        hp: 2,
-        destructible: {
-          state: true,
-          weapons: ["sword1"],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 0.5,
-        items: [],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-      e: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 0,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "shelf1",
-        type: "shelf",
-        hp: 2,
-        destructible: {
-          state: true,
-          weapons: ["sword1"],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 1,
-        items: [],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-      f: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 0,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "counter1",
-        type: "counter",
-        hp: 2,
-        destructible: {
-          state: true,
-          weapons: ["sword1"],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 0.5,
-        items: [],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-      g: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 0,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "smallBox1",
-        type: "smallBox",
-        hp: 2,
-        destructible: {
-          state: true,
-          weapons: ["sword1"],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 0.5,
-        items: [],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-      h: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: true,
-          remaining: 5,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: true,
-            state: false,
-            count: 0,
-            limit: 65,
-          },
-          trigger: {
-            type: "any",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "largeBox1",
-        type: "largeBox",
-        hp: 2,
-        destructible: {
-          state: false,
-          weapons: ["sword1"],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 1,
-        items: [],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-      i: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 0,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "closet2",
-        type: "barrel",
-        hp: 2,
-        destructible: {
-          state: true,
-          weapons: ["sword1", "bolt", "spear1"],
-          leaveRubble: true,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 1,
-        items: [
-          {
-            name: "hpUp",
-            type: "item",
-            subType: "",
-            effect: "hpUp",
-          },
-          {
-            name: "sword1",
-            type: "weapon",
-            subType: "sword",
-            effect: "",
-          },
-          {
-            name: "spear1",
-            type: "weapon",
-            subType: "spear",
-            effect: "",
-          },
-          {
-            name: "crossbow1",
-            type: "weapon",
-            subType: "crossbow",
-            effect: "ammo+5",
-          },
-          {
-            name: "ironPlate",
-            type: "armor",
-            subType: "mail",
-            effect: "hpUp",
-          },
-          {
-            name: "ammo10",
-            type: "item",
-            subType: "",
-            effect: "",
-          },
-        ],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-        },
-      },
-    };
-    this.barrierLevelDataRef = {
-      a: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 0,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "wall1",
-        type: "wall",
-        hp: 2,
-        destructible: {
-          state: false,
-          weapons: [],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        position: "",
-        height: 1,
-      },
-      b: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: false,
-          remaining: 0,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: false,
-            state: false,
-            count: 0,
-            limit: 5,
-          },
-          trigger: {
-            type: "player",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "crossbow1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "door1",
-        type: "door",
-        hp: 3,
-        destructible: {
-          state: true,
-          weapons: ["sword1"],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        position: "",
-        height: 1,
-      },
-      c: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: true,
-          remaining: 5,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: true,
-            state: false,
-            count: 0,
-            limit: 65,
-          },
-          trigger: {
-            type: "any",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "sword1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "balcony1",
-        type: "balcony",
-        hp: 2,
-        destructible: {
-          state: true,
-          weapons: ["sword1", "spear1", "bolt"],
-          leaveRubble: true,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        position: "",
-        height: 1,
-      },
-      d: {
-        id: 0,
-        trap: {
-          state: false,
-          persistent: true,
-          remaining: 5,
-          direction: "",
-          target: {},
-          timer: {
-            enabled: true,
-            state: false,
-            count: 0,
-            limit: 65,
-          },
-          trigger: {
-            type: "any",
-          },
-          action: "attack",
-          acting: {
-            state: false,
-            count: 0,
-            peak: 0,
-            limit: 0,
-            direction: "",
-            directionType: "",
-          },
-          itemNameRef: "sword1",
-          item: {},
-          ammo: 0,
-        },
-        state: true,
-        name: "balconyX",
-        type: "balcony",
-        hp: 2,
-        destructible: {
-          state: true,
-          weapons: ["sword1", "spear1", "bolt"],
-          leaveRubble: true,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        position: "",
-        height: 1,
-      },
-    };
-    this.customTrapSetNewCustomTestData = [
-      {
-        persistent: false,
-        remaining: 5,
-        timerEnabled: true,
-        timerLimit: 70,
-        triggerType: "any",
-        itemNameRef: "spear2",
-        type: "obstacle",
-        location: {
-          x: 2,
-          y: 3,
-        },
-      },
-      {
-        persistent: false,
-        remaining: 15,
-        timerEnabled: false,
-        timerLimit: 0,
-        triggerType: "any",
-        itemNameRef: "crossbow1",
-        type: "obstacle",
-        location: {
-          x: 3,
-          y: 6,
-        },
-      },
-    ];
-    this.elevationTypeLevelDataRef = {
-      a: "floor",
-      b: "step",
-      c: "ramp",
-    };
-    this.pathArray = [];
-
-    // ITEMS
-    this.itemList = [
-      {
-        name: "moveSpeedUp",
-        amount: 5,
-        total: 5,
-        type: "item",
-        effect: "speedUp",
-      },
-      {
-        name: "moveSpeedDown",
-        amount: 5,
-        total: 5,
-        type: "item",
-        effect: "speedDown",
-      },
-      {
-        name: "hpUp",
-        amount: 4,
-        total: 4,
-        type: "item",
-        effect: "hpUp",
-      },
-      {
-        name: "hpDown",
-        amount: 4,
-        total: 4,
-        type: "item",
-        effect: "hpDown",
-      },
-      {
-        name: "focusUp",
-        amount: 4,
-        total: 4,
-        type: "item",
-        effect: "focusUp",
-      },
-      {
-        name: "focusDown",
-        amount: 4,
-        total: 4,
-        type: "item",
-        effect: "focusDown",
-      },
-      {
-        name: "strengthUp",
-        amount: 4,
-        total: 4,
-        type: "item",
-        effect: "strengthUp",
-      },
-      {
-        name: "strengthDown",
-        amount: 4,
-        total: 4,
-        type: "item",
-        effect: "strengthDown",
-      },
-      {
-        name: "spear1",
-        amount: 3,
-        total: 3,
-        type: "weapon",
-        subType: "spear",
-        effect: "",
-      },
-      {
-        name: "spear2",
-        amount: 3,
-        total: 3,
-        type: "weapon",
-        subType: "spear",
-        effect: "",
-      },
-      {
-        name: "sword1",
-        amount: 2,
-        total: 2,
-        type: "weapon",
-        subType: "sword",
-        effect: "",
-      },
-      {
-        name: "sword2",
-        amount: 2,
-        total: 2,
-        type: "weapon",
-        subType: "sword",
-        effect: "",
-      },
-      {
-        name: "crossbow1",
-        amount: 2,
-        total: 2,
-        type: "weapon",
-        subType: "crossbow",
-        effect: "ammo+5",
-      },
-      {
-        name: "crossbow2",
-        amount: 2,
-        total: 2,
-        type: "weapon",
-        subType: "crossbow",
-        effect: "ammo+7",
-      },
-      {
-        name: "helmet1",
-        amount: 3,
-        total: 3,
-        type: "armor",
-        subType: "helmet",
-        effect: "+10",
-      },
-      {
-        name: "ironPlate",
-        amount: 2,
-        total: 2,
-        type: "armor",
-        subType: "mail",
-        effect: "hpUp",
-      },
-      {
-        name: "ninjaGi",
-        amount: 2,
-        total: 2,
-        type: "armor",
-        subType: "mail",
-        effect: "snghit-5",
-      },
-      {
-        name: "ghostMail",
-        amount: 1,
-        total: 1,
-        type: "armor",
-        subType: "mail",
-        effect: "snghit-10",
-      },
-      {
-        name: "speedGreaves",
-        amount: 2,
-        total: 2,
-        type: "armor",
-        subType: "greaves",
-        effect: "speedUp",
-      },
-      {
-        name: "ammo5",
-        amount: 4,
-        total: 4,
-        type: "item",
-        effect: "",
-      },
-      {
-        name: "ammo10",
-        amount: 2,
-        total: 2,
-        type: "item",
-        effect: "",
-      },
-    ];
-    this.disableInitItems = true;
-    this.initItemList = [
-      // {
-      //   name: 'moveSpeedUp',
-      //   type: 'item',
-      //   effect: 'speedUp',
-      // },
-      // {
-      //   name: 'moveSpeedDown',
-      //   type: 'item',
-      //   effect: 'speedDown',
-      // },
-
-      {
-        name: "ammo5",
-        type: "item",
-        effect: "",
-      },
-      // {
-      //   name: 'ammo10',
-      //   type: 'item',
-      //   effect: '',
-      // },
-      {
-        name: "hpUp",
-        type: "item",
-        effect: "hpUp",
-      },
-      // {
-      //   name: 'hpDown',
-      //   type: 'item',
-      //   effect: 'hpDown',
-      // },
-      {
-        name: "spear1",
-        type: "weapon",
-        subType: "spear",
-        effect: "",
-      },
-      // {
-      //   name: 'sword2',
-      //   type: 'weapon',
-      //   subType: 'sword',
-      //   effect: '',
-      // },
-      {
-        name: "crossbow1",
-        type: "weapon",
-        subType: "crossbow",
-        effect: "ammo+10",
-      },
-      // {
-      //   name: 'ghostMail',
-      //   type: 'armor',
-      //   subType: 'mail',
-      //   effect: 'snghit-5',
-      // },
-      {
-        name: "speedGreaves",
-        type: "armor",
-        subType: "greaves",
-        effect: "speedUp",
-      },
-      {
-        name: "ironPlate",
-        type: "armor",
-        subType: "mail",
-        effect: "hpUp",
-      },
-      // {
-      //   name: 'helmet1',
-      //   type: 'armor',
-      //   subType: 'helmet',
-      //   effect: '+10',
-      // },
-      // {
-      //   name: 'helmet2',
-      //   type: 'armor',
-      //   subType: 'helmet',
-      //   effect: '',
-      // },
-      {
-        name: "strengthUp",
-        type: "item",
-        effect: "strengthUp",
-      },
-      {
-        name: "strengthUp",
-        type: "item",
-        effect: "strengthUp",
-      },
-      // {
-      //   name: 'hpUp',
-      //   type: 'item',
-      //   effect: 'hpUp',
-      // },
-      {
-        name: "strengthUp",
-        type: "item",
-        effect: "strengthUp",
-      },
-      {
-        name: "strengthUp",
-        type: "item",
-        effect: "strengthUp",
-      },
-    ];
-    this.customItemPlacement = {
-      state: true,
-      cells: [
-        { x: 0, y: 9 },
-        { x: 0, y: 8 },
-        { x: 0, y: 7 },
-        { x: 0, y: 6 },
-        { x: 1, y: 9 },
-        { x: 1, y: 8 },
-        { x: 1, y: 7 },
-        { x: 1, y: 6 },
-        { x: 2, y: 9 },
-        { x: 2, y: 8 },
-        { x: 2, y: 7 },
-        { x: 2, y: 6 },
-        { x: 5, y: 6 },
-        { x: 6, y: 6 },
-        { x: 6, y: 6 },
-      ],
-    };
-
-    // PLAYER
-    this.playerNumber = 2;
-    this.currentPlayer = 1;
-    this.players = [
-      {
-        number: 1,
-        startPosition: {
-          cell: {
-            number: {
-              x: 0,
-              y: 6,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-        },
-        currentPosition: {
-          cell: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-        },
-        nextPosition: {
-          x: 0,
-          y: 0,
-        },
-        target: {
-          cell1: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-            free: true,
-            occupant: {
-              type: "",
-              player: "",
-            },
-            void: false,
-          },
-          cell2: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-            free: true,
-            occupant: {
-              type: "",
-              player: "",
-            },
-            void: false,
-          },
-          myCellBlock: false,
-        },
-        direction: "east",
-        turning: {
-          state: false,
-          toDirection: "",
-          delayCount: 0,
-          limit: 5.1,
-        },
-        turnCheckerDirection: "",
-        action: "idle",
-        moving: {
-          state: false,
-          step: 0,
-          course: "",
-          origin: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-          destination: {
-            x: 0,
-            y: 0,
-          },
-        },
-        newMoveDelay: {
-          state: false,
-          count: 0,
-          limit: 15,
-        },
-        strafing: {
-          state: false,
-          direction: "",
-        },
-        strafeReleaseHook: false,
-        moveCancel: {
-          state: false,
-          oldDirection: "",
-          newDirection: "",
-          returningTo: {},
-          returningFrom: {},
-        },
-        flanking: {
-          checking: false,
-          preFlankDirection: "",
-          direction: "",
-          state: false,
-          step: 0,
-          target1: { x: 0, y: 0 },
-          target2: { x: 0, y: 0 },
-        },
-        drowning: false,
-        attacking: {
-          state: false,
-          count: 0,
-          limit: 20,
-          strength: 0,
-          direction: "",
-          directionType: "", //thrust or slash
-          animRef: {},
-          peak: false,
-          charge: 0,
-          chargePeak: false,
-          peakCount: 0,
-          blunt: false,
-          clashing: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-        },
-        defending: {
-          state: false,
-          count: 0,
-          limit: 4,
-          animRef: {},
-          peak: false,
-          peakCount: 0,
-          decay: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-          direction: "",
-          directionType: "", //thrust or slash
-        },
-        dodging: {
-          countState: false,
-          state: false,
-          count: 0,
-          limit: 20,
-          peak: {
-            start: 8,
-            end: 12,
-          },
-          direction: "",
-        },
-        jumping: {
-          checking: false,
-          state: false,
-        },
-        success: {
-          attackSuccess: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-          defendSuccess: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-          deflected: {
-            state: false,
-            count: 0,
-            limit: 20,
-            predeflect: false,
-            type: "",
-          },
-        },
-        pushBack: {
-          state: false,
-          prePushBackMoveSpeed: 0,
-        },
-        halfPushBack: {
-          state: false,
-          direction: "",
-          type: "",
-          countUp: {
-            state: true,
-            count: 0,
-            limit: 0,
-          },
-          countDown: {
-            state: false,
-            count: 0,
-            limit: 0,
-          },
-          coords: {
-            x: undefined,
-            y: undefined,
-          },
-        },
-        falling: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        dead: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        ghost: {
-          state: false,
-          position: {
-            cell: {
-              number: {
-                x: 0,
-                y: 0,
-              },
-              center: {
-                x: 0,
-                y: 0,
-              },
-            },
-          },
-        },
-        respawn: false,
-        points: 0,
-        speed: {
-          move: 0.1,
-          range: [0.05, 0.1, 0.125, 0.2],
-        },
-        terrainMoveSpeed: {
-          state: false,
-          speed: 0,
-        },
-        hp: 2,
-        currentWeapon: {
-          name: "sword1",
-          type: "sword",
-          effect: "",
-        },
-        currentArmor: {
-          name: "",
-          type: "",
-          effect: "",
-        },
-        items: {
-          weaponIndex: 0,
-          armorIndex: 0,
-          weapons: [
-            {
-              name: "sword1",
-              type: "sword",
-              effect: "",
-            },
-          ],
-          armor: [],
-          ammo: 20,
-        },
-        inventorySize: 4,
-        cycleWeapon: {
-          state: false,
-          count: 0,
-          limit: 3,
-        },
-        cycleArmor: {
-          state: false,
-          count: 0,
-          limit: 3,
-        },
-        crits: {
-          singleHit: 1,
-          doubleHit: 6,
-          pushBack: 4,
-          guardBreak: 3,
-          dodge: 0,
-        },
-        statusDisplay: {
-          state: false,
-          status: "",
-          count: 0,
-          limit: 15,
-        },
-        popups: [
-          {
-            state: true,
-            count: 0,
-            limit: 0,
-            type: "",
-            position: "northWest",
-            msg: "",
-            img: "",
-          },
-        ],
-        itemDrop: {
-          state: false,
-          count: 0,
-          limit: 10,
-          item: {
-            name: "",
-          },
-          gear: {
-            type: "",
-          },
-        },
-        itemPickup: {
-          state: false,
-          count: 0,
-          limit: 10,
-          item: {
-            name: "",
-          },
-          gear: {
-            type: "",
-          },
-        },
-        discardGear: {
-          state: false,
-          count: 0,
-          limit: 8,
-        },
-        idleAnim: {
-          state: false,
-          count: 0,
-          limit: 6,
-        },
-        actionDirectionAnimationArray: [],
-        ai: {
-          state: false,
-          imgType: "",
-          primaryMission: "",
-          mission: "",
-          prevMission: "",
-          currentObjective: "",
-          targetSet: false,
-          targetAcquired: false,
-          safeRange: true,
-          pathArray: [],
-          targetPlayer: {
-            number: 1,
-            currentPosition: {
-              x: undefined,
-              y: undefined,
-            },
-            target: {
-              number1: {
-                x: undefined,
-                y: undefined,
-              },
-              number2: {
-                x: undefined,
-                y: undefined,
-              },
-            },
-            action: "",
-          },
-          instructions: [],
-          currentInstruction: 0,
-          resetInstructions: false,
-          patrolling: {
-            checkin: undefined,
-            state: false,
-            area: [],
-            loopControl: false,
-          },
-          defending: {
-            checkin: undefined,
-            state: false,
-            area: [],
-          },
-          persuing: {
-            state: false,
-          },
-          engaging: {
-            state: true,
-            targetAction: "",
-          },
-          retrieving: {
-            checkin: undefined,
-            state: false,
-            point: { x: undefined, y: undefined },
-            targetItem: {
-              name: "",
-              type: "",
-              subType: "",
-              effect: "",
-            },
-            safe: true,
-          },
-          retreating: {
-            checkin: undefined,
-            state: false,
-            point: { x: undefined, y: undefined },
-            level: 0,
-            safe: true,
-          },
-          organizing: {
-            weaponPriorityIndex: 0,
-            armorPriorityIndex: 0,
-            dropped: {
-              state: false,
-              gear: {
-                name: "",
-                type: "",
-                subType: "",
-                effect: "",
-              },
-            },
-          },
-          mode: "",
-          upgradeWeapon: false,
-          upgradeArmor: false,
-          pathfindingRanges: {
-            spear: 3,
-            crossbow: 5,
-          },
-        },
-        stamina: {
-          current: 20,
-          max: 20,
-        },
-        newPushPullDelay: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        prePush: {
-          state: false,
-          count: 0,
-          limit: 15,
-          targetCell: undefined,
-          direction: "",
-          pusher: undefined,
-        },
-        pushing: {
-          state: false,
-          targetCell: undefined,
-          moveSpeed: 0,
-        },
-        prePull: {
-          state: false,
-          count: 0,
-          limit: 15,
-          targetCell: undefined,
-          direction: "",
-          puller: undefined,
-        },
-        pulling: {
-          state: false,
-          targetCell: undefined,
-          moveSpeed: 0,
-        },
-        postPull: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        pushed: {
-          state: false,
-          pusher: 0,
-          moveSpeed: 0,
-        },
-        pulled: {
-          state: false,
-          puller: 0,
-          moveSpeed: 0,
-        },
-        elasticCounter: {
-          preState: false,
-          state: false,
-          direction: "",
-          type: "",
-          subType: "",
-          countUp: {
-            state: false,
-            count: 0,
-            limit: 6,
-          },
-          countDown: {
-            state: false,
-            count: 0,
-            limit: 6,
-          },
-          coords: {
-            x: undefined,
-            y: undefined,
-          },
-          pause: {
-            preState: false,
-            state: false,
-            type: "",
-            count: 0,
-            limit: 6,
-          },
-        },
-        team: "Red",
-        input: "Keyboard",
-      },
-      {
-        number: 2,
-        startPosition: {
-          cell: {
-            number: {
-              x: 2,
-              y: 6,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-        },
-        currentPosition: {
-          cell: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-        },
-        nextPosition: {
-          x: 0,
-          y: 0,
-        },
-        target: {
-          cell1: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-            free: true,
-            occupant: {
-              type: "",
-              player: "",
-            },
-            void: false,
-          },
-          cell2: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-            free: true,
-            occupant: {
-              type: "",
-              player: "",
-            },
-            void: false,
-          },
-          myCellBlock: false,
-        },
-        direction: "west",
-        turning: {
-          state: false,
-          toDirection: "",
-          delayCount: 0,
-          limit: 5.1,
-        },
-        turnCheckerDirection: "",
-        action: "idle",
-        moving: {
-          state: false,
-          step: 0,
-          course: "",
-          origin: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-          destination: {
-            x: 0,
-            y: 0,
-          },
-        },
-        newMoveDelay: {
-          state: false,
-          count: 0,
-          limit: 15,
-        },
-        strafing: {
-          state: false,
-          direction: "",
-        },
-        strafeReleaseHook: false,
-        moveCancel: {
-          state: false,
-          oldDirection: "",
-          newDirection: "",
-          returningTo: {},
-          returningFrom: {},
-        },
-        flanking: {
-          checking: false,
-          preFlankDirection: "",
-          direction: "",
-          state: false,
-          step: 0,
-          target1: { x: 0, y: 0 },
-          target2: { x: 0, y: 0 },
-        },
-        attacking: {
-          state: false,
-          count: 0,
-          limit: 20,
-          strength: 0,
-          direction: "",
-          directionType: "", //thrust or slash
-          animRef: {},
-          peak: false,
-          peakCount: 0,
-          charge: 0,
-          chargePeak: false,
-          blunt: false,
-          clashing: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-        },
-        defending: {
-          state: false,
-          count: 0,
-          limit: 4,
-          animRef: {},
-          peak: false,
-          peakCount: 0,
-          decay: {
-            state: false,
-            count: 0,
-            limit: 25,
-          },
-          direction: "",
-          directionType: "", //thrust or slash
-        },
-        drowning: false,
-        dodging: {
-          countState: false,
-          state: false,
-          count: 0,
-          limit: 20,
-          peak: {
-            start: 8,
-            end: 12,
-          },
-          direction: "",
-        },
-        jumping: {
-          checking: false,
-          state: false,
-        },
-        success: {
-          attackSuccess: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-          defendSuccess: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-          deflected: {
-            state: false,
-            count: 0,
-            limit: 20,
-            predeflect: false,
-            type: "",
-          },
-        },
-        pushBack: {
-          state: false,
-          prePushBackMoveSpeed: 0,
-        },
-        halfPushBack: {
-          state: false,
-          direction: "",
-          type: "",
-          countUp: {
-            state: true,
-            count: 0,
-            limit: 0,
-          },
-          countDown: {
-            state: false,
-            count: 0,
-            limit: 0,
-          },
-          coords: {
-            x: undefined,
-            y: undefined,
-          },
-        },
-        falling: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        dead: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        ghost: {
-          state: false,
-          position: {
-            cell: {
-              number: {
-                x: 0,
-                y: 0,
-              },
-              center: {
-                x: 0,
-                y: 0,
-              },
-            },
-          },
-        },
-        respawn: false,
-        points: 0,
-        speed: {
-          move: 0.1,
-          range: [0.05, 0.1, 0.125, 0.2],
-        },
-        terrainMoveSpeed: {
-          state: false,
-          speed: 0,
-        },
-        hp: 2,
-        currentWeapon: {
-          name: "sword1",
-          type: "sword",
-          effect: "",
-        },
-        currentArmor: {
-          name: "",
-          type: "",
-          effect: "",
-        },
-        items: {
-          weaponIndex: 0,
-          armorIndex: 0,
-          weapons: [
-            {
-              name: "sword1",
-              type: "sword",
-              effect: "",
-            },
-          ],
-          armor: [],
-          ammo: 0,
-        },
-        inventorySize: 4,
-        cycleWeapon: {
-          state: false,
-          count: 0,
-          limit: 3,
-        },
-        cycleArmor: {
-          state: false,
-          count: 0,
-          limit: 3,
-        },
-        crits: {
-          singleHit: 1,
-          doubleHit: 6,
-          pushBack: 4,
-          guardBreak: 3,
-          dodge: 0,
-        },
-        statusDisplay: {
-          state: false,
-          status: "",
-          count: 0,
-          limit: 15,
-        },
-        popups: [
-          {
-            state: true,
-            count: 0,
-            limit: 0,
-            type: "",
-            position: "northWest",
-            msg: "",
-            img: "",
-          },
-        ],
-        itemDrop: {
-          state: false,
-          count: 0,
-          limit: 10,
-          item: {
-            name: "",
-          },
-          gear: {
-            type: "",
-          },
-        },
-        itemPickup: {
-          state: false,
-          count: 0,
-          limit: 10,
-          item: {
-            name: "",
-          },
-          gear: {
-            type: "",
-          },
-        },
-        discardGear: {
-          state: false,
-          count: 0,
-          limit: 8,
-        },
-        idleAnim: {
-          state: false,
-          count: 0,
-          limit: 6,
-        },
-        actionDirectionAnimationArray: [],
-        ai: {
-          state: false,
-          imgType: "",
-          primaryMission: "",
-          mission: "",
-          prevMission: "",
-          currentObjective: "",
-          targetSet: false,
-          targetAcquired: false,
-          safeRange: true,
-          pathArray: [],
-          targetPlayer: {
-            number: 1,
-            currentPosition: {
-              x: undefined,
-              y: undefined,
-            },
-            target: {
-              number1: {
-                x: undefined,
-                y: undefined,
-              },
-              number2: {
-                x: undefined,
-                y: undefined,
-              },
-            },
-            action: "",
-          },
-          instructions: [],
-          currentInstruction: 0,
-          resetInstructions: false,
-          patrolling: {
-            checkin: undefined,
-            state: false,
-            area: [],
-            loopControl: false,
-          },
-          defending: {
-            checkin: undefined,
-            state: false,
-            area: [],
-          },
-          persuing: {
-            state: false,
-          },
-          engaging: {
-            state: true,
-            targetAction: "",
-          },
-          retrieving: {
-            checkin: undefined,
-            state: false,
-            point: { x: undefined, y: undefined },
-            targetItem: {
-              name: "",
-              type: "",
-              subType: "",
-              effect: "",
-            },
-            safe: true,
-          },
-          retreating: {
-            checkin: undefined,
-            state: false,
-            point: { x: undefined, y: undefined },
-            level: 0,
-            safe: true,
-          },
-          organizing: {
-            weaponPriorityIndex: 0,
-            armorPriorityIndex: 0,
-            dropped: {
-              state: false,
-              gear: {
-                name: "",
-                type: "",
-                subType: "",
-                effect: "",
-              },
-            },
-          },
-          mode: "",
-          upgradeWeapon: false,
-          upgradeArmor: false,
-          pathfindingRanges: {
-            spear: 3,
-            crossbow: 5,
-          },
-        },
-        stamina: {
-          current: 20,
-          max: 20,
-        },
-        newPushPullDelay: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        prePush: {
-          state: false,
-          count: 0,
-          limit: 15,
-          targetCell: undefined,
-          direction: "",
-          pusher: undefined,
-        },
-        pushing: {
-          state: false,
-          targetCell: undefined,
-          moveSpeed: 0,
-        },
-        prePull: {
-          state: false,
-          count: 0,
-          limit: 15,
-          targetCell: undefined,
-          direction: "",
-          puller: undefined,
-        },
-        pulling: {
-          state: false,
-          targetCell: undefined,
-          moveSpeed: 0,
-        },
-        postPull: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        pushed: {
-          state: false,
-          pusher: 0,
-          moveSpeed: 0,
-        },
-        pulled: {
-          state: false,
-          puller: 0,
-          moveSpeed: 0,
-        },
-        elasticCounter: {
-          preState: false,
-          state: false,
-          direction: "",
-          type: "",
-          subType: "",
-          countUp: {
-            state: false,
-            count: 0,
-            limit: 6,
-          },
-          countDown: {
-            state: false,
-            count: 0,
-            limit: 6,
-          },
-          coords: {
-            x: undefined,
-            y: undefined,
-          },
-          pause: {
-            preState: false,
-            state: false,
-            type: "",
-            count: 0,
-            limit: 6,
-          },
-        },
-        team: "Blue",
-        input: "Keyboard",
-      },
-    ];
-
-    // INPUT
-    this.gamepad = false;
-    this.keyPressed = [
-      {
-        north: false,
-        south: false,
-        east: false,
-        west: false,
-        attack: false,
-        defend: false,
-        strafe: false,
-        dodge: false,
-        pull: false,
-        kick: false,
-        cycleWeapon: false,
-        cycleArmor: false,
-        discardWeapon: false,
-        discardArmor: false,
-        uiMenu: false,
-        playerMenu: false,
-        rotateRight: false,
-        rotateLeft: false,
-      },
-      {
-        north: false,
-        south: false,
-        east: false,
-        west: false,
-        attack: false,
-        defend: false,
-        strafe: false,
-        dodge: false,
-        pull: false,
-        kick: false,
-        cycleWeapon: false,
-        cycleArmor: false,
-        discardWeapon: false,
-        discardArmor: false,
-        uiMenu: false,
-        playerMenu: false,
-        rotateRight: false,
-        rotateLeft: false,
-      },
-    ];
-    this.clicked = {
-      cell: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-        drawCenter: {
-          x: 0,
-          y: 0,
-        },
-        vertices: [
-          {
-            x: 0,
-            y: 0,
-          },
-          {
-            x: 0,
-            y: 0,
-          },
-          {
-            x: 0,
-            y: 0,
-          },
-          {
-            x: 0,
-            y: 0,
-          },
-        ],
-        side: 0,
-        levelData: "",
-        edge: {
-          state: false,
-          side: "",
-        },
-        terrain: {
-          name: "",
-          type: "",
-          effect: "",
-        },
-        item: {
-          name: "",
-          type: "",
-          subType: "",
-          effect: "",
-          initDrawn: false,
-        },
-        void: {
-          state: false,
-        },
-        obstacle: {
-          id: 0,
-          trap: {},
-          state: false,
-          name: "",
-          type: "",
-          hp: 2,
-          destructible: {
-            state: false,
-            weapons: [],
-            leaveRubble: false,
-          },
-          locked: {
-            state: false,
-            key: "",
-          },
-          weight: 1,
-          height: 0.5,
-          items: [],
-          effects: [],
-          moving: {
-            state: false,
-            step: 0,
-            origin: {
-              number: {
-                x: undefined,
-                y: undefined,
-              },
-              center: {
-                x: undefined,
-                y: undefined,
-              },
-            },
-            destination: {
-              number: {
-                x: undefined,
-                y: undefined,
-              },
-              center: {
-                x: undefined,
-                y: undefined,
-              },
-            },
-            currentPosition: {
-              x: undefined,
-              y: undefined,
-            },
-            nextPosition: {
-              x: undefined,
-              y: undefined,
-            },
-            moveSpeed: 0,
-            pushable: true,
-            pushed: false,
-            pusher: undefined,
-            falling: {
-              state: false,
-              count: 0,
-              limit: 10,
-            },
-          },
-        },
-        barrier: {
-          id: 0,
-          trap: {},
-          state: false,
-          name: "",
-          type: "",
-          hp: 2,
-          destructible: {
-            state: false,
-            weapons: [],
-            leaveRubble: false,
-          },
-          locked: {
-            state: false,
-            key: "",
-          },
-          position: "",
-          height: 1,
-        },
-        elevation: {
-          number: 0,
-          type: "",
-          position: "",
-        },
-        rubble: false,
-      },
-      player: undefined,
-    };
-    this.turnCheckerDirection = "";
-
-    // SETTINGS
-    this.settingsGridWidth = 9;
-    this.settingsCanvasHeight = 500;
-    this.settingsCanvasWidth = 700;
-    this.settingsSceneX = 250;
-    this.settingsSceneY = 40;
-    this.settingsClicked = {
-      number: {
-        x: 0,
-        y: 0,
-      },
-      center: {
-        x: 0,
-        y: 0,
-      },
-      drawCenter: {
-        x: 0,
-        y: 0,
-      },
-      vertices: [
-        {
-          x: 0,
-          y: 0,
-        },
-        {
-          x: 0,
-          y: 0,
-        },
-        {
-          x: 0,
-          y: 0,
-        },
-        {
-          x: 0,
-          y: 0,
-        },
-      ],
-      side: 0,
-      levelData: "",
-      edge: {
-        state: false,
-        side: "",
-      },
-      terrain: {
-        name: "",
-        type: "",
-        effect: "",
-      },
-      item: {
-        name: "",
-        type: "",
-        subType: "",
-        effect: "",
-        initDrawn: false,
-      },
-      void: {
-        state: false,
-      },
-      obstacle: {
-        id: 0,
-        trap: {},
-        state: false,
-        name: "",
-        type: "",
-        hp: 2,
-        destructible: {
-          state: false,
-          weapons: [],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        weight: 1,
-        height: 0.5,
-        items: [],
-        effects: [],
-        moving: {
-          state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-        },
-      },
-      barrier: {
-        id: 0,
-        trap: {},
-        state: false,
-        name: "",
-        type: "",
-        hp: 2,
-        destructible: {
-          state: false,
-          weapons: [],
-          leaveRubble: false,
-        },
-        locked: {
-          state: false,
-          key: "",
-        },
-        position: "",
-        height: 1,
-      },
-      elevation: {
-        number: 0,
-        type: "",
-        position: "",
-      },
-      rubble: false,
-    };
-    this.settingsFormAiGridInfo = [];
-    this.settingsFormAiStartPosList = [];
-    this.updateSettingsFormAiDataData = {};
-    this.settingsFormPlyrGridInfo = [];
-    this.settingsFormPlyrStartPosList = [];
-    this.settingsFormPlayerData = {};
-    this.showSettingsKeyPress = {
-      state: false,
-      count: 0,
-      limit: 4,
-    };
-    this.showSettingsCanvasData = {
-      state: true,
-      field: "human_start",
-      plyrNo: 1,
-      type: "start",
-    };
-    this.gamepadConfig = [];
-    this.connectedGamepadsInit = false;
-
-    // CELL INFO
-    this.showCellInfoBox = false;
-    this.mouseOverCell = {
-      state: false,
-      cell: undefined,
-      count: 0,
-      threshold: 40,
-    };
-    this.mousedOverCellCoords = {
-      x: undefined,
-      y: undefined,
-    };
-    this.mouseMoving = false;
-    this.mouseOverCellSwitchOff = {
-      state: false,
-      count: 0,
-      limit: 100,
-    };
-    this.cellInfoMouseOver = false;
-    this.cursorCoords = {};
-
-    //LOOP & ANIMATION
-    this.stepper = {
-      now: 0,
-      dt: 0,
-      last: 0,
-      step: 1 / 60,
-      fps: 0,
-
-      secondsPassed: 0,
-      oldTimeStamp: 0,
-      movingSpeed: 30,
-      frameCount: 0,
-
-      fps2: 30,
-      interval: 1000 / 30,
-      lastTime: 0,
-      currentTime: new Date().getTime(),
-      deltaTime: 0,
-    };
-    this.moveStepRef = [
-      [
-        0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
-        0.8, 0.85, 0.9, 0.95, 1,
-      ],
-      [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-      [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
-      [0.2, 0.4, 0.6, 0.8, 1],
-    ];
-    this.actionAnimFrameTypeCountRef = {
-      attacking: {
-        typeCount: 7,
-        sheetLength: 70,
-      },
-      defending: {
-        typeCount: 5,
-        sheetLength: 50,
-      },
-    };
-    this.attackAnimRef = {
-      limit: {
-        unarmed: {
-          thrust: {
-            normal: 30,
-            charged: 40,
-          },
-          slash: {
-            normal: 35,
-            charged: 45,
-          },
-        },
-        sword: {
-          thrust: {
-            normal: 40,
-            charged: 50,
-          },
-          slash: {
-            normal: 45,
-            charged: 55,
-          },
-        },
-        spear: {
-          thrust: {
-            normal: 50,
-            charged: 60,
-          },
-          slash: {
-            normal: 55,
-            charged: 65,
-          },
-        },
-        crossbow: {
-          thrust: {
-            normal: 40,
-            charged: 50,
-          },
-          slash: {
-            normal: 50,
-            charged: 60,
-          },
-        },
-      },
-      peak: {
-        unarmed: {
-          thrust: {
-            normal: 15,
-            charged: 25,
-          },
-          slash: {
-            normal: 20,
-            charged: 30,
-          },
-        },
-        sword: {
-          thrust: {
-            normal: 25,
-            charged: 35,
-          },
-          slash: {
-            normal: 30,
-            charged: 40,
-          },
-        },
-        spear: {
-          thrust: {
-            normal: 35,
-            charged: 45,
-          },
-          slash: {
-            normal: 40,
-            charged: 50,
-          },
-        },
-        crossbow: {
-          thrust: {
-            normal: 35,
-            charged: 45,
-          },
-          slash: {
-            normal: 35,
-            charged: 45,
-          },
-        },
-      },
-    };
-    this.obstacleBarrierTrapAttackAnimRef = {
-      limit: {
-        sword: 25,
-        spear: 30,
-        crossbow: 30,
-      },
-      peak: {
-        sword: 15,
-        spear: 20,
-        crossbow: 20,
-      },
-    };
-    this.defendAnimRef = {
-      limit: {
-        unarmed: {
-          thrust: 20,
-          slash: 20,
-        },
-        sword: {
-          thrust: 30,
-          slash: 30,
-        },
-        spear: {
-          thrust: 40,
-          slash: 40,
-        },
-        crossbow: {
-          thrust: 30,
-          slash: 30,
-        },
-      },
-      peak: {
-        unarmed: {
-          thrust: 11,
-          slash: 11,
-          // 7
-        },
-        sword: {
-          thrust: 15,
-          slash: 15,
-          // 12
-        },
-        spear: {
-          thrust: 20,
-          slash: 20,
-          // 17
-        },
-        crossbow: {
-          thrust: 17,
-          slash: 17,
-        },
-      },
-    };
-    this.staminaCostRef = {
-      attack: {
-        unarmed: {
-          blunt: {
-            pre: 1,
-            peak: 2,
-          },
-          normal: {
-            pre: 1,
-            peak: 2,
-          },
-        },
-        sword: {
-          blunt: {
-            pre: 2,
-            peak: 3,
-          },
-          normal: {
-            pre: 2,
-            peak: 3,
-          },
-        },
-        spear: {
-          blunt: {
-            pre: 2,
-            peak: 4,
-          },
-          normal: {
-            pre: 2,
-            peak: 4,
-          },
-        },
-        crossbow: {
-          blunt: {
-            pre: 1,
-            peak: 3,
-          },
-          normal: {
-            pre: 1,
-            peak: 3,
-          },
-        },
-      },
-      deflected: {
-        outOfStamina: 0,
-        attacked: 3,
-        bluntAttacked: 2,
-        defended: 3,
-        parried: 5,
-        knockedOut: 0,
-      },
-      defend: {
-        pre: 1.5,
-        peak: 2,
-      },
-      dodge: {
-        pre: 2,
-        peak: 4,
-      },
-      flank: 5,
-      jump: 6,
-      pushBack: 7,
-      push: 3,
-      pull: 4,
-      move: 0.1,
-      strafe: 0.5,
-      turn: 0.5,
-    };
-    this.deflectedLengthRef = {
-      outOfStamina: 50,
-      attacked: 18,
-      bluntAttacked: 23,
-      defended: 10,
-      parried: 25,
-      knockedOut: 65,
-    };
-    this.baseDodgeCountRef = {
-      limit: 20,
-      peak: {
-        start: 8,
-        end: 12,
-      },
-    };
-    this.simultaneousAttackAllowance = 2;
-    this.defendPeakAllowance = 2;
-    this.projectiles = [];
-    this.projectileSpeed = 0.1;
-    this.cellsUnderAttack = [];
-    this.cellsUnderPreAttack = [];
-    this.cellsToHighlight = [];
-    this.cellsToHighlight2 = [];
-    this.gamepadPollCounter = {
-      count1: 0,
-      count2: 0,
-      store1: [],
-      store2: [],
-    };
-    this.charSpriteHeight = 100;
-    this.charSpriteWidth = 60;
-    this.playerColourRef = {
-      player1: "red",
-      player2: "blue",
-      player3: "green",
-      player4: "purple",
-      player5: "orange",
-      player6: "brown",
-      player7: "",
-      player8: "",
-    };
-    this.playerDrawWidth = 45;
-    this.playerDrawHeight = 45;
-    this.playerDrawWidth2 = 55;
-    this.playerDrawHeight2 = 85;
-    this.popupSize = 45;
-    this.popupImgSize = 25;
-    this.movingObstacles = [];
-    this.halfPushBackObstacles = [];
-    this.obstacleBarrierActionAnimationArray = [];
-
-    this.obstacleBarrierToDestroy = [];
-    this.obstacleItemsToDrop = [];
-    this.obstaclesOutOfBoundsFall = [];
-    this.cellPopups = [];
-    this.popupImageRef = {};
-    this.indicatorImgs = {};
-    this.playerImgs = [];
-    this.itemImgs = {};
-    this.boltImgs = {};
-    this.floorImgs = {};
-    this.obstacleImgs = {};
-    this.barrierImgs = {};
-    this.cellColorRef = [];
-    this.popupProgressBorderSvgPath = "";
-    this.popupProgressImgGradColor1 = "rgb(255,0,0)";
-    this.popupProgressImgGradColor2 = "rgb(255,255,0)";
-
-    this.currentPlayerDrawCell;
-    this.halfPushBackChaining = true;
-    this.halfPushBackChainingMoveAll = true;
-
-    this.showPlayerOutlines = false;
-    this.showGridIsoGuide = false;
-    this.showDirectionalActionAnimation = true;
-    this.hideAllPopups = false;
-    this.hideDirectionalActionPopus = true;
-    this.directionalAnimShape = "ringSection";
-
-    this.backgroundImageRef = {};
-
-    // CAMERA
-    this.toggleCameraMode = false;
-    this.camera = {
-      state: false,
-      startCount: 0,
-      startLimit: 4,
-      mode: "pan",
-      fixed: false,
-      target: {
-        type: "player",
-        plyrNo: 1,
-        cell: {
-          x: undefined,
-          y: undefined,
-        },
-      },
-      focus: {
-        x: undefined,
-        y: undefined,
-      },
-      focusCell: {
-        x: 4,
-        y: 4,
-      },
-      cellToPanOrigin: {
-        x: 4,
-        y: 4,
-      },
-      zoom: {
-        x: 1,
-        y: 1,
-      },
-      zoomDirection: "in",
-      pan: {
-        x: 1,
-        y: 1,
-      },
-      panDirection: "east",
-      adjustedPan: {
-        x: -1,
-        y: -1,
-      },
-      zoomFocusPan: {
-        x: -1,
-        y: -1,
-      },
-      limits: {
-        zoom: {
-          min: 0.5,
-          max: 2.5,
-        },
-        pan: {
-          x: {
-            min: -400,
-            max: 400,
-          },
-          y: {
-            min: -200,
-            max: 200,
-          },
-        },
-        state: {
-          count: 0,
-          limit: 10,
-          zoom: false,
-          pan: false,
-        },
-      },
-      instructionType: "default",
-      currentPreInstruction: 0,
-      preInstructions: [],
-      currentInstruction: 0,
-      instructions: [],
-      customView: {
-        state: false,
-        zoom: 0,
-        pan: {
-          x: 0,
-          y: 0,
-        },
-        keyPressCount: {
-          start: 0,
-          limit: 4,
-        },
-      },
-    };
-    this.cameraInstructionRef = {
-      default: {},
-      story: {},
-      // FollowPlayer2, centerOnCell21 etc
-    };
-    this.resetCameraSwitch = false;
-    this.setInitZoom = {
-      state: false,
-      windowWidth: 0,
-      gridWidth: 0,
-      count: 0,
-      limit: 0,
-    };
-    this.engagedZoomThreshold = {
-      melee: 0.5,
-      ranged: 0.1,
-    };
-    this.settingAutoCamera = false;
-    this.settingAutoCameraFollowBolt = false;
-    this.highlightZoomPanFocusCell = true;
-    this.zoomThresh = -0.05;
-    // this.zoomThresh = -0.15;
-    this.autoCamPanWaitingForPath = false;
-
-    // AI
-    this.aiInitSettings = {
-      randomStart: false,
-      startPosition: {
-        number: { x: 1, y: 7 },
-      },
-      primaryMission: "defend",
-      mission: undefined,
-      mode: "careful",
-      partolArea: [
-        { x: 8, y: 6 },
-        // {x: 7, y: 4}
-      ],
-      weapons: [],
-      armor: [],
-      team: "",
-    };
-    this.addAiPlayerKeyPress = false;
-    this.addAiCount = {
-      state: false,
-      count: 0,
-      limit: 10,
-    };
-    this.aiPlayers = [];
-    this.aiTarget = 1;
-    this.resetAiTarget = {
-      state: false,
-      state2: false,
-      player: 1,
-      count: 0,
-      limit: 25,
-    };
-    this.allPlayersDead = false;
-    this.removeAi = undefined;
-    this.easyStar = undefined;
-    this.getPath = false;
-    this.aiDeflectCheck = false;
-    this.aiDeflectedCheck = [];
-
-    this.bloodSacrificeEvent = {
-      state: false,
-      count: 0,
-      limit: 100,
-      restore: false,
-    };
-    this.bloodSacrificeVoidedCells = [];
-
-    this.testDraw = [];
-    this.testData = "";
-    this.testCount = {
-      state: false,
-      count: 0,
-      limit: 0,
-    };
-
-    // ASSETS
-    this.testRefNorth = React.createRef();
-    this.testRefSouth = React.createRef();
-    this.testRefEast = React.createRef();
-    this.testRefWest = React.createRef();
-
-    this.bgCompassRef = React.createRef();
-
-    this.backgroundField1Ref = React.createRef();
-    this.backgroundField2Ref = React.createRef();
-    this.backgroundField3Ref = React.createRef();
-    this.backgroundNorthernLights1Ref = React.createRef();
-    this.backgroundSeaClouds1Ref = React.createRef();
-    this.backgroundSeaClouds2Ref = React.createRef();
-    this.backgroundSeaClouds3Ref = React.createRef();
-    this.backgroundSeaClouds4Ref = React.createRef();
-    this.backgroundSeaCloudsNight1Ref = React.createRef();
-    this.backgroundSeaCoast1Ref = React.createRef();
-
-    this.popupProgressImgRef = React.createRef();
-    this.popupProgressSvgRef = React.createRef();
-    this.floorGrassRef = React.createRef();
-    this.floorDirtRef = React.createRef();
-    this.floorIceRef = React.createRef();
-    this.floorStoneRef = React.createRef();
-    this.floorSandRef = React.createRef();
-    this.floorMudRef = React.createRef();
-    this.floorPondRef = React.createRef();
-    this.floorRiverRef = React.createRef();
-    this.floorBrambleRef = React.createRef();
-    this.floorLavaRef = React.createRef();
-    this.floorAttackRef = React.createRef();
-    this.floorAttack2Ref = React.createRef();
-    this.floorVoidRef = React.createRef();
-    this.floorVoid2Ref = React.createRef();
-    this.floorVoid3Ref = React.createRef();
-    this.floorHighlightRef = React.createRef();
-    this.floorRubbleRef = React.createRef();
-
-    this.cellVoidingIndicateRef = React.createRef();
-    this.cellVoidingIndicate2Ref = React.createRef();
-
-    this.wallRef = React.createRef();
-    this.wall2Ref = React.createRef();
-    this.wall3Ref = React.createRef();
-
-    this.obstacleAHalfRef = React.createRef();
-    this.obstacleAFullRef = React.createRef();
-    this.obstacleBHalfRef = React.createRef();
-    this.obstacleBFullRef = React.createRef();
-    this.obstacleCHalfRef = React.createRef();
-    this.obstacleCFullRef = React.createRef();
-    this.obstacleDHalfRef = React.createRef();
-    this.obstacleDFullRef = React.createRef();
-    this.obstacleEHalfRef = React.createRef();
-    this.obstacleEFullRef = React.createRef();
-    this.obstacleCrateRef = React.createRef();
-    this.obstacleBarrelRef = React.createRef();
-    this.barrierANorthRef = React.createRef();
-    this.barrierASouthRef = React.createRef();
-    this.barrierAEastRef = React.createRef();
-    this.barrierAWestRef = React.createRef();
-
-    this.unbreakableIndicateRef = React.createRef();
-
-    this.timerIndicateRef = React.createRef();
-
-    this.preAction1IndicateRef = React.createRef();
-    this.preAction2IndicateRef = React.createRef();
-    this.preAction1IndicateRef = React.createRef();
-    this.preAction2IndicateRef = React.createRef();
-
-    this.preAttackIndicateRef = React.createRef();
-    this.preAttack2IndicateRef = React.createRef();
-
-    this.attack1IndicateRef = React.createRef();
-    this.attack2IndicateRef = React.createRef();
-    this.attack3IndicateRef = React.createRef();
-
-    this.attackUnarmedIndicateRef = React.createRef();
-    this.attackBluntIndicateRef = React.createRef();
-    this.attackBluntIndicate2Ref = React.createRef();
-
-    this.attackSuccessIndicateRef = React.createRef();
-
-    this.attackBreakIndicateRef = React.createRef();
-
-    this.attackFeintIndicateRef = React.createRef();
-    this.attackFeintIndicate2Ref = React.createRef();
-    this.attackFeintIndicate3Ref = React.createRef();
-
-    this.attackParriedIndicateRef = React.createRef();
-    this.chargeIndicateRef = React.createRef();
-
-    this.missedIndicateRef = React.createRef();
-    this.missedIndicate2Ref = React.createRef();
-
-    this.defendIndicateRef = React.createRef();
-    this.defendIndicate1Ref = React.createRef();
-    this.defendIndicate2Ref = React.createRef();
-    this.defendIndicate3Ref = React.createRef();
-    this.defendIndicate4Ref = React.createRef();
-
-    this.defendBreakIndicateRef = React.createRef();
-    this.defendSuccessIndicateRef = React.createRef();
-    this.defendBreakIndicateRef = React.createRef();
-
-    this.defendFeintIndicateRef = React.createRef();
-    this.defendFeintIndicate2Ref = React.createRef();
-    this.defendFeintIndicate3Ref = React.createRef();
-
-    this.boltDefendIndicateRef = React.createRef();
-    this.boltDefendIndicate2Ref = React.createRef();
-    this.boltKilledIndicateRef = React.createRef();
-
-    this.deflectIndicateRef = React.createRef();
-    this.deflectIndicate2Ref = React.createRef();
-    this.deflectInjuredIndicateRef = React.createRef();
-    this.deflectInjuredIndicate2Ref = React.createRef();
-    this.deflectBluntIndicateRef = React.createRef();
-
-    this.pushbackIndicateRef = React.createRef();
-
-    this.dodgeIndicateRef = React.createRef();
-    this.dodgeIndicateRef = React.createRef();
-    this.dodgeFeintIndicateRef = React.createRef();
-    this.dodgeFeintIndicate2Ref = React.createRef();
-    this.dodgeIndicate2Ref = React.createRef();
-
-    this.flankIndicateRef = React.createRef();
-    this.flankIndicate2Ref = React.createRef();
-    this.noFlankIndicateRef = React.createRef();
-
-    this.fallingIndicateRef = React.createRef();
-    this.drowningIndicateRef = React.createRef();
-
-    this.ghostIndicateRef = React.createRef();
-    this.deathIndicateRef = React.createRef();
-
-    this.healIndicateRef = React.createRef();
-
-    this.outOfStaminaIndicateRef = React.createRef();
-    this.inventoryFullIndicateRef = React.createRef();
-    this.outOfAmmoIndicateRef = React.createRef();
-
-    this.destroyedItemIndicateRef = React.createRef();
-    this.pickupBuffIndicateRef = React.createRef();
-    this.pickupDebuffIndicateRef = React.createRef();
-    this.pickupWeaponIndicateRef = React.createRef();
-    this.dropWeaponIndicateRef = React.createRef();
-    this.dropArmorIndicateRef = React.createRef();
-    this.pickupArmorIndicateRef = React.createRef();
-    this.pickupAmmoIndicateRef = React.createRef();
-
-    this.prePushIndicateRef = React.createRef();
-    this.canPushIndicateRef = React.createRef();
-    this.noPushingIndicateRef = React.createRef();
-    this.pushingIndicateRef = React.createRef();
-    this.prePullIndicateRef = React.createRef();
-    this.canPullIndicateRef = React.createRef();
-    this.noPullingIndicateRef = React.createRef();
-    this.pullingIndicateRef = React.createRef();
-    this.pushedPulledIndicateRef = React.createRef();
-
-    this.terrainSpeedupIndicateRef = React.createRef();
-    this.terrainSlowdownIndicateRef = React.createRef();
-    this.terrainInjuredIndicateRef = React.createRef();
-
-    this.noDirectionIndicateRef = React.createRef();
-    this.noDirectionIndicate2Ref = React.createRef();
-    this.noDirectionIndicate3Ref = React.createRef();
-    this.northDirectionIndicateRef = React.createRef();
-    this.southDirectionIndicateRef = React.createRef();
-    this.eastDirectionIndicateRef = React.createRef();
-    this.westDirectionIndicateRef = React.createRef();
-
-    // ITEMS
-    this.itemSpdUpRef = React.createRef();
-    this.itemSpdDownRef = React.createRef();
-    this.itemHpUpRef = React.createRef();
-    this.itemHpDownRef = React.createRef();
-    this.itemFocusUpRef = React.createRef();
-    this.itemFocusDownRef = React.createRef();
-    this.itemStrUpRef = React.createRef();
-    this.itemStrDownRef = React.createRef();
-    this.itemHelmet1Ref = React.createRef();
-    this.itemAmmoRef = React.createRef();
-    this.itemAmmoRef = React.createRef();
-    this.itemMail1Ref = React.createRef();
-    this.itemGreaves1Ref = React.createRef();
-    this.itemBoltNorthRef = React.createRef();
-    this.itemBoltSouthRef = React.createRef();
-    this.itemBoltEastRef = React.createRef();
-    this.itemBoltWestRef = React.createRef();
-    this.itemSwordRef = React.createRef();
-    this.itemSpearRef = React.createRef();
-    this.itemBowRef = React.createRef();
-    this.itemCrossbowRef = React.createRef();
-    this.boltNorthRef = React.createRef();
-    this.boltSouthRef = React.createRef();
-    this.boltEastRef = React.createRef();
-    this.boltWestRef = React.createRef();
-    this.ammoRef = React.createRef();
-    this.mail1Ref = React.createRef();
-    this.mail2Ref = React.createRef();
-    this.mail3Ref = React.createRef();
-    this.greaves1Ref = React.createRef();
-    this.greaves2Ref = React.createRef();
-    this.greaves3Ref = React.createRef();
-    this.helmet1Ref = React.createRef();
-    this.hpUpRef = React.createRef();
-    this.hpDownRef = React.createRef();
-    this.spdUpRef = React.createRef();
-    this.spdDownRef = React.createRef();
-    this.strUpRef = React.createRef();
-    this.strDownRef = React.createRef();
-    this.focusUpRef = React.createRef();
-    this.focusDownRef = React.createRef();
-
-    this.playerImgIdleSheetRef = React.createRef();
-    this.player2ImgIdleSheetRef = React.createRef();
-    this.playerComAImgIdleSheetRef = React.createRef();
-    this.playerComBImgIdleSheetRef = React.createRef();
-    this.playerImgMoveSheetRef = React.createRef();
-    this.player2ImgMoveSheetRef = React.createRef();
-    this.comAImgMoveSheetRef = React.createRef();
-    this.comBImgMoveSheetRef = React.createRef();
-    this.player1ImgDefendSheetRef = React.createRef();
-    this.player2ImgDefendSheetRef = React.createRef();
-    this.comAImgDefendSheetRef = React.createRef();
-    this.comBImgDefendSheetRef = React.createRef();
-    this.player1ImgAttackSheetRef = React.createRef();
-    this.player2ImgAttackSheetRef = React.createRef();
-    this.comAImgAttackSheetRef = React.createRef();
-    this.comBImgAttackSheetRef = React.createRef();
-
-    // AI
-    this.completeMissionIndicateRef = React.createRef();
-    this.enrouteIndicateRef = React.createRef();
-    this.targetSwitchIndicateRef = React.createRef();
-    this.pathSwitchIndicateRef = React.createRef();
-    this.retreatIndicateRef = React.createRef();
-
-    this.completeMissionIndicateRef = React.createRef();
-    this.enrouteIndicateRef = React.createRef();
-    this.targetSwitchIndicateRef = React.createRef();
-    this.pathSwitchIndicateRef = React.createRef();
-    this.retreatIndicateRef = React.createRef();
-    this.aggressiveModeIndicateRef = React.createRef();
-    this.passiveModeIndicateRef = React.createRef();
-    this.thinkingIndicateRef = React.createRef();
-    this.defendMissionIndicateRef = React.createRef();
-    this.patrolMissionIndicateRef = React.createRef();
-    this.pursueMissionIndicateRef = React.createRef();
-    this.pursueMissionIndicate2Ref = React.createRef();
-    this.retrieveMissionIndicateRef = React.createRef();
-
-    this.moveSheetNewRef = React.createRef();
-    this.idleSheetNewRef = React.createRef();
-    this.idleSheetNew2Ref = React.createRef();
-    this.attackSheetNewRef = React.createRef();
-    this.defendSheetNewRef = React.createRef();
-    this.dodgeSheetNewRef = React.createRef();
-    this.deflectedFallingSheetNewRef = React.createRef();
-  }
+  drawGridInitRef = React.createRef();
 
   componentDidMount() {
+    console.log("componentDidMount");
+
     // Helper.init()
 
     this.easyStar = new Easystar.js();
 
-    if (window.innerWidth < 1100) {
-      this.setState({
-        containerInnerClass: "containerInnerSmall",
-        sceneY: {
-          three: 300,
-          six: 200,
-          nine: 120,
-          twelve: 50,
-        },
-      });
+    // Use context's setState for shared state
+    const { context, setState } = this.context;
+    const gridWidth = context.gridWidth;
+    let newSceneY;
 
-      switch (this.gridWidth) {
+    if (window.innerWidth < 1100) {
+      switch (gridWidth) {
         case 3:
-          this.sceneY = 300;
+          newSceneY = 300;
           break;
         case 6:
-          this.sceneY = 200;
+          newSceneY = 200;
           break;
         case 9:
-          this.sceneY = 120;
+          newSceneY = 120;
           break;
         case 12:
-          this.sceneY = 50;
+          newSceneY = 50;
           break;
       }
 
-      this.canvasWidth = 1000;
-      this.canvasHeight = 600;
+      setState((prevState) => ({
+        ...prevState,
+        state: {
+          ...prevState.state,
+          containerInnerClass: "containerInnerSmall",
+          sceneY: {
+            three: 300,
+            six: 200,
+            nine: 120,
+            twelve: 50,
+          },
+        },
+        canvasWidth: 1000,
+        canvasHeight: 600,
+        sceneY: newSceneY,
+      }));
     }
 
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext("2d");
+    // Use refs from imageRefs
+    const canvas = imageRefs.canvasRef.current;
+    const canvasContext = canvas.getContext("2d");
+    const canvas2 = imageRefs.canvasRef2.current;
+    const canvasContext2 = canvas2.getContext("2d");
 
-    let canvas2 = this.canvasRef2.current;
-    let context2 = canvas2.getContext("2d");
+    setState((prevState) => ({
+      ...prevState,
+      state: {
+        ...prevState.state,
+        canvas,
+        canvasContext,
+        canvas2,
+        canvasContext2,
+      },
+    }));
 
-    this.setState({
-      canvas: canvas,
-      context: context,
-      canvas2: canvas2,
-      context2: context2,
-    });
+    if (imageRefs.deflectedFallingSheetNewRef.current) {
+      imageRefs.deflectedFallingSheetNewRef.current.onload = () => {
+        this.addListeners(canvas, canvas2);
 
-    this.deflectedFallingSheetNewRef.current.onload = () => {
-      this.addListeners(canvas, canvas2);
+        this.updateSettingsFormPlayerData({
+          input: [
+            { plyrNo: 1, input: "keyboard" },
+            { plyrNo: 2, input: "keyboard" },
+          ],
+          weapon: [
+            { plyrNo: 1, weapons: ["sword", "spear", "crossbow"] },
+            { plyrNo: 2, weapons: ["sword", "spear", "crossbow"] },
+          ],
+          armor: [
+            { plyrNo: 1, armor: [] },
+            { plyrNo: 2, armor: [] },
+          ],
+          team: [
+            { plyrNo: 1, team: "Red" },
+            { plyrNo: 2, team: "Blue" },
+          ],
+        });
 
-      this.updateSettingsFormPlayerData({
-        input: [
-          { plyrNo: 1, input: "keyboard" },
-          { plyrNo: 2, input: "keyboard" },
-        ],
-        weapon: [
-          { plyrNo: 1, weapons: ["sword", "spear", "crossbow"] },
-          { plyrNo: 2, weapons: ["sword", "spear", "crossbow"] },
-        ],
-        armor: [
-          { plyrNo: 1, armor: [] },
-          { plyrNo: 2, armor: [] },
-        ],
-        team: [
-          { plyrNo: 1, team: "Red" },
-          { plyrNo: 2, team: "Blue" },
-        ],
-      });
-      this.drawGridInit(
-        this.state.canvas,
-        this.state.context,
-        this.state.canvas2,
-        this.state.context2
-      );
-      this.getCustomPlyrStartPosList([
-        {
-          plyrNo: 1,
-          selected: undefined,
-          posArray: [],
-        },
-        {
-          plyrNo: 2,
-          selected: undefined,
-          posArray: [],
-        },
-      ]);
+        // this.drawGridInit(canvas, canvasContext, canvas2, canvasContext2);
 
-      window.requestAnimationFrame(this.gameLoop);
-    };
+        setState((prevState) => ({
+          ...prevState,
+          global_function_component_triggers: {
+            ...prevState.global_function_component_triggers,
+            drawGridInit: {
+              ...prevState.global_function_component_triggers.drawGridInit,
+              main: prevState.global_function_component_triggers.drawGridInit.main + 1,
+            },
+          },
+        }));
+
+        // function updateNestedState(obj, path, value) {
+        //   if (path.length === 1) {
+        //     return { ...obj, [path[0]]: value };
+        //   }
+        //   const [head, ...rest] = path;
+        //   return {
+        //     ...obj,
+        //     [head]: updateNestedState(obj[head] || {}, rest, value),
+        //   };
+        // }
+
+        setState((prevState) =>
+          updateNestedState(
+            prevState,
+            ["global_function_component_triggers", "drawGridInit", "main"],
+            prevState.global_function_component_triggers.drawGridInit.main + 1,
+          ),
+        );
+
+        this.getCustomPlyrStartPosList([
+          { plyrNo: 1, selected: undefined, posArray: [] },
+          { plyrNo: 2, selected: undefined, posArray: [] },
+        ]);
+
+        // window.requestAnimationFrame(this.gameLoop);
+      };
+    }
   }
+
   componentWillUnmount() {
-    window.cancelAnimationFrame(this.stepper.currentTime);
+    // window.cancelAnimationFrame(this.stepper.currentTime);
   }
 
   pollGamepads = () => {
@@ -4441,7 +208,7 @@ class App extends Component {
       ) {
         connectedGamepads.splice(
           connectedGamepads.indexOf((x) => x.index === pad.index),
-          1
+          1,
         );
       }
     }
@@ -4450,7 +217,7 @@ class App extends Component {
 
     let currentGamepadPlayer;
     let settingsGamepadPlayerCount = this.gamepadConfig.filter(
-      (x) => x.input === "Gamepad"
+      (x) => x.input === "Gamepad",
     ).length;
 
     if (this.gamepadPollCounter.count1 === 0) {
@@ -4558,7 +325,7 @@ class App extends Component {
       if (gp) {
         // console.log('gp',gp);
         let gamepadConfigRef = this.gamepadConfig.find(
-          (x) => x.gamepadIndex === gp.index
+          (x) => x.gamepadIndex === gp.index,
         );
 
         if (gamepadConfigRef) {
@@ -4894,7 +661,7 @@ class App extends Component {
               gp.id.substr(0, 11) === "Joy-Con (L)"
             ) {
               console.log(
-                "can't use single joycon. please re-configure controller/gamepad settings"
+                "can't use single joycon. please re-configure controller/gamepad settings",
               );
               keyPressed[keyPressedIndex].state = false;
               keyPressed[keyPressedIndex].keyPressed = {
@@ -5381,7 +1148,7 @@ class App extends Component {
               (y = {
                 plyrNo: y.plyrNo,
                 selected: y.selected,
-              })
+              }),
           );
 
           let plyrChange = newArray.find((x) => x.plyrNo === plyrNo);
@@ -5398,7 +1165,7 @@ class App extends Component {
                 plyrNo: y.plyrNo,
                 mission: y.mission,
                 selected: y.selected,
-              })
+              }),
           );
 
           this.getCustomAiStartPosList(newArray2);
@@ -5416,7 +1183,7 @@ class App extends Component {
                 plyrNo: y.plyrNo,
                 mission: y.mission,
                 selected: y.selected,
-              })
+              }),
           );
 
           let plyrChange = newArray3.find((x) => x.plyrNo === plyrNo);
@@ -5706,7 +1473,7 @@ class App extends Component {
       this.connectedGamepadsInit = false;
       this.showSettingsKeyPress.state = true;
       console.log(
-        "connected gamepads state change! please re-configure controller/gamepad settings"
+        "connected gamepads state change! please re-configure controller/gamepad settings",
       );
     }
   };
@@ -5868,7 +1635,7 @@ class App extends Component {
           mission: null,
           startPos: null,
           otherPositions: [],
-        })
+        }),
     );
 
     for (const plyr of initArray) {
@@ -6029,7 +1796,7 @@ class App extends Component {
   };
   setBackgroundImage = (args) => {
     document.getElementsByClassName(
-      this.state.containerInnerClass
+      this.state.containerInnerClass,
     )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
   };
 
@@ -6057,7 +1824,7 @@ class App extends Component {
           !this.gridInfo.find(
             (x) =>
               x.number.x === this.players[plyr.plyrNo - 1].startPosition.cell.number.x &&
-              x.number.y === this.players[plyr.plyrNo - 1].startPosition.cell.number.y
+              x.number.y === this.players[plyr.plyrNo - 1].startPosition.cell.number.y,
           )
         ) {
           let cll = { x: undefined, y: undefined };
@@ -6096,7 +1863,7 @@ class App extends Component {
         if (
           this.plyrStartPosCheckCell({ x: elem.number.x, y: elem.number.y }) === true &&
           !avoidCells.find(
-            (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y
+            (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y,
           )
         ) {
           array1.push({ x: elem.number.x, y: elem.number.y });
@@ -6149,7 +1916,7 @@ class App extends Component {
   plyrStartPosCheckCell = (cell) => {
     let cellFree = true;
     let cell2 = this.gridInfo.find(
-      (elem) => elem.number.x === cell.x && elem.number.y === cell.y
+      (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
     );
     // if (
     //   cell2.levelData.charAt(0) ===  'z' ||
@@ -6229,7 +1996,7 @@ class App extends Component {
           if (
             this.checkCell({ x: elem.number.x, y: elem.number.y }, ["all"]) === true &&
             !avoidCells.find(
-              (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y
+              (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y,
             )
           ) {
             array1.push({ x: elem.number.x, y: elem.number.y });
@@ -6512,10 +2279,10 @@ class App extends Component {
         };
 
         let cell = this.settingsGridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
+          (elem) => elem.number.x === x && elem.number.y === y,
         );
         let cellLevelData = this.settingsGridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
+          (elem) => elem.number.x === x && elem.number.y === y,
         ).levelData;
 
         let floor = floorImgs[cell.terrain.name];
@@ -6538,7 +2305,7 @@ class App extends Component {
         context3.fillText(
           "" + x + "," + y + "",
           iso2.x - offset2.x / 2 + 5,
-          iso2.y - offset2.y / 2 + 2
+          iso2.y - offset2.y / 2 + 2,
         );
 
         // context3.fillStyle = "black";
@@ -6550,7 +2317,7 @@ class App extends Component {
           context4.fillText(
             "" + x + "," + y + "",
             iso2.x - offset2.x / 2 + 5,
-            iso2.y - offset2.y / 2 + 2
+            iso2.y - offset2.y / 2 + 2,
           );
         }
 
@@ -6628,7 +2395,7 @@ class App extends Component {
             iso2.x - offset2.x,
             iso2.y - obstacleImg.height / 2,
             obstacleImg.width / 2,
-            obstacleImg.height / 2
+            obstacleImg.height / 2,
           );
           if (context4) {
             context4.drawImage(
@@ -6636,7 +2403,7 @@ class App extends Component {
               iso2.x - offset2.x,
               iso2.y - obstacleImg.height / 2,
               obstacleImg.width / 2,
-              obstacleImg.height / 2
+              obstacleImg.height / 2,
             );
           }
         }
@@ -6648,7 +2415,7 @@ class App extends Component {
             iso2.x - offset2.x,
             iso2.y - barrierImg.height / 2,
             barrierImg.width / 2,
-            barrierImg.height / 2
+            barrierImg.height / 2,
           );
           if (context4) {
             context4.drawImage(
@@ -6656,7 +2423,7 @@ class App extends Component {
               iso2.x - offset2.x,
               iso2.y - barrierImg.height / 2,
               barrierImg.width / 2,
-              barrierImg.height / 2
+              barrierImg.height / 2,
             );
           }
         }
@@ -6782,7 +2549,7 @@ class App extends Component {
           } else {
             pathSet = path;
           }
-        }
+        },
       );
       this.easyStar.setIterationsPerCalculation(1000);
       this.easyStar.calculate();
@@ -7141,14 +2908,14 @@ class App extends Component {
           if (greater === "zoom" && remainder > 0) {
             if (
               this.camera.instructions[this.camera.instructions.length - 1].action2.split(
-                "_"
+                "_",
               )[0] === "zoom"
             ) {
               this.camera.instructions[this.camera.instructions.length - 1].limit2 +=
                 remainder;
             } else if (
               this.camera.instructions[this.camera.instructions.length - 1].action3.split(
-                "_"
+                "_",
               )[0] === "zoom"
             ) {
               this.camera.instructions[this.camera.instructions.length - 1].limit3 +=
@@ -7464,7 +3231,7 @@ class App extends Component {
           if (
             !this.cellsToHighlight2.find(
               (x) =>
-                x.number.x === focusCell.number.x && x.number.y === focusCell.number.y
+                x.number.x === focusCell.number.x && x.number.y === focusCell.number.y,
             )
           ) {
             this.cellsToHighlight2.push({
@@ -7583,7 +3350,7 @@ class App extends Component {
               pathSet = path;
               resolve(pathSet);
             }
-          }
+          },
         );
         this.easyStar.setIterationsPerCalculation(1000);
         this.easyStar.calculate();
@@ -7711,7 +3478,7 @@ class App extends Component {
       }
     }
     let livingHumanPlayerCount = this.players.filter(
-      (x) => x.ai.state !== true && x.dead.state !== true
+      (x) => x.ai.state !== true && x.dead.state !== true,
     ).length;
     switch (args) {
       case "test":
@@ -7740,7 +3507,7 @@ class App extends Component {
           // "zoom_in_" + 5 + ""
           // "zoom_outToInit"
           // "move&&zoom_in_" + 1 + "_" + 5 + "_slow_" + 5
-          "move&&zoom_in_" + 5 + "_" + 1 + "_fast_" + 8
+          "move&&zoom_in_" + 5 + "_" + 1 + "_fast_" + 8,
         );
 
         break;
@@ -7755,7 +3522,7 @@ class App extends Component {
               player.currentPosition.cell.number.x +
               "_" +
               player.currentPosition.cell.number.y +
-              "_fast"
+              "_fast",
             // 'waitFor_50',
           );
 
@@ -7798,7 +3565,7 @@ class App extends Component {
                     player.currentPosition.cell.number.x +
                     "_" +
                     player.currentPosition.cell.number.y +
-                    "_fast"
+                    "_fast",
                 );
 
                 getZoom(weaponType);
@@ -7816,7 +3583,7 @@ class App extends Component {
                 this.getIntermediateCellByArea(parsedPreInstructions);
 
               this.camera.preInstructions.push(
-                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
+                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast",
                 // 'waitFor_50',
               );
 
@@ -7838,7 +3605,7 @@ class App extends Component {
               player.currentPosition.cell.number.x +
               "_" +
               player.currentPosition.cell.number.y +
-              "_fast"
+              "_fast",
             // 'waitFor_50',
           );
 
@@ -7877,7 +3644,7 @@ class App extends Component {
                     player.currentPosition.cell.number.x +
                     "_" +
                     player.currentPosition.cell.number.y +
-                    "_fast"
+                    "_fast",
                 );
 
                 getZoom(weaponType);
@@ -7891,7 +3658,7 @@ class App extends Component {
                 this.getIntermediateCellByArea(parsedPreInstructions);
 
               this.camera.preInstructions.push(
-                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
+                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast",
                 // 'waitFor_50',
               );
 
@@ -7946,7 +3713,7 @@ class App extends Component {
               player.currentPosition.cell.number.x +
               "_" +
               player.currentPosition.cell.number.y +
-              "_fast"
+              "_fast",
             // 'waitFor_50',
           );
 
@@ -7979,7 +3746,7 @@ class App extends Component {
                   this.players[0].currentPosition.cell.number.x +
                   "_" +
                   this.players[0].currentPosition.cell.number.y +
-                  "_fast"
+                  "_fast",
               );
 
               getZoom("melee");
@@ -7992,7 +3759,7 @@ class App extends Component {
                 this.getIntermediateCellByArea(parsedPreInstructions);
 
               this.camera.preInstructions.push(
-                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
+                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast",
               );
 
               getZoom("ranged");
@@ -8016,7 +3783,7 @@ class App extends Component {
             player.currentPosition.cell.number.x +
             "_" +
             player.currentPosition.cell.number.y +
-            "_fast"
+            "_fast",
           // 'waitFor_50',
         );
 
@@ -8039,7 +3806,7 @@ class App extends Component {
         }
         let bolt = this.projectiles.find((x) => x.id === boltId);
         this.camera.preInstructions.push(
-          "moveTo_" + bolt.origin.number.x + "_" + bolt.origin.number.y + "_fast"
+          "moveTo_" + bolt.origin.number.x + "_" + bolt.origin.number.y + "_fast",
         );
         let endCell = {
           x: 0,
@@ -8066,7 +3833,7 @@ class App extends Component {
             break;
         }
         this.camera.preInstructions.push(
-          "moveTo_" + endCell.x + "_" + endCell.y + "_fast"
+          "moveTo_" + endCell.x + "_" + endCell.y + "_fast",
         );
 
         break;
@@ -8086,7 +3853,7 @@ class App extends Component {
       "zoom",
       this.camera.zoom.x,
       "pan",
-      this.camera.pan
+      this.camera.pan,
     );
 
     if (focusType === "init" || focusType === "reset") {
@@ -8741,7 +4508,7 @@ class App extends Component {
     let rearCellNo = this.getCellFromDirection(
       1,
       elem.locationCell,
-      this.getOppositeDirection(elem.ownerDirection)
+      this.getOppositeDirection(elem.ownerDirection),
     );
     let ownerCenter = undefined;
     let targetCenter = undefined;
@@ -8763,26 +4530,26 @@ class App extends Component {
       startPt = ownerCenter;
       if (rearCellNo.x > -1 && rearCellNo.y > -1) {
         endPt = this.gridInfo.find(
-          (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
+          (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y,
         )?.center;
       } else {
         endPt = this.getVoidCenter(
           1,
           this.getOppositeDirection(elem.ownerDirection),
-          ownerCenter
+          ownerCenter,
         );
       }
     }
     if (elem.phase === "release") {
       if (rearCellNo.x > -1 && rearCellNo.y > -1) {
         startPt = this.gridInfo.find(
-          (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y
+          (x) => x.number.x === rearCellNo.x && x.number.y === rearCellNo.y,
         )?.center;
       } else {
         startPt = this.getVoidCenter(
           1,
           this.getOppositeDirection(elem.ownerDirection),
-          ownerCenter
+          ownerCenter,
         );
       }
       endPt = targetCenter;
@@ -8813,7 +4580,7 @@ class App extends Component {
     shape,
     direction,
     face,
-    elem
+    elem,
   ) => {
     const colors = [
       "#FF5733", // Red-Orange
@@ -8853,7 +4620,7 @@ class App extends Component {
     }
     if (type === "obstacleBarrierDirectionalAction") {
       let refCell = this.gridInfo.find(
-        (x) => x.number.x === elem.locationCell.x && x.number.y === elem.locationCell.y
+        (x) => x.number.x === elem.locationCell.x && x.number.y === elem.locationCell.y,
       );
       pointA = {
         x: refCell.center.x,
@@ -9976,7 +5743,7 @@ class App extends Component {
       // }
       if (subType === "windup") {
         let dirInputThresh = Math.ceil(
-          player[type].animRef.peak.unarmed.thrust.normal / 2
+          player[type].animRef.peak.unarmed.thrust.normal / 2,
         );
         countCalcUp = Math.floor(dirInputThresh / 2);
       }
@@ -10022,7 +5789,7 @@ class App extends Component {
 
       if (subType === "windup") {
         let countCalcUp = Math.floor(
-          (player.defending.peakCount - player.defending.count) / 2
+          (player.defending.peakCount - player.defending.count) / 2,
         );
         // Math.floor(
         //   (player.defending.limit - player.defending.peakCount) / 2
@@ -10069,7 +5836,7 @@ class App extends Component {
         };
 
         let countCalcUp = Math.floor(
-          (player.defending.limit - player.defending.peakCount) / 2
+          (player.defending.limit - player.defending.peakCount) / 2,
         );
         // let countCalcUp = Math.floor(
         //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
@@ -10286,7 +6053,7 @@ class App extends Component {
       data.elasticCounter.coords = finalCoords;
       targetCell = this.getCellFromDirection(1, data.currentPosition.cell.number, dir);
       let targetCellRef = this.gridInfo.find(
-        (x) => x.number.x === targetCell.x && x.number.y === targetCell.y
+        (x) => x.number.x === targetCell.x && x.number.y === targetCell.y,
       );
       drawCell = { x: undefined, y: undefined };
 
@@ -10389,7 +6156,7 @@ class App extends Component {
         targetCell = this.getCellFromDirection(
           1,
           data.currentPosition.cell.number,
-          data.halfPushBack.direction
+          data.halfPushBack.direction,
         );
       }
       if (subType === "obstacle") {
@@ -10399,7 +6166,7 @@ class App extends Component {
       }
 
       let targetCellRef = this.gridInfo.find(
-        (x) => x.number.x === targetCell.x && x.number.y === targetCell.y
+        (x) => x.number.x === targetCell.x && x.number.y === targetCell.y,
       );
       drawCell = { x: undefined, y: undefined };
 
@@ -10579,10 +6346,10 @@ class App extends Component {
     target.cell2.number = this.getCellFromDirection(2, currentPosition, direction);
 
     let targetCell1Ref = this.gridInfo.find(
-      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y,
     );
     let targetCell2Ref = this.gridInfo.find(
-      (x) => x.number.x === target.cell2.number.x && x.number.y === target.cell2.number.y
+      (x) => x.number.x === target.cell2.number.x && x.number.y === target.cell2.number.y,
     );
 
     // CHECK SET VOID AND CENTERS
@@ -10596,7 +6363,7 @@ class App extends Component {
       target.cell1.center = this.getVoidCenter(
         1,
         voidDirection,
-        player.currentPosition.cell.center
+        player.currentPosition.cell.center,
       );
       // this.testDraw.push({color:'red',x:target.cell1.center.x,y:target.cell1.center.y})
     }
@@ -10613,7 +6380,7 @@ class App extends Component {
       target.cell2.center = this.getVoidCenter(
         2,
         voidDirection,
-        player.currentPosition.cell.center
+        player.currentPosition.cell.center,
       );
       // this.testDraw.push({color:'red',x:target.cell2.center.x,y:target.cell2.center.y})
     }
@@ -10628,7 +6395,7 @@ class App extends Component {
     let myCell = this.gridInfo.find(
       (elem2) =>
         elem2.number.x === player.currentPosition.cell.number.x &&
-        elem2.number.y === player.currentPosition.cell.number.y
+        elem2.number.y === player.currentPosition.cell.number.y,
     );
 
     target.myCellBlock = this.checkMyCellBarrier(direction, myCell);
@@ -10773,7 +6540,7 @@ class App extends Component {
 
     let cellFree = true;
     let cell2 = this.gridInfo.find(
-      (elem) => elem.number.x === cell.x && elem.number.y === cell.y
+      (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
     );
     if (
       // cell2.levelData.charAt(0) ===  'z' ||
@@ -10865,7 +6632,7 @@ class App extends Component {
                 x.obstacle.state === true ||
                 x.terrain.type === "deep" ||
                 // x.terrain.type === "void" ||
-                x.void.state === true
+                x.void.state === true,
             ).length +
             this.playerNumber >=
           this.gridInfo.length
@@ -10895,7 +6662,7 @@ class App extends Component {
     if (randomFreeCellChosen === true) {
       // console.log('getRandomFreeCell: set free cell',cell.number);
       let refCell = this.gridInfo.find(
-        (x) => x.number.x === cell.number.x && x.number.y === cell.number.y
+        (x) => x.number.x === cell.number.x && x.number.y === cell.number.y,
       );
       cell.number = refCell.number;
       cell.center = refCell.center;
@@ -11075,7 +6842,7 @@ class App extends Component {
         // console.log('ctc instruct ',instruct,instructionRef[instruct],'cell to check',cellToCheck,'steps',stepsA,stepsB);
 
         let ctcRef = this.gridInfo.find(
-          (x) => x.number.x === cellToCheck.x && x.number.y === cellToCheck.y
+          (x) => x.number.x === cellToCheck.x && x.number.y === cellToCheck.y,
         );
 
         let cellFree = true;
@@ -11213,7 +6980,7 @@ class App extends Component {
         direction: "south",
         originCell: cell,
       },
-      "bolt"
+      "bolt",
     );
     this.projectiles.push(result.projectile);
     this.getBoltTarget(result.projectile);
@@ -11298,7 +7065,7 @@ class App extends Component {
           let elevation = this.gridInfo.find(
             (elem) =>
               elem.number.x === owner.currentPosition.cell.number.x &&
-              elem.number.y === owner.currentPosition.cell.number.y
+              elem.number.y === owner.currentPosition.cell.number.y,
           ).elevation.number;
 
           projectile = {
@@ -11366,7 +7133,7 @@ class App extends Component {
         let direction = "";
         if (ownerType === "obstacle") {
           refCell = this.gridInfo.find(
-            (x) => x.obstacle.state === true && x.obstacle.id === owner.id
+            (x) => x.obstacle.state === true && x.obstacle.id === owner.id,
           );
           let origin = {
             number: refCell.number,
@@ -11420,7 +7187,7 @@ class App extends Component {
 
         if (ownerType === "barrier") {
           refCell = this.gridInfo.find(
-            (x) => x.barrier.state === true && x.barrier.id === owner.id
+            (x) => x.barrier.state === true && x.barrier.id === owner.id,
           );
           let origin = {
             number: refCell.number,
@@ -11526,7 +7293,7 @@ class App extends Component {
             bolt.currentPosition.number = cell.number;
 
             let infoCell = this.gridInfo.find(
-              (x) => x.number.x === cell.number.x && x.number.y === cell.number.y
+              (x) => x.number.x === cell.number.x && x.number.y === cell.number.y,
             );
 
             let boltOwner;
@@ -11536,7 +7303,7 @@ class App extends Component {
             if (bolt.ownerType === "obstacle" || bolt.ownerType === "barrier") {
               boltOwner = this.gridInfo.find(
                 (x) =>
-                  x[bolt.ownerType].state === true && x[bolt.ownerType].id === bolt.owner
+                  x[bolt.ownerType].state === true && x[bolt.ownerType].id === bolt.owner,
               )[bolt.ownerType];
             }
             if (bolt.ownerType === "custom") {
@@ -11581,7 +7348,7 @@ class App extends Component {
                     infoCell,
                     undefined,
                     undefined,
-                    bolt
+                    bolt,
                   );
                 }
               }
@@ -11636,7 +7403,7 @@ class App extends Component {
                       infoCell,
                       undefined,
                       undefined,
-                      bolt
+                      bolt,
                     );
                   }
                   if (bolt.ownerType === "player") {
@@ -11647,7 +7414,7 @@ class App extends Component {
                       infoCell,
                       undefined,
                       undefined,
-                      bolt
+                      bolt,
                     );
                   }
                 } else if (
@@ -11661,7 +7428,7 @@ class App extends Component {
                     infoCell,
                     undefined,
                     undefined,
-                    bolt
+                    bolt,
                   );
                 }
               } else {
@@ -11674,7 +7441,7 @@ class App extends Component {
                     let myCell = this.gridInfo.find(
                       (x) =>
                         x.number.x === bolt.origin.number.x &&
-                        x.number.y === bolt.origin.number.y
+                        x.number.y === bolt.origin.number.y,
                     );
                     this.attackCellContents(
                       "bolt",
@@ -11683,7 +7450,7 @@ class App extends Component {
                       infoCell,
                       undefined,
                       myCell,
-                      bolt
+                      bolt,
                     );
                   } else {
                     console.log("this barrier is the same as the bolt owner. do nothing");
@@ -11701,7 +7468,7 @@ class App extends Component {
                   infoCell,
                   undefined,
                   undefined,
-                  bolt
+                  bolt,
                 );
               }
               if (infoCell.elevation.number > bolt.elevation) {
@@ -11775,7 +7542,7 @@ class App extends Component {
     for (const cellx of rangeElemCells2) {
       // console.log('cellx',cellx);
       let cellRef4 = this.gridInfo.find(
-        (elemb) => elemb.number.x === cellx.x && elemb.number.y === cellx.y
+        (elemb) => elemb.number.x === cellx.x && elemb.number.y === cellx.y,
       );
       if (cellRef4.obstacle.state === true && cellRef4.obstacle.height >= 1) {
         // clearToShoot = false;
@@ -11874,7 +7641,7 @@ class App extends Component {
 
     for (const cell2 of bolt.target.path) {
       let cell = this.gridInfo.find(
-        (elem) => elem.number.x === cell2.number.x && elem.number.y === cell2.number.y
+        (elem) => elem.number.x === cell2.number.x && elem.number.y === cell2.number.y,
       );
 
       if (cell) {
@@ -11917,7 +7684,7 @@ class App extends Component {
     let cell = this.gridInfo.find(
       (elem) =>
         elem.number.x === player.currentPosition.cell.number.x &&
-        elem.number.y === player.currentPosition.cell.number.y
+        elem.number.y === player.currentPosition.cell.number.y,
     );
 
     let gearAmount = 0;
@@ -11985,7 +7752,7 @@ class App extends Component {
 
             if (
               !this.players[player.number - 1].popups.find(
-                (x) => x.msg === "pickupWeapon"
+                (x) => x.msg === "pickupWeapon",
               )
             ) {
               this.players[player.number - 1].popups.push({
@@ -12021,7 +7788,7 @@ class App extends Component {
                 // console.log('picked up a crossbow checking ammo',ammo);
                 if (
                   !this.players[player.number - 1].popups.find(
-                    (x) => x.msg === "crossbow"
+                    (x) => x.msg === "crossbow",
                   )
                 ) {
                   this.players[player.number - 1].popups.push({
@@ -12049,7 +7816,7 @@ class App extends Component {
 
               if (
                 !this.players[player.number - 1].popups.find(
-                  (x) => x.msg === "pickupWeapon"
+                  (x) => x.msg === "pickupWeapon",
                 )
               ) {
                 this.players[player.number - 1].popups.push({
@@ -12075,7 +7842,7 @@ class App extends Component {
 
                 if (
                   !this.players[player.number - 1].popups.find(
-                    (x) => x.msg === "pickupAmmo"
+                    (x) => x.msg === "pickupAmmo",
                   )
                 ) {
                   this.players[player.number - 1].popups.push({
@@ -12187,7 +7954,7 @@ class App extends Component {
 
               if (
                 !this.players[player.number - 1].popups.find(
-                  (x) => x.msg === "pickupArmor"
+                  (x) => x.msg === "pickupArmor",
                 )
               ) {
                 this.players[player.number - 1].popups.push({
@@ -12487,7 +8254,7 @@ class App extends Component {
         }
 
         this.gridInfo.find(
-          (x) => x.number.x === cell.number.x && x.number.y === cell.number.y
+          (x) => x.number.x === cell.number.x && x.number.y === cell.number.y,
         ).rubble = false;
       }
     } else {
@@ -12521,7 +8288,7 @@ class App extends Component {
           30,
           "walkable",
           false,
-          false
+          false,
         );
         if (availibleCells.length > 0) {
           if (targetCell.obstacle.trap.item.subType === "crossbow") {
@@ -12541,7 +8308,7 @@ class App extends Component {
                         x.y === targetCell.number.y - 2)) ||
                     (x.y === targetCell.number.y &&
                       (x.x === targetCell.number.x + 2 ||
-                        x.x === targetCell.number.x - 2))
+                        x.x === targetCell.number.x - 2)),
                 );
             }
             if (targetCell.obstacle.trap.item.subType === "sword") {
@@ -12557,7 +8324,7 @@ class App extends Component {
                         x.y === targetCell.number.y - 1)) ||
                     (x.y === targetCell.number.y &&
                       (x.x === targetCell.number.x + 1 ||
-                        x.x === targetCell.number.x - 1))
+                        x.x === targetCell.number.x - 1)),
                 );
             }
           }
@@ -12565,7 +8332,7 @@ class App extends Component {
         } else {
           targetCell.obstacle.trap.state = false;
           console.log(
-            `Obstacle trap disables because there is no appropriate target cell`
+            `Obstacle trap disables because there is no appropriate target cell`,
           );
         }
       } else {
@@ -12574,28 +8341,28 @@ class App extends Component {
           cell = this.getCellFromDirection(
             3,
             targetCell.number,
-            targetCell.obstacle.trap.direction
+            targetCell.obstacle.trap.direction,
           );
         }
         if (targetCell.obstacle.trap.item.subType === "spear") {
           cell = this.getCellFromDirection(
             2,
             targetCell.number,
-            targetCell.obstacle.trap.direction
+            targetCell.obstacle.trap.direction,
           );
         }
         if (targetCell.obstacle.trap.item.subType === "sword") {
           cell = this.getCellFromDirection(
             1,
             targetCell.number,
-            targetCell.obstacle.trap.direction
+            targetCell.obstacle.trap.direction,
           );
         }
         if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
           targetCell.obstacle.trap.state = false;
           console.log(
             `obstacletrap disabled because there is no appropriate target cell`,
-            data.number
+            data.number,
           );
         } else {
           targetCell.obstacle.trap.target = cell;
@@ -12774,7 +8541,7 @@ class App extends Component {
     let foundPlayer;
     let player;
     let cl = this.gridInfo.find(
-      (elem) => elem.number.x === cell.x && elem.number.y === cell.y
+      (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
     );
 
     if (cl.number.x === this.gridWidth && cl.number.y === 0) {
@@ -12874,14 +8641,14 @@ class App extends Component {
       cellRef = this.gridInfo.find(
         (x) =>
           x.number.x === player.target.cell1.number.x &&
-          x.number.y === player.target.cell1.number.y
+          x.number.y === player.target.cell1.number.y,
       );
     }
     if (subType === "cell2") {
       cellRef = this.gridInfo.find(
         (x) =>
           x.number.x === player.target.cell2.number.x &&
-          x.number.y === player.target.cell2.number.y
+          x.number.y === player.target.cell2.number.y,
       );
     }
     if (type === "player") {
@@ -12930,7 +8697,7 @@ class App extends Component {
             (x) =>
               x.msg === "unbreakable" &&
               x.cell.number.x === cellRef.number.x &&
-              x.cell.number.y === cellRef.number.y
+              x.cell.number.y === cellRef.number.y,
           )
         ) {
           this.cellPopups.push({
@@ -12943,7 +8710,7 @@ class App extends Component {
             color: "",
             img: "",
             cell: this.gridInfo.find(
-              (x) => x.number.x === cellRef.number.x && x.number.y === cellRef.number.y
+              (x) => x.number.x === cellRef.number.x && x.number.y === cellRef.number.y,
             ),
           });
         }
@@ -12981,7 +8748,7 @@ class App extends Component {
             (x) =>
               x.msg === "unbreakable" &&
               x.cell.number.x === cellRef.number.x &&
-              x.cell.number.y === cellRef.number.y
+              x.cell.number.y === cellRef.number.y,
           )
         ) {
           this.cellPopups.push({
@@ -12994,7 +8761,7 @@ class App extends Component {
             color: "",
             img: "",
             cell: this.gridInfo.find(
-              (x) => x.number.x === cellRef.number.x && x.number.y === cellRef.number.y
+              (x) => x.number.x === cellRef.number.x && x.number.y === cellRef.number.y,
             ),
           });
         }
@@ -13203,7 +8970,7 @@ class App extends Component {
             let cell2Ref = this.gridInfo.find(
               (x) =>
                 x.number.x === player.target.cell2.number.x &&
-                x.number.y === player.target.cell2.number.y
+                x.number.y === player.target.cell2.number.y,
             );
 
             if (
@@ -13277,7 +9044,7 @@ class App extends Component {
               // COMPLETE JUMP
               this.pushBack(
                 otherPlayer,
-                this.getOppositeDirection(otherPlayer.direction)
+                this.getOppositeDirection(otherPlayer.direction),
               );
               completeJump();
             } else {
@@ -13285,7 +9052,7 @@ class App extends Component {
                 completeJump();
                 this.pushBack(
                   otherPlayer,
-                  this.getOppositeDirection(otherPlayer.direction)
+                  this.getOppositeDirection(otherPlayer.direction),
                 );
               } else {
                 interruptJump();
@@ -13304,8 +9071,8 @@ class App extends Component {
     let obstacleDirection = this.getOppositeDirection(
       this.getDirectionFromCells(
         obstacle.moving.origin.number,
-        obstacle.moving.destination.number
-      )
+        obstacle.moving.destination.number,
+      ),
     );
 
     let pushPull = false;
@@ -13364,7 +9131,7 @@ class App extends Component {
                 let result = this.projectileCreator(
                   ownerType,
                   locationCell[ownerType],
-                  "bolt"
+                  "bolt",
                 );
                 this.projectiles.push(result.projectile);
                 this.getBoltTarget(result.projectile);
@@ -13373,7 +9140,7 @@ class App extends Component {
                 console.log("This trap is meant to fire a projectile but has no ammo.");
                 if (trap.persistent === true) {
                   console.log(
-                    "This trap is persistent but out of ammo. Reload from default"
+                    "This trap is persistent but out of ammo. Reload from default",
                   );
                   let item = this.itemList.find((x) => {
                     return x.name === trap.itemNameRef;
@@ -13461,7 +9228,7 @@ class App extends Component {
                   locationCell,
                   trap,
                   releaseTime - pullbackTime,
-                  this.directionalAnimShape
+                  this.directionalAnimShape,
                 );
               }
               if (trap.acting.count === releaseTime) {
@@ -13481,7 +9248,7 @@ class App extends Component {
                   trap,
                   // (trap.acting.limit-releaseTime)
                   trap.acting.peak + dirAnimSetCalcMod - releaseTime,
-                  this.directionalAnimShape
+                  this.directionalAnimShape,
                 );
               }
             }
@@ -13492,7 +9259,7 @@ class App extends Component {
                 (x) =>
                   x.msg === "attacking" &&
                   x.cell.number.x === locationCell.number.x &&
-                  x.cell.number.y === locationCell.number.y
+                  x.cell.number.y === locationCell.number.y,
               )
             ) {
               this.cellPopups.push({
@@ -13507,7 +9274,7 @@ class App extends Component {
                 cell: this.gridInfo.find(
                   (x) =>
                     x.number.x === locationCell.number.x &&
-                    x.number.y === locationCell.number.y
+                    x.number.y === locationCell.number.y,
                 ),
               });
             }
@@ -13524,10 +9291,10 @@ class App extends Component {
                   (x) =>
                     x.msg === "attacking" &&
                     x.cell.number.x === locationCell.number.x &&
-                    x.cell.number.y === locationCell.number.y
-                )
+                    x.cell.number.y === locationCell.number.y,
+                ),
               ),
-              1
+              1,
             );
 
             let toRemove = this.obstacleBarrierActionAnimationArray.findIndex((x) => {
@@ -13552,7 +9319,7 @@ class App extends Component {
     const higlightCell = () => {
       if (
         !this.cellsToHighlight2.find(
-          (x) => x.number.x === trap.target.x && x.number.y === trap.target.y
+          (x) => x.number.x === trap.target.x && x.number.y === trap.target.y,
         )
       ) {
         this.cellsToHighlight2.push({
@@ -13584,7 +9351,7 @@ class App extends Component {
                   (x) =>
                     x.msg === "timer" &&
                     x.cell.number.x === locationCell.number.x &&
-                    x.cell.number.y === locationCell.number.y
+                    x.cell.number.y === locationCell.number.y,
                 )
               ) {
                 this.cellPopups.push({
@@ -13599,7 +9366,7 @@ class App extends Component {
                   cell: this.gridInfo.find(
                     (x) =>
                       x.number.x === locationCell.number.x &&
-                      x.number.y === locationCell.number.y
+                      x.number.y === locationCell.number.y,
                   ),
                 });
               }
@@ -13614,7 +9381,7 @@ class App extends Component {
                   (x) =>
                     x.msg === "timer" &&
                     x.cell.number.x === locationCell.number.x &&
-                    x.cell.number.y === locationCell.number.y
+                    x.cell.number.y === locationCell.number.y,
                 )
               ) {
                 this.cellPopups.splice(
@@ -13623,10 +9390,10 @@ class App extends Component {
                       (x) =>
                         x.msg === "timer" &&
                         x.cell.number.x === locationCell.number.x &&
-                        x.cell.number.y === locationCell.number.y
-                    )
+                        x.cell.number.y === locationCell.number.y,
+                    ),
                   ),
-                  1
+                  1,
                 );
               }
             }
@@ -13642,7 +9409,7 @@ class App extends Component {
         if (trap.remaining <= 0) {
           trap.state = false;
           console.log(
-            `This ${ownerType} trap is not persistent and has no fires remaining. Disabling`
+            `This ${ownerType} trap is not persistent and has no fires remaining. Disabling`,
           );
         }
         if (trap.remaining > 0) {
@@ -13663,7 +9430,7 @@ class App extends Component {
                     (x) =>
                       x.msg === "timer" &&
                       x.cell.number.x === locationCell.number.x &&
-                      x.cell.number.y === locationCell.number.y
+                      x.cell.number.y === locationCell.number.y,
                   )
                 ) {
                   this.cellPopups.push({
@@ -13678,7 +9445,7 @@ class App extends Component {
                     cell: this.gridInfo.find(
                       (x) =>
                         x.number.x === locationCell.number.x &&
-                        x.number.y === locationCell.number.y
+                        x.number.y === locationCell.number.y,
                     ),
                   });
                 }
@@ -13693,7 +9460,7 @@ class App extends Component {
                     (x) =>
                       x.msg === "timer" &&
                       x.cell.number.x === locationCell.number.x &&
-                      x.cell.number.y === locationCell.number.y
+                      x.cell.number.y === locationCell.number.y,
                   )
                 ) {
                   this.cellPopups.splice(
@@ -13702,10 +9469,10 @@ class App extends Component {
                         (x) =>
                           x.msg === "timer" &&
                           x.cell.number.x === locationCell.number.x &&
-                          x.cell.number.y === locationCell.number.y
-                      )
+                          x.cell.number.y === locationCell.number.y,
+                      ),
                     ),
-                    1
+                    1,
                   );
                 }
               }
@@ -13757,7 +9524,7 @@ class App extends Component {
               (x) =>
                 x.msg === "timer" &&
                 x.cell.number.x === locationCell.number.x &&
-                x.cell.number.y === locationCell.number.y
+                x.cell.number.y === locationCell.number.y,
             )
           ) {
             this.cellPopups.splice(
@@ -13766,10 +9533,10 @@ class App extends Component {
                   (x) =>
                     x.msg === "timer" &&
                     x.cell.number.x === locationCell.number.x &&
-                    x.cell.number.y === locationCell.number.y
-                )
+                    x.cell.number.y === locationCell.number.y,
+                ),
               ),
-              1
+              1,
             );
           }
         }
@@ -13814,7 +9581,7 @@ class App extends Component {
               45,
               "walkable",
               false,
-              false
+              false,
             );
             if (availibleCells.length > 0) {
               if (trap.item.subType === "crossbow") {
@@ -13824,7 +9591,7 @@ class App extends Component {
                   .find(
                     (x) =>
                       (x.x === data.number.x && x.y === data.number.y + 3) ||
-                      (x.y === data.number.y && x.x === data.number.x + 3)
+                      (x.y === data.number.y && x.x === data.number.x + 3),
                   );
               } else {
                 if (trap.item.subType === "spear") {
@@ -13838,7 +9605,7 @@ class App extends Component {
                         (x.x === data.number.x &&
                           (x.y === data.number.y + 2 || x.y === data.number.y - 2)) ||
                         (x.y === data.number.y &&
-                          (x.x === data.number.x + 2 || x.x === data.number.x - 2))
+                          (x.x === data.number.x + 2 || x.x === data.number.x - 2)),
                     );
                 }
                 if (trap.item.subType === "sword") {
@@ -13852,7 +9619,7 @@ class App extends Component {
                         (x.x === data.number.x &&
                           (x.y === data.number.y + 1 || x.y === data.number.y - 1)) ||
                         (x.y === data.number.y &&
-                          (x.x === data.number.x + 1 || x.x === data.number.x - 1))
+                          (x.x === data.number.x + 1 || x.x === data.number.x - 1)),
                     );
                 }
               }
@@ -13863,7 +9630,7 @@ class App extends Component {
               trap.state = false;
               console.log(
                 `${type} trap disabled because there is no appropriate target cell`,
-                data.number
+                data.number,
               );
             }
           } else {
@@ -13883,7 +9650,7 @@ class App extends Component {
               trap.state = false;
               console.log(
                 `${type} trap disabled because there is no appropriate target cell`,
-                data.number
+                data.number,
               );
             } else {
               trap.target = cell;
@@ -13914,7 +9681,7 @@ class App extends Component {
             trap.state = false;
             console.log(
               `${type} trap disabled because there is no appropriate target cellx`,
-              data.number
+              data.number,
             );
           } else {
             trap.target = cell;
@@ -14190,7 +9957,7 @@ class App extends Component {
     }
     if (instructionType === "setNewRandom") {
       let obsBarList = this.gridInfo.filter(
-        (x) => x.obstacle.state === true || x.barrier.state === true
+        (x) => x.obstacle.state === true || x.barrier.state === true,
       );
       let toSetCount = 0;
       let usedIndices = [];
@@ -14249,7 +10016,7 @@ class App extends Component {
     if (instructionType === "setNewCustom") {
       for (const elem of data) {
         let cellRef = this.gridInfo.find(
-          (x) => x.number.x === elem.location.x && x.number.y === elem.location.y
+          (x) => x.number.x === elem.location.x && x.number.y === elem.location.y,
         );
         if (cellRef.obstacle.state === true) {
           if (elem.type === "obstacle") {
@@ -14282,7 +10049,7 @@ class App extends Component {
             cellRef[elem.type].trap = this.obstacleBarrierTrapInitSet(
               "",
               elem.type,
-              cellRef
+              cellRef,
             );
             trapsToSet.push({
               type: elem.type,
@@ -14297,7 +10064,7 @@ class App extends Component {
               elem.type,
               " is in this location",
               elem.location,
-              ". Invalid selection. Ignoring..."
+              ". Invalid selection. Ignoring...",
             );
           }
         }
@@ -14332,7 +10099,7 @@ class App extends Component {
             cellRef[elem.type].trap = this.obstacleBarrierTrapInitSet(
               "",
               elem.type,
-              cellRef
+              cellRef,
             );
             trapsToSet.push({
               type: elem.type,
@@ -14347,7 +10114,7 @@ class App extends Component {
               elem.type,
               " is in this location",
               elem.location,
-              ". Invalid selection. Ignoring..."
+              ". Invalid selection. Ignoring...",
             );
           }
         }
@@ -14477,7 +10244,7 @@ class App extends Component {
           if (popup) {
             player.popups.splice(
               player.popups.findIndex((x) => x.msg === pop),
-              1
+              1,
             );
           }
         }
@@ -14506,14 +10273,14 @@ class App extends Component {
         ];
         popupsToRemove.splice(
           popupsToRemove.findIndex((x) => x === msg),
-          1
+          1,
         );
         for (const pop of popupsToRemove) {
           popup = player.popups.find((x) => x.msg === pop);
           if (popup) {
             player.popups.splice(
               player.popups.findIndex((x) => x.msg === pop),
-              1
+              1,
             );
           }
         }
@@ -14533,7 +10300,7 @@ class App extends Component {
 
     if (action === "attacking") {
       directionalInputThresh = Math.ceil(
-        player[action].animRef.peak.unarmed.thrust.normal / 2
+        player[action].animRef.peak.unarmed.thrust.normal / 2,
       );
       if (player.currentWeapon.type === "crossbow") {
         if (mode === "init") {
@@ -14546,7 +10313,7 @@ class App extends Component {
             if (input === true) {
               if (inputCount > 1) {
                 inputDirections = inputDirections.filter(
-                  (x) => x !== player[action].direction
+                  (x) => x !== player[action].direction,
                 );
                 inputDirection = inputDirections[0];
               } else {
@@ -14559,7 +10326,7 @@ class App extends Component {
                 player[action].directionType = "slash";
               } else {
                 console.log(
-                  "crossbow directional atk & charge can only be in player direction"
+                  "crossbow directional atk & charge can only be in player direction",
                 );
                 feintAttack();
               }
@@ -14569,7 +10336,7 @@ class App extends Component {
               // console.log("input thresh passed.");
               if (inputCount > 1) {
                 inputDirections = inputDirections.filter(
-                  (x) => x !== player[action].direction
+                  (x) => x !== player[action].direction,
                 );
                 inputDirection = inputDirections[0];
               } else {
@@ -14595,7 +10362,7 @@ class App extends Component {
             }
             if (player[action].direction === "none") {
               console.log(
-                "crossbow attack requires direction === player direction. feint attack"
+                "crossbow attack requires direction === player direction. feint attack",
               );
               feintAttack();
             }
@@ -14625,7 +10392,7 @@ class App extends Component {
             if (input === true) {
               if (inputCount > 1) {
                 inputDirections = inputDirections.filter(
-                  (x) => x !== player[action].direction
+                  (x) => x !== player[action].direction,
                 );
                 inputDirection = inputDirections[0];
               } else {
@@ -14662,7 +10429,7 @@ class App extends Component {
 
               if (inputCount > 1) {
                 inputDirections = inputDirections.filter(
-                  (x) => x !== player[action].direction
+                  (x) => x !== player[action].direction,
                 );
                 inputDirection = inputDirections[0];
               } else {
@@ -14741,7 +10508,7 @@ class App extends Component {
                 "changing defend direction before thresh. from",
                 player[action].direction,
                 "to",
-                inputDirection
+                inputDirection,
               );
               directionChanged = true;
               popup(inputDirection, player[action].direction);
@@ -14753,7 +10520,7 @@ class App extends Component {
               console.log(
                 "changing defend direction before thresh. from",
                 player[action].direction,
-                "to none"
+                "to none",
               );
               directionChanged = true;
             }
@@ -14790,7 +10557,7 @@ class App extends Component {
     owner,
     arrayElemId,
     xCount,
-    shape
+    shape,
   ) => {
     // action:
     //   attacking, defending
@@ -15225,17 +10992,17 @@ class App extends Component {
       myCell = this.gridInfo.find(
         (elem) =>
           elem.number.x === owner.currentPosition.cell.number.x &&
-          elem.number.y === owner.currentPosition.cell.number.y
+          elem.number.y === owner.currentPosition.cell.number.y,
       );
       targetCell1 = this.gridInfo.find(
         (x) =>
           x.number.x === owner.target.cell1.number.x &&
-          x.number.y === owner.target.cell1.number.y
+          x.number.y === owner.target.cell1.number.y,
       );
       targetCell2 = this.gridInfo.find(
         (x) =>
           x.number.x === owner.target.cell2.number.x &&
-          x.number.y === owner.target.cell2.number.y
+          x.number.y === owner.target.cell2.number.y,
       );
       cell1Free = owner.target.cell1.free;
       cell2Free = owner.target.cell2.free;
@@ -15249,16 +11016,16 @@ class App extends Component {
       cell2Rubble = owner.target.cell2.occupant.type === "rubble";
     } else {
       myCell = this.gridInfo.find(
-        (x) => x[ownerType].state === true && x[ownerType].id === owner.id
+        (x) => x[ownerType].state === true && x[ownerType].id === owner.id,
       );
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       let cell1 = this.getCellFromDirection(1, myCell.number, ownerDirection);
       let cell2 = this.getCellFromDirection(2, myCell.number, ownerDirection);
       targetCell1 = this.gridInfo.find(
-        (x) => x.number.x === cell1.x && x.number.y === cell1.y
+        (x) => x.number.x === cell1.x && x.number.y === cell1.y,
       );
       targetCell2 = this.gridInfo.find(
-        (x) => x.number.x === cell2.x && x.number.y === cell2.y
+        (x) => x.number.x === cell2.x && x.number.y === cell2.y,
       );
       cell1Free = this.checkCell(targetCell1.number, []);
       cell2Free = this.checkCell(targetCell2.number, []);
@@ -15319,7 +11086,7 @@ class App extends Component {
               },
               count: 1,
               limit: 8,
-            }
+            },
           );
           // TARGET CELL 1 IS NOT FREE, ITEM, BOLT, RUBBLE, ATTACK CELL1
 
@@ -15345,7 +11112,7 @@ class App extends Component {
                 targetCell1,
                 targetCell2,
                 myCell,
-                undefined
+                undefined,
               );
             }
           }
@@ -15363,7 +11130,7 @@ class App extends Component {
               "hit player, obstacle, bolt, item or rubble w/ ",
               ownerWeaponType,
               " @ ",
-              targetCell1.number
+              targetCell1.number,
             );
             this.meleeAttackParse(ownerType, owner, 1);
           }
@@ -15396,7 +11163,7 @@ class App extends Component {
                 targetCell1,
                 targetCell2,
                 myCell,
-                undefined
+                undefined,
               );
             }
 
@@ -15421,7 +11188,7 @@ class App extends Component {
                 targetCell1,
                 targetCell2,
                 myCell,
-                undefined
+                undefined,
               );
             }
 
@@ -15473,7 +11240,7 @@ class App extends Component {
                   " attacked empty cell @ ",
                   targetCell2.number,
                   "w/",
-                  ownerWeaponType
+                  ownerWeaponType,
                 );
               }
             }
@@ -15542,7 +11309,7 @@ class App extends Component {
                 " attacked empty cell @ ",
                 targetCell1.number,
                 "w/",
-                ownerWeaponType
+                ownerWeaponType,
               );
             }
           }
@@ -15609,7 +11376,7 @@ class App extends Component {
                 owner.id,
                 " attacked empty cell @ ",
                 targetCell1.number,
-                "unarmed"
+                "unarmed",
               );
             }
 
@@ -15697,7 +11464,7 @@ class App extends Component {
                   " blunt attacked empty cell @ ",
                   targetCell1.number,
                   "w/",
-                  owner.currentWeapon.type
+                  owner.currentWeapon.type,
                 );
               }
 
@@ -15732,7 +11499,7 @@ class App extends Component {
           owner.number,
           owner.id,
           "s mycell barrier is in the way at",
-          myCell.number
+          myCell.number,
         );
         this.attackCellContents(
           "melee",
@@ -15741,7 +11508,7 @@ class App extends Component {
           targetCell1,
           targetCell2,
           myCell,
-          undefined
+          undefined,
         );
       }
     }
@@ -15781,17 +11548,17 @@ class App extends Component {
       myCell = this.gridInfo.find(
         (elem) =>
           elem.number.x === owner.currentPosition.cell.number.x &&
-          elem.number.y === owner.currentPosition.cell.number.y
+          elem.number.y === owner.currentPosition.cell.number.y,
       );
       targetCell1 = this.gridInfo.find(
         (x) =>
           x.number.x === owner.target.cell1.number.x &&
-          x.number.y === owner.target.cell1.number.y
+          x.number.y === owner.target.cell1.number.y,
       );
       targetCell2 = this.gridInfo.find(
         (x) =>
           x.number.x === owner.target.cell2.number.x &&
-          x.number.y === owner.target.cell2.number.y
+          x.number.y === owner.target.cell2.number.y,
       );
       ownerDirection = owner.direction;
       ownerActionDirection = owner.attacking.direction;
@@ -15804,7 +11571,7 @@ class App extends Component {
       cell2Rubble = owner.target.cell2.occupant.type === "rubble";
     } else {
       myCell = this.gridInfo.find(
-        (x) => x[ownerType].state === true && x[ownerType].id === owner.id
+        (x) => x[ownerType].state === true && x[ownerType].id === owner.id,
       );
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       ownerActionDirection = owner.trap.acting.direction;
@@ -15812,10 +11579,10 @@ class App extends Component {
       let cell1 = this.getCellFromDirection(1, myCell.number, ownerDirection);
       let cell2 = this.getCellFromDirection(2, myCell.number, ownerDirection);
       targetCell1 = this.gridInfo.find(
-        (x) => x.number.x === cell1.x && x.number.y === cell1.y
+        (x) => x.number.x === cell1.x && x.number.y === cell1.y,
       );
       targetCell2 = this.gridInfo.find(
-        (x) => x.number.x === cell2.x && x.number.y === cell2.y
+        (x) => x.number.x === cell2.x && x.number.y === cell2.y,
       );
       ownerWeaponType = owner.trap.item.subType;
       ownerWeaponType = owner.trap.item.name;
@@ -15952,7 +11719,7 @@ class App extends Component {
             ownerWeaponType,
             "@",
             logCellNo,
-            "successfully. deflect target/defender"
+            "successfully. deflect target/defender",
           );
           this.setDeflection(targetPlayerRef, "bluntAttacked", false);
           owner.success.attackSuccess = {
@@ -15976,7 +11743,7 @@ class App extends Component {
             ownerWeaponType,
             "@",
             logCellNo,
-            "successfully. damage,deflect target/defender"
+            "successfully. damage,deflect target/defender",
           );
           this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
 
@@ -16002,7 +11769,7 @@ class App extends Component {
           "@",
           logCellNo,
           "successfully. damage,deflect target/defender",
-          owner.trap.acting.direction
+          owner.trap.acting.direction,
         );
         this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
 
@@ -16023,7 +11790,7 @@ class App extends Component {
         ownerWeaponType,
         "@",
         logCellNo,
-        "but they dodged successfully"
+        "but they dodged successfully",
       );
 
       if (ownerType === "player") {
@@ -16051,7 +11818,7 @@ class App extends Component {
             (x) =>
               x.msg === "missedAttack2" &&
               x.cell.number.x === myCell.number.x &&
-              x.cell.number.y === myCell.number.y
+              x.cell.number.y === myCell.number.y,
           )
         ) {
           this.cellPopups.push({
@@ -16064,7 +11831,7 @@ class App extends Component {
             color: "",
             img: "",
             cell: this.gridInfo.find(
-              (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
+              (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y,
             ),
           });
         }
@@ -16086,7 +11853,7 @@ class App extends Component {
           ownerWeaponType,
           " @",
           logCellNo,
-          ". they defended but blunt attack is an auto defense break. Deflect target"
+          ". they defended but blunt attack is an auto defense break. Deflect target",
         );
         this.setDeflection(targetPlayerRef, "bluntAttacked", false);
         owner.success.attackSuccess = {
@@ -16127,7 +11894,7 @@ class App extends Component {
                 ownerWeaponType,
                 " @",
                 logCellNo,
-                ". they parried successfully. Deflect/pushback (high chance) attacker?"
+                ". they parried successfully. Deflect/pushback (high chance) attacker?",
               );
 
               // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
@@ -16193,7 +11960,7 @@ class App extends Component {
                 if (attackerCharge > 25) {
                   this.pushBack(
                     targetPlayerRef,
-                    this.getOppositeDirection(targetPlayerRef.direction)
+                    this.getOppositeDirection(targetPlayerRef.direction),
                   );
                 }
               }
@@ -16202,7 +11969,7 @@ class App extends Component {
                 if (attackerCharge > 50) {
                   this.pushBack(
                     targetPlayerRef,
-                    this.getOppositeDirection(targetPlayerRef.direction)
+                    this.getOppositeDirection(targetPlayerRef.direction),
                   );
                 }
               }
@@ -16227,7 +11994,7 @@ class App extends Component {
                   ownerWeaponType,
                   " @",
                   logCellNo,
-                  ". they off peak defended successfully. Deflect attacker?"
+                  ". they off peak defended successfully. Deflect attacker?",
                 );
                 // DEFLECT ATTACKER?
                 if (ownerType === "player") {
@@ -16262,7 +12029,7 @@ class App extends Component {
                 if (this.rnJesus(0, 3) === 1) {
                   this.pushBack(
                     targetPlayerRef,
-                    this.getOppositeDirection(targetPlayerRef.direction)
+                    this.getOppositeDirection(targetPlayerRef.direction),
                   );
                 }
               }
@@ -16282,7 +12049,7 @@ class App extends Component {
                   ownerWeaponType,
                   " @",
                   logCellNo,
-                  ". they off peak defended unsuccessfully. Damage, deflect target/defender?"
+                  ". they off peak defended unsuccessfully. Damage, deflect target/defender?",
                 );
                 this.setDeflection(targetPlayerRef, "attacked", false);
                 this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
@@ -16303,7 +12070,7 @@ class App extends Component {
                 ownerWeaponType,
                 " @",
                 logCellNo,
-                ". they off peak defended successfully. Deflect/pushback attacker?"
+                ". they off peak defended successfully. Deflect/pushback attacker?",
               );
               if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) !== 1) {
                 // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
@@ -16353,7 +12120,7 @@ class App extends Component {
               if (this.rnJesus(0, 2) === 1) {
                 this.pushBack(
                   targetPlayerRef,
-                  this.getOppositeDirection(targetPlayerRef.direction)
+                  this.getOppositeDirection(targetPlayerRef.direction),
                 );
               }
             }
@@ -16401,7 +12168,7 @@ class App extends Component {
 
         attackerDirectionalInputThresh = Math.ceil(
           owner.attacking.animRef.peak[attackerArmed][owner.attacking.directionType]
-            .normal / 2
+            .normal / 2,
         );
 
         result1 =
@@ -16417,7 +12184,7 @@ class App extends Component {
       targetDirectionalInputThresh = Math.ceil(
         targetPlayerRef[targetAction].animRef.peak[targetArmed][
           targetPlayerRef[targetAction].directionType
-        ].normal / 2
+        ].normal / 2,
       );
       if (targetAction === "attacking") {
         result2 =
@@ -16449,7 +12216,7 @@ class App extends Component {
           owner.id,
           " & defender player",
           targetPlayerRef.number,
-          "are evenly matched in combat advantage. clashing!! pushback one or both players w/o damage"
+          "are evenly matched in combat advantage. clashing!! pushback one or both players w/o damage",
         );
 
         if (additional === "clash") {
@@ -16472,7 +12239,7 @@ class App extends Component {
             ownerWeaponType,
             "@",
             logCellNo,
-            ". pushback 1 or both players"
+            ". pushback 1 or both players",
           );
 
           let attackerCharge = calcChargePercentage("attacking").result1;
@@ -16494,14 +12261,14 @@ class App extends Component {
             }
             this.pushBack(
               targetPlayerRef,
-              this.getOppositeDirection(targetPlayerRef.direction)
+              this.getOppositeDirection(targetPlayerRef.direction),
             );
             set = true;
           } else if (set !== true) {
             if (attackerCharge > targetCharge) {
               this.pushBack(
                 targetPlayerRef,
-                this.getOppositeDirection(targetPlayerRef.direction)
+                this.getOppositeDirection(targetPlayerRef.direction),
               );
               set = true;
             }
@@ -16568,7 +12335,7 @@ class App extends Component {
             ownerWeaponType,
             "@",
             logCellNo,
-            ". damage both players, deflect both players"
+            ". damage both players, deflect both players",
           );
           this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
           this.setDeflection(targetPlayerRef, "attacked", false);
@@ -16584,7 +12351,7 @@ class App extends Component {
               targetCell,
               targetCell2,
               myCell,
-              undefined
+              undefined,
             );
           }
         }
@@ -16599,7 +12366,7 @@ class App extends Component {
           owner.id,
           " & defender player",
           targetPlayerRef.number,
-          "are unevenly matched in combat advantage. attacker advantage (defender is likely unarmed) damage, deflect target/defender"
+          "are unevenly matched in combat advantage. attacker advantage (defender is likely unarmed) damage, deflect target/defender",
         );
         if (ownerType === "player") {
           owner.success.attackSuccess = {
@@ -16622,7 +12389,7 @@ class App extends Component {
           owner.id,
           " & defender player",
           targetPlayerRef.number,
-          "are unevenly matched in combat advantage. target/defender advantage (attacker is likely unarmed) damage, deflect attacker"
+          "are unevenly matched in combat advantage. target/defender advantage (attacker is likely unarmed) damage, deflect attacker",
         );
         if (ownerType === "player") {
           this.handleMeleeDamage("player", targetPlayerRef, owner);
@@ -16635,7 +12402,7 @@ class App extends Component {
             targetCell,
             targetCell2,
             myCell,
-            undefined
+            undefined,
           );
         }
 
@@ -16660,12 +12427,12 @@ class App extends Component {
           targetCell1.number,
           "w/ ",
           ownerWeaponType,
-          ". pushback?"
+          ". pushback?",
         );
         this.projectiles.find(
           (x) =>
             x.currentPosition.number.x === targetCell1.number.x &&
-            x.currentPosition.number.y === targetCell1.number.y
+            x.currentPosition.number.y === targetCell1.number.y,
         ).kill = true;
 
         if (ownerType === "player") {
@@ -16711,7 +12478,7 @@ class App extends Component {
             targetCell1,
             targetCell2,
             myCell,
-            undefined
+            undefined,
           );
         }
       }
@@ -16728,12 +12495,12 @@ class App extends Component {
           targetCell2.number,
           "w/ ",
           ownerWeaponType,
-          ". pushback?"
+          ". pushback?",
         );
         this.projectiles.find(
           (x) =>
             x.currentPosition.number.x === targetCell2.number.x &&
-            x.currentPosition.number.y === targetCell2.number.y
+            x.currentPosition.number.y === targetCell2.number.y,
         ).kill = true;
 
         if (ownerType === "player") {
@@ -16779,7 +12546,7 @@ class App extends Component {
             targetCell1,
             targetCell2,
             myCell,
-            undefined
+            undefined,
           );
         }
       }
@@ -16888,7 +12655,7 @@ class App extends Component {
                 ". Target -",
                 targetPlayerRef.number,
                 targetPlayerRef.attacking.direction,
-                " They may trade blows"
+                " They may trade blows",
               );
               handleTargetAttacking("trade");
             }
@@ -16907,7 +12674,7 @@ class App extends Component {
                 ". Target -",
                 targetPlayerRef.number,
                 targetPlayerRef.attacking.direction,
-                " They may clash"
+                " They may clash",
               );
               handleTargetAttacking("clash");
             }
@@ -16920,7 +12687,7 @@ class App extends Component {
               ownerActionDirection,
               ". Target -",
               targetPlayerRef.number,
-              targetPlayerRef.attacking.direction
+              targetPlayerRef.attacking.direction,
             );
             executeAttack();
           }
@@ -16947,7 +12714,7 @@ class App extends Component {
                 ownerActionDirection,
                 ". Target -",
                 targetPlayerRef.number,
-                targetPlayerRef.defending.direction
+                targetPlayerRef.defending.direction,
               );
               executeAttack();
             }
@@ -16964,7 +12731,7 @@ class App extends Component {
                 ownerActionDirection,
                 ". Target -",
                 targetPlayerRef.number,
-                targetPlayerRef.defending.direction
+                targetPlayerRef.defending.direction,
               );
               handleTargetDefending();
             }
@@ -16977,7 +12744,7 @@ class App extends Component {
               ownerActionDirection,
               ". Target -",
               targetPlayerRef.number,
-              targetPlayerRef.defending.direction
+              targetPlayerRef.defending.direction,
             );
             executeAttack();
           }
@@ -17056,7 +12823,7 @@ class App extends Component {
               ". Target -",
               targetPlayerRef.number,
               targetPlayerRef.attacking.direction,
-              " They may clash"
+              " They may clash",
             );
             handleTargetAttacking("clash");
           } else {
@@ -17069,7 +12836,7 @@ class App extends Component {
               ". Target -",
               targetPlayerRef.number,
               targetPlayerRef.attacking.direction,
-              " They may trade"
+              " They may trade",
             );
             handleTargetAttacking("trade");
           }
@@ -17092,7 +12859,7 @@ class App extends Component {
               ownerActionDirection,
               ". Target -",
               targetPlayerRef.number,
-              targetPlayerRef.defending.direction
+              targetPlayerRef.defending.direction,
             );
             handleTargetDefending();
           } else {
@@ -17104,7 +12871,7 @@ class App extends Component {
               ownerActionDirection,
               ". Target -",
               targetPlayerRef.number,
-              targetPlayerRef.defending.direction
+              targetPlayerRef.defending.direction,
             );
             executeAttack();
           }
@@ -17149,7 +12916,7 @@ class App extends Component {
     let boltOwner;
     if (ownerType === "player") {
       const directionalInputThresh = Math.ceil(
-        this.players[bolt.owner - 1].attacking.animRef.peak.crossbow.slash.normal / 2
+        this.players[bolt.owner - 1].attacking.animRef.peak.crossbow.slash.normal / 2,
       );
       boltChargePercentage =
         (bolt.charge /
@@ -17210,7 +12977,7 @@ class App extends Component {
           target.number,
           " just dodged a bolt from ",
           bolt.ownerType,
-          bolt.owner
+          bolt.owner,
         );
         target.stamina.current += this.staminaCostRef.dodge.pre;
         // FINISH
@@ -17230,7 +12997,7 @@ class App extends Component {
             "from the back by",
             bolt.ownerType,
             bolt.owner,
-            "Damage & Deflect"
+            "Damage & Deflect",
           );
           this.handleProjectileDamage(bolt, ownerType, "player", target);
           this.setDeflection(target, "attacked", false);
@@ -17265,7 +13032,7 @@ class App extends Component {
                   "from the side. by",
                   bolt.ownerType,
                   bolt.owner,
-                  "but they attacked it successfully. Pushback?"
+                  "but they attacked it successfully. Pushback?",
                 );
                 if (!target.popups.find((x) => x.msg === "boltKilled")) {
                   target.popups.push({
@@ -17300,7 +13067,7 @@ class App extends Component {
                   "from the side. by",
                   bolt.ownerType,
                   bolt.owner,
-                  "but they attacked it unsuccessfully due to bolt charge roll. Damage & Deflect?"
+                  "but they attacked it unsuccessfully due to bolt charge roll. Damage & Deflect?",
                 );
                 this.handleProjectileDamage(bolt, ownerType, "player", target);
                 this.setDeflection(target, "attacked", false);
@@ -17321,7 +13088,7 @@ class App extends Component {
                 "from the side. by",
                 bolt.ownerType,
                 bolt.owner,
-                "but they attacked it unsuccessfully due to attack direction. Damage & Deflect?"
+                "but they attacked it unsuccessfully due to attack direction. Damage & Deflect?",
               );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
@@ -17342,7 +13109,7 @@ class App extends Component {
               "from the side. by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked successfully but unarmed. Damage, Deflect?"
+              "but they attacked successfully but unarmed. Damage, Deflect?",
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
@@ -17364,7 +13131,7 @@ class App extends Component {
                 "from the side. by",
                 bolt.ownerType,
                 bolt.owner,
-                "but they defended unarmed. Damage & Deflect"
+                "but they defended unarmed. Damage & Deflect",
               );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
@@ -17391,7 +13158,7 @@ class App extends Component {
                     "from the side. by",
                     bolt.ownerType,
                     bolt.owner,
-                    "but they parried. Pushback?"
+                    "but they parried. Pushback?",
                   );
                   target.stamina.current += this.staminaCostRef.defend.peak;
                   target.success.defendSuccess = {
@@ -17440,7 +13207,7 @@ class App extends Component {
                       "from the side. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they off-peak defended successfully overcoming bolt charge"
+                      "but they off-peak defended successfully overcoming bolt charge",
                     );
                     target.success.defendSuccess = {
                       state: true,
@@ -17482,7 +13249,7 @@ class App extends Component {
                       "from the side. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they off-peak defended unsuccessfully due to bolt charge. Damage, Deflect, Pushback?"
+                      "but they off-peak defended unsuccessfully due to bolt charge. Damage, Deflect, Pushback?",
                     );
                     this.handleProjectileDamage(bolt, ownerType, "player", target);
 
@@ -17504,7 +13271,7 @@ class App extends Component {
                   "from the side. by",
                   bolt.ownerType,
                   bolt.owner,
-                  "but they defended it unsuccessfully due to action direction. Damage & Deflect?"
+                  "but they defended it unsuccessfully due to action direction. Damage & Deflect?",
                 );
                 this.handleProjectileDamage(bolt, ownerType, "player", target);
                 this.setDeflection(target, "attacked", false);
@@ -17526,7 +13293,7 @@ class App extends Component {
               "from the side. by",
               bolt.ownerType,
               bolt.owner,
-              "but theyre not defending or attacking or dodging. Damage, Deflect?"
+              "but theyre not defending or attacking or dodging. Damage, Deflect?",
             );
 
             this.handleProjectileDamage(bolt, ownerType, "player", target);
@@ -17553,7 +13320,7 @@ class App extends Component {
               "from the front. by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked successfully but unarmed. Damage, Deflect?"
+              "but they attacked successfully but unarmed. Damage, Deflect?",
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
@@ -17578,7 +13345,7 @@ class App extends Component {
                 "from the front. by",
                 bolt.ownerType,
                 bolt.owner,
-                "but they attacked successfully. pushback target?"
+                "but they attacked successfully. pushback target?",
               );
               if (!target.popups.find((x) => x.msg === "boltKilled")) {
                 target.popups.push({
@@ -17617,7 +13384,7 @@ class App extends Component {
               "from the front. by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked unsuccessfully due to attack direction. Damage, Deflect?"
+              "but they attacked unsuccessfully due to attack direction. Damage, Deflect?",
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
@@ -17650,7 +13417,7 @@ class App extends Component {
                       "from the front. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they parried successfully unarmed overcoming bolt charge."
+                      "but they parried successfully unarmed overcoming bolt charge.",
                     );
                     // target.stamina.current += this.staminaCostRef.defend.peak;
                     target.success.defendSuccess = {
@@ -17689,7 +13456,7 @@ class App extends Component {
                       "from the front. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they peak defended successfully unarmed and overcome by bolt charge. Damage deflect?"
+                      "but they peak defended successfully unarmed and overcome by bolt charge. Damage deflect?",
                     );
                     this.handleProjectileDamage(bolt, ownerType, "player", target);
                     this.setDeflection(target, "attacked", false);
@@ -17710,7 +13477,7 @@ class App extends Component {
                     "from the front. by",
                     bolt.ownerType,
                     bolt.owner,
-                    "but they off-peak defended successfully but unarmed. Damage deflect?"
+                    "but they off-peak defended successfully but unarmed. Damage deflect?",
                   );
                   this.handleProjectileDamage(bolt, ownerType, "player", target);
                   this.setDeflection(target, "attacked", false);
@@ -17733,7 +13500,7 @@ class App extends Component {
                     "from the front. by",
                     bolt.ownerType,
                     bolt.owner,
-                    "but they parried successfully armed. Pushback?"
+                    "but they parried successfully armed. Pushback?",
                   );
                   target.stamina.current += this.staminaCostRef.defend.peak;
                   target.success.defendSuccess = {
@@ -17779,7 +13546,7 @@ class App extends Component {
                       "from the front. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they off-peak defended successfully armed overcoming bolt charge. Pushback?"
+                      "but they off-peak defended successfully armed overcoming bolt charge. Pushback?",
                     );
                     target.success.defendSuccess = {
                       state: true,
@@ -17821,7 +13588,7 @@ class App extends Component {
                       "from the front. by",
                       bolt.ownerType,
                       bolt.owner,
-                      "but they defended overcome by bolt charge. Damage, Deflect?"
+                      "but they defended overcome by bolt charge. Damage, Deflect?",
                     );
                     this.handleProjectileDamage(bolt, ownerType, "player", target);
                     this.setDeflection(target, "attacked", false);
@@ -17844,7 +13611,7 @@ class App extends Component {
                 "from the front. by",
                 bolt.ownerType,
                 bolt.owner,
-                "but they defended unsuccessfully & unarmed due to action direction . Damage, Deflect?"
+                "but they defended unsuccessfully & unarmed due to action direction . Damage, Deflect?",
               );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
@@ -17865,7 +13632,7 @@ class App extends Component {
               "from the front. by",
               bolt.ownerType,
               bolt.owner,
-              "but arent defending or attacking. Damage Deflect?"
+              "but arent defending or attacking. Damage Deflect?",
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
@@ -17888,14 +13655,14 @@ class App extends Component {
         " by",
         bolt.ownerType,
         bolt.owner,
-        "."
+        ".",
       );
 
       boltOwner = this.gridInfo.find(
         (x) =>
           x[bolt.ownerType].state === true &&
           x[bolt.ownerType].trap?.state === true &&
-          x[bolt.ownerType].id === bolt.owner
+          x[bolt.ownerType].id === bolt.owner,
       );
       if (
         boltOwner.trap.action === "attack" &&
@@ -17913,7 +13680,7 @@ class App extends Component {
               "hit by bolt from the side by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked it successfully."
+              "but they attacked it successfully.",
             );
           } else {
             console.log(
@@ -17921,7 +13688,7 @@ class App extends Component {
               "hit by bolt from the side by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked it unsuccessfully. Attack cell contents."
+              "but they attacked it unsuccessfully. Attack cell contents.",
             );
             this.attackCellContents(
               "bolt",
@@ -17930,7 +13697,7 @@ class App extends Component {
               cell,
               undefined,
               undefined,
-              bolt
+              bolt,
             );
           }
         }
@@ -17945,7 +13712,7 @@ class App extends Component {
               "hit by bolt from the front by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked it successfully."
+              "but they attacked it successfully.",
             );
           } else {
             console.log(
@@ -17953,7 +13720,7 @@ class App extends Component {
               "hit by bolt from the front by",
               bolt.ownerType,
               bolt.owner,
-              "but they attacked it unsuccessfully. Attack cell contents."
+              "but they attacked it unsuccessfully. Attack cell contents.",
             );
             this.attackCellContents(
               "bolt",
@@ -17962,7 +13729,7 @@ class App extends Component {
               cell,
               undefined,
               undefined,
-              bolt
+              bolt,
             );
           }
         }
@@ -17974,7 +13741,7 @@ class App extends Component {
           cell,
           undefined,
           undefined,
-          bolt
+          bolt,
         );
       }
 
@@ -18058,7 +13825,7 @@ class App extends Component {
       ownerAttackCharge = owner.attacking.charge;
     } else {
       let myCell = this.gridInfo.find(
-        (x) => x[ownerType].state === true && x[ownerType].id === owner.id
+        (x) => x[ownerType].state === true && x[ownerType].id === owner.id,
       );
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       ownerWeaponType = owner.trap.item.subType;
@@ -18108,11 +13875,11 @@ class App extends Component {
     // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
     let doubleHit = this.rnJesus(
       1,
-      doubleHitChance + ownerAttackCharge + positionalDamagaMod
+      doubleHitChance + ownerAttackCharge + positionalDamagaMod,
     );
     let singleHit = this.rnJesus(
       1,
-      singleHitChance + ownerAttackCharge + positionalDamagaMod
+      singleHitChance + ownerAttackCharge + positionalDamagaMod,
     );
 
     if (ownerWeaponName === "") {
@@ -18162,7 +13929,7 @@ class App extends Component {
 
       // ADJUST TARGET MOVE SPEED
       let currentMoveSpeedIndx = targetPlayer.speed.range.indexOf(
-        targetPlayer.speed.move
+        targetPlayer.speed.move,
       );
       if (currentMoveSpeedIndx > 0) {
         targetPlayer.speed.move = targetPlayer.speed.range[currentMoveSpeedIndx - 1];
@@ -18190,7 +13957,7 @@ class App extends Component {
           console.log(
             "check for evidence of retrieval here and resume retrieve if so",
             owner.ai.retrieving,
-            owner.ai.mission
+            owner.ai.mission,
           );
 
           if (owner.ai.retrieving.checkin) {
@@ -18242,7 +14009,7 @@ class App extends Component {
         let boltChargePercentage = 0;
 
         const directionalInputThresh = Math.ceil(
-          boltOwner.attacking.animRef.peak.crossbow.slash.normal / 2
+          boltOwner.attacking.animRef.peak.crossbow.slash.normal / 2,
         );
         boltChargePercentage =
           (bolt.charge /
@@ -18293,11 +14060,11 @@ class App extends Component {
         // THE LOWER THE SINGLE HIT CHANCE & THE HIGHER THE DOUBLE HIT CHANCE
         let doubleHit = this.rnJesus(
           1,
-          doubleHitChance + bolt.charge + positionalDamagaMod
+          doubleHitChance + bolt.charge + positionalDamagaMod,
         );
         let singleHit = this.rnJesus(
           1,
-          singleHitChance + bolt.charge + positionalDamagaMod
+          singleHitChance + bolt.charge + positionalDamagaMod,
         );
 
         if (singleHit === 1) {
@@ -18356,7 +14123,7 @@ class App extends Component {
             console.log(
               "check for evidence of retrieval here and resume retrieve if so",
               boltOwner.ai.retrieving,
-              boltOwner.ai.mission
+              boltOwner.ai.mission,
             );
 
             if (boltOwner.ai.retrieving.checkin) {
@@ -18526,7 +14293,7 @@ class App extends Component {
 
         if (
           !this.players[player.number - 1].popups.find(
-            (x) => x.msg.split("_")[0] === "hpDown"
+            (x) => x.msg.split("_")[0] === "hpDown",
           )
         ) {
           this.players[player.number - 1].popups.push({
@@ -18543,7 +14310,7 @@ class App extends Component {
         if (this.players[player.number - 1].hp === 1) {
           // ADJUST TARGET MOVE SPEED
           let currentMoveSpeedIndx = this.players[player.number - 1].speed.range.indexOf(
-            this.players[player.number - 1].speed.move
+            this.players[player.number - 1].speed.move,
           );
           if (currentMoveSpeedIndx > 0) {
             this.players[player.number - 1].speed.move =
@@ -18573,7 +14340,7 @@ class App extends Component {
 
         if (
           !this.players[player.number - 1].popups.find(
-            (x) => x.msg.split("_")[0] === "hpDown"
+            (x) => x.msg.split("_")[0] === "hpDown",
           )
         ) {
           this.players[player.number - 1].popups.push({
@@ -18603,7 +14370,7 @@ class App extends Component {
         if (this.players[player.number - 1].hp === 1) {
           // ADJUST TARGET MOVE SPEED
           let currentMoveSpeedIndx = this.players[player.number - 1].speed.range.indexOf(
-            this.players[player.number - 1].speed.move
+            this.players[player.number - 1].speed.move,
           );
           if (currentMoveSpeedIndx > 0) {
             this.players[player.number - 1].speed.move =
@@ -18633,7 +14400,7 @@ class App extends Component {
 
         if (
           !this.players[player.number - 1].popups.find(
-            (x) => x.msg.split("_")[0] === "hpDown"
+            (x) => x.msg.split("_")[0] === "hpDown",
           )
         ) {
           this.players[player.number - 1].popups.push({
@@ -18650,7 +14417,7 @@ class App extends Component {
         if (this.players[player.number - 1].hp === 1) {
           // ADJUST TARGET MOVE SPEED
           let currentMoveSpeedIndx = this.players[player.number - 1].speed.range.indexOf(
-            this.players[player.number - 1].speed.move
+            this.players[player.number - 1].speed.move,
           );
           if (currentMoveSpeedIndx > 0) {
             this.players[player.number - 1].speed.move =
@@ -18712,7 +14479,7 @@ class App extends Component {
 
         if (
           !this.players[player.number - 1].popups.find(
-            (x) => x.msg.split("_")[0] === "hpDown"
+            (x) => x.msg.split("_")[0] === "hpDown",
           )
         ) {
           this.players[player.number - 1].popups.push({
@@ -18729,7 +14496,7 @@ class App extends Component {
         if (this.players[player.number - 1].hp === 1) {
           // ADJUST TARGET MOVE SPEED
           let currentMoveSpeedIndx = this.players[player.number - 1].speed.range.indexOf(
-            this.players[player.number - 1].speed.move
+            this.players[player.number - 1].speed.move,
           );
           if (currentMoveSpeedIndx > 0) {
             this.players[player.number - 1].speed.move =
@@ -19101,7 +14868,7 @@ class App extends Component {
       if (popup) {
         player.popups.splice(
           player.popups.findIndex((x) => x.msg === pop),
-          1
+          1,
         );
       }
     }
@@ -19124,7 +14891,7 @@ class App extends Component {
     let myCell = this.gridInfo.find(
       (x) =>
         x.number.x === player.currentPosition.cell.number.x &&
-        x.number.y === player.currentPosition.cell.number.y
+        x.number.y === player.currentPosition.cell.number.y,
     );
 
     player.pushBack.prePushMoveSpeed = player.speed.move;
@@ -19143,7 +14910,7 @@ class App extends Component {
     };
     let target = this.getTarget(player);
     let targetCell = this.gridInfo.find(
-      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y,
     );
 
     if (myCell.barrier.state === true && myCell.barrier.position === pushBackDirection) {
@@ -19279,7 +15046,7 @@ class App extends Component {
       // if (this.halfPushBackObstacles.find((x) => x.state !== true && x.myCellNo !== data.number)) {
       if (
         !this.halfPushBackObstacles.find(
-          (x) => x.state === true && x.myCellNo === data.number
+          (x) => x.state === true && x.myCellNo === data.number,
         )
       ) {
         this.halfPushBackObstacles.push({
@@ -19625,7 +15392,7 @@ class App extends Component {
                   (x) =>
                     x.msg === "destroyedItem" &&
                     x.cell.number.x === myCellRef.number.x &&
-                    x.cell.number.y === myCellRef.number.y
+                    x.cell.number.y === myCellRef.number.y,
                 )
               ) {
                 this.cellPopups.push({
@@ -19658,7 +15425,7 @@ class App extends Component {
                   (x) =>
                     x.msg === "destroyedItem" &&
                     x.cell.number.x === myCellRef.number.x &&
-                    x.cell.number.y === myCellRef.number.y
+                    x.cell.number.y === myCellRef.number.y,
                 )
               ) {
                 this.cellPopups.push({
@@ -19736,7 +15503,7 @@ class App extends Component {
                     (x) =>
                       x.msg === "destroyedItem" &&
                       x.cell.number.x === targetCellRef.number.x &&
-                      x.cell.number.y === targetCellRef.number.y
+                      x.cell.number.y === targetCellRef.number.y,
                   )
                 ) {
                   this.cellPopups.push({
@@ -19769,7 +15536,7 @@ class App extends Component {
                     (x) =>
                       x.msg === "destroyedItem" &&
                       x.cell.number.x === targetCellRef.number.x &&
-                      x.cell.number.y === targetCellRef.number.y
+                      x.cell.number.y === targetCellRef.number.y,
                   )
                 ) {
                   this.cellPopups.push({
@@ -19805,15 +15572,15 @@ class App extends Component {
       targetCellNumber = this.getCellFromDirection(
         1,
         data.currentPosition.cell.number,
-        data.halfPushBack.direction
+        data.halfPushBack.direction,
       );
       targetCellRef = this.gridInfo.find(
-        (x) => x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y
+        (x) => x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y,
       );
       myCellRef = this.gridInfo.find(
         (x) =>
           x.number.x === data.currentPosition.cell.number.x &&
-          x.number.y === data.currentPosition.cell.number.y
+          x.number.y === data.currentPosition.cell.number.y,
       );
       impactee = data.halfPushBack.type;
       shouldDamageImpactor = this.rnJesus(1, data.crits.guardBreak) === 1;
@@ -19836,7 +15603,7 @@ class App extends Component {
               1,
               targetCellRef.obstacle.height +
                 targetCellRef.obstacle.weight +
-                targetCellRef.obstacle.hp
+                targetCellRef.obstacle.hp,
             ) === 1;
           if (shouldDamageImpactee === true) {
             damageObstacle("impactee");
@@ -19861,7 +15628,7 @@ class App extends Component {
           impacteePlayerRef = this.players.find(
             (x) =>
               x.currentPosition.cell.number.x === targetCellRef.number.x &&
-              x.currentPosition.cell.number.y === targetCellRef.number.y
+              x.currentPosition.cell.number.y === targetCellRef.number.y,
           );
           shouldDamageImpactee =
             this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
@@ -19869,7 +15636,7 @@ class App extends Component {
           if (shouldDamageImpactee === true) {
             this.handleMiscPlayerDamage(
               impacteePlayerRef,
-              "halfPushBackImpactee_" + impactor + ""
+              "halfPushBackImpactee_" + impactor + "",
             );
           }
 
@@ -19954,16 +15721,16 @@ class App extends Component {
     if (type === "obstacle") {
       direction = data.direction;
       targetCellRef = this.gridInfo.find(
-        (x) => x.number.x === data.blockCellNo.x && x.number.y === data.blockCellNo.y
+        (x) => x.number.x === data.blockCellNo.x && x.number.y === data.blockCellNo.y,
       );
       myCellRef = this.gridInfo.find(
-        (x) => x.number.x === data.myCellNo.x && x.number.y === data.myCellNo.y
+        (x) => x.number.x === data.myCellNo.x && x.number.y === data.myCellNo.y,
       );
       impactee = data.blockType;
       shouldDamageImpactor =
         this.rnJesus(
           1,
-          data.obstacle.height + data.obstacle.weight + data.obstacle.hp
+          data.obstacle.height + data.obstacle.weight + data.obstacle.hp,
         ) === 1;
 
       switch (impactee) {
@@ -19977,7 +15744,7 @@ class App extends Component {
           shouldDamageImpactee =
             this.rnJesus(
               1,
-              targetCellRef.obstacle.height + targetCellRef.obstacle.weight
+              targetCellRef.obstacle.height + targetCellRef.obstacle.weight,
             ) === 1;
           if (shouldDamageImpactee === true) {
             damageObstacle("impactee");
@@ -19998,7 +15765,7 @@ class App extends Component {
           impacteePlayerRef = this.players.find(
             (x) =>
               x.currentPosition.cell.number.x === targetCellRef.number.x &&
-              x.currentPosition.cell.number.y === targetCellRef.number.y
+              x.currentPosition.cell.number.y === targetCellRef.number.y,
           );
           shouldDamageImpactee =
             this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
@@ -20006,7 +15773,7 @@ class App extends Component {
           if (shouldDamageImpactee === true) {
             this.handleMiscPlayerDamage(
               impacteePlayerRef,
-              "halfPushBackImpactee_" + impactor + ""
+              "halfPushBackImpactee_" + impactor + "",
             );
           }
 
@@ -20076,7 +15843,7 @@ class App extends Component {
     if (moveObstacle === true && impactee === "obstacle") {
       let destCell = this.getCellFromDirection(1, targetCellRef.number, direction);
       let destCellRef = this.gridInfo.find(
-        (x) => x.number.x === destCell.x && x.number.y === destCell.y
+        (x) => x.number.x === destCell.x && x.number.y === destCell.y,
       );
       let destCellOccupant = "";
       let preMoveSpeed = this.rnJesus(0, 5);
@@ -20130,7 +15897,7 @@ class App extends Component {
           this.players.find(
             (x) =>
               x.currentPosition.cell.number.x === destCellRef.number.x &&
-              x.currentPosition.cell.number.y === destCellRef.number.y
+              x.currentPosition.cell.number.y === destCellRef.number.y,
           )
         ) {
           targetFree = false;
@@ -20145,7 +15912,7 @@ class App extends Component {
           if (destCellRef) {
             let obstacleCrementObj = this.obstacleMoveCrementer(
               targetCellRef,
-              destCellRef
+              destCellRef,
             );
 
             targetCellRef.obstacle = {
@@ -20236,7 +16003,7 @@ class App extends Component {
     if (movePlayer === true && impactee === "player") {
       let destCell = this.getCellFromDirection(1, targetCellRef.number, direction);
       let destCellRef = this.gridInfo.find(
-        (x) => x.number.x === destCell.x && x.number.y === destCell.y
+        (x) => x.number.x === destCell.x && x.number.y === destCell.y,
       );
       let destCellOccupant = "";
       let preMoveSpeed = this.rnJesus(0, 5);
@@ -20283,7 +16050,7 @@ class App extends Component {
           this.players.find(
             (x) =>
               x.currentPosition.cell.number.x === destCellRef.number.x &&
-              x.currentPosition.cell.number.y === destCellRef.number.y
+              x.currentPosition.cell.number.y === destCellRef.number.y,
           )
         ) {
           targetFree = false;
@@ -20392,7 +16159,7 @@ class App extends Component {
             };
             let cell3Ref = this.gridInfo.find(
               (elem) =>
-                elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
+                elem.number.x === cell3.number.x && elem.number.y === cell3.number.y,
             );
 
             if (!cell3Ref) {
@@ -20422,19 +16189,20 @@ class App extends Component {
               } else {
                 cell3Ref = this.gridInfo.find(
                   (elem) =>
-                    elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
+                    elem.number.x === cell3.number.x && elem.number.y === cell3.number.y,
                 );
                 // console.log('cell for placement exists',cell3Ref.number,this.customItemPlacement.cells[index],'item',item2.name);
                 if (
                   this.customItemPlacement.cells.find(
-                    (x) => x.x === cell3.number.x && x.y === cell3.number.y
+                    (x) => x.x === cell3.number.x && x.y === cell3.number.y,
                   )
                 ) {
                   // console.log('b');
                   cell3 = this.getRandomFreeCell();
                   cell3Ref = this.gridInfo.find(
                     (elem) =>
-                      elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
+                      elem.number.x === cell3.number.x &&
+                      elem.number.y === cell3.number.y,
                   );
 
                   if (!cell3) {
@@ -20454,7 +16222,7 @@ class App extends Component {
                     cell3Ref = this.gridInfo.find(
                       (elem) =>
                         elem.number.x === cell3.number.x &&
-                        elem.number.y === cell3.number.y
+                        elem.number.y === cell3.number.y,
                     );
                     // console.log('chose another cell',cell3Ref.number);
                   }
@@ -20472,7 +16240,7 @@ class App extends Component {
             } else {
               cell3Ref = this.gridInfo.find(
                 (elem) =>
-                  elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
+                  elem.number.x === cell3.number.x && elem.number.y === cell3.number.y,
               );
               // console.log('cell @',this.customItemPlacement.cells[index],cell3Ref.number);
               if (cell3Ref.obstacle.state === true) {
@@ -20485,7 +16253,8 @@ class App extends Component {
                 } else {
                   cell3Ref = this.gridInfo.find(
                     (elem) =>
-                      elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
+                      elem.number.x === cell3.number.x &&
+                      elem.number.y === cell3.number.y,
                   );
                   // console.log('cell is clear for placement3',cell3Ref.number,'item',cell3Ref.item.name,index);
                   cell3Ref.item.name = item2.name;
@@ -20496,7 +16265,7 @@ class App extends Component {
               } else {
                 cell3Ref = this.gridInfo.find(
                   (elem) =>
-                    elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
+                    elem.number.x === cell3.number.x && elem.number.y === cell3.number.y,
                 );
                 // console.log('cell is clear for placement4',cell3Ref.number,'item',cell3Ref.item.name,index);
 
@@ -20527,7 +16296,7 @@ class App extends Component {
           if (checkCell === true) {
             // console.log('cell free');
             let cellRef = this.gridInfo.find(
-              (elem) => elem.number.x === cell.x && elem.number.y === cell.y
+              (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
             );
             cellRef.item.name = item.name;
             cellRef.item.type = item.type;
@@ -20563,7 +16332,7 @@ class App extends Component {
             }
             if (checkCell === true) {
               let cell2 = this.gridInfo.find(
-                (elem) => elem.number.x === cell.x && elem.number.y === cell.y
+                (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
               );
               cell2.item.name = item2.name;
               cell2.item.type = item2.type;
@@ -20625,7 +16394,7 @@ class App extends Component {
           dropped = true;
 
           let index = player.items.weapons.findIndex(
-            (weapon) => weapon.name === player.currentWeapon.name
+            (weapon) => weapon.name === player.currentWeapon.name,
           );
           // console.log("dropping weapon player ",player.number,this.players[player.number-1].items.weapons[index].name,index,);
 
@@ -20699,7 +16468,7 @@ class App extends Component {
         if (player.currentArmor.name !== "") {
           dropped = true;
           let index = player.items.armor.findIndex(
-            (armor) => armor.name === player.currentArmor.name
+            (armor) => armor.name === player.currentArmor.name,
           );
           // console.log("dropping armor player ",player.number,this.players[player.number-1].items.armor[index].name);
           item.name = this.players[player.number - 1].items.armor[index].name;
@@ -20781,7 +16550,7 @@ class App extends Component {
         let dropCellIndex = this.gridInfo.findIndex(
           (cell) =>
             cell.number.x === player.currentPosition.cell.number.x &&
-            cell.number.y === player.currentPosition.cell.number.y
+            cell.number.y === player.currentPosition.cell.number.y,
         );
         this.gridInfo[dropCellIndex].item = item;
 
@@ -20824,7 +16593,7 @@ class App extends Component {
     let cellToDrop = this.gridInfo.find(
       (elem) =>
         elem.number.x === player.currentPosition.cell.number.x &&
-        elem.number.y === player.currentPosition.cell.number.y
+        elem.number.y === player.currentPosition.cell.number.y,
     );
 
     this.players[player.number - 1].action = "idle";
@@ -20833,7 +16602,7 @@ class App extends Component {
       if (type === "weapon") {
         if (player.currentWeapon.name !== "") {
           let index = player.items.weapons.findIndex(
-            (weapon) => weapon.name === player.currentWeapon.name
+            (weapon) => weapon.name === player.currentWeapon.name,
           );
 
           let weapon = player.currentWeapon;
@@ -20910,7 +16679,7 @@ class App extends Component {
       if (type === "armor") {
         if (player.currentArmor.name !== "") {
           let index2 = player.items.armor.findIndex(
-            (armor) => armor.name === player.currentArmor.name
+            (armor) => armor.name === player.currentArmor.name,
           );
 
           let armor = player.currentArmor;
@@ -21017,7 +16786,7 @@ class App extends Component {
     targetCell,
     targetCell2,
     myCell,
-    bolt
+    bolt,
   ) => {
     let damage;
     let weaponCheck;
@@ -21059,7 +16828,7 @@ class App extends Component {
                 ownerWeaponType,
                 "@ ",
                 targetCell.number,
-                "and damaged it."
+                "and damaged it.",
               );
               let hp = targetCell.obstacle.hp - calcedDamage;
 
@@ -21108,7 +16877,7 @@ class App extends Component {
                 ownerWeaponType,
                 "@ ",
                 targetCell.number,
-                "and destroyed it. Drop items, leave rubble?"
+                "and destroyed it. Drop items, leave rubble?",
               );
               let itemsToDrop = [];
               if (
@@ -21233,7 +17002,7 @@ class App extends Component {
                 (x) =>
                   x.msg === "unbreakable" &&
                   x.cell.number.x === targetCell.number.x &&
-                  x.cell.number.y === targetCell.number.y
+                  x.cell.number.y === targetCell.number.y,
               )
             ) {
               this.cellPopups.push({
@@ -21248,7 +17017,7 @@ class App extends Component {
                 cell: this.gridInfo.find(
                   (x) =>
                     x.number.x === targetCell.number.x &&
-                    x.number.y === targetCell.number.y
+                    x.number.y === targetCell.number.y,
                 ),
               });
             }
@@ -21264,7 +17033,7 @@ class App extends Component {
               targetCell.number,
               " but their current weapon cannot destroy this, they need",
               targetCell.obstacle.destructible.weapons,
-              ". pushback obstacle. Deflect, pushback attacker?"
+              ". pushback obstacle. Deflect, pushback attacker?",
             );
 
             if (this.rnJesus(0, 2) === 1) {
@@ -21273,7 +17042,7 @@ class App extends Component {
                   ownerType,
                   owner,
                   targetCell,
-                  `hitPushBolt_${bolt.direction}`
+                  `hitPushBolt_${bolt.direction}`,
                 );
               }
               if (type === "melee") {
@@ -21318,14 +17087,14 @@ class App extends Component {
             ownerWeaponType,
             "@ ",
             targetCell.number,
-            " but it is indestructible. pushback obstacle. Deflect, pushback attacker?"
+            " but it is indestructible. pushback obstacle. Deflect, pushback attacker?",
           );
           if (
             !this.cellPopups.find(
               (x) =>
                 x.msg === "unbreakable" &&
                 x.cell.number.x === targetCell.number.x &&
-                x.cell.number.y === targetCell.number.y
+                x.cell.number.y === targetCell.number.y,
             )
           ) {
             this.cellPopups.push({
@@ -21339,7 +17108,8 @@ class App extends Component {
               img: "",
               cell: this.gridInfo.find(
                 (x) =>
-                  x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
+                  x.number.x === targetCell.number.x &&
+                  x.number.y === targetCell.number.y,
               ),
             });
           }
@@ -21348,7 +17118,7 @@ class App extends Component {
               ownerType,
               owner,
               targetCell,
-              `hitPushBolt_${bolt.direction}`
+              `hitPushBolt_${bolt.direction}`,
             );
           }
           if (type === "melee") {
@@ -21409,7 +17179,7 @@ class App extends Component {
                 ownerWeaponType,
                 "@ ",
                 targetCell2.number,
-                "and damaged it."
+                "and damaged it.",
               );
               let hp = targetCell2.obstacle.hp - calcedDamage;
 
@@ -21443,7 +17213,7 @@ class App extends Component {
                   ownerType,
                   owner,
                   targetCell2,
-                  `hitPushBolt_${bolt.direction}`
+                  `hitPushBolt_${bolt.direction}`,
                 );
               }
               if (type === "melee") {
@@ -21463,7 +17233,7 @@ class App extends Component {
                 ownerWeaponType,
                 "@ ",
                 targetCell2.number,
-                "and destroyed it. Drop items, leave rubble?"
+                "and destroyed it. Drop items, leave rubble?",
               );
               let itemsToDrop = [];
               if (
@@ -21595,14 +17365,14 @@ class App extends Component {
               targetCell2.number,
               " but their current weapon cannot destroy this, they need",
               targetCell2.obstacle.destructible.weapons,
-              ". pushback obstacle. Deflect attacker?"
+              ". pushback obstacle. Deflect attacker?",
             );
             if (
               !this.cellPopups.find(
                 (x) =>
                   x.msg === "unbreakable" &&
                   x.cell.number.x === targetCell2.number.x &&
-                  x.cell.number.y === targetCell2.number.y
+                  x.cell.number.y === targetCell2.number.y,
               )
             ) {
               this.cellPopups.push({
@@ -21617,7 +17387,7 @@ class App extends Component {
                 cell: this.gridInfo.find(
                   (x) =>
                     x.number.x === targetCell2.number.x &&
-                    x.number.y === targetCell2.number.y
+                    x.number.y === targetCell2.number.y,
                 ),
               });
             }
@@ -21628,7 +17398,7 @@ class App extends Component {
                   ownerType,
                   owner,
                   targetCell2,
-                  `hitPushBolt_${bolt.direction}`
+                  `hitPushBolt_${bolt.direction}`,
                 );
               }
               if (type === "melee") {
@@ -21673,14 +17443,14 @@ class App extends Component {
             ownerWeaponType,
             "@ ",
             targetCell2.number,
-            " but it is indestructible. pushback obstacle. Deflect, pushback attacker?"
+            " but it is indestructible. pushback obstacle. Deflect, pushback attacker?",
           );
           if (
             !this.cellPopups.find(
               (x) =>
                 x.msg === "unbreakable" &&
                 x.cell.number.x === targetCell2.number.x &&
-                x.cell.number.y === targetCell2.number.y
+                x.cell.number.y === targetCell2.number.y,
             )
           ) {
             this.cellPopups.push({
@@ -21695,7 +17465,7 @@ class App extends Component {
               cell: this.gridInfo.find(
                 (x) =>
                   x.number.x === targetCell2.number.x &&
-                  x.number.y === targetCell2.number.y
+                  x.number.y === targetCell2.number.y,
               ),
             });
           }
@@ -21704,7 +17474,7 @@ class App extends Component {
               ownerType,
               owner,
               targetCell2,
-              `hitPushBolt_${bolt.direction}`
+              `hitPushBolt_${bolt.direction}`,
             );
           }
           if (type === "melee") {
@@ -21772,7 +17542,7 @@ class App extends Component {
                 ownerWeaponType,
                 "@ ",
                 myCell.number,
-                " and damaged it."
+                " and damaged it.",
               );
               // this.gridInfo.find(elem => elem.number.x === myCell.number.x && elem.number.y === myCell.number.y ).barrier.hp -= calcedDamage;
 
@@ -21813,7 +17583,7 @@ class App extends Component {
                 ownerWeaponType,
                 "@ ",
                 myCell.number,
-                " and destroyed it. leave rubble?"
+                " and destroyed it. leave rubble?",
               );
               if (
                 myCell.barrier.destructible.leaveRubble === true &&
@@ -21926,14 +17696,14 @@ class App extends Component {
               myCell.number,
               " but their current weapon cannot destroy this, they need",
               myCell.barrier.destructible.weapons,
-              ". Deflect, pushback attacker?"
+              ". Deflect, pushback attacker?",
             );
             if (
               !this.cellPopups.find(
                 (x) =>
                   x.msg === "unbreakable" &&
                   x.cell.number.x === myCell.number.x &&
-                  x.cell.number.y === myCell.number.y
+                  x.cell.number.y === myCell.number.y,
               )
             ) {
               this.cellPopups.push({
@@ -21946,7 +17716,7 @@ class App extends Component {
                 color: "",
                 img: "",
                 cell: this.gridInfo.find(
-                  (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
+                  (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y,
                 ),
               });
             }
@@ -21988,14 +17758,14 @@ class App extends Component {
             ownerWeaponType,
             "@ ",
             myCell.number,
-            " but it is indestructible. Deflect,pushback attacker?"
+            " but it is indestructible. Deflect,pushback attacker?",
           );
           if (
             !this.cellPopups.find(
               (x) =>
                 x.msg === "unbreakable" &&
                 x.cell.number.x === myCell.number.x &&
-                x.cell.number.y === myCell.number.y
+                x.cell.number.y === myCell.number.y,
             )
           ) {
             this.cellPopups.push({
@@ -22008,7 +17778,7 @@ class App extends Component {
               color: "",
               img: "",
               cell: this.gridInfo.find(
-                (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
+                (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y,
               ),
             });
           }
@@ -22068,7 +17838,7 @@ class App extends Component {
                   ownerWeaponType,
                   "@ ",
                   targetCell.number,
-                  " and damaged it"
+                  " and damaged it",
                 );
                 // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= calcedDamage;
 
@@ -22109,7 +17879,7 @@ class App extends Component {
                   ownerWeaponType,
                   "@ ",
                   targetCell.number,
-                  " and destroyed it"
+                  " and destroyed it",
                 );
                 if (
                   targetCell.barrier.destructible.leaveRubble === true &&
@@ -22222,14 +17992,14 @@ class App extends Component {
                 targetCell.number,
                 " but their current weapon cannot destroy this, they need",
                 targetCell.barrier.destructible.weapons,
-                ". Deflect,pushback attacker?"
+                ". Deflect,pushback attacker?",
               );
               if (
                 !this.cellPopups.find(
                   (x) =>
                     x.msg === "unbreakable" &&
                     x.cell.number.x === targetCell.number.x &&
-                    x.cell.number.y === targetCell.number.y
+                    x.cell.number.y === targetCell.number.y,
                 )
               ) {
                 this.cellPopups.push({
@@ -22244,7 +18014,7 @@ class App extends Component {
                   cell: this.gridInfo.find(
                     (x) =>
                       x.number.x === targetCell.number.x &&
-                      x.number.y === targetCell.number.y
+                      x.number.y === targetCell.number.y,
                   ),
                 });
               }
@@ -22285,7 +18055,7 @@ class App extends Component {
               ownerWeaponType,
               "@ ",
               targetCell.number,
-              " but it is indestructible. Deflect,pushback attacker?"
+              " but it is indestructible. Deflect,pushback attacker?",
             );
             // console.log('attacking invurnerable barrier w/ bolt');
             if (
@@ -22293,7 +18063,7 @@ class App extends Component {
                 (x) =>
                   x.msg === "unbreakable" &&
                   x.cell.number.x === targetCell.number.x &&
-                  x.cell.number.y === targetCell.number.y
+                  x.cell.number.y === targetCell.number.y,
               )
             ) {
               this.cellPopups.push({
@@ -22308,7 +18078,7 @@ class App extends Component {
                 cell: this.gridInfo.find(
                   (x) =>
                     x.number.x === targetCell.number.x &&
-                    x.number.y === targetCell.number.y
+                    x.number.y === targetCell.number.y,
                 ),
               });
             }
@@ -22367,7 +18137,7 @@ class App extends Component {
                   ownerWeaponType,
                   "@ ",
                   targetCell2.number,
-                  " and damaged it"
+                  " and damaged it",
                 );
                 // this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).barrier.hp -= calcedDamage;
 
@@ -22408,7 +18178,7 @@ class App extends Component {
                   ownerWeaponType,
                   "@ ",
                   targetCell2.number,
-                  " and destroyed it"
+                  " and destroyed it",
                 );
                 if (
                   targetCell2.barrier.destructible.leaveRubble === true &&
@@ -22521,14 +18291,14 @@ class App extends Component {
                 targetCell2.number,
                 " but their current weapon cannot destroy this, they need",
                 targetCell2.barrier.destructible.weapons,
-                ". Deflect,pushback attacker?"
+                ". Deflect,pushback attacker?",
               );
               if (
                 !this.cellPopups.find(
                   (x) =>
                     x.msg === "unbreakable" &&
                     x.cell.number.x === targetCell2.number.x &&
-                    x.cell.number.y === targetCell2.number.y
+                    x.cell.number.y === targetCell2.number.y,
                 )
               ) {
                 this.cellPopups.push({
@@ -22543,7 +18313,7 @@ class App extends Component {
                   cell: this.gridInfo.find(
                     (x) =>
                       x.number.x === targetCell2.number.x &&
-                      x.number.y === targetCell2.number.y
+                      x.number.y === targetCell2.number.y,
                   ),
                 });
               }
@@ -22584,7 +18354,7 @@ class App extends Component {
               ownerWeaponType,
               "@ ",
               targetCell2.number,
-              " but it is indestructible. deflected, pushback attack?"
+              " but it is indestructible. deflected, pushback attack?",
             );
             // console.log('attacking invurnerable barrier w/ bolt');
             if (
@@ -22592,7 +18362,7 @@ class App extends Component {
                 (x) =>
                   x.msg === "unbreakable" &&
                   x.cell.number.x === targetCell2.number.x &&
-                  x.cell.number.y === targetCell2.number.y
+                  x.cell.number.y === targetCell2.number.y,
               )
             ) {
               this.cellPopups.push({
@@ -22607,7 +18377,7 @@ class App extends Component {
                 cell: this.gridInfo.find(
                   (x) =>
                     x.number.x === targetCell2.number.x &&
-                    x.number.y === targetCell2.number.y
+                    x.number.y === targetCell2.number.y,
                 ),
               });
             }
@@ -22666,7 +18436,7 @@ class App extends Component {
             ownerWeaponType,
             "@ ",
             targetCell.number,
-            " and destroyed it."
+            " and destroyed it.",
           );
 
           if (ownerType === "player") {
@@ -22693,7 +18463,7 @@ class App extends Component {
           this.gridInfo.find(
             (elem) =>
               elem.number.x === targetCell.number.x &&
-              elem.number.y === targetCell.number.y
+              elem.number.y === targetCell.number.y,
           ).item = {
             name: "",
             type: "",
@@ -22712,12 +18482,12 @@ class App extends Component {
             ownerWeaponType,
             "@ ",
             targetCell.number,
-            " and destroyed it."
+            " and destroyed it.",
           );
           this.gridInfo.find(
             (elem) =>
               elem.number.x === targetCell.number.x &&
-              elem.number.y === targetCell.number.y
+              elem.number.y === targetCell.number.y,
           ).rubble = false;
         }
       } else {
@@ -22737,7 +18507,7 @@ class App extends Component {
             ownerWeaponType,
             "@ ",
             targetCell2.number,
-            " and destroyed it."
+            " and destroyed it.",
           );
           if (ownerType === "player") {
             this.players[owner.number - 1].statusDisplay = {
@@ -22763,7 +18533,7 @@ class App extends Component {
           this.gridInfo.find(
             (elem) =>
               elem.number.x === targetCell2.number.x &&
-              elem.number.y === targetCell2.number.y
+              elem.number.y === targetCell2.number.y,
           ).item = {
             name: "",
             type: "",
@@ -22782,13 +18552,13 @@ class App extends Component {
             ownerWeaponType,
             "@ ",
             targetCell2.number,
-            " and destroyed it."
+            " and destroyed it.",
           );
           // console.log('damage/clear rubble @ ',targetCell2.number);
           this.gridInfo.find(
             (elem) =>
               elem.number.x === targetCell2.number.x &&
-              elem.number.y === targetCell2.number.y
+              elem.number.y === targetCell2.number.y,
           ).rubble = false;
         }
       }
@@ -22949,13 +18719,13 @@ class App extends Component {
               targetCell2 = this.gridInfo.find(
                 (elem) =>
                   elem.number.x === owner.target.cell2.number.x &&
-                  elem.number.y === owner.target.cell2.number.y
+                  elem.number.y === owner.target.cell2.number.y,
               );
             } else {
               targetCell2 = this.gridInfo.find(
                 (elem) =>
                   elem.number.x === owner.trap.target.x &&
-                  elem.number.y === owner.trap.target.y
+                  elem.number.y === owner.trap.target.y,
               );
             }
 
@@ -23088,7 +18858,7 @@ class App extends Component {
             type,
             " for ",
             damage,
-            " damage"
+            " damage",
           );
           handleObstacleDamage(damage, 1);
         }
@@ -23117,28 +18887,28 @@ class App extends Component {
         myCell = this.gridInfo.find(
           (elem) =>
             elem.number.x === targetCell.number.x + 1 &&
-            elem.number.y === targetCell.number.y
+            elem.number.y === targetCell.number.y,
         );
       }
       if (bolt.direction === "south") {
         myCell = this.gridInfo.find(
           (elem) =>
             elem.number.x === targetCell.number.x - 1 &&
-            elem.number.y === targetCell.number.y
+            elem.number.y === targetCell.number.y,
         );
       }
       if (bolt.direction === "east") {
         myCell = this.gridInfo.find(
           (elem) =>
             elem.number.x === targetCell.number.x &&
-            elem.number.y === targetCell.number.y - 1
+            elem.number.y === targetCell.number.y - 1,
         );
       }
       if (bolt.direction === "east") {
         myCell = this.gridInfo.find(
           (elem) =>
             elem.number.x === targetCell.number.x &&
-            elem.number.y === targetCell.number.y + 1
+            elem.number.y === targetCell.number.y + 1,
         );
       }
 
@@ -23268,7 +19038,7 @@ class App extends Component {
         // console.log('ctc instruct ',instruct,instructionRef[instruct],'cell to check',cellToCheck,'steps',stepsA,stepsB);
 
         let ctcRef = this.gridInfo.find(
-          (x) => x.number.x === cellToCheck.x && x.number.y === cellToCheck.y
+          (x) => x.number.x === cellToCheck.x && x.number.y === cellToCheck.y,
         );
 
         let cellFree = true;
@@ -23510,7 +19280,7 @@ class App extends Component {
               pickUp = true;
             } else {
               console.log(
-                "player " + player.number + " you already have max movement speed"
+                "player " + player.number + " you already have max movement speed",
               );
 
               player.statusDisplay = {
@@ -23845,12 +19615,12 @@ class App extends Component {
 
     let resetPush = false;
     let refCell = this.gridInfo.find(
-      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y,
     );
     let plyrRefCell = this.gridInfo.find(
       (x) =>
         x.number.x === player.currentPosition.cell.number.x &&
-        x.number.y === player.currentPosition.cell.number.y
+        x.number.y === player.currentPosition.cell.number.y,
     );
 
     let myCellCheck = true;
@@ -23894,7 +19664,7 @@ class App extends Component {
           if (player.popups.find((x) => x.msg === "prePush")) {
             player.popups.splice(
               player.popups.findIndex((x) => x.msg === "prePush"),
-              1
+              1,
             );
           }
           this.canPushObstacle("player", player, refCell, "");
@@ -24030,7 +19800,7 @@ class App extends Component {
         impactDirection = owner.direction;
       } else {
         let myCell = this.gridInfo.find(
-          (x) => x[ownerType].state === true && x[ownerType].id === owner.id
+          (x) => x[ownerType].state === true && x[ownerType].id === owner.id,
         );
         impactDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       }
@@ -24053,7 +19823,7 @@ class App extends Component {
 
     let destCell = this.getCellFromDirection(1, obstacleCell.number, impactDirection);
     let destCellRef = this.gridInfo.find(
-      (x) => x.number.x === destCell.x && x.number.y === destCell.y
+      (x) => x.number.x === destCell.x && x.number.y === destCell.y,
     );
     let destCellOccupant = "";
 
@@ -24187,7 +19957,7 @@ class App extends Component {
             pushStrengthPlayer,
             pushStrengthThreshold,
             owner.crits.guardBreak - 2,
-            owner.crits.pushBack - 2
+            owner.crits.pushBack - 2,
           );
         }
 
@@ -24216,13 +19986,13 @@ class App extends Component {
           if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
             this.players[owner.number - 1].popups.splice(
               this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-              1
+              1,
             );
           }
           if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
             this.players[owner.number - 1].popups.splice(
               this.players[owner.number - 1].popups.findIndex((x) => x.msg === "noPush"),
-              1
+              1,
             );
           }
         }
@@ -24329,13 +20099,13 @@ class App extends Component {
         if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
           this.players[owner.number - 1].popups.splice(
             this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-            1
+            1,
           );
         }
         if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
           this.players[owner.number - 1].popups.splice(
             this.players[owner.number - 1].popups.findIndex((x) => x.msg === "noPush"),
-            1
+            1,
           );
         }
       }
@@ -24363,13 +20133,13 @@ class App extends Component {
           if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
             this.players[owner.number - 1].popups.splice(
               this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-              1
+              1,
             );
           }
           if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
             this.players[owner.number - 1].popups.splice(
               this.players[owner.number - 1].popups.findIndex((x) => x.msg === "noPush"),
-              1
+              1,
             );
           }
         }
@@ -24511,13 +20281,13 @@ class App extends Component {
         if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
           this.players[owner.number - 1].popups.splice(
             this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-            1
+            1,
           );
         }
         if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
           this.players[owner.number - 1].popups.splice(
             this.players[owner.number - 1].popups.findIndex((x) => x.msg === "canPush"),
-            1
+            1,
           );
         }
       }
@@ -24544,12 +20314,12 @@ class App extends Component {
 
     let resetPush = false;
     let targetCell = this.gridInfo.find(
-      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y,
     );
     let plyrRefCell = this.gridInfo.find(
       (x) =>
         x.number.x === pusher.currentPosition.cell.number.x &&
-        x.number.y === pusher.currentPosition.cell.number.y
+        x.number.y === pusher.currentPosition.cell.number.y,
     );
 
     let myCellCheck = true;
@@ -24599,7 +20369,7 @@ class App extends Component {
           if (pusher.popups.find((x) => x.msg === "prePush")) {
             pusher.popups.splice(
               pusher.popups.findIndex((x) => x.msg === "prePush"),
-              1
+              1,
             );
           }
           this.canPushPlayer(pusher, targetCell, targetPlayer);
@@ -24684,7 +20454,7 @@ class App extends Component {
     let destCell = this.getCellFromDirection(1, targetCell.number, impactDirection);
 
     let destCellRef = this.gridInfo.find(
-      (x) => x.number.x === destCell.x && x.number.y === destCell.y
+      (x) => x.number.x === destCell.x && x.number.y === destCell.y,
     );
     let destCellOccupant = "";
 
@@ -24809,7 +20579,7 @@ class App extends Component {
           pushStrengthPlayer,
           pushStrengthThreshold,
           pusher.crits.guardBreak - 2,
-          pusher.crits.pushBack - 2
+          pusher.crits.pushBack - 2,
         );
         resetPush = true;
       }
@@ -24834,13 +20604,13 @@ class App extends Component {
         if (this.players[pusher.number - 1].popups.find((x) => x.msg === "prePush")) {
           this.players[pusher.number - 1].popups.splice(
             this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-            1
+            1,
           );
         }
         if (this.players[pusher.number - 1].popups.find((x) => x.msg === "noPush")) {
           this.players[pusher.number - 1].popups.splice(
             this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "noPush"),
-            1
+            1,
           );
         }
 
@@ -24860,7 +20630,7 @@ class App extends Component {
 
         if (
           !this.players[targetPlayer.number - 1].popups.find(
-            (x) => x.msg === "pushedPulled"
+            (x) => x.msg === "pushedPulled",
           )
         ) {
           this.players[targetPlayer.number - 1].popups.push({
@@ -24957,13 +20727,13 @@ class App extends Component {
         if (this.players[pusher.number - 1].popups.find((x) => x.msg === "prePush")) {
           this.players[pusher.number - 1].popups.splice(
             this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-            1
+            1,
           );
         }
         if (this.players[pusher.number - 1].popups.find((x) => x.msg === "noPush")) {
           this.players[pusher.number - 1].popups.splice(
             this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "noPush"),
-            1
+            1,
           );
         }
 
@@ -24983,7 +20753,7 @@ class App extends Component {
 
         if (
           !this.players[targetPlayer.number - 1].popups.find(
-            (x) => x.msg === "pushedPulled"
+            (x) => x.msg === "pushedPulled",
           )
         ) {
           this.players[targetPlayer.number - 1].popups.push({
@@ -25113,13 +20883,13 @@ class App extends Component {
       if (this.players[pusher.number - 1].popups.find((x) => x.msg === "prePush")) {
         this.players[pusher.number - 1].popups.splice(
           this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-          1
+          1,
         );
       }
       if (this.players[pusher.number - 1].popups.find((x) => x.msg === "canaPush")) {
         this.players[pusher.number - 1].popups.splice(
           this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "canPush"),
-          1
+          1,
         );
       }
 
@@ -25137,12 +20907,12 @@ class App extends Component {
 
     let resetPull = false;
     let refCell = this.gridInfo.find(
-      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y,
     );
     let plyrRefCell = this.gridInfo.find(
       (x) =>
         x.number.x === player.currentPosition.cell.number.x &&
-        x.number.y === player.currentPosition.cell.number.y
+        x.number.y === player.currentPosition.cell.number.y,
     );
     let limit = player.defending.limit - 1;
     let myCellCheck = true;
@@ -25188,7 +20958,7 @@ class App extends Component {
           if (player.popups.find((x) => x.msg === "prePull")) {
             player.popups.splice(
               player.popups.findIndex((x) => x.msg === "prePull"),
-              1
+              1,
             );
           }
           this.canPullObstacle(player, refCell);
@@ -25276,13 +21046,13 @@ class App extends Component {
       if (player.popups.find((x) => x.msg === "prePull")) {
         player.popups.splice(
           player.popups.findIndex((x) => x.msg === "prePull"),
-          1
+          1,
         );
       }
       if (player.popups.find((x) => x.msg === "canPull")) {
         player.popups.splice(
           player.popups.findIndex((x) => x.msg === "canPull"),
-          1
+          1,
         );
       }
     }
@@ -25311,17 +21081,17 @@ class App extends Component {
       let playerCellRef = this.gridInfo.find(
         (x) =>
           x.number.x === player.currentPosition.cell.number.x &&
-          x.number.y === player.currentPosition.cell.number.y
+          x.number.y === player.currentPosition.cell.number.y,
       );
 
       let destCell = this.getCellFromDirection(
         1,
         player.currentPosition.cell.number,
-        impactDirection
+        impactDirection,
       );
 
       let destCellRef = this.gridInfo.find(
-        (x) => x.number.x === destCell.x && x.number.y === destCell.y
+        (x) => x.number.x === destCell.x && x.number.y === destCell.y,
       );
       let destCellOccupant = "";
 
@@ -25399,13 +21169,13 @@ class App extends Component {
         if (this.players[player.number - 1].popups.find((x) => x.msg === "prePull")) {
           this.players[player.number - 1].popups.splice(
             this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePull"),
-            1
+            1,
           );
         }
         if (this.players[player.number - 1].popups.find((x) => x.msg === "noPull")) {
           this.players[player.number - 1].popups.splice(
             this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPull"),
-            1
+            1,
           );
         }
 
@@ -25519,7 +21289,7 @@ class App extends Component {
           pullStrengthPlayer,
           pullStrengthThreshold,
           player.crits.guardBreak - 2,
-          player.crits.pushBack - 2
+          player.crits.pushBack - 2,
         );
         resetPull = true;
       }
@@ -25546,13 +21316,13 @@ class App extends Component {
         if (this.players[player.number - 1].popups.find((x) => x.msg === "prePull")) {
           this.players[player.number - 1].popups.splice(
             this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePull"),
-            1
+            1,
           );
         }
         if (this.players[player.number - 1].popups.find((x) => x.msg === "noPull")) {
           this.players[player.number - 1].popups.splice(
             this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPull"),
-            1
+            1,
           );
         }
 
@@ -25715,13 +21485,13 @@ class App extends Component {
       if (this.players[player.number - 1].popups.find((x) => x.msg === "prePull")) {
         this.players[player.number - 1].popups.splice(
           this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePull"),
-          1
+          1,
         );
       }
       if (this.players[player.number - 1].popups.find((x) => x.msg === "canPull")) {
         this.players[player.number - 1].popups.splice(
           this.players[player.number - 1].popups.findIndex((x) => x.msg === "canPull"),
-          1
+          1,
         );
       }
     }
@@ -25731,12 +21501,12 @@ class App extends Component {
 
     let resetPull = false;
     let targetCell = this.gridInfo.find(
-      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y,
     );
     let plyrRefCell = this.gridInfo.find(
       (x) =>
         x.number.x === puller.currentPosition.cell.number.x &&
-        x.number.y === puller.currentPosition.cell.number.y
+        x.number.y === puller.currentPosition.cell.number.y,
     );
     let limit = puller.defending.limit - 1;
     let myCellCheck = true;
@@ -25788,7 +21558,7 @@ class App extends Component {
           if (puller.popups.find((x) => x.msg === "prePull")) {
             puller.popups.splice(
               puller.popups.findIndex((x) => x.msg === "prePull"),
-              1
+              1,
             );
           }
           this.canPullPlayer(puller, targetCell, targetPlayer);
@@ -25870,13 +21640,13 @@ class App extends Component {
       if (this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")) {
         this.players[puller.number - 1].popups.splice(
           this.players[puller.number - 1].popups.findIndex((x) => x.msg === "prePull"),
-          1
+          1,
         );
       }
       if (this.players[puller.number - 1].popups.find((x) => x.msg === "canPull")) {
         this.players[puller.number - 1].popups.splice(
           this.players[puller.number - 1].popups.findIndex((x) => x.msg === "canPull"),
-          1
+          1,
         );
       }
     }
@@ -25900,7 +21670,7 @@ class App extends Component {
     let pullerCellRef = this.gridInfo.find(
       (x) =>
         x.number.x === puller.currentPosition.cell.number.x &&
-        x.number.y === puller.currentPosition.cell.number.y
+        x.number.y === puller.currentPosition.cell.number.y,
     );
 
     if (puller.stamina.current - this.staminaCostRef.pull >= 0) {
@@ -25916,12 +21686,12 @@ class App extends Component {
       let destCell = this.getCellFromDirection(
         1,
         puller.currentPosition.cell.number,
-        impactDirection
+        impactDirection,
       );
 
       // console.log('destCell',destCell,'pull pos',puller.currentPosition.cell.number,'impact dir',impactDirection);
       let destCellRef = this.gridInfo.find(
-        (x) => x.number.x === destCell.x && x.number.y === destCell.y
+        (x) => x.number.x === destCell.x && x.number.y === destCell.y,
       );
       let destCellOccupant = "";
 
@@ -26005,7 +21775,7 @@ class App extends Component {
           pullStrengthPlayer,
           pullStrengthThreshold,
           puller.crits.guardBreak - 2,
-          puller.crits.pushBack - 2
+          puller.crits.pushBack - 2,
         );
         resetPull = true;
       }
@@ -26029,13 +21799,13 @@ class App extends Component {
         if (this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")) {
           this.players[puller.number - 1].popups.splice(
             this.players[puller.number - 1].popups.findIndex((x) => x.msg === "prePull"),
-            1
+            1,
           );
         }
         if (this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")) {
           this.players[puller.number - 1].popups.splice(
             this.players[puller.number - 1].popups.findIndex((x) => x.msg === "noPull"),
-            1
+            1,
           );
         }
 
@@ -26062,7 +21832,7 @@ class App extends Component {
 
         if (
           !this.players[targetPlayer.number - 1].popups.find(
-            (x) => x.msg === "pushedPulled"
+            (x) => x.msg === "pushedPulled",
           )
         ) {
           this.players[targetPlayer.number - 1].popups.push({
@@ -26166,13 +21936,13 @@ class App extends Component {
         if (this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")) {
           this.players[puller.number - 1].popups.splice(
             this.players[puller.number - 1].popups.findIndex((x) => x.msg === "prePull"),
-            1
+            1,
           );
         }
         if (this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")) {
           this.players[puller.number - 1].popups.splice(
             this.players[puller.number - 1].popups.findIndex((x) => x.msg === "noPull"),
-            1
+            1,
           );
         }
 
@@ -26197,7 +21967,7 @@ class App extends Component {
 
         if (
           !this.players[targetPlayer.number - 1].popups.find(
-            (x) => x.msg === "pushedPulled"
+            (x) => x.msg === "pushedPulled",
           )
         ) {
           this.players[targetPlayer.number - 1].popups.push({
@@ -26361,13 +22131,13 @@ class App extends Component {
       if (this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")) {
         this.players[puller.number - 1].popups.splice(
           this.players[puller.number - 1].popups.findIndex((x) => x.msg === "prePull"),
-          1
+          1,
         );
       }
       if (this.players[puller.number - 1].popups.find((x) => x.msg === "canPull")) {
         this.players[puller.number - 1].popups.splice(
           this.players[puller.number - 1].popups.findIndex((x) => x.msg === "canPull"),
-          1
+          1,
         );
       }
     }
@@ -27931,7 +23701,7 @@ class App extends Component {
       this.state.canvas2,
       this.state.context2,
       this.state.canvas3,
-      this.state.context3
+      this.state.context3,
     );
 
     if (type === "soft") {
@@ -28061,7 +23831,7 @@ class App extends Component {
             cell,
             "patrol points",
             cell1,
-            cell3
+            cell3,
           );
         }
       }
@@ -28161,7 +23931,7 @@ class App extends Component {
         }
 
         let cell2 = this.gridInfo.find(
-          (elem) => elem.number.x === cell.x && elem.number.y === cell.y
+          (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
         );
         let newPlayer = {
           number: newPlayerNumber,
@@ -29145,14 +24915,14 @@ class App extends Component {
       let havePriorityWeapon = true;
       weaponUpgradePriority = ["crossbow", "spear", "sword"];
       let inMyInventory = plyr.items.weapons.find(
-        (elem) => elem.type === weaponUpgradePriority[weaponPriorityIndex]
+        (elem) => elem.type === weaponUpgradePriority[weaponPriorityIndex],
       );
 
       console.log(
         "priority weapon",
         weaponUpgradePriority[weaponPriorityIndex],
         "index",
-        weaponPriorityIndex
+        weaponPriorityIndex,
       );
 
       if (plyr.currentWeapon.type === weaponUpgradePriority[weaponPriorityIndex]) {
@@ -29190,7 +24960,7 @@ class App extends Component {
           "priority weapon is in my inventory. Switching to it",
           plyr.currentWeapon,
           plyr.items.ammo,
-          plyr.items.weapons
+          plyr.items.weapons,
         );
 
         if (
@@ -29231,7 +25001,7 @@ class App extends Component {
         console.log("dont have priority weapon");
 
         let inTheField = fieldItemScan.find(
-          (elem) => elem.subType === weaponUpgradePriority[weaponPriorityIndex]
+          (elem) => elem.subType === weaponUpgradePriority[weaponPriorityIndex],
         );
         // console.log('inTheField',inTheField);
         if (inTheField) {
@@ -29430,12 +25200,12 @@ class App extends Component {
 
           console.log(
             "found hpup gear in the field. retrieve! @",
-            plyr.ai.retrieving.point
+            plyr.ai.retrieving.point,
           );
         } else {
           console.log(
             "no hp up gear found in the field",
-            fieldItemScan.find((gear) => gear.effect === "hpUp")
+            fieldItemScan.find((gear) => gear.effect === "hpUp"),
           );
         }
       }
@@ -29483,12 +25253,12 @@ class App extends Component {
 
           console.log(
             "found speedUp gear in the field. retrieve! @",
-            plyr.ai.retrieving.point
+            plyr.ai.retrieving.point,
           );
         } else {
           console.log(
             "no spped up gear found in the field",
-            fieldItemScan.find((gear) => gear.effect === "speedUp")
+            fieldItemScan.find((gear) => gear.effect === "speedUp"),
           );
         }
       }
@@ -29503,7 +25273,7 @@ class App extends Component {
       if (plyr.items.ammo === 0) {
         console.log("my crossbow out of ammo");
         let inTheField = fieldItemScan.find(
-          (elem) => elem.type === "crossbow" || elem.name.substr(0, 4) === "ammo"
+          (elem) => elem.type === "crossbow" || elem.name.substr(0, 4) === "ammo",
         );
         if (inTheField) {
           if (
@@ -29600,7 +25370,7 @@ class App extends Component {
               weaponUpgradePriority.length - 1
             ) {
               console.log(
-                "no ammo for bow or alternative weapons to upgrade to. Switch to unarmed"
+                "no ammo for bow or alternative weapons to upgrade to. Switch to unarmed",
               );
               plyr.currentWeapon = {
                 name: "",
@@ -29666,7 +25436,7 @@ class App extends Component {
 
           console.log(
             "found hpup item in the field. retrieve @ ",
-            itemToRetrieve.location
+            itemToRetrieve.location,
           );
         } else {
           console.log("no heal item/gear found.");
@@ -29750,7 +25520,7 @@ class App extends Component {
       }
 
       let droppedGear = fieldItemScan.find(
-        (elem) => elem.name === plyr.ai.organizing.dropped.gear.name
+        (elem) => elem.name === plyr.ai.organizing.dropped.gear.name,
       );
       // console.log('droppedGear',droppedGear);
 
@@ -31255,7 +27025,7 @@ class App extends Component {
         let currentPatrolPoint = aiPlayer.ai.patrolling.area.findIndex(
           (elem) =>
             elem.x === aiPlayer.currentPosition.cell.number.x &&
-            elem.y === aiPlayer.currentPosition.cell.number.y
+            elem.y === aiPlayer.currentPosition.cell.number.y,
         );
         // console.log('currentPatrolPoint 1',currentPatrolPoint, aiPlayer.currentPosition.cell.number);
         if (currentPatrolPoint === 0) {
@@ -31407,7 +27177,7 @@ class App extends Component {
             console.log(
               "plyr",
               aiPlayer.number,
-              " engaging w/ crossbow but too close for comfort"
+              " engaging w/ crossbow but too close for comfort",
             );
             aiPlayer.ai.retreating.state = false;
             aiPlayer.ai.retreating.checkin = undefined;
@@ -31495,7 +27265,7 @@ class App extends Component {
                     keyword: "strafe_" + oppositeDir,
                     count: 0,
                     limit: 1,
-                  }
+                  },
                 );
               }
               if (
@@ -31529,7 +27299,7 @@ class App extends Component {
                   keyword: "short_wait",
                   count: 0,
                   limit: 15,
-                }
+                },
               );
             }
           } else {
@@ -31543,7 +27313,7 @@ class App extends Component {
                 keyword: "short_wait",
                 count: 0,
                 limit: 1,
-              }
+              },
             );
           }
           engageTargetAction = "open";
@@ -31560,7 +27330,7 @@ class App extends Component {
             "target  ",
             targetPlayer.number,
             " is defending",
-            targetPlayer.defending.decay.count
+            targetPlayer.defending.decay.count,
           );
           if (aiPlayer.ai.safeRange === true) {
             if (oppositeDir) {
@@ -31576,7 +27346,7 @@ class App extends Component {
                     keyword: "strafe_" + oppositeDir,
                     count: 0,
                     limit: 1,
-                  }
+                  },
                 );
               }
               if (
@@ -31610,7 +27380,7 @@ class App extends Component {
                   keyword: "short_wait",
                   count: 0,
                   limit: 15,
-                }
+                },
               );
             }
           } else {
@@ -31624,7 +27394,7 @@ class App extends Component {
                 keyword: "short_wait",
                 count: 0,
                 limit: 1,
-              }
+              },
             );
           }
           engageTargetAction = "defend";
@@ -31685,7 +27455,7 @@ class App extends Component {
               let aiPosCell3 = this.gridInfo.find(
                 (elem) =>
                   elem.number.x === aiPlayer.currentPosition.cell.number.x &&
-                  elem.number.y === aiPlayer.currentPosition.cell.number.y
+                  elem.number.y === aiPlayer.currentPosition.cell.number.y,
               );
 
               switch (aiPlayer.direction) {
@@ -31786,7 +27556,7 @@ class App extends Component {
               for (const cell2 of cellsToConsider2) {
                 let freeCell2 = true;
                 let cellRef2 = this.gridInfo.find(
-                  (elem) => elem.number.x === cell2.x && elem.number.y === cell2.y
+                  (elem) => elem.number.x === cell2.x && elem.number.y === cell2.y,
                 );
                 if (cellRef2) {
                   let terrainInfo4 = cellRef2.levelData.length - 1;
@@ -31929,7 +27699,7 @@ class App extends Component {
                   keyword: "short_wait",
                   count: 0,
                   limit: 15,
-                }
+                },
               );
             }
           } else {
@@ -31943,7 +27713,7 @@ class App extends Component {
                 keyword: "short_wait",
                 count: 0,
                 limit: 1,
-              }
+              },
             );
           }
           engageTargetAction = "open";
@@ -31988,7 +27758,7 @@ class App extends Component {
                   keyword: "short_wait",
                   count: 0,
                   limit: 15,
-                }
+                },
               );
             }
           } else {
@@ -32002,7 +27772,7 @@ class App extends Component {
                 keyword: "short_wait",
                 count: 0,
                 limit: 1,
-              }
+              },
             );
           }
           engageTargetAction = "defend";
@@ -32064,7 +27834,7 @@ class App extends Component {
               let aiPosCell2 = this.gridInfo.find(
                 (elem) =>
                   elem.number.x === aiPlayer.currentPosition.cell.number.x &&
-                  elem.number.y === aiPlayer.currentPosition.cell.number.y
+                  elem.number.y === aiPlayer.currentPosition.cell.number.y,
               );
 
               switch (aiPlayer.direction) {
@@ -32165,7 +27935,7 @@ class App extends Component {
               for (const cell of cellsToConsider) {
                 let freeCell = true;
                 let cellRef = this.gridInfo.find(
-                  (elem) => elem.number.x === cell.x && elem.number.y === cell.y
+                  (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
                 );
                 if (cellRef) {
                   let terrainInfo3 = cellRef.levelData.length - 1;
@@ -32306,7 +28076,7 @@ class App extends Component {
                   keyword: "short_wait",
                   count: 0,
                   limit: 15,
-                }
+                },
               );
             }
           } else {
@@ -32320,7 +28090,7 @@ class App extends Component {
                 keyword: "short_wait",
                 count: 0,
                 limit: 1,
-              }
+              },
             );
           }
 
@@ -32338,7 +28108,7 @@ class App extends Component {
             "target  ",
             targetPlayer.number,
             " is defending",
-            targetPlayer.defending.decay.count
+            targetPlayer.defending.decay.count,
           );
 
           if (aiPlayer.ai.safeRange === true) {
@@ -32373,7 +28143,7 @@ class App extends Component {
                   keyword: "short_wait",
                   count: 0,
                   limit: 15,
-                }
+                },
               );
             }
           } else {
@@ -32387,7 +28157,7 @@ class App extends Component {
                 keyword: "short_wait",
                 count: 0,
                 limit: 1,
-              }
+              },
             );
           }
 
@@ -32449,7 +28219,7 @@ class App extends Component {
               let aiPosCell3 = this.gridInfo.find(
                 (elem) =>
                   elem.number.x === aiPlayer.currentPosition.cell.number.x &&
-                  elem.number.y === aiPlayer.currentPosition.cell.number.y
+                  elem.number.y === aiPlayer.currentPosition.cell.number.y,
               );
 
               switch (aiPlayer.direction) {
@@ -32550,7 +28320,7 @@ class App extends Component {
               for (const cell3 of cellsToConsider3) {
                 let freeCell3 = true;
                 let cellRef3 = this.gridInfo.find(
-                  (elem) => elem.number.x === cell3.x && elem.number.y === cell3.y
+                  (elem) => elem.number.x === cell3.x && elem.number.y === cell3.y,
                 );
                 if (cellRef3) {
                   let terrainInfo5 = cellRef3.levelData.length - 1;
@@ -32706,7 +28476,7 @@ class App extends Component {
           // console.log('cell2a',cell2);
           freeCell2 = true;
           let cellRef2 = this.gridInfo.find(
-            (elem) => elem.number.x === cell2.x && elem.number.y === cell2.y
+            (elem) => elem.number.x === cell2.x && elem.number.y === cell2.y,
           );
           if (cellRef2) {
             if (
@@ -32877,7 +28647,7 @@ class App extends Component {
           let targetCell = this.gridInfo.find(
             (elem) =>
               elem.number.x === aiPlayer.ai.retrieving.point.x &&
-              elem.number.y === aiPlayer.ai.retrieving.point.y
+              elem.number.y === aiPlayer.ai.retrieving.point.y,
           );
           if (
             targetCell.item.name === "" ||
@@ -32991,7 +28761,7 @@ class App extends Component {
           // console.log('avoid plyr',plyr.number,'@',plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
           this.easyStar.avoidAdditionalPoint(
             plyr.currentPosition.cell.number.x,
-            plyr.currentPosition.cell.number.y
+            plyr.currentPosition.cell.number.y,
           );
         }
       }
@@ -33006,7 +28776,7 @@ class App extends Component {
           console.log(
             aiPlayer.ai.mission,
             " careful pathfinding. enemy is plyr #",
-            plyr.number
+            plyr.number,
           );
           let rng;
           let span;
@@ -33028,7 +28798,7 @@ class App extends Component {
                 cornerCell = this.gridInfo.find(
                   (elem) =>
                     elem.number.x === plyr.currentPosition.cell.number.x + rng &&
-                    elem.number.y === plyr.currentPosition.cell.number.y + rng
+                    elem.number.y === plyr.currentPosition.cell.number.y + rng,
                 );
                 whichCorner = "southEast";
                 break;
@@ -33036,7 +28806,7 @@ class App extends Component {
                 cornerCell = this.gridInfo.find(
                   (elem) =>
                     elem.number.x === plyr.currentPosition.cell.number.x - rng &&
-                    elem.number.y === plyr.currentPosition.cell.number.y - rng
+                    elem.number.y === plyr.currentPosition.cell.number.y - rng,
                 );
                 whichCorner = "northWest";
                 break;
@@ -33044,7 +28814,7 @@ class App extends Component {
                 cornerCell = this.gridInfo.find(
                   (elem) =>
                     elem.number.x === plyr.currentPosition.cell.number.x - rng &&
-                    elem.number.y === plyr.currentPosition.cell.number.y + rng
+                    elem.number.y === plyr.currentPosition.cell.number.y + rng,
                 );
                 whichCorner = "southWest";
                 break;
@@ -33052,7 +28822,7 @@ class App extends Component {
                 cornerCell = this.gridInfo.find(
                   (elem) =>
                     elem.number.x === plyr.currentPosition.cell.number.x + rng &&
-                    elem.number.y === plyr.currentPosition.cell.number.y - rng
+                    elem.number.y === plyr.currentPosition.cell.number.y - rng,
                 );
                 whichCorner = "northEast";
                 break;
@@ -33203,7 +28973,7 @@ class App extends Component {
           } else {
             pathSet = path;
           }
-        }
+        },
       );
 
       this.easyStar.setIterationsPerCalculation(4000);
@@ -33268,11 +29038,12 @@ class App extends Component {
 
               for (const rangeElem of candidateTargets) {
                 let indx = candidateTargets.findIndex(
-                  (rng) => rng.x === rangeElem.x && rng.y === rangeElem.y
+                  (rng) => rng.x === rangeElem.x && rng.y === rangeElem.y,
                 );
 
                 let pursuitTargetRef = this.gridInfo.find(
-                  (elem) => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y
+                  (elem) =>
+                    elem.number.x === rangeElem.x && elem.number.y === rangeElem.y,
                 );
 
                 if (!pursuitTargetRef) {
@@ -33385,7 +29156,7 @@ class App extends Component {
                   let rngElCellFree = true;
                   let cellRef3 = this.gridInfo.find(
                     (elema) =>
-                      elema.number.x === rangeElem.x && elema.number.y === rangeElem.y
+                      elema.number.x === rangeElem.x && elema.number.y === rangeElem.y,
                   );
                   if (cellRef3) {
                     if (
@@ -33408,7 +29179,7 @@ class App extends Component {
                     for (const cellx of rangeElemCells2) {
                       let cellRef4 = this.gridInfo.find(
                         (elemb) =>
-                          elemb.number.x === cellx.x && elemb.number.y === cellx.y
+                          elemb.number.x === cellx.x && elemb.number.y === cellx.y,
                       );
 
                       if (
@@ -33448,7 +29219,7 @@ class App extends Component {
                 // console.log('found path to safe bow range',targetPos);
               } else {
                 console.log(
-                  "No free or unobstructed firing positions at this distance for crossbow"
+                  "No free or unobstructed firing positions at this distance for crossbow",
                 );
                 if (aiPlayer.ai.pathfindingRanges.crossbow > 1) {
                   aiPlayer.ai.pathfindingRanges.crossbow--;
@@ -33481,7 +29252,7 @@ class App extends Component {
                     effect: "",
                   };
                   console.log(
-                    "no crossbow fire position or other gear in the field. switching to unarmed"
+                    "no crossbow fire position or other gear in the field. switching to unarmed",
                   );
                 }
               }
@@ -33570,11 +29341,12 @@ class App extends Component {
               for (const rangeElem of candidateTargets) {
                 // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y})
                 let indx = candidateTargets.findIndex(
-                  (rng) => rng.x === rangeElem.x && rng.y === rangeElem.y
+                  (rng) => rng.x === rangeElem.x && rng.y === rangeElem.y,
                 );
 
                 let pursuitTargetRef = this.gridInfo.find(
-                  (elem) => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y
+                  (elem) =>
+                    elem.number.x === rangeElem.x && elem.number.y === rangeElem.y,
                 );
 
                 if (!pursuitTargetRef) {
@@ -33635,7 +29407,7 @@ class App extends Component {
                   let rngElCellFree = true;
                   let cellRef3 = this.gridInfo.find(
                     (elema) =>
-                      elema.number.x === rangeElem.x && elema.number.y === rangeElem.y
+                      elema.number.x === rangeElem.x && elema.number.y === rangeElem.y,
                   );
                   if (cellRef3) {
                     if (
@@ -33658,7 +29430,7 @@ class App extends Component {
                     for (const cellx of rangeElemCells2) {
                       let cellRef4 = this.gridInfo.find(
                         (elemb) =>
-                          elemb.number.x === cellx.x && elemb.number.y === cellx.y
+                          elemb.number.x === cellx.x && elemb.number.y === cellx.y,
                       );
 
                       if (
@@ -33698,7 +29470,7 @@ class App extends Component {
                 // console.log('found path to safe spear range',targetPos);
               } else {
                 console.log(
-                  "No free or unobstructed firing positions at this distance for spear"
+                  "No free or unobstructed firing positions at this distance for spear",
                 );
                 if (aiPlayer.ai.pathfindingRanges.spear > 1) {
                   aiPlayer.ai.pathfindingRanges.spear--;
@@ -33720,11 +29492,12 @@ class App extends Component {
 
               for (const rangeElem of candidateTargets) {
                 let indx = candidateTargets.findIndex(
-                  (rng) => rng.x === rangeElem.x && rng.y === rangeElem.y
+                  (rng) => rng.x === rangeElem.x && rng.y === rangeElem.y,
                 );
 
                 let pursuitTargetRef = this.gridInfo.find(
-                  (elem) => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y
+                  (elem) =>
+                    elem.number.x === rangeElem.x && elem.number.y === rangeElem.y,
                 );
 
                 if (!pursuitTargetRef) {
@@ -33758,7 +29531,8 @@ class App extends Component {
                       }
                       let cellRef3 = this.gridInfo.find(
                         (elema) =>
-                          elema.number.x === rngElCell.x && elema.number.y === rngElCell.y
+                          elema.number.x === rngElCell.x &&
+                          elema.number.y === rngElCell.y,
                       );
                       if (cellRef3) {
                         if (
@@ -33834,7 +29608,7 @@ class App extends Component {
             // console.log('avoid plyr',plyr.number,'@',plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
             this.easyStar.avoidAdditionalPoint(
               plyr.currentPosition.cell.number.x,
-              plyr.currentPosition.cell.number.y
+              plyr.currentPosition.cell.number.y,
             );
           }
         }
@@ -33846,7 +29620,7 @@ class App extends Component {
               console.log(
                 aiPlayer.ai.mission,
                 " careful pathfinding. enemy is plyr #",
-                plyr.number
+                plyr.number,
               );
               let rng;
               let span;
@@ -33868,7 +29642,7 @@ class App extends Component {
                     cornerCell = this.gridInfo.find(
                       (elem) =>
                         elem.number.x === plyr.currentPosition.cell.number.x + rng &&
-                        elem.number.y === plyr.currentPosition.cell.number.y + rng
+                        elem.number.y === plyr.currentPosition.cell.number.y + rng,
                     );
                     whichCorner = "southEast";
                     break;
@@ -33876,7 +29650,7 @@ class App extends Component {
                     cornerCell = this.gridInfo.find(
                       (elem) =>
                         elem.number.x === plyr.currentPosition.cell.number.x - rng &&
-                        elem.number.y === plyr.currentPosition.cell.number.y - rng
+                        elem.number.y === plyr.currentPosition.cell.number.y - rng,
                     );
                     whichCorner = "northWest";
                     break;
@@ -33884,7 +29658,7 @@ class App extends Component {
                     cornerCell = this.gridInfo.find(
                       (elem) =>
                         elem.number.x === plyr.currentPosition.cell.number.x - rng &&
-                        elem.number.y === plyr.currentPosition.cell.number.y + rng
+                        elem.number.y === plyr.currentPosition.cell.number.y + rng,
                     );
                     whichCorner = "southWest";
                     break;
@@ -33892,7 +29666,7 @@ class App extends Component {
                     cornerCell = this.gridInfo.find(
                       (elem) =>
                         elem.number.x === plyr.currentPosition.cell.number.x + rng &&
-                        elem.number.y === plyr.currentPosition.cell.number.y - rng
+                        elem.number.y === plyr.currentPosition.cell.number.y - rng,
                     );
                     whichCorner = "northEast";
                     break;
@@ -34047,7 +29821,7 @@ class App extends Component {
             } else {
               pathSet = path;
             }
-          }
+          },
         );
 
         this.easyStar.setIterationsPerCalculation(4000);
@@ -34139,7 +29913,7 @@ class App extends Component {
                 keyword: "long_wait",
                 count: 0,
                 limit: 25,
-              }
+              },
             );
           } else {
             instructions.push({
@@ -34174,7 +29948,7 @@ class App extends Component {
                 keyword: "long_wait",
                 count: 0,
                 limit: 25,
-              }
+              },
             );
           } else {
             instructions.push(
@@ -34187,7 +29961,7 @@ class App extends Component {
                 keyword: "move_" + newDirection,
                 count: 0,
                 limit: 1,
-              }
+              },
             );
           }
         }
@@ -34214,7 +29988,7 @@ class App extends Component {
         aiPlayer,
         this.players[aiPlayer - 1].ai.currentInstruction,
         "path",
-        path
+        path,
       );
     }
 
@@ -34229,25 +30003,25 @@ class App extends Component {
       let targetCell = this.gridInfo.find(
         (elem) =>
           elem.number.x === plyr.target.cell1.number.x &&
-          elem.number.y === plyr.target.cell1.number.y
+          elem.number.y === plyr.target.cell1.number.y,
       );
       let playerCell = this.gridInfo.find(
         (elem) =>
           elem.number.x === plyr.currentPosition.cell.number.x &&
-          elem.number.y === plyr.currentPosition.cell.number.y
+          elem.number.y === plyr.currentPosition.cell.number.y,
       );
 
       let pathIndx = plyr.ai.pathArray.findIndex(
         (elem) =>
           elem.x === plyr.currentPosition.cell.number.x &&
-          elem.y === plyr.currentPosition.cell.number.y
+          elem.y === plyr.currentPosition.cell.number.y,
       );
       let currentPathStep = plyr.ai.pathArray[pathIndx];
       let nextPathStep = plyr.ai.pathArray[pathIndx + 1];
       let nextPathStepCell = undefined;
       if (nextPathStep) {
         nextPathStepCell = this.gridInfo.find(
-          (elem) => elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y
+          (elem) => elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y,
         );
       }
 
@@ -34918,92 +30692,93 @@ class App extends Component {
     this.pathArray = pathArray;
   };
 
-  gameLoop = () => {
-    // IF PRESSED SETTINGS KEY, COUNT
-    // PAUSE GAME IF SETTINGS OPENED
-    if (this.showSettingsKeyPress.state === true) {
-      if (this.showSettingsKeyPress.count < this.showSettingsKeyPress.limit) {
-        this.showSettingsKeyPress.count++;
-      }
-      if (this.showSettingsKeyPress.count >= this.showSettingsKeyPress.limit) {
-        if (this.state.showSettings !== true) {
-          this.setState({
-            showSettings: true,
-          });
-          if (this.showSettingsCanvasData.state === true) {
-            this.settingsFormGridWidthUpdate(this.settingsGridWidth);
-          }
+  // gameLoop = () => {
+  //   // IF PRESSED SETTINGS KEY, COUNT
+  //   // PAUSE GAME IF SETTINGS OPENED
+  //   if (this.showSettingsKeyPress.state === true) {
+  //     if (this.showSettingsKeyPress.count < this.showSettingsKeyPress.limit) {
+  //       this.showSettingsKeyPress.count++;
+  //     }
+  //     if (this.showSettingsKeyPress.count >= this.showSettingsKeyPress.limit) {
+  //       if (this.state.showSettings !== true) {
+  //         this.setState({
+  //           showSettings: true,
+  //         });
+  //         if (this.showSettingsCanvasData.state === true) {
+  //           this.settingsFormGridWidthUpdate(this.settingsGridWidth);
+  //         }
 
-          // this.redrawSettingsGrid();
-        } else {
-          // this.updateSettingsFormAiDataData = {};
-          this.settingsFormAiStartPosList = [];
-          this.setState({
-            showSettings: false,
-          });
-        }
-        this.showSettingsKeyPress = {
-          state: false,
-          count: 0,
-          limit: this.showSettingsKeyPress.limit,
-        };
-      }
-    }
+  //         // this.redrawSettingsGrid();
+  //       } else {
+  //         // this.updateSettingsFormAiDataData = {};
+  //         this.settingsFormAiStartPosList = [];
+  //         this.setState({
+  //           showSettings: false,
+  //         });
+  //       }
+  //       this.showSettingsKeyPress = {
+  //         state: false,
+  //         count: 0,
+  //         limit: this.showSettingsKeyPress.limit,
+  //       };
+  //     }
+  //   }
 
-    if (this.state.showSettings !== true) {
-      // let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-      this.stepper.currentTime = new Date().getTime();
-      this.stepper.deltaTime = this.stepper.currentTime - this.stepper.lastTime;
+  //   if (this.state.showSettings !== true) {
+  //     // let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+  //     this.stepper.currentTime = new Date().getTime();
+  //     this.stepper.deltaTime = this.stepper.currentTime - this.stepper.lastTime;
 
-      if (this.stepper.deltaTime > this.stepper.interval) {
-        this.time++;
+  //     if (this.stepper.deltaTime > this.stepper.interval) {
+  //       this.time++;
 
-        if (this.time === 300) {
-          //   this.openVoid = true;
-          // OR
-          //   this.customCellToVoid({x:2,y:2})
-          // this.players[1].ai.retreating.state = false;
-          // this.players[1].ai.retreating.checkin = undefined;
-          // this.players[1].ai.mission = 'retreat';
-          // this.players[1].ai.retreating.safe = false;
-        }
+  //       if (this.time === 300) {
+  //         //   this.openVoid = true;
+  //         // OR
+  //         //   this.customCellToVoid({x:2,y:2})
+  //         // this.players[1].ai.retreating.state = false;
+  //         // this.players[1].ai.retreating.checkin = undefined;
+  //         // this.players[1].ai.mission = 'retreat';
+  //         // this.players[1].ai.retreating.safe = false;
+  //       }
 
-        this.setState({
-          stateUpdater: "..",
-        });
+  //       this.setState({
+  //         stateUpdater: "..",
+  //       });
 
-        if (this.gamepad === true) {
-          this.pollGamepads();
-        }
+  //       if (this.gamepad === true) {
+  //         this.pollGamepads();
+  //       }
 
-        // REMOVE AI PLAYER!
-        if (this.removeAi && this.addAiCount.state !== true) {
-          let aiPlayer = this.players[this.removeAi - 1];
-          let newArray = this.players.filter((x) => x !== aiPlayer);
-          this.players = [];
-          this.players = newArray;
-          this.removeAi = undefined;
-        }
+  //       // REMOVE AI PLAYER!
+  //       if (this.removeAi && this.addAiCount.state !== true) {
+  //         let aiPlayer = this.players[this.removeAi - 1];
+  //         let newArray = this.players.filter((x) => x !== aiPlayer);
+  //         this.players = [];
+  //         this.players = newArray;
+  //         this.removeAi = undefined;
+  //       }
 
-        for (const player of this.players) {
-          this.playerUpdate(
-            player,
-            this.state.canvas,
-            this.state.context,
-            this.state.canvas2,
-            this.state.context2,
-            this.state.canvas3,
-            this.state.context3
-          );
-        }
+  //       for (const player of this.players) {
+  //         this.playerUpdate(
+  //           player,
+  //           this.state.canvas,
+  //           this.state.context,
+  //           this.state.canvas2,
+  //           this.state.context2,
+  //           this.state.canvas3,
+  //           this.state.context3
+  //         );
+  //       }
 
-        this.stepper.lastTime =
-          this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
-      }
-    }
+  //       this.stepper.lastTime =
+  //         this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
+  //     }
+  //   }
 
-    requestAnimationFrame(this.gameLoop);
-  };
+  //   requestAnimationFrame(this.gameLoop);
+  // };
+
   playerUpdate = (player, canvas, context, canvas2, context2, canvas3, context3) => {
     // console.log('updating player',player.number,this.currentPlayer);
 
@@ -35108,7 +30883,7 @@ class App extends Component {
           "arc",
           "counterClockwise",
           "front",
-          "east"
+          "east",
         );
       }
       if (this.testCount.count >= this.testCount.limit) {
@@ -35677,7 +31452,7 @@ class App extends Component {
           ) {
             canCancelMove = false;
             console.log(
-              "cannot cancel move when being pushed back, falling, drowning, pulling, pushing, and being pushed or pulled"
+              "cannot cancel move when being pushed back, falling, drowning, pulling, pushing, and being pushed or pulled",
             );
           }
 
@@ -35838,12 +31613,12 @@ class App extends Component {
         let refCell1 = this.gridInfo.find(
           (x) =>
             x.number.x === player.target.cell1.number.x &&
-            x.number.y === player.target.cell1.number.y
+            x.number.y === player.target.cell1.number.y,
         );
         let refCell2 = this.gridInfo.find(
           (x) =>
             x.number.x === player.target.cell2.number.x &&
-            x.number.y === player.target.cell2.number.y
+            x.number.y === player.target.cell2.number.y,
         );
 
         if (player.target.cell1.void === true) {
@@ -35907,7 +31682,7 @@ class App extends Component {
           if (player.popups.find((x) => x.msg === "dodging")) {
             player.popups.splice(
               player.popups.findIndex((x) => x.msg === "dodging"),
-              1
+              1,
             );
           }
 
@@ -36006,7 +31781,7 @@ class App extends Component {
                 this.gridInfo.find(
                   (x) =>
                     x.number.x === player.currentPosition.cell.number.x &&
-                    x.number.y === player.currentPosition.cell.number.y
+                    x.number.y === player.currentPosition.cell.number.y,
                 ).terrain.type !== "deep"
               ) {
                 // console.log('pulled pushed player at destination. deflect?');
@@ -36123,7 +31898,7 @@ class App extends Component {
                     "player",
                     refCell2,
                     player,
-                    refCell1.obstacle
+                    refCell1.obstacle,
                   );
                 }
               }
@@ -36295,7 +32070,7 @@ class App extends Component {
                     "player",
                     refCell2,
                     player,
-                    refCell2.obstacle
+                    refCell2.obstacle,
                   );
                 }
 
@@ -36371,7 +32146,7 @@ class App extends Component {
               // playerAPushDir2 = "north";
               if (playerAPushDir2 === playerBPushDir2) {
                 playerBPushDir2 = ["north", "south", "east", "west"].filter(
-                  (x) => x !== playerAPushDir2
+                  (x) => x !== playerAPushDir2,
                 )[0];
               }
               let canPush = this.pushBack(plyr4, playerAPushDir2);
@@ -36413,7 +32188,7 @@ class App extends Component {
                     elem.shape,
                     elem.direction,
                     elem.face,
-                    elem
+                    elem,
                   );
                 }
                 if (elem.counter.count >= elem.counter.limit) {
@@ -36438,7 +32213,7 @@ class App extends Component {
                   player = this.directionalActionAnimLineCrementer(
                     "player",
                     player,
-                    elem
+                    elem,
                   );
                 }
                 if (elem.counter.count >= elem.counter.limit) {
@@ -36542,7 +32317,7 @@ class App extends Component {
               if (popup) {
                 player.popups.splice(
                   player.popups.findIndex((x) => x.msg === pop),
-                  1
+                  1,
                 );
               }
             }
@@ -36608,7 +32383,7 @@ class App extends Component {
           let directionalActionResult = this.checkSetAttackDefendDirectionalInput(
             "windup",
             "attacking",
-            player
+            player,
           );
           player = directionalActionResult.player;
           let chargeType = "normal";
@@ -36679,7 +32454,7 @@ class App extends Component {
               if (popup) {
                 player.popups.splice(
                   player.popups.findIndex((x) => x.msg === pop),
-                  1
+                  1,
                 );
               }
             }
@@ -36729,7 +32504,7 @@ class App extends Component {
           if (player.popups.find((x) => x.msg === "dodging")) {
             player.popups.splice(
               player.popups.findIndex((x) => x.msg === "dodging"),
-              1
+              1,
             );
           }
         }
@@ -36763,7 +32538,7 @@ class App extends Component {
           let directionalActionResult = this.checkSetAttackDefendDirectionalInput(
             "windup",
             "attacking",
-            player
+            player,
           );
           player = directionalActionResult.player;
           if (player.attacking.state === true) {
@@ -36901,14 +32676,14 @@ class App extends Component {
                 let cellUnderPreAttack1 = this.gridInfo.find(
                   (elem) =>
                     elem.number.x === player.target.cell1.number.x &&
-                    elem.number.y === player.target.cell1.number.y
+                    elem.number.y === player.target.cell1.number.y,
                 );
                 let cellUnderPreAttack2;
                 if (player.currentWeapon.type === "spear") {
                   cellUnderPreAttack2 = this.gridInfo.find(
                     (elem) =>
                       elem.number.x === player.target.cell2.number.x &&
-                      elem.number.y === player.target.cell2.number.y
+                      elem.number.y === player.target.cell2.number.y,
                   );
                 }
                 if (player.currentWeapon.type === "spear") {
@@ -37006,7 +32781,7 @@ class App extends Component {
                 // }
               }
               let dirInputThresh = Math.ceil(
-                player.attacking.animRef.peak.unarmed.thrust.normal / 2
+                player.attacking.animRef.peak.unarmed.thrust.normal / 2,
               );
               if (player.attacking.count === dirInputThresh) {
                 if (player.elasticCounter.state !== true) {
@@ -37033,7 +32808,7 @@ class App extends Component {
                   //   Math.ceil(xTime / 2) -
                   //   player.attacking.count,
                   Math.ceil(xTime / 2),
-                  this.directionalAnimShape
+                  this.directionalAnimShape,
                 );
               }
 
@@ -37053,7 +32828,7 @@ class App extends Component {
                   //   dirAnimSetCalcMod -
                   //   (directionalActionResult.inputThresh + Math.ceil(xTime / 2)),
                   Math.ceil(xTime / 2),
-                  this.directionalAnimShape
+                  this.directionalAnimShape,
                 );
               }
             }
@@ -37294,7 +33069,7 @@ class App extends Component {
               if (player.popups.find((x) => x.msg === "attacking")) {
                 player.popups.splice(
                   player.popups.findIndex((x) => x.msg === "attacking"),
-                  1
+                  1,
                 );
               }
 
@@ -37311,7 +33086,7 @@ class App extends Component {
                 if (popup) {
                   player.popups.splice(
                     player.popups.findIndex((x) => x.msg === pop),
-                    1
+                    1,
                   );
                 }
               }
@@ -37353,7 +33128,7 @@ class App extends Component {
           let directionalActionResult = this.checkSetAttackDefendDirectionalInput(
             "windup",
             "defending",
-            player
+            player,
           );
           player = directionalActionResult.player;
 
@@ -37455,7 +33230,7 @@ class App extends Component {
           if (this.showDirectionalActionAnimation === true) {
             let dirAnimSetCalcMod = 5;
             const decayLimit = Math.ceil(
-              (player.defending.limit - defendPeak) * defendDecayLimitPercentage
+              (player.defending.limit - defendPeak) * defendDecayLimitPercentage,
             );
             let xTime =
               player.defending.peakCount +
@@ -37463,7 +33238,7 @@ class App extends Component {
               dirAnimSetCalcMod -
               player.defending.count;
             let existingDefendAnim = player.actionDirectionAnimationArray.find(
-              (x) => x.action === "defending"
+              (x) => x.action === "defending",
             );
             // if (player.defending.count === directionalActionResult.inputThresh) {
             if (!existingDefendAnim) {
@@ -37474,7 +33249,7 @@ class App extends Component {
                 player,
                 null,
                 xTime,
-                this.directionalAnimShape
+                this.directionalAnimShape,
               );
             }
             if (directionalActionResult.directionChanged === true) {
@@ -37495,7 +33270,7 @@ class App extends Component {
                 player,
                 null,
                 yTime,
-                this.directionalAnimShape
+                this.directionalAnimShape,
               );
             }
           }
@@ -37518,7 +33293,7 @@ class App extends Component {
               player.defending.decay.state = true;
               player.defending.decay.count = 0;
               player.defending.decay.limit = Math.ceil(
-                (player.defending.limit - defendPeak) * defendDecayLimitPercentage
+                (player.defending.limit - defendPeak) * defendDecayLimitPercentage,
               );
               player.stamina.current =
                 player.stamina.current - this.staminaCostRef.defend.peak;
@@ -37711,7 +33486,7 @@ class App extends Component {
                 if (popup) {
                   player.popups.splice(
                     player.popups.findIndex((x) => x.msg === pop),
-                    1
+                    1,
                   );
                 }
               }
@@ -38313,7 +34088,7 @@ class App extends Component {
             let myCell = this.gridInfo.find(
               (cell) =>
                 cell.number.x === player.currentPosition.cell.number.x &&
-                cell.number.y === player.currentPosition.cell.number.y
+                cell.number.y === player.currentPosition.cell.number.y,
             );
             // if (myCell.item.name !== '') {
             //   // console.log('found an item. picking it up');
@@ -38466,7 +34241,7 @@ class App extends Component {
             let myCell = this.gridInfo.find(
               (cell) =>
                 cell.number.x === player.currentPosition.cell.number.x &&
-                cell.number.y === player.currentPosition.cell.number.y
+                cell.number.y === player.currentPosition.cell.number.y,
             );
             // if (myCell.item.name !== '') {
             //   // console.log('found an item. picking it up');
@@ -38545,9 +34320,9 @@ class App extends Component {
           if (this.players[player.number - 1].popups.find((x) => x.msg === "dodging")) {
             this.players[player.number - 1].popups.splice(
               this.players[player.number - 1].popups.findIndex(
-                (x) => x.msg === "dodging"
+                (x) => x.msg === "dodging",
               ),
-              1
+              1,
             );
           }
 
@@ -38577,7 +34352,7 @@ class App extends Component {
 
             player.direction = this.getOppositeDirection(player.flanking.direction);
             player.turning.toDirection = this.getOppositeDirection(
-              player.flanking.direction
+              player.flanking.direction,
             );
 
             player.flanking = {
@@ -38593,7 +34368,7 @@ class App extends Component {
             if (player.popups.find((x) => x.msg === "flanking2")) {
               player.popups.splice(
                 player.popups.findIndex((y) => y.msg === "flanking2"),
-                1
+                1,
               );
             }
           }
@@ -38656,7 +34431,7 @@ class App extends Component {
                 if (player.popups.find((x) => x.msg === "flanking2")) {
                   player.popups.splice(
                     player.popups.findIndex((y) => y.msg === "flanking2"),
-                    1
+                    1,
                   );
                 }
                 if (!player.popups.find((x) => x.msg === "noFlanking")) {
@@ -38681,7 +34456,7 @@ class App extends Component {
               let myCell = this.gridInfo.find(
                 (elem2) =>
                   elem2.number.x === player.currentPosition.cell.number.x &&
-                  elem2.number.y === player.currentPosition.cell.number.y
+                  elem2.number.y === player.currentPosition.cell.number.y,
               );
               let myCellBlock = this.checkMyCellBarrier(player.direction, myCell);
 
@@ -38730,9 +34505,9 @@ class App extends Component {
                 ) {
                   this.players[player.number - 1].popups.splice(
                     this.players[player.number - 1].popups.findIndex(
-                      (x) => x.msg === "dodging"
+                      (x) => x.msg === "dodging",
                     ),
-                    1
+                    1,
                   );
                 }
               } else {
@@ -38764,7 +34539,7 @@ class App extends Component {
                 if (player.popups.find((x) => x.msg === "flanking2")) {
                   player.popups.splice(
                     player.popups.findIndex((y) => y.msg === "flanking2"),
-                    1
+                    1,
                   );
                 }
                 if (!player.popups.find((x) => x.msg === "noFlanking")) {
@@ -38899,11 +34674,11 @@ class App extends Component {
                       let myCell = this.gridInfo.find(
                         (elem2) =>
                           elem2.number.x === player.currentPosition.cell.number.x &&
-                          elem2.number.y === player.currentPosition.cell.number.y
+                          elem2.number.y === player.currentPosition.cell.number.y,
                       );
                       let myCellBlock = this.checkMyCellBarrier(
                         keyPressedDirection,
-                        myCell
+                        myCell,
                       );
 
                       // if (target.cell1.free === true) {
@@ -38996,7 +34771,7 @@ class App extends Component {
                         if (player.popups.find((x) => x.msg === "flanking2")) {
                           player.popups.splice(
                             player.popups.findIndex((y) => y.msg === "flanking2"),
-                            1
+                            1,
                           );
                         }
                       }
@@ -39313,17 +35088,17 @@ class App extends Component {
                 let myCell = this.gridInfo.find(
                   (elem) =>
                     elem.number.x === player.currentPosition.cell.number.x &&
-                    elem.number.y === player.currentPosition.cell.number.y
+                    elem.number.y === player.currentPosition.cell.number.y,
                 );
                 let cell1 = this.gridInfo.find(
                   (elem) =>
                     elem.number.x === target.cell1.number.x &&
-                    elem.number.y === target.cell1.number.y
+                    elem.number.y === target.cell1.number.y,
                 );
                 let cell2 = this.gridInfo.find(
                   (elem) =>
                     elem.number.x === target.cell2.number.x &&
-                    elem.number.y === target.cell2.number.y
+                    elem.number.y === target.cell2.number.y,
                 );
                 // console.log('cell1',cell1);
                 // console.log('cell2',cell2);
@@ -39475,7 +35250,7 @@ class App extends Component {
                 if (alarmedPopup === true) {
                   if (
                     !this.players[player.number - 1].popups.find(
-                      (x) => x.msg === "alarmed"
+                      (x) => x.msg === "alarmed",
                     )
                   ) {
                     this.players[player.number - 1].popups.push({
@@ -39553,7 +35328,7 @@ class App extends Component {
                     this.keyPressed[player.number - 1].dodge === true
                   ) {
                     console.log(
-                      "was dodging, now blunt attacking. cancel dodge. return dodge stamina"
+                      "was dodging, now blunt attacking. cancel dodge. return dodge stamina",
                     );
                     player.stamina.current += this.staminaCostRef.dodge.peak;
                     player.dodging = {
@@ -39582,14 +35357,14 @@ class App extends Component {
                   if (popup) {
                     player.popups.splice(
                       player.popups.findIndex((x) => x.msg === "dodging"),
-                      1
+                      1,
                     );
                   }
                   let popup2 = player.popups.find((x) => x.msg === "dodgeStart");
                   if (popup2) {
                     player.popups.splice(
                       player.popups.findIndex((x) => x.msg === "dodgeStart"),
-                      1
+                      1,
                     );
                   }
 
@@ -39600,7 +35375,7 @@ class App extends Component {
                 player = this.checkSetAttackDefendDirectionalInput(
                   "init",
                   "attacking",
-                  player
+                  player,
                 ).player;
 
                 player.action = "attacking";
@@ -39633,7 +35408,7 @@ class App extends Component {
                   player = this.checkSetAttackDefendDirectionalInput(
                     "init",
                     "defending",
-                    player
+                    player,
                   ).player;
 
                   player.defending.state = true;
@@ -39669,7 +35444,7 @@ class App extends Component {
               this.preObstaclePullCheck(
                 player,
                 player.target,
-                this.getOppositeDirection(player.direction)
+                this.getOppositeDirection(player.direction),
               );
             }
             if (
@@ -39680,7 +35455,7 @@ class App extends Component {
               this.prePlayerPullCheck(
                 player,
                 player.target,
-                this.getOppositeDirection(player.direction)
+                this.getOppositeDirection(player.direction),
               );
             }
           }
@@ -39732,7 +35507,7 @@ class App extends Component {
             player.number,
             " was being pre-pulled/pushed by ",
             plyrPullPushedPlyr,
-            " break pulling/pushing and deflect?"
+            " break pulling/pushing and deflect?",
           );
 
           let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
@@ -39740,7 +35515,7 @@ class App extends Component {
             this.setDeflection(
               this.players[plyrPullPushedPlyr - 1],
               "bluntAttacked",
-              false
+              false,
             );
           }
 
@@ -39765,9 +35540,9 @@ class App extends Component {
             ) {
               this.players[plyrPullPushedPlyr - 1].popups.splice(
                 this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                  (x) => x.msg === "prePush"
+                  (x) => x.msg === "prePush",
                 ),
-                1
+                1,
               );
             }
             if (
@@ -39775,9 +35550,9 @@ class App extends Component {
             ) {
               this.players[plyrPullPushedPlyr - 1].popups.splice(
                 this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                  (x) => x.msg === "canPush"
+                  (x) => x.msg === "canPush",
                 ),
-                1
+                1,
               );
             }
           }
@@ -39801,9 +35576,9 @@ class App extends Component {
             ) {
               this.players[plyrPullPushedPlyr - 1].popups.splice(
                 this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                  (x) => x.msg === "prePull"
+                  (x) => x.msg === "prePull",
                 ),
-                1
+                1,
               );
             }
             if (
@@ -39811,9 +35586,9 @@ class App extends Component {
             ) {
               this.players[plyrPullPushedPlyr - 1].popups.splice(
                 this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                  (x) => x.msg === "canPull"
+                  (x) => x.msg === "canPull",
                 ),
-                1
+                1,
               );
             }
           }
@@ -39854,9 +35629,9 @@ class App extends Component {
           ) {
             this.players[plyrPullPushedPlyr - 1].popups.splice(
               this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                (x) => x.msg === "prePush"
+                (x) => x.msg === "prePush",
               ),
-              1
+              1,
             );
           }
           if (
@@ -39864,9 +35639,9 @@ class App extends Component {
           ) {
             this.players[plyrPullPushedPlyr - 1].popups.splice(
               this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                (x) => x.msg === "prePull"
+                (x) => x.msg === "prePull",
               ),
-              1
+              1,
             );
           }
         }
@@ -40108,7 +35883,7 @@ class App extends Component {
         let destCellRef = this.gridInfo.find(
           (x) =>
             x.number.x === cell.obstacle.moving.destination.number.x &&
-            x.number.y === cell.obstacle.moving.destination.number.y
+            x.number.y === cell.obstacle.moving.destination.number.y,
         );
 
         let obstacleCrementObj = undefined;
@@ -40173,12 +35948,12 @@ class App extends Component {
               let originCellRef = this.gridInfo.find(
                 (x) =>
                   x.number.x === cell.obstacle.moving.origin.number.x &&
-                  x.number.y === cell.obstacle.moving.origin.number.y
+                  x.number.y === cell.obstacle.moving.origin.number.y,
               );
               let destCellRef = this.gridInfo.find(
                 (x) =>
                   x.number.x === cell.obstacle.moving.destination.number.x &&
-                  x.number.y === cell.obstacle.moving.destination.number.y
+                  x.number.y === cell.obstacle.moving.destination.number.y,
               );
 
               if (
@@ -40387,7 +36162,7 @@ class App extends Component {
                     "obstacle",
                     destCellRef,
                     plyr,
-                    destCellRef.obstacle
+                    destCellRef.obstacle,
                   );
                 }
               }
@@ -40412,7 +36187,7 @@ class App extends Component {
               let originCellRef = this.gridInfo.find(
                 (x) =>
                   x.number.x === cell.obstacle.moving.origin.number.x &&
-                  x.number.y === cell.obstacle.moving.origin.number.y
+                  x.number.y === cell.obstacle.moving.origin.number.y,
               );
 
               originCellRef.obstacle = {
@@ -40674,7 +36449,7 @@ class App extends Component {
               elem.shape,
               elem.direction,
               elem.face,
-              elem
+              elem,
             );
           }
           if (elem.counter.count >= elem.counter.limit) {
@@ -41355,7 +37130,7 @@ class App extends Component {
                   focusCell,
                   canvas,
                   context,
-                  speed
+                  speed,
                 );
               }
               break;
@@ -41453,7 +37228,7 @@ class App extends Component {
                   focusCell,
                   canvas,
                   context,
-                  speed
+                  speed,
                 );
               }
 
@@ -41620,7 +37395,7 @@ class App extends Component {
                           "zoom",
                           this.camera.instructions[
                             this.camera.currentInstruction
-                          ].action.split("_")[1]
+                          ].action.split("_")[1],
                         );
 
                         if (
@@ -41641,7 +37416,7 @@ class App extends Component {
                               "zoom",
                               this.camera.instructions[
                                 this.camera.currentInstruction
-                              ].action2.split("_")[1]
+                              ].action2.split("_")[1],
                             );
                           }
                           if (
@@ -41661,7 +37436,7 @@ class App extends Component {
                                   "pan",
                                   this.camera.instructions[
                                     this.camera.currentInstruction
-                                  ].action2.split("_")[1]
+                                  ].action2.split("_")[1],
                                 );
                               }
                             } else {
@@ -41669,7 +37444,7 @@ class App extends Component {
                                 "pan",
                                 this.camera.instructions[
                                   this.camera.currentInstruction
-                                ].action2.split("_")[1]
+                                ].action2.split("_")[1],
                               );
                             }
                           }
@@ -41696,7 +37471,7 @@ class App extends Component {
                                 "zoom",
                                 this.camera.instructions[
                                   this.camera.currentInstruction
-                                ].action3.split("_")[1]
+                                ].action3.split("_")[1],
                               );
                             }
                             if (
@@ -41716,7 +37491,7 @@ class App extends Component {
                                     "pan",
                                     this.camera.instructions[
                                       this.camera.currentInstruction
-                                    ].action3.split("_")[1]
+                                    ].action3.split("_")[1],
                                   );
                                 }
                               } else {
@@ -41724,7 +37499,7 @@ class App extends Component {
                                   "pan",
                                   this.camera.instructions[
                                     this.camera.currentInstruction
-                                  ].action3.split("_")[1]
+                                  ].action3.split("_")[1],
                                 );
                               }
                             }
@@ -41743,7 +37518,7 @@ class App extends Component {
                           "pan",
                           this.camera.instructions[
                             this.camera.currentInstruction
-                          ].action.split("_")[1]
+                          ].action.split("_")[1],
                         );
 
                         if (
@@ -41764,7 +37539,7 @@ class App extends Component {
                               "zoom",
                               this.camera.instructions[
                                 this.camera.currentInstruction
-                              ].action2.split("_")[1]
+                              ].action2.split("_")[1],
                             );
                           }
                           if (
@@ -41784,7 +37559,7 @@ class App extends Component {
                                   "pan",
                                   this.camera.instructions[
                                     this.camera.currentInstruction
-                                  ].action2.split("_")[1]
+                                  ].action2.split("_")[1],
                                 );
                               }
                             } else {
@@ -41792,7 +37567,7 @@ class App extends Component {
                                 "pan",
                                 this.camera.instructions[
                                   this.camera.currentInstruction
-                                ].action2.split("_")[1]
+                                ].action2.split("_")[1],
                               );
                             }
                           }
@@ -41819,7 +37594,7 @@ class App extends Component {
                                 "zoom",
                                 this.camera.instructions[
                                   this.camera.currentInstruction
-                                ].action3.split("_")[1]
+                                ].action3.split("_")[1],
                               );
                             }
                             if (
@@ -41839,7 +37614,7 @@ class App extends Component {
                                     "pan",
                                     this.camera.instructions[
                                       this.camera.currentInstruction
-                                    ].action3.split("_")[1]
+                                    ].action3.split("_")[1],
                                   );
                                 }
                               } else {
@@ -41847,7 +37622,7 @@ class App extends Component {
                                   "pan",
                                   this.camera.instructions[
                                     this.camera.currentInstruction
-                                  ].action3.split("_")[1]
+                                  ].action3.split("_")[1],
                                 );
                               }
                             }
@@ -41876,7 +37651,7 @@ class App extends Component {
                         "zoom",
                         this.camera.instructions[
                           this.camera.currentInstruction
-                        ].action.split("_")[1]
+                        ].action.split("_")[1],
                       );
 
                       if (
@@ -41895,7 +37670,7 @@ class App extends Component {
                             "zoom",
                             this.camera.instructions[
                               this.camera.currentInstruction
-                            ].action2.split("_")[1]
+                            ].action2.split("_")[1],
                           );
                         }
                         if (
@@ -41915,7 +37690,7 @@ class App extends Component {
                                 "pan",
                                 this.camera.instructions[
                                   this.camera.currentInstruction
-                                ].action2.split("_")[1]
+                                ].action2.split("_")[1],
                               );
                             }
                           } else {
@@ -41923,7 +37698,7 @@ class App extends Component {
                               "pan",
                               this.camera.instructions[
                                 this.camera.currentInstruction
-                              ].action2.split("_")[1]
+                              ].action2.split("_")[1],
                             );
                           }
                         }
@@ -41950,7 +37725,7 @@ class App extends Component {
                               "zoom",
                               this.camera.instructions[
                                 this.camera.currentInstruction
-                              ].action3.split("_")[1]
+                              ].action3.split("_")[1],
                             );
                           }
                           if (
@@ -41970,7 +37745,7 @@ class App extends Component {
                                   "pan",
                                   this.camera.instructions[
                                     this.camera.currentInstruction
-                                  ].action3.split("_")[1]
+                                  ].action3.split("_")[1],
                                 );
                               }
                             } else {
@@ -41978,7 +37753,7 @@ class App extends Component {
                                 "pan",
                                 this.camera.instructions[
                                   this.camera.currentInstruction
-                                ].action3.split("_")[1]
+                                ].action3.split("_")[1],
                               );
                             }
                           }
@@ -41997,7 +37772,7 @@ class App extends Component {
                         "pan",
                         this.camera.instructions[
                           this.camera.currentInstruction
-                        ].action.split("_")[1]
+                        ].action.split("_")[1],
                       );
 
                       if (
@@ -42016,7 +37791,7 @@ class App extends Component {
                             "zoom",
                             this.camera.instructions[
                               this.camera.currentInstruction
-                            ].action2.split("_")[1]
+                            ].action2.split("_")[1],
                           );
                         }
                         if (
@@ -42036,7 +37811,7 @@ class App extends Component {
                                 "pan",
                                 this.camera.instructions[
                                   this.camera.currentInstruction
-                                ].action2.split("_")[1]
+                                ].action2.split("_")[1],
                               );
                             }
                           } else {
@@ -42044,7 +37819,7 @@ class App extends Component {
                               "pan",
                               this.camera.instructions[
                                 this.camera.currentInstruction
-                              ].action2.split("_")[1]
+                              ].action2.split("_")[1],
                             );
                           }
                         }
@@ -42071,7 +37846,7 @@ class App extends Component {
                               "zoom",
                               this.camera.instructions[
                                 this.camera.currentInstruction
-                              ].action3.split("_")[1]
+                              ].action3.split("_")[1],
                             );
                           }
                           if (
@@ -42091,7 +37866,7 @@ class App extends Component {
                                   "pan",
                                   this.camera.instructions[
                                     this.camera.currentInstruction
-                                  ].action3.split("_")[1]
+                                  ].action3.split("_")[1],
                                 );
                               }
                             } else {
@@ -42099,7 +37874,7 @@ class App extends Component {
                                 "pan",
                                 this.camera.instructions[
                                   this.camera.currentInstruction
-                                ].action3.split("_")[1]
+                                ].action3.split("_")[1],
                               );
                             }
                           }
@@ -42271,7 +38046,7 @@ class App extends Component {
           context.fillText(
             "" + x + "," + y + "",
             iso.x + sceneX - 25,
-            iso.y + sceneY - 5
+            iso.y + sceneY - 5,
           );
 
           context.fillStyle = "white";
@@ -42292,7 +38067,7 @@ class App extends Component {
         let floor;
         let drawFloor = true;
         let gridInfoCell = this.gridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
+          (elem) => elem.number.x === x && elem.number.y === y,
         );
         gridInfoCell.center = center;
         gridInfoCell.drawCenter = center;
@@ -42316,7 +38091,7 @@ class App extends Component {
                 (x) =>
                   x.msg === "cellVoiding" &&
                   x.cell.number.x === gridInfoCell.number.x &&
-                  x.cell.number.y === gridInfoCell.number.y
+                  x.cell.number.y === gridInfoCell.number.y,
               )
             ) {
               this.cellPopups.push({
@@ -42331,7 +38106,7 @@ class App extends Component {
                 cell: this.gridInfo.find(
                   (x) =>
                     x.number.x === gridInfoCell.number.x &&
-                    x.number.y === gridInfoCell.number.y
+                    x.number.y === gridInfoCell.number.y,
                 ),
               });
             }
@@ -42425,7 +38200,7 @@ class App extends Component {
         context.fillText(
           "" + x + "," + y + "",
           iso.x - offset.x / 2 + 18,
-          iso.y - offset.y / 2 + 12
+          iso.y - offset.y / 2 + 12,
         );
 
         context.fillStyle = "black";
@@ -42637,7 +38412,7 @@ class App extends Component {
           pointxthisplayerDrawWidth2,
           pointythisplayerDrawHeight2,
           thisplayerDrawWidth,
-          thisplayerDrawHeight
+          thisplayerDrawHeight,
         ) => {
           console.log("** playerDrawLog **");
           // console.log("-- player --", plyr.number);
@@ -42656,7 +38431,7 @@ class App extends Component {
           console.log(
             "-- origin --",
             plyr.moving.origin.number.x,
-            plyr.moving.origin.number.y
+            plyr.moving.origin.number.y,
           );
           // console.log("-- action --", plyr.action);
           // console.log("updatedPlayerImg", updatedPlayerImg);
@@ -42725,7 +38500,7 @@ class App extends Component {
                 }
                 let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
                 let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(
-                  plyr.moving.step
+                  plyr.moving.step,
                 );
                 finalAnimIndex = moveAnimIndex + 1;
                 console.log(
@@ -42736,7 +38511,7 @@ class App extends Component {
                   "plyr",
                   plyr.number,
                   "index",
-                  finalAnimIndex
+                  finalAnimIndex,
                 );
                 if (plyr.target.cell1.void == true) {
                   // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
@@ -42745,7 +38520,7 @@ class App extends Component {
               case "jumping":
                 let rangeIndex4 = plyr.speed.range.indexOf(0.1);
                 let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(
-                  plyr.moving.step
+                  plyr.moving.step,
                 );
                 finalAnimIndex = moveAnimIndex4;
                 // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
@@ -42754,7 +38529,7 @@ class App extends Component {
                 if (plyr.pushBack.state === true) {
                   let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
                   let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(
-                    plyr.moving.step
+                    plyr.moving.step,
                   );
                   finalAnimIndex = moveAnimIndex3;
                   console.log(
@@ -42763,7 +38538,7 @@ class App extends Component {
                     "step",
                     plyr.moving.step,
                     "indx",
-                    finalAnimIndex
+                    finalAnimIndex,
                   );
                 } else {
                   let moveSpeed = plyr.speed.move;
@@ -42781,7 +38556,7 @@ class App extends Component {
                   }
                   let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
                   let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(
-                    plyr.moving.step
+                    plyr.moving.step,
                   );
                   finalAnimIndex = moveAnimIndex2;
                   console.log(
@@ -42790,14 +38565,14 @@ class App extends Component {
                     "step",
                     plyr.moving.step,
                     "indx",
-                    finalAnimIndex
+                    finalAnimIndex,
                   );
                 }
                 break;
               case "flanking":
                 let rangeIndex6 = plyr.speed.range.indexOf(0.2);
                 let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(
-                  plyr.moving.step
+                  plyr.moving.step,
                 );
                 finalAnimIndex = moveAnimIndex6;
                 console.log(
@@ -42806,7 +38581,7 @@ class App extends Component {
                   "step",
                   plyr.moving.step,
                   "anim indx",
-                  finalAnimIndex
+                  finalAnimIndex,
                 );
                 // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
                 break;
@@ -42847,7 +38622,7 @@ class App extends Component {
                   this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
                 increment = Math.ceil(
                   plyr[plyr.action].limit /
-                    this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+                    this.actionAnimFrameTypeCountRef[plyr.action].typeCount,
                 );
                 frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
                 remainder = plyr[plyr.action].count % increment;
@@ -42893,7 +38668,7 @@ class App extends Component {
                   this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
                 increment = Math.ceil(
                   plyr[plyr.action].limit /
-                    this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+                    this.actionAnimFrameTypeCountRef[plyr.action].typeCount,
                 );
                 frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
                 remainder = plyr[plyr.action].count % increment;
@@ -43014,7 +38789,7 @@ class App extends Component {
                   "anim testing dodge",
                   plyr.dodging.count,
                   "indx",
-                  finalAnimIndex
+                  finalAnimIndex,
                 );
                 break;
             }
@@ -43051,7 +38826,7 @@ class App extends Component {
             case "jumping":
               let rangeIndex4 = plyr.speed.range.indexOf(0.1);
               let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(
-                plyr.moving.step
+                plyr.moving.step,
               );
               finalAnimIndex = moveAnimIndex4;
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
@@ -43060,7 +38835,7 @@ class App extends Component {
               if (plyr.pushBack.state === true) {
                 let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
                 let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(
-                  plyr.moving.step
+                  plyr.moving.step,
                 );
                 finalAnimIndex = moveAnimIndex3;
                 // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
@@ -43080,7 +38855,7 @@ class App extends Component {
                 }
                 let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
                 let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(
-                  plyr.moving.step
+                  plyr.moving.step,
                 );
                 finalAnimIndex = moveAnimIndex2;
                 // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
@@ -43089,7 +38864,7 @@ class App extends Component {
             case "flanking":
               let rangeIndex6 = plyr.speed.range.indexOf(0.2);
               let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(
-                plyr.moving.step
+                plyr.moving.step,
               );
               finalAnimIndex = moveAnimIndex6;
               // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
@@ -43134,7 +38909,7 @@ class App extends Component {
                 this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
               increment = Math.ceil(
                 plyr[plyr.action].limit /
-                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount,
               );
               frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
               remainder = plyr[plyr.action].count % increment;
@@ -43175,7 +38950,7 @@ class App extends Component {
                 this.actionAnimFrameTypeCountRef[plyr.action].typeCount;
               increment = Math.ceil(
                 plyr[plyr.action].limit /
-                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount
+                  this.actionAnimFrameTypeCountRef[plyr.action].typeCount,
               );
               frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
               remainder = plyr[plyr.action].count % increment;
@@ -43444,17 +39219,17 @@ class App extends Component {
               north: this.popupDrawCalc(
                 "north",
                 { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-                plyr.number
+                plyr.number,
               ),
               west: this.popupDrawCalc(
                 "west",
                 { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-                plyr.number
+                plyr.number,
               ),
               south: this.popupDrawCalc(
                 "south",
                 { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-                plyr.number
+                plyr.number,
               ),
             };
             let origin = popupCoordObject.west;
@@ -43484,7 +39259,7 @@ class App extends Component {
               origin2.y,
               width2 + 2,
               this.playerDrawHeight * 1.5,
-              2
+              2,
             );
             // context2.roundRect(origin2.x, origin2.y, width2, height2, 2);
             // context2.roundRect(
@@ -43553,7 +39328,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10 - jumpYCalc * 3,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               } else {
                 context2.drawImage(
@@ -43565,7 +39340,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
             }
@@ -43718,17 +39493,17 @@ class App extends Component {
               elasticCountCalcResult = this.calcElasticCountCoords(
                 "halfPushBack",
                 "player",
-                plyr
+                plyr,
               );
               let finalCoords = this.calcElasticCountCoords(
                 "halfPushBack",
                 "player",
-                plyr
+                plyr,
               ).coords;
               let drawCell = this.calcElasticCountCoords(
                 "halfPushBack",
                 "player",
-                plyr
+                plyr,
               ).drawCell;
               plyr = this.calcElasticCountCoords("halfPushBack", "player", plyr).player;
 
@@ -43758,7 +39533,7 @@ class App extends Component {
                   finalCoords.x,
                   finalCoords.y,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
 
@@ -43890,7 +39665,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
             }
@@ -43928,7 +39703,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
                 // context2.fillStyle = "black";
                 // context2.fillRect(point.x, point.y,5,5);
@@ -43951,7 +39726,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
                 // context2.fillStyle = "black";
                 // context2.fillRect(point.x, point.y,5,5);
@@ -43974,7 +39749,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
                 // context2.fillStyle = "black";
                 // context2.fillRect(point.x, point.y,5,5);
@@ -43997,7 +39772,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
                 // context2.fillStyle = "black";
                 // context2.fillRect(point.x, point.y,5,5);
@@ -44017,7 +39792,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
                 // context2.fillStyle = "black";
                 // context2.fillRect(point.x, point.y,5,5);
@@ -44036,7 +39811,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
                 // context2.fillStyle = "black";
                 // context2.fillRect(point.x, point.y,5,5);
@@ -44058,12 +39833,12 @@ class App extends Component {
               let finalCoords = this.calcElasticCountCoords(
                 "attacking",
                 "player",
-                plyr
+                plyr,
               ).coords;
               let drawCell = this.calcElasticCountCoords(
                 "attacking",
                 "player",
-                plyr
+                plyr,
               ).drawCell;
               plyr = this.calcElasticCountCoords("attacking", "player", plyr).player;
               finalCoords.x -= 5;
@@ -44111,7 +39886,7 @@ class App extends Component {
                   finalCoords.x,
                   finalCoords.y,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
 
@@ -44243,7 +40018,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
             }
@@ -44268,12 +40043,12 @@ class App extends Component {
               let finalCoords = this.calcElasticCountCoords(
                 "defending",
                 "player",
-                plyr
+                plyr,
               ).coords;
               let drawCell = this.calcElasticCountCoords(
                 "defending",
                 "player",
-                plyr
+                plyr,
               ).drawCell;
               plyr = this.calcElasticCountCoords("defending", "player", plyr).player;
 
@@ -44323,7 +40098,7 @@ class App extends Component {
                   finalCoords.x,
                   finalCoords.y,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
 
@@ -44455,7 +40230,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
             }
@@ -44488,7 +40263,7 @@ class App extends Component {
                     animAction.points[i].y,
                     animAction.points[i + 1].x,
                     animAction.points[i + 1].y,
-                    40
+                    40,
                   );
                 }
 
@@ -44508,7 +40283,7 @@ class App extends Component {
                       animAction.points[i].y2,
                       animAction.points[i + 1].x2,
                       animAction.points[i + 1].y2,
-                      30
+                      30,
                     );
                   }
                   lastPoint = animAction.points[animAction.points.length - 1];
@@ -44628,7 +40403,7 @@ class App extends Component {
                 newCharDrawPoint.x - 5,
                 newCharDrawPoint.y - 10 - jumpYCalc * 3,
                 this.playerDrawWidth2,
-                this.playerDrawHeight2
+                this.playerDrawHeight2,
               );
             }
           }
@@ -44756,7 +40531,7 @@ class App extends Component {
                 newCharDrawPoint.x - 5,
                 newCharDrawPoint.y - 10,
                 this.playerDrawWidth2,
-                this.playerDrawHeight2
+                this.playerDrawHeight2,
               );
             }
           }
@@ -44939,7 +40714,7 @@ class App extends Component {
                 newCharDrawPoint.x - 5,
                 newCharDrawPoint.y - 10,
                 this.playerDrawWidth2,
-                this.playerDrawHeight2
+                this.playerDrawHeight2,
               );
             }
           }
@@ -44956,7 +40731,7 @@ class App extends Component {
                 newCharDrawPoint.x - 5,
                 newCharDrawPoint.y - 10,
                 this.playerDrawWidth2,
-                this.playerDrawHeight2
+                this.playerDrawHeight2,
               );
             }
 
@@ -44980,7 +40755,7 @@ class App extends Component {
                   newCharDrawPoint.x - 5,
                   newCharDrawPoint.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
             }
@@ -44994,12 +40769,12 @@ class App extends Component {
               let finalCoords = this.calcElasticCountCoords(
                 "deflected",
                 "player",
-                plyr
+                plyr,
               ).coords;
               let drawCell = this.calcElasticCountCoords(
                 "deflected",
                 "player",
-                plyr
+                plyr,
               ).drawCell;
               plyr = this.calcElasticCountCoords("deflected", "player", plyr).player;
               finalCoords.x -= 5;
@@ -45018,7 +40793,7 @@ class App extends Component {
                   finalCoords.x,
                   finalCoords.y,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
 
@@ -45148,12 +40923,12 @@ class App extends Component {
               let finalCoords = this.calcElasticCountCoords(
                 "dodging",
                 "player",
-                plyr
+                plyr,
               ).coords;
               let drawCell = this.calcElasticCountCoords(
                 "dodging",
                 "player",
-                plyr
+                plyr,
               ).drawCell;
 
               plyr = this.calcElasticCountCoords("dodging", "player", plyr).player;
@@ -45189,7 +40964,7 @@ class App extends Component {
                   finalCoords.x,
                   finalCoords.y,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
               }
 
@@ -45318,7 +41093,7 @@ class App extends Component {
               let respawnPosCellRef = this.gridInfo.find(
                 (x) =>
                   x.number.x === plyr.startPosition.cell.number.x &&
-                  x.number.y === plyr.startPosition.cell.number.y
+                  x.number.y === plyr.startPosition.cell.number.y,
               );
               let respawnCellNo;
               let respawnCellCenter;
@@ -45345,23 +41120,23 @@ class App extends Component {
                 respawnPosCellRef = this.gridInfo.find(
                   (x) =>
                     x.number.x === respawnCellNo.number.x &&
-                    x.number.y === respawnCellNo.number.y
+                    x.number.y === respawnCellNo.number.y,
                 );
 
                 if (respawnCellNo) {
                   canRespawn = true;
                 } else {
                   console.log(
-                    "no cells for respawn. Unlikely but true. Reassign obstacle cell"
+                    "no cells for respawn. Unlikely but true. Reassign obstacle cell",
                   );
                   if (this.gridInfo.filter((x) => x.obstacle.state === true)[0]) {
                     this.gridInfo.filter(
-                      (x) => x.obstacle.state === true
+                      (x) => x.obstacle.state === true,
                     )[0].obstacle.state = false;
                     respawnPosCellRef = this.gridInfo.find(
                       (x) =>
                         x.number.x === respawnCellNo.number.x &&
-                        x.number.y === respawnCellNo.number.y
+                        x.number.y === respawnCellNo.number.y,
                     );
                     let oldLvlData = this.gridInfo
                       .filter((x) => x.obstacle.state === true)[0]
@@ -45372,17 +41147,16 @@ class App extends Component {
                     canRespawn = true;
                   } else {
                     console.log(
-                      "no free cells for respawn and no obstacle cell to comandeer. Highly unlikley"
+                      "no free cells for respawn and no obstacle cell to comandeer. Highly unlikley",
                     );
 
                     if (this.gridInfo.filter((x) => x.void.state === true)[0]) {
-                      this.gridInfo.filter(
-                        (x) => x.void.state === true
-                      )[0].void.state = false;
+                      this.gridInfo.filter((x) => x.void.state === true)[0].void.state =
+                        false;
                       respawnPosCellRef = this.gridInfo.find(
                         (x) =>
                           x.number.x === respawnCellNo.number.x &&
-                          x.number.y === respawnCellNo.number.y
+                          x.number.y === respawnCellNo.number.y,
                       );
                       let oldLvlData = this.gridInfo
                         .filter((x) => x.void.state === true)[0]
@@ -45445,7 +41219,7 @@ class App extends Component {
                   origin2.x - 5,
                   origin2.y - 10,
                   this.playerDrawWidth2,
-                  this.playerDrawHeight2
+                  this.playerDrawHeight2,
                 );
 
                 if (
@@ -45478,7 +41252,7 @@ class App extends Component {
                 plyr.ghost.position.cell.center.x - 15,
                 plyr.ghost.position.cell.center.y - 15,
                 25,
-                25
+                25,
               );
             }
           }
@@ -45500,7 +41274,7 @@ class App extends Component {
                 plyr.ghost.position.cell.center.x - 20,
                 plyr.ghost.position.cell.center.y - 20,
                 25,
-                25
+                25,
               );
             }
           }
@@ -45588,7 +41362,7 @@ class App extends Component {
                             invalidPos2 = this.getCellFromDirection(
                               1,
                               invalidPos,
-                              pop.position
+                              pop.position,
                             );
 
                             dir = this.getDirectionFromCells(myPos, invalidPos2);
@@ -45619,7 +41393,7 @@ class App extends Component {
                         invalidPos2 = this.getCellFromDirection(
                           1,
                           cellPos,
-                          popup2.position
+                          popup2.position,
                         );
 
                         dir = this.getDirectionFromCells(myPos, invalidPos2);
@@ -45694,7 +41468,7 @@ class App extends Component {
                     popupDrawCoords = this.popupDrawCalc(
                       popup.position,
                       { x: point.x - 25, y: point.y - 25 },
-                      plyr.number
+                      plyr.number,
                     );
 
                     this.drawPopupBubble(
@@ -45706,7 +41480,7 @@ class App extends Component {
                       5,
                       popupDrawCoords.anchor.x,
                       popupDrawCoords.anchor.y,
-                      popupBorderColor
+                      popupBorderColor,
                     );
                     let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
 
@@ -45722,7 +41496,7 @@ class App extends Component {
                         popupDrawCoords.origin.y + this.popupSize,
                         10,
                         this.popupSize * perc,
-                        5
+                        5,
                       );
                       context2.fill();
                       // console.log("playerPopupProgress init", perc);
@@ -45735,7 +41509,7 @@ class App extends Component {
                         popup.msg.split("_")[1],
                         popupDrawCoords.origin.x +
                           (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
-                        popupDrawCoords.origin.y + 15
+                        popupDrawCoords.origin.y + 15,
                       );
 
                       centerPopupOffset = (this.popupSize - this.popupImgSize * 0.75) / 2;
@@ -45744,7 +41518,7 @@ class App extends Component {
                         popupDrawCoords.origin.x + centerPopupOffset,
                         popupDrawCoords.origin.y + (centerPopupOffset + 5),
                         this.popupImgSize * 0.75,
-                        this.popupImgSize * 0.75
+                        this.popupImgSize * 0.75,
                       );
                     } else {
                       context2.drawImage(
@@ -45752,7 +41526,7 @@ class App extends Component {
                         popupDrawCoords.origin.x + centerPopupOffset,
                         popupDrawCoords.origin.y + centerPopupOffset,
                         this.popupImgSize,
-                        this.popupImgSize
+                        this.popupImgSize,
                       );
                     }
                   } else if (popup.position !== "northWest") {
@@ -45785,7 +41559,7 @@ class App extends Component {
                           invalidPos2 = this.getCellFromDirection(
                             1,
                             invalidPos,
-                            pop.position
+                            pop.position,
                           );
 
                           dir = this.getDirectionFromCells(myPos, invalidPos2);
@@ -45817,7 +41591,7 @@ class App extends Component {
                       invalidPos2 = this.getCellFromDirection(
                         1,
                         cellPos,
-                        popup2.position
+                        popup2.position,
                       );
 
                       dir = this.getDirectionFromCells(myPos, invalidPos2);
@@ -45835,7 +41609,7 @@ class App extends Component {
                       plyr.popups.find((x) => x.msg === popup.msg).state = false;
                       console.log(
                         "A new invalid direction === popup's position. reconsidering...",
-                        popup.msg
+                        popup.msg,
                       );
                     } else {
                       let popupProgress = false;
@@ -45882,7 +41656,7 @@ class App extends Component {
                       popupDrawCoords = this.popupDrawCalc(
                         popup.position,
                         { x: point.x - 25, y: point.y - 25 },
-                        plyr.number
+                        plyr.number,
                       );
                       this.drawPopupBubble(
                         context2,
@@ -45893,7 +41667,7 @@ class App extends Component {
                         5,
                         popupDrawCoords.anchor.x,
                         popupDrawCoords.anchor.y,
-                        popupBorderColor
+                        popupBorderColor,
                       );
                       let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
 
@@ -45909,7 +41683,7 @@ class App extends Component {
                           popupDrawCoords.origin.y + this.popupSize,
                           10,
                           this.popupSize * perc,
-                          5
+                          5,
                         );
                         context2.fill();
                         // console.log(
@@ -45926,7 +41700,7 @@ class App extends Component {
                           popup.msg.split("_")[1],
                           popupDrawCoords.origin.x +
                             (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
-                          popupDrawCoords.origin.y + 15
+                          popupDrawCoords.origin.y + 15,
                         );
 
                         centerPopupOffset =
@@ -45936,7 +41710,7 @@ class App extends Component {
                           popupDrawCoords.origin.x + centerPopupOffset,
                           popupDrawCoords.origin.y + (centerPopupOffset + 5),
                           this.popupImgSize * 0.75,
-                          this.popupImgSize * 0.75
+                          this.popupImgSize * 0.75,
                         );
                       } else {
                         if (player.action === "defending" && popup.msg === "defending") {
@@ -45970,7 +41744,7 @@ class App extends Component {
                           popupDrawCoords.origin.x + centerPopupOffset,
                           popupDrawCoords.origin.y + centerPopupOffset,
                           this.popupImgSize,
-                          this.popupImgSize
+                          this.popupImgSize,
                         );
                       }
                     }
@@ -46008,7 +41782,7 @@ class App extends Component {
                 animAction.points[i].y,
                 animAction.points[i + 1].x,
                 animAction.points[i + 1].y,
-                40
+                40,
               );
             }
             lastPoint = animAction.points[animAction.points.length - 1];
@@ -46027,7 +41801,7 @@ class App extends Component {
                   animAction.points[i].y2,
                   animAction.points[i + 1].x2,
                   animAction.points[i + 1].y2,
-                  30
+                  30,
                 );
               }
               lastPoint = animAction.points[animAction.points.length - 1];
@@ -46077,7 +41851,7 @@ class App extends Component {
           context.drawImage(
             obstacleImg,
             gridInfoCell.obstacle.moving.nextPosition.x,
-            gridInfoCell.obstacle.moving.nextPosition.y
+            gridInfoCell.obstacle.moving.nextPosition.y,
           );
           gridInfoCell.obstacle.moving.nextPosition.y += 2;
 
@@ -46096,7 +41870,7 @@ class App extends Component {
             context.drawImage(
               obstacleImg,
               obstacle.moving.nextPosition.x,
-              obstacle.moving.nextPosition.y
+              obstacle.moving.nextPosition.y,
             );
             obstacle.moving.nextPosition = {
               x: obstacle.moving.nextPosition.x,
@@ -46152,7 +41926,7 @@ class App extends Component {
               context2.drawImage(
                 obstacleImg,
                 iso.x - offset.x,
-                iso.y - obstacleImg.height
+                iso.y - obstacleImg.height,
               );
             } else {
               // console.log('x/y',x,y);
@@ -46212,7 +41986,7 @@ class App extends Component {
                 obstacleImg,
                 cell.obstacle.moving.nextPosition.x - offset.x,
                 cell.obstacle.moving.nextPosition.y -
-                  Math.ceil(obstacleImg.height / 2, 30, 30)
+                  Math.ceil(obstacleImg.height / 2, 30, 30),
               );
             }
 
@@ -46266,7 +42040,7 @@ class App extends Component {
                     obs.coords = this.calcElasticCountCoords(
                       "halfPushBack",
                       "obstacle",
-                      obs
+                      obs,
                     ).coords;
                     context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
                   }
@@ -46289,7 +42063,7 @@ class App extends Component {
                 context2.drawImage(
                   obstacleImg,
                   iso.x - offset.x,
-                  iso.y - obstacleImg.height
+                  iso.y - obstacleImg.height,
                 );
               }
               if (cell.type === "barrier" && cell.cell.barrier.type) {
@@ -46300,7 +42074,7 @@ class App extends Component {
                   iso.x - offset.x,
                   iso.y - barrierImg.height,
                   barrierImg.width,
-                  barrierImg.height
+                  barrierImg.height,
                 );
               }
             }
@@ -46350,7 +42124,7 @@ class App extends Component {
               iso.x - offset.x,
               iso.y - barrierImg.height,
               barrierImg.width,
-              barrierImg.height
+              barrierImg.height,
             );
           }
         }
@@ -46386,7 +42160,7 @@ class App extends Component {
               bolt.currentPosition.center.x - 15,
               bolt.currentPosition.center.y - 15,
               35,
-              35
+              35,
             );
           }
         }
@@ -46409,7 +42183,7 @@ class App extends Component {
                     (x) =>
                       x.state === true &&
                       x.cell.number.x === popup.cell.number.x &&
-                      x.cell.number.y === popup.cell.number.y
+                      x.cell.number.y === popup.cell.number.y,
                   );
                   let positions = [
                     "north",
@@ -46424,7 +42198,7 @@ class App extends Component {
 
                   if (popup.color === "") {
                     popup.color = this.cellColorRef.find(
-                      (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
+                      (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y,
                     ).color;
                   }
 
@@ -46467,7 +42241,7 @@ class App extends Component {
                           invalidPos2 = this.getCellFromDirection(
                             1,
                             invalidPos,
-                            pop.position
+                            pop.position,
                           );
 
                           // let dir = undefined;
@@ -46503,7 +42277,7 @@ class App extends Component {
                       invalidPos2 = this.getCellFromDirection(
                         1,
                         cellPos,
-                        popup2.position
+                        popup2.position,
                       );
 
                       dir = this.getDirectionFromCells(myPos, invalidPos2);
@@ -46528,7 +42302,7 @@ class App extends Component {
                   popupDrawCoords = this.popupDrawCalc(
                     popup.position,
                     { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
-                    0
+                    0,
                   );
                   this.drawPopupBubble(
                     context2,
@@ -46539,7 +42313,7 @@ class App extends Component {
                     5,
                     popupDrawCoords.anchor.x,
                     popupDrawCoords.anchor.y,
-                    popup.color
+                    popup.color,
                   );
                   // context2.fillStyle = 'black';
                   // context2.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
@@ -46550,7 +42324,7 @@ class App extends Component {
                     popupDrawCoords.origin.x + centerPopupOffset,
                     popupDrawCoords.origin.y + centerPopupOffset,
                     this.popupImgSize,
-                    this.popupImgSize
+                    this.popupImgSize,
                   );
                 } else {
                   let dir = undefined;
@@ -46561,7 +42335,7 @@ class App extends Component {
                       x.state === true &&
                       x.msg !== popup.msg &&
                       x.cell.number.x !== popup.cell.number.x &&
-                      x.cell.number.y !== popup.cell.number.y
+                      x.cell.number.y !== popup.cell.number.y,
                   );
 
                   for (const plyr2 of this.players) {
@@ -46589,7 +42363,7 @@ class App extends Component {
                           invalidPos2 = this.getCellFromDirection(
                             1,
                             invalidPos,
-                            pop.position
+                            pop.position,
                           );
 
                           dir = this.getDirectionFromCells(myPos, invalidPos2);
@@ -46619,7 +42393,7 @@ class App extends Component {
                       invalidPos2 = this.getCellFromDirection(
                         1,
                         cellPos,
-                        popup2.position
+                        popup2.position,
                       );
 
                       dir = this.getDirectionFromCells(myPos, invalidPos2);
@@ -46638,13 +42412,13 @@ class App extends Component {
                       (x) =>
                         x.msg === popup.msg &&
                         x.cell.number.x === popup.cell.number.x &&
-                        x.cell.number.x === popup.cell.number.x
+                        x.cell.number.x === popup.cell.number.x,
                     ).state = false;
                     this.cellPopups.find(
                       (x) =>
                         x.msg === popup.msg &&
                         x.cell.number.x === popup.cell.number.x &&
-                        x.cell.number.x === popup.cell.number.x
+                        x.cell.number.x === popup.cell.number.x,
                     ).position = "";
                     // console.log('reconsidering...',popup.msg);
                   } else {
@@ -46655,7 +42429,7 @@ class App extends Component {
                         x: popup.cell.center.x - 25,
                         y: popup.cell.center.y - 15,
                       },
-                      0
+                      0,
                     );
                     // this.drawPopupBubble2(context2,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
                     this.drawPopupBubble(
@@ -46667,7 +42441,7 @@ class App extends Component {
                       5,
                       popupDrawCoords.anchor.x,
                       popupDrawCoords.anchor.y,
-                      popup.color
+                      popup.color,
                     );
                     // context2.fillStyle = 'black';
                     // context2.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
@@ -46678,7 +42452,7 @@ class App extends Component {
                       popupDrawCoords.origin.x + centerPopupOffset,
                       popupDrawCoords.origin.y + centerPopupOffset,
                       this.popupImgSize,
-                      this.popupImgSize
+                      this.popupImgSize,
                     );
                   }
                 }
@@ -46718,7 +42492,7 @@ class App extends Component {
                 this.testDraw[i].y,
                 this.testDraw[i + 1].x,
                 this.testDraw[i + 1].y,
-                20
+                20,
               );
             }
             lastPoint = this.testDraw[this.testDraw.length - 1];
@@ -46737,7 +42511,7 @@ class App extends Component {
                   this.testDraw[i].y2,
                   this.testDraw[i + 1].x2,
                   this.testDraw[i + 1].y2,
-                  30
+                  30,
                 );
               }
               lastPoint = this.testDraw[this.testDraw.length - 1];
@@ -47165,7 +42939,7 @@ class App extends Component {
       // OBSTACLE
       if (elem.levelData.split("_")[1] !== "*") {
         elem.obstacle = JSON.parse(
-          JSON.stringify(this.obstacleLevelDataRef[elem.levelData.split("_")[1]])
+          JSON.stringify(this.obstacleLevelDataRef[elem.levelData.split("_")[1]]),
         );
         elem.obstacle.id = obstacleCount;
         elem.obstacle.moving.origin = {
@@ -47179,7 +42953,9 @@ class App extends Component {
       // BARRIER
       if (elem.levelData.split("_")[0] !== "**") {
         elem.barrier = JSON.parse(
-          JSON.stringify(this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)])
+          JSON.stringify(
+            this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)],
+          ),
         );
         elem.barrier.id = barrierCount;
         switch (elem.levelData.split("_")[0].charAt(1)) {
@@ -47343,7 +43119,7 @@ class App extends Component {
       // OBSTACLE
       if (elem2.levelData.split("_")[1] !== "*") {
         elem2.obstacle = JSON.parse(
-          JSON.stringify(this.obstacleLevelDataRef[elem2.levelData.split("_")[1]])
+          JSON.stringify(this.obstacleLevelDataRef[elem2.levelData.split("_")[1]]),
         );
         elem2.obstacle.id = obstacleCount;
         elem2.obstacle.moving.origin = {
@@ -47358,8 +43134,8 @@ class App extends Component {
       if (elem2.levelData.split("_")[0] !== "**") {
         elem2.barrier = JSON.parse(
           JSON.stringify(
-            this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)]
-          )
+            this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)],
+          ),
         );
         elem2.barrier.id = barrierCount;
         switch (elem2.levelData.split("_")[0].charAt(1)) {
@@ -48129,7 +43905,7 @@ class App extends Component {
         !this.gridInfo.find(
           (x) =>
             x.number.x === plyr.startPosition.cell.number.x &&
-            x.number.y === plyr.startPosition.cell.number.y
+            x.number.y === plyr.startPosition.cell.number.y,
         )
       ) {
         let cll = { x: undefined, y: undefined };
@@ -48151,22 +43927,22 @@ class App extends Component {
         this.gridInfo.find(
           (x) =>
             x.number.x === plyr.startPosition.cell.number.x &&
-            x.number.y === plyr.startPosition.cell.number.y
+            x.number.y === plyr.startPosition.cell.number.y,
         ).terrain.type === "deep" ||
         this.gridInfo.find(
           (x) =>
             x.number.x === plyr.startPosition.cell.number.x &&
-            x.number.y === plyr.startPosition.cell.number.y
+            x.number.y === plyr.startPosition.cell.number.y,
         ).terrain.type === "void" ||
         this.gridInfo.find(
           (x) =>
             x.number.x === plyr.startPosition.cell.number.x &&
-            x.number.y === plyr.startPosition.cell.number.y
+            x.number.y === plyr.startPosition.cell.number.y,
         ).void.state === true ||
         this.gridInfo.find(
           (x) =>
             x.number.x === plyr.startPosition.cell.number.x &&
-            x.number.y === plyr.startPosition.cell.number.y
+            x.number.y === plyr.startPosition.cell.number.y,
         ).obstacle.state === true
       ) {
         let cll = { x: undefined, y: undefined };
@@ -48242,14 +44018,14 @@ class App extends Component {
 
     // CELL COLOR REF
     let preCellColorRef = this.gridInfo.map(
-      (x) => (x = { x: x.number.x, y: x.number.y, color: "" })
+      (x) => (x = { x: x.number.x, y: x.number.y, color: "" }),
     );
     for (const cell of preCellColorRef) {
       let colorCheckPass = false;
       while (colorCheckPass === false) {
         let randomColor = `rgb(${this.rnJesus(0, 255)},${this.rnJesus(
           0,
-          255
+          255,
         )},${this.rnJesus(0, 255)})`;
         let colorsInUse = preCellColorRef
           .filter((x) => x.color !== "")
@@ -48283,10 +44059,10 @@ class App extends Component {
         };
 
         let cell = this.gridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
+          (elem) => elem.number.x === x && elem.number.y === y,
         );
         let cellLevelData = this.gridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
+          (elem) => elem.number.x === x && elem.number.y === y,
         ).levelData;
 
         floor = this.floorImgs[cell.terrain.name];
@@ -48303,7 +44079,7 @@ class App extends Component {
         context.fillText(
           "" + x + "," + y + "",
           iso.x - offset.x / 2 + 18,
-          iso.y - offset.y / 2 + 12
+          iso.y - offset.y / 2 + 12,
         );
 
         context.fillStyle = "black";
@@ -48311,7 +44087,7 @@ class App extends Component {
 
         // INITIAL ITEM DISTRIBUTION!!
         let cell2 = this.gridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
+          (elem) => elem.number.x === x && elem.number.y === y,
         );
         if (cell2.item.name !== "") {
           // console.log('found cell with item');
@@ -48457,7 +44233,7 @@ class App extends Component {
             let cell = this.gridInfo.find(
               (elem) =>
                 elem.number.x === player.startPosition.cell.number.x &&
-                elem.number.y === player.startPosition.cell.number.y
+                elem.number.y === player.startPosition.cell.number.y,
             );
             point.x = cell.center.x;
             point.y = cell.center.y;
@@ -48514,7 +44290,7 @@ class App extends Component {
               newCharDrawPoint.x,
               newCharDrawPoint.y,
               this.playerDrawWidth2,
-              this.playerDrawHeight2
+              this.playerDrawHeight2,
             );
           }
         }
@@ -48527,7 +44303,7 @@ class App extends Component {
             iso.x - offset.x,
             iso.y - barrierImg.height,
             barrierImg.width,
-            barrierImg.height
+            barrierImg.height,
           );
         }
 
@@ -48546,45 +44322,45 @@ class App extends Component {
 
   render() {
     return (
-      <React.Fragment>
-        {this.state.loading === true && <Loading />}
+      <>
+        {this.context.context.state.loading === true && <Loading />}
 
         <div className="containerTop">
           <div className="timer">
-            <p className="timerText">{this.time}</p>
-            {this.cursorCoords.x && (
+            <p className="timerText">{this.context.context.time}</p>
+            {this.context.context.cursorCoords.x && (
               <p className="timerText">
-                Cursor: x {this.cursorCoords.x.toFixed(2)}, y{" "}
-                {this.cursorCoords.y.toFixed(2)}
+                Cursor: x {this.context.context.cursorCoords.x.toFixed(2)}, y{" "}
+                {this.context.context.cursorCoords.y.toFixed(2)}
               </p>
             )}
           </div>
-          <Helper players={this.players} />
-          <div className={this.state.containerInnerClass}>
+          {/* <Helper players={this.players} /> */}
+          <div className={this.context.context.state.containerInnerClass}>
             <canvas
-              width={this.canvasWidth}
-              height={this.canvasHeight}
-              ref={this.canvasRef}
+              width={this.context.context.canvasWidth}
+              height={this.context.context.canvasHeight}
+              ref={imageRefs.canvasRef}
               className="canvas"
             />
             <canvas
-              width={this.canvasWidth}
-              height={this.canvasHeight}
-              ref={this.canvasRef2}
+              width={this.context.context.canvasWidth}
+              height={this.context.context.canvasHeight}
+              ref={imageRefs.canvasRef2}
               className="canvas2"
             />
             {/* // DEBUB BOX */}
-            <div className={this.debugBoxStyle}>
+            <div className={this.context.context.debugBoxStyle}>
               <DebugBox
-                player={this.players[0]}
+                player={this.context.context.players[0]}
                 expand={this.expandDebugBox}
                 minimize={this.minimizeDebugBox}
               />
             </div>
-            {this.players.length > 1 && (
-              <div className={this.debugBoxStyle2}>
+            {this.context.context.players.length > 1 && (
+              <div className={this.context.context.debugBoxStyle2}>
                 <DebugBox
-                  player={this.players[1]}
+                  player={this.context.context.players[1]}
                   expand={this.expandDebugBox}
                   minimize={this.minimizeDebugBox}
                 />
@@ -48592,9 +44368,9 @@ class App extends Component {
             )}
             {/* //BACKGROUND COMPASS */}
             <img
-              src={bgCompass}
+              src={backgrounds_assets.bgCompass}
               className="bgCompass"
-              ref={this.bgCompassRef}
+              ref={imageRefs.bgCompassRef}
               alt="logo"
             />
             {/* // SETTINGS BOX */}
@@ -48612,7 +44388,7 @@ class App extends Component {
                   <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon" />
                 </OverlayTrigger>
               </a>
-              {this.aiPlayers[0] && (
+              {this.context.context.aiPlayers[0] && (
                 // {this.updateSettingsFormAiDataData.random &&(
                 <a
                   className="setSwitchLink cameraModeHighlighted"
@@ -48630,7 +44406,7 @@ class App extends Component {
                   </OverlayTrigger>
                 </a>
               )}
-              {!this.aiPlayers[0] && (
+              {!this.context.context.aiPlayers[0] && (
                 // {!this.updateSettingsFormAiDataData.random &&(
                 <a className="setSwitchLink" onClick={this.toggleAiDisplay}>
                   <OverlayTrigger
@@ -48646,17 +44422,17 @@ class App extends Component {
                   </OverlayTrigger>
                 </a>
               )}
-              {this.camera.state === false && (
+              {this.context.context.camera.state === false && (
                 <a className="setSwitchLink" onClick={this.menuToggleCamera}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
                       <Popover id={`popover-positioned-${"top"}`}>
                         <Popover.Body>
-                          {this.camera.customView.state !== true && (
+                          {this.context.context.camera.customView.state !== true && (
                             <strong>Toggle Camera Sub-menu</strong>
                           )}
-                          {this.camera.customView.state === true && (
+                          {this.context.context.camera.customView.state === true && (
                             <strong>Toggle Camera Sub-menu (Custom View is set)</strong>
                           )}
                         </Popover.Body>
@@ -48668,7 +44444,7 @@ class App extends Component {
                         size="sm"
                         className="setSwitchIcon"
                       />
-                      {this.camera.customView.state === true && (
+                      {this.context.context.camera.customView.state === true && (
                         <FontAwesomeIcon
                           icon={faCheckSquare}
                           size="sm"
@@ -48694,10 +44470,10 @@ class App extends Component {
               </a>
             </div>
             {/* // CAMERA BOX */}
-            {this.camera.state === true && (
+            {this.context.context.camera.state === true && (
               <div className="cameraBox">
                 <CameraControl
-                  camera={this.camera}
+                  camera={this.context.context.camera}
                   close={this.closeCamera}
                   toggleMode={this.toggleCameraModeUI}
                   preReset={this.preResetCamera}
@@ -48706,7 +44482,7 @@ class App extends Component {
               </div>
             )}
             {/* // CELL INFO */}
-            {this.showCellInfoBox !== true && (
+            {this.context.context.showCellInfoBox !== true && (
               <div className="cellInfoSwitch">
                 <OverlayTrigger
                   placement={"top"}
@@ -48725,56 +44501,58 @@ class App extends Component {
                 </OverlayTrigger>
               </div>
             )}
-            {this.showCellInfoBox === true && (
+            {this.context.context.showCellInfoBox === true && (
               <CellInfo
-                ref={this.cellInfoBoxRef}
-                clicked={this.clicked}
+                ref={this.context.context.cellInfoBoxRef}
+                clicked={this.context.context.clicked}
                 close={this.closeCellInfoBox}
-                cellInfoMouseOver={this.cellInfoMouseOver}
+                cellInfoMouseOver={this.context.context.cellInfoMouseOver}
                 setCellInfoMouseOver={this.setCellInfoMouseOver}
-                cursorCoords={this.cursorCoords}
+                cursorCoords={this.context.context.cursorCoords}
               />
             )}
             {/* // AI STATUS BOX */}
-            {this.state.showAiStatus === true && (
+            {this.context.context.state.showAiStatus === true && (
               <AiStatus
-                players={this.players}
-                aiPlayers={this.aiPlayers}
+                players={this.context.context.players}
+                aiPlayers={this.context.context.aiPlayers}
                 onAiAdd={this.addAiRandomPlayer}
               />
             )}
           </div>
-          {this.state.showSettings === true && (
+          {this.context.context.state.showSettings === true && (
             <Settings
-              gridWidth={this.gridWidth}
+              gridWidth={this.context.context.gridWidth}
               onConfirm={this.loadSettings}
               onCancel={this.cancelSettings}
               getCustomAiStartPosList={this.getCustomAiStartPosList}
-              aiStartPosList={this.settingsFormAiStartPosList}
-              aiSettingsFormHandler={this.aiSettingsFormHandler}
-              updateSettingsFormAiDataData={this.updateSettingsFormAiDataData}
+              aiStartPosList={this.context.context.settingsFormAiStartPosList}
+              aiSettingsFormHandler={this.context.context.aiSettingsFormHandler}
+              updateSettingsFormAiDataData={
+                this.context.context.updateSettingsFormAiDataData
+              }
               updateSettingsFormAiData={this.updateSettingsFormAiData}
               rnJesus={this.rnJesus}
               settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
-              plyrStartPosList={this.settingsFormPlyrStartPosList}
+              plyrStartPosList={this.context.context.settingsFormPlyrStartPosList}
               getCustomPlyrStartPosList={this.getCustomPlyrStartPosList}
-              gamepad={this.gamepad}
-              canvasRef={this.canvasRef3}
-              canvasRef2={this.canvasRef4}
-              canvasHeight={this.settingsCanvasHeight}
-              canvasWidth={this.settingsCanvasWidth}
-              gridInfo={this.settingsGridInfo}
-              clickedCell={this.settingsClicked}
-              showCanvasData={this.showSettingsCanvasData}
+              gamepad={this.context.context.gamepad}
+              canvasRef={imageRefs.canvasRef3}
+              canvasRef2={imageRefs.canvasRef4}
+              canvasHeight={this.context.context.settingsCanvasHeight}
+              canvasWidth={this.context.context.settingsCanvasWidth}
+              gridInfo={this.context.context.settingsGridInfo}
+              clickedCell={this.context.context.settingsClicked}
+              showCanvasData={this.context.context.showSettingsCanvasData}
               updateSettingsCanvasData={this.updateSettingsCanvasData}
-              disableInitItems={this.disableInitItems}
-              settingsFormPlayerData={this.settingsFormPlayerData}
+              disableInitItems={this.context.context.disableInitItems}
+              settingsFormPlayerData={this.context.context.settingsFormPlayerData}
               updateSettingsFormPlayerData={this.updateSettingsFormPlayerData}
             />
           )}
           <svg
             className="popupProgressSvg hidden"
-            ref={this.popupProgressSvgRef}
+            ref={imageRefs.popupProgressSvgRef}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -0.5 30 30"
             shapeRendering="crispEdges">
@@ -48801,1227 +44579,33 @@ class App extends Component {
               <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop
                   offset="0%"
-                  stopColor={this.popupProgressSvgGradColor1}
+                  stopColor={this.context.context.popupProgressSvgGradColor1}
                   stopOpacity="100%"
                 />
                 <stop
                   offset="100%"
-                  stopColor={this.popupProgressSvgGradColor2}
+                  stopColor={this.context.context.popupProgressSvgGradColor2}
                   stopOpacity="100%"
                 />
               </linearGradient>
             </defs>
           </svg>
-          <img
-            src=""
-            className="hidden"
-            height={this.popupImgSize}
-            width={this.popupImgSize}
-            ref={this.popupProgressImgRef}
-            alt="logo"
-          />
-          <img
-            src={bgCompass}
-            className="hidden bgCompass"
-            ref={this.bgCompassRef}
-            alt="logo"
-          />
-
-          <img
-            src={backgroundField1}
-            className="hidden"
-            ref={this.backgroundField1Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundField2}
-            className="hidden"
-            ref={this.backgroundField2Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundField3}
-            className="hidden"
-            ref={this.backgroundField3Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundNorthernLights1}
-            className="hidden"
-            ref={this.backgroundNorthernLights1Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundSeaClouds1}
-            className="hidden"
-            ref={this.backgroundSeaClouds1Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundSeaClouds2}
-            className="hidden"
-            ref={this.backgroundSeaClouds2Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundSeaClouds3}
-            className="hidden"
-            ref={this.backgroundSeaClouds3Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundSeaClouds4}
-            className="hidden"
-            ref={this.backgroundSeaClouds4Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundSeaCloudsNight1}
-            className="hidden"
-            ref={this.backgroundSeaCloudsNight1Ref}
-            alt="logo"
-          />
-          <img
-            src={backgroundSeaCoast1}
-            className="hidden"
-            ref={this.backgroundSeaCoast1Ref}
-            alt="logo"
-          />
-
-          <img src={floorGrass} className="hidden" ref={this.floorGrassRef} alt="logo" />
-          <img src={floorDirt} className="hidden" ref={this.floorDirtRef} alt="logo" />
-          <img src={floorIce} className="hidden" ref={this.floorIceRef} alt="logo" />
-          <img src={floorStone} className="hidden" ref={this.floorStoneRef} alt="logo" />
-          <img src={floorSand} className="hidden" ref={this.floorSandRef} alt="logo" />
-          <img src={floorMud} className="hidden" ref={this.floorMudRef} alt="logo" />
-          <img src={floorPond} className="hidden" ref={this.floorPondRef} alt="logo" />
-          <img src={floorRiver} className="hidden" ref={this.floorRiverRef} alt="logo" />
-          <img
-            src={floorBramble}
-            className="hidden"
-            ref={this.floorBrambleRef}
-            alt="logo"
-          />
-          <img src={floorLava} className="hidden" ref={this.floorLavaRef} alt="logo" />
-          <img
-            src={floorAttack}
-            className="hidden"
-            ref={this.floorAttackRef}
-            alt="logo"
-          />
-          <img
-            src={floorAttack2}
-            className="hidden"
-            ref={this.floorAttack2Ref}
-            alt="logo"
-          />
-          <img src={floorVoid} className="hidden" ref={this.floorVoidRef} alt="logo" />
-          <img src={floorVoid2} className="hidden" ref={this.floorVoid2Ref} alt="logo" />
-          <img src={floorVoid3} className="hidden" ref={this.floorVoid3Ref} alt="logo" />
-          <img
-            src={floorHighlight}
-            className="hidden"
-            ref={this.floorHighlightRef}
-            alt="logo"
-          />
-          <img
-            src={floorRubble}
-            className="hidden"
-            ref={this.floorRubbleRef}
-            alt="logo"
-          />
-          <img src={wall} className="hidden" ref={this.wallRef} alt="logo" />
-          <img src={wall2} className="hidden" ref={this.wall2Ref} alt="logo" />
-          <img src={wall3} className="hidden" ref={this.wall3Ref} alt="logo" />
-          <img
-            src={obstacleAHalf}
-            className="hidden"
-            ref={this.obstacleAHalfRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleAFull}
-            className="hidden"
-            ref={this.obstacleAFullRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleBHalf}
-            className="hidden"
-            ref={this.obstacleBHalfRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleBFull}
-            className="hidden"
-            ref={this.obstacleBFullRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleCHalf}
-            className="hidden"
-            ref={this.obstacleCHalfRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleCFull}
-            className="hidden"
-            ref={this.obstacleCFullRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleDHalf}
-            className="hidden"
-            ref={this.obstacleDHalfRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleDFull}
-            className="hidden"
-            ref={this.obstacleDFullRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleEHalf}
-            className="hidden"
-            ref={this.obstacleEHalfRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleEFull}
-            className="hidden"
-            ref={this.obstacleEFullRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleCrate}
-            className="hidden"
-            ref={this.obstacleCrateRef}
-            alt="logo"
-          />
-          <img
-            src={obstacleBarrel}
-            className="hidden"
-            ref={this.obstacleBarrelRef}
-            alt="logo"
-          />
-          <img
-            src={barrierANorth}
-            className="hidden"
-            ref={this.barrierANorthRef}
-            alt="logo"
-          />
-          <img
-            src={barrierASouth}
-            className="hidden"
-            ref={this.barrierASouthRef}
-            alt="logo"
-          />
-          <img
-            src={barrierAEast}
-            className="hidden"
-            ref={this.barrierAEastRef}
-            alt="logo"
-          />
-          <img
-            src={barrierAWest}
-            className="hidden"
-            ref={this.barrierAWestRef}
-            alt="logo"
-          />
-
-          <img
-            src={attack1Indicate}
-            className="hidden playerImgs"
-            ref={this.attack1IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attack2Indicate}
-            className="hidden playerImgs"
-            ref={this.attack2IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attack3Indicate}
-            className="hidden playerImgs"
-            ref={this.attack3IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attackUnarmedIndicate}
-            className="hidden playerImgs"
-            ref={this.attackUnarmedIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attackBluntIndicate}
-            className="hidden playerImgs"
-            ref={this.attackBluntIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attackSuccessIndicate}
-            className="hidden playerImgs"
-            ref={this.attackSuccessIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendIndicate}
-            className="hidden playerImgs"
-            ref={this.defendIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendIndicate1}
-            className="hidden playerImgs"
-            ref={this.defendIndicate1Ref}
-            alt="logo"
-          />
-          <img
-            src={defendIndicate2}
-            className="hidden playerImgs"
-            ref={this.defendIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={defendIndicate3}
-            className="hidden playerImgs"
-            ref={this.defendIndicate3Ref}
-            alt="logo"
-          />
-          <img
-            src={defendIndicate4}
-            className="hidden playerImgs"
-            ref={this.defendIndicate4Ref}
-            alt="logo"
-          />
-          <img
-            src={deflectIndicate}
-            className="hidden playerImgs"
-            ref={this.deflectIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={deflectIndicate2}
-            className="hidden playerImgs"
-            ref={this.deflectIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={deflectInjuredIndicate}
-            className="hidden playerImgs"
-            ref={this.deflectInjuredIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={deflectInjuredIndicate2}
-            className="hidden playerImgs"
-            ref={this.deflectInjuredIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={deflectBluntIndicate}
-            className="hidden playerImgs"
-            ref={this.deflectBluntIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pushbackIndicate}
-            className="hidden playerImgs"
-            ref={this.pushbackIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={ghostIndicate}
-            className="hidden playerImgs"
-            ref={this.ghostIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={deathIndicate}
-            className="hidden playerImgs"
-            ref={this.deathIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={preAttackIndicate}
-            className="hidden playerImgs"
-            ref={this.preAttackIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={preAttack2Indicate}
-            className="hidden playerImgs"
-            ref={this.preAttack2IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attackBreakIndicate}
-            className="hidden playerImgs"
-            ref={this.attackBreakIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendBreakIndicate}
-            className="hidden playerImgs"
-            ref={this.defendBreakIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendSuccessIndicate}
-            className="hidden playerImgs"
-            ref={this.defendSuccessIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={boltDefendIndicate}
-            className="hidden playerImgs"
-            ref={this.boltDefendIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={dodgeIndicate}
-            className="hidden playerImgs"
-            ref={this.dodgeIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={preAction1Indicate}
-            className="hidden playerImgs"
-            ref={this.preAction1IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={preAction2Indicate}
-            className="hidden playerImgs"
-            ref={this.preAction2IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={fallingIndicate}
-            className="hidden playerImgs"
-            ref={this.fallingIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={completeMissionIndicate}
-            className="hidden playerImgs"
-            ref={this.completeMissionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={flankIndicate}
-            className="hidden playerImgs"
-            ref={this.flankIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attackBluntIndicate2}
-            className="hidden playerImgs"
-            ref={this.attackBluntIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={enrouteIndicate}
-            className="hidden playerImgs"
-            ref={this.enrouteIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={targetSwitchIndicate}
-            className="hidden playerImgs"
-            ref={this.targetSwitchIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pathSwitchIndicate}
-            className="hidden playerImgs"
-            ref={this.pathSwitchIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={retreatIndicate}
-            className="hidden playerImgs"
-            ref={this.retreatIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendSuccessIndicate}
-            className="hidden playerImgs"
-            ref={this.defendSuccessIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={healIndicate}
-            className="hidden playerImgs"
-            ref={this.healIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={preAttack2Indicate}
-            className="hidden playerImgs"
-            ref={this.preAttack2IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={preAction1Indicate}
-            className="hidden playerImgs"
-            ref={this.preAction1IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={preAction2Indicate}
-            className="hidden playerImgs"
-            ref={this.preAction2IndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attackBreakIndicate}
-            className="hidden playerImgs"
-            ref={this.attackBreakIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={missedIndicate}
-            className="hidden playerImgs"
-            ref={this.missedIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendBreakIndicate}
-            className="hidden playerImgs"
-            ref={this.defendBreakIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={boltDefendIndicate}
-            className="hidden playerImgs"
-            ref={this.boltDefendIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={dodgeIndicate}
-            className="hidden playerImgs"
-            ref={this.dodgeIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={fallingIndicate}
-            className="hidden playerImgs"
-            ref={this.fallingIndicateRef}
-            alt="logo"
-          />
-
-          <img
-            src={completeMissionIndicate}
-            className="hidden playerImgs"
-            ref={this.completeMissionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={flankIndicate}
-            className="hidden playerImgs"
-            ref={this.flankIndicateRef}
-            alt="log"
-          />
-          <img
-            src={attackBluntIndicate2}
-            className="hidden playerImgs"
-            ref={this.attackBluntIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={enrouteIndicate}
-            className="hidden playerImgs"
-            ref={this.enrouteIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={targetSwitchIndicate}
-            className="hidden playerImgs"
-            ref={this.targetSwitchIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pathSwitchIndicate}
-            className="hidden playerImgs"
-            ref={this.pathSwitchIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={retreatIndicate}
-            className="hidden playerImgs"
-            ref={this.retreatIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendSuccessIndicate}
-            className="hidden playerImgs"
-            ref={this.defendSuccessIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={aggressiveModeIndicate}
-            className="hidden playerImgs"
-            ref={this.aggressiveModeIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={passiveModeIndicate}
-            className="hidden playerImgs"
-            ref={this.passiveModeIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={thinkingIndicate}
-            className="hidden playerImgs"
-            ref={this.thinkingIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendMissionIndicate}
-            className="hidden playerImgs"
-            ref={this.defendMissionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={patrolMissionIndicate}
-            className="hidden playerImgs"
-            ref={this.patrolMissionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pursueMissionIndicate}
-            className="hidden playerImgs"
-            ref={this.pursueMissionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pursueMissionIndicate2}
-            className="hidden playerImgs"
-            ref={this.pursueMissionIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={retrieveMissionIndicate}
-            className="hidden playerImgs"
-            ref={this.retrieveMissionIndicateRef}
-            alt="logo"
-          />
-
-          <img
-            src={drowningIndicate}
-            className="hidden playerImgs"
-            ref={this.drowningIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={destroyedItemIndicate}
-            className="hidden playerImgs"
-            ref={this.destroyedItemIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pickupBuffIndicate}
-            className="hidden playerImgs"
-            ref={this.pickupBuffIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pickupDebuffIndicate}
-            className="hidden playerImgs"
-            ref={this.pickupDebuffIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pickupWeaponIndicate}
-            className="hidden playerImgs"
-            ref={this.pickupWeaponIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={dropWeaponIndicate}
-            className="hidden playerImgs"
-            ref={this.dropWeaponIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={dropArmorIndicate}
-            className="hidden playerImgs"
-            ref={this.dropArmorIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pickupArmorIndicate}
-            className="hidden playerImgs"
-            ref={this.pickupArmorIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pickupAmmoIndicate}
-            className="hidden playerImgs"
-            ref={this.pickupAmmoIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={terrainSpeedupIndicate}
-            className="hidden playerImgs"
-            ref={this.terrainSpeedupIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={terrainSlowdownIndicate}
-            className="hidden playerImgs"
-            ref={this.terrainSlowdownIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={terrainInjuredIndicate}
-            className="hidden playerImgs"
-            ref={this.terrainInjuredIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={outOfStaminaIndicate}
-            className="hidden playerImgs"
-            ref={this.outOfStaminaIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={boltKilledIndicate}
-            className="hidden playerImgs"
-            ref={this.boltKilledIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attackParriedIndicate}
-            className="hidden playerImgs"
-            ref={this.attackParriedIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={inventoryFullIndicate}
-            className="hidden playerImgs"
-            ref={this.inventoryFullIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={outOfAmmoIndicate}
-            className="hidden playerImgs"
-            ref={this.outOfAmmoIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={missedIndicate2}
-            className="hidden playerImgs"
-            ref={this.missedIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={prePushIndicate}
-            className="hidden playerImgs"
-            ref={this.prePushIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={canPushIndicate}
-            className="hidden playerImgs"
-            ref={this.canPushIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={noPushingIndicate}
-            className="hidden playerImgs"
-            ref={this.noPushingIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pushingIndicate}
-            className="hidden playerImgs"
-            ref={this.pushingIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={prePullIndicate}
-            className="hidden playerImgs"
-            ref={this.prePullIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={canPullIndicate}
-            className="hidden playerImgs"
-            ref={this.canPullIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={noPullingIndicate}
-            className="hidden playerImgs"
-            ref={this.noPullingIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pullingIndicate}
-            className="hidden playerImgs"
-            ref={this.pullingIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={pushedPulledIndicate}
-            className="hidden playerImgs"
-            ref={this.pushedPulledIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={unbreakableIndicate}
-            className="hidden playerImgs"
-            ref={this.unbreakableIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={dodgeIndicate2}
-            className="hidden playerImgs"
-            ref={this.dodgeIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={attackFeintIndicate}
-            className="hidden playerImgs"
-            ref={this.attackFeintIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={attackFeintIndicate2}
-            className="hidden playerImgs"
-            ref={this.attackFeintIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={attackFeintIndicate3}
-            className="hidden playerImgs"
-            ref={this.attackFeintIndicate3Ref}
-            alt="logo"
-          />
-          <img
-            src={defendFeintIndicate}
-            className="hidden playerImgs"
-            ref={this.defendFeintIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={defendFeintIndicate2}
-            className="hidden playerImgs"
-            ref={this.defendFeintIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={defendFeintIndicate3}
-            className="hidden playerImgs"
-            ref={this.defendFeintIndicate3Ref}
-            alt="logo"
-          />
-          <img
-            src={dodgeFeintIndicate}
-            className="hidden playerImgs"
-            ref={this.dodgeFeintIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={dodgeFeintIndicate2}
-            className="hidden playerImgs"
-            ref={this.dodgeFeintIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={boltDefendIndicate2}
-            className="hidden playerImgs"
-            ref={this.boltDefendIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={flankIndicate2}
-            className="hidden playerImgs"
-            ref={this.flankIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={noFlankIndicate}
-            className="hidden playerImgs"
-            ref={this.noFlankIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={cellVoidingIndicate}
-            className="hidden playerImgs"
-            ref={this.cellVoidingIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={cellVoidingIndicate2}
-            className="hidden playerImgs"
-            ref={this.cellVoidingIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={timerIndicate}
-            className="hidden playerImgs"
-            ref={this.timerIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={chargeIndicate}
-            className="hidden playerImgs"
-            ref={this.chargeIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={noDirectionIndicate}
-            className="hidden playerImgs"
-            ref={this.noDirectionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={noDirectionIndicate2}
-            className="hidden playerImgs"
-            ref={this.noDirectionIndicate2Ref}
-            alt="logo"
-          />
-          <img
-            src={noDirectionIndicate3}
-            className="hidden playerImgs"
-            ref={this.noDirectionIndicate3Ref}
-            alt="logo"
-          />
-          <img
-            src={northDirectionIndicate}
-            className="hidden playerImgs"
-            ref={this.northDirectionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={southDirectionIndicate}
-            className="hidden playerImgs"
-            ref={this.southDirectionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={eastDirectionIndicate}
-            className="hidden playerImgs"
-            ref={this.eastDirectionIndicateRef}
-            alt="logo"
-          />
-          <img
-            src={westDirectionIndicate}
-            className="hidden playerImgs"
-            ref={this.westDirectionIndicateRef}
-            alt="logo"
-          />
-
-          <img
-            src={sword}
-            className="hidden playerImgs"
-            ref={this.itemSwordRef}
-            alt="logo"
-          />
-          <img
-            src={spear}
-            className="hidden playerImgs"
-            ref={this.itemSpearRef}
-            alt="logo"
-          />
-          <img src={bow} className="hidden playerImgs" ref={this.itemBowRef} alt="logo" />
-          <img
-            src={crossbow}
-            className="hidden playerImgs"
-            ref={this.itemCrossbowRef}
-            alt="logo"
-          />
-          <img
-            src={boltNorth}
-            className="hidden playerImgs"
-            ref={this.itemBoltNorthRef}
-            alt="logo"
-          />
-          <img
-            src={boltSouth}
-            className="hidden playerImgs"
-            ref={this.itemBoltSouthRef}
-            alt="logo"
-          />
-          <img
-            src={boltEast}
-            className="hidden playerImgs"
-            ref={this.itemBoltEastRef}
-            alt="logo"
-          />
-          <img
-            src={boltWest}
-            className="hidden playerImgs"
-            ref={this.itemBoltWestRef}
-            alt="logo"
-          />
-          <img
-            src={ammo}
-            className="hidden playerImgs"
-            ref={this.itemAmmoRef}
-            alt="logo"
-          />
-          <img
-            src={mail1}
-            className="hidden playerImgs"
-            ref={this.itemMail1Ref}
-            alt="logo"
-          />
-          <img
-            src={mail2}
-            className="hidden playerImgs"
-            ref={this.itemMail2Ref}
-            alt="logo"
-          />
-          <img
-            src={mail3}
-            className="hidden playerImgs"
-            ref={this.itemMail3Ref}
-            alt="logo"
-          />
-          <img
-            src={greaves1}
-            className="hidden playerImgs"
-            ref={this.itemGreaves1Ref}
-            alt="logo"
-          />
-
-          <img
-            src={greaves2}
-            className="hidden playerImgs"
-            ref={this.itemGreaves2Ref}
-            alt="logo"
-          />
-          <img
-            src={greaves3}
-            className="hidden playerImgs"
-            ref={this.itemGreaves3Ref}
-            alt="logo"
-          />
-          <img
-            src={helmet1}
-            className="hidden playerImgs"
-            ref={this.itemHelmet1Ref}
-            alt="logo"
-          />
-          <img
-            src={hpUp}
-            className="hidden playerImgs"
-            ref={this.itemHpUpRef}
-            alt="logo"
-          />
-          <img
-            src={hpDown}
-            className="hidden playerImgs"
-            ref={this.itemHpDownRef}
-            alt="logo"
-          />
-          <img
-            src={spdUp}
-            className="hidden playerImgs"
-            ref={this.itemSpdUpRef}
-            alt="logo"
-          />
-          <img
-            src={spdDown}
-            className="hidden playerImgs"
-            ref={this.itemSpdDownRef}
-            alt="logo"
-          />
-          <img
-            src={strUp}
-            className="hidden playerImgs"
-            ref={this.itemStrUpRef}
-            alt="logo"
-          />
-          <img
-            src={strDown}
-            className="hidden playerImgs"
-            ref={this.itemStrDownRef}
-            alt="logo"
-          />
-          <img
-            src={focusUp}
-            className="hidden playerImgs"
-            ref={this.itemFocusUpRef}
-            alt="logo"
-          />
-          <img
-            src={focusDown}
-            className="hidden playerImgs"
-            ref={this.itemFocusDownRef}
-            alt="logo"
-          />
-
-          <img
-            src={playerImgIdleSheet}
-            className="hidden playerImgs"
-            ref={this.playerImgIdleSheetRef}
-            alt="logo"
-          />
-          <img
-            src={player2ImgIdleSheet}
-            className="hidden playerImgs"
-            ref={this.player2ImgIdleSheetRef}
-            alt="logo"
-          />
-          <img
-            src={playerComAImgIdleSheet}
-            className="hidden playerImgs"
-            ref={this.playerComAImgIdleSheetRef}
-            alt="logo"
-          />
-          <img
-            src={playerComBImgIdleSheet}
-            className="hidden playerImgs"
-            ref={this.playerComBImgIdleSheetRef}
-            alt="logo"
-          />
-          <img
-            src={playerImgMoveSheet}
-            className="hidden playerImgs"
-            ref={this.playerImgMoveSheetRef}
-            alt="logo"
-          />
-          <img
-            src={player2ImgMoveSheet}
-            className="hidden playerImgs"
-            ref={this.player2ImgMoveSheetRef}
-            alt="logo"
-          />
-          <img
-            src={comAImgMoveSheet}
-            className="hidden playerImgs"
-            ref={this.comAImgMoveSheetRef}
-            alt="logo"
-          />
-          <img
-            src={comBImgMoveSheet}
-            className="hidden playerImgs"
-            ref={this.comBImgMoveSheetRef}
-            alt="logo"
-          />
-          <img
-            src={player1DefendSheet}
-            className="hidden playerImgs"
-            ref={this.player1ImgDefendSheetRef}
-            alt="logo"
-          />
-          <img
-            src={player2DefendSheet}
-            className="hidden playerImgs"
-            ref={this.player2ImgDefendSheetRef}
-            alt="logo"
-          />
-          <img
-            src={comADefendSheet}
-            className="hidden playerImgs"
-            ref={this.comAImgDefendSheetRef}
-            alt="logo"
-          />
-          <img
-            src={comBDefendSheet}
-            className="hidden playerImgs"
-            ref={this.comBImgDefendSheetRef}
-            alt="logo"
-          />
-          <img
-            src={player1AttackSheet}
-            className="hidden playerImgs"
-            ref={this.player1ImgAttackSheetRef}
-            alt="logo"
-          />
-          <img
-            src={player2AttackSheet}
-            className="hidden playerImgs"
-            ref={this.player2ImgAttackSheetRef}
-            alt="logo"
-          />
-          <img
-            src={comAAttackSheet}
-            className="hidden playerImgs"
-            ref={this.comAImgAttackSheetRef}
-            alt="logo"
-          />
-          <img
-            src={comBAttackSheet}
-            className="hidden playerImgs"
-            ref={this.comBImgAttackSheetRef}
-            alt="logo"
-          />
-          <img
-            src={testSpriteNorth}
-            className="hidden playerImgs"
-            ref={this.testRefNorth}
-            alt="logo"
-          />
-          <img
-            src={testSpriteSouth}
-            className="hidden playerImgs"
-            ref={this.testRefSouth}
-            alt="logo"
-          />
-          <img
-            src={testSpriteEast}
-            className="hidden playerImgs"
-            ref={this.testRefEast}
-            alt="logo"
-          />
-          <img
-            src={testSpriteWest}
-            className="hidden playerImgs"
-            ref={this.testRefWest}
-            alt="logo"
-          />
-          <img
-            src={moveSheetNew}
-            className="hidden playerImgs"
-            ref={this.moveSheetNewRef}
-            alt="logo"
-          />
-          <img
-            src={idleSheetNew}
-            className="hidden playerImgs"
-            ref={this.idleSheetNewRef}
-            alt="logo"
-          />
-          <img
-            src={idleSheetNew2}
-            className="hidden playerImgs"
-            ref={this.idleSheetNew2Ref}
-            alt="logo"
-          />
-          <img
-            src={attackSheetNew}
-            className="hidden playerImgs"
-            ref={this.attackSheetNewRef}
-            alt="logo"
-          />
-          <img
-            src={defendSheetNew}
-            className="hidden playerImgs"
-            ref={this.defendSheetNewRef}
-            alt="logo"
-          />
-          <img
-            src={dodgeSheetNew}
-            className="hidden playerImgs"
-            ref={this.dodgeSheetNewRef}
-            alt="logo"
-          />
-          <img
-            src={deflectedFallingSheetNew}
-            className="hidden playerImgs"
-            ref={this.deflectedFallingSheetNewRef}
-            alt="logo"
-          />
+          <ImageRefs />
         </div>
-      </React.Fragment>
+
+        {/* <GameEngine /> */}
+        <GameEngine
+          playerUpdate={this.playerUpdate}
+          pollGamepads={this.pollGamepads}
+          settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
+        />
+
+        <DrawGridInit processLevelData={this.processLevelData} />
+        <SetBackgroundImage />
+        <StartProcessLevelData />
+        <ProcessLevelData />
+        <UpdatePathArray />
+      </>
     );
   }
 }
