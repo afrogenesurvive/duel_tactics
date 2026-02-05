@@ -1,9 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
 
-import { checkCell as checkCellUtil} from "./utils/checkCell";
-import { rnJesus as rnJesusUtil } from "./utils/rnJesus";
-import { cartesianToIsometric as cartesianToIsometricUtil } from "./utils/catersianToIsometric";
-
 export const GameContext = createContext();
 
 export const GameContextProvider = ({ children }) => {
@@ -36,75 +32,52 @@ export const GameContextProvider = ({ children }) => {
             main: 0,
             prop1: 0,
             prop2: 0,
-            next: 0,
         },
         setBackgroundImage: {
             main: 0,
             image: "",
-            next: 0,
         },
         startProcessLevelData: {
             main: 0,
-            next: 0,
         },
         processLevelData: {
-            main: 0,
-            next: 0,
+            main: 0
         },
         setZoomPan: {
-            main: 0,
-            next: 0,
+            main: 0
         },
         findFocusCell: {
-            main: 0,
-            next: 0,
+            main: 0
         },
         placeItems: {
-            main: 0,
-            next: 0,
+            main: 0
         },
         updatePathArray: {
             main: 0,
-            next: 0,
         },
         checkCell: {
             main: 0,
-            next: 0,
         },
         findFocusCell: {
             main: 0,
-            inputType: "",
-            inputSubType: "",
-            focus: {
-                x: undefined,
-                y: undefined,
-            },
-            speed: "",
-            next: 0,
         },
         getTarget: {
             main: 0,
-            next: 0,
         },
         obstacleBarrierTrapInitSet: {
-            main: 0,
-            next: 0,
+            main: 0
         },
         placeItems: {
             main: 0,
-            next: 0,
         },
         rnJesus: {
             main: 0,
-            next: 0,
         },
         settingsFormGridWidthUpdate: {
             main: 0,
-            next: 0,
         },
         setZoomPan: {
-            main: 0,
-            next: 0,
+            main: 0
         },
     },
     
@@ -3912,19 +3885,21 @@ export const GameContextProvider = ({ children }) => {
     };
   }
 
-    function checkCell(cell, include) {
-        return checkCellUtil(state, cell, include);
+  function cartesianToIsometric (cartPt) {
+    console.log("Converting Cartesian to Isometric:", cartPt);
+    
+    class Point {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+      }
     }
 
-    function cartesianToIsometric(x, y) {
-        return cartesianToIsometricUtil(state, x, y);
-    }
-
-    function rnJesus(min, max) {
-        return rnJesusUtil(min, max);
-    }
-
-
+    var tempPt = new Point();
+    tempPt.x = cartPt.x - cartPt.y;
+    tempPt.y = (cartPt.x + cartPt.y) / 2;
+    return tempPt;
+  };
 
   return (
     // <GameContext.Provider value={{ state, setState }}>
@@ -3933,9 +3908,7 @@ export const GameContextProvider = ({ children }) => {
         context: state,
         setState,
         updateNestedState,
-        cartesianToIsometric,
-        checkCell,
-        rnJesus,
+        cartesianToIsometric
       }}
     >
       {children}

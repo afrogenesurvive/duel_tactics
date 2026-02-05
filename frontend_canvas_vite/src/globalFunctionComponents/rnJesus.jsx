@@ -8,17 +8,17 @@ import { imageRefs } from "../imageRefs";
 import path from "path";
 
 
-const FindFocusCell = () => {
+const RnJesus = () => {
   const { context, setState } = useContext(GameContext);
 
-  console.log("FindFocusCell: game context", context.state);
+  console.log("RnJesus: game context", context.state);
   
 
     useEffect(() => {
 
       if (!context.state.canvas || !context.state.canvasContext) return;
 
-      console.log("FindFocusCell useEffect triggered");
+      console.log("RnJesus useEffect triggered");
 
       
     //   setState(prev => ({
@@ -26,10 +26,10 @@ const FindFocusCell = () => {
     //     // ...
     //   }));
 
-    }, [context.global_function_component_triggers.findFocusCell]); // <--- dependency
+    }, [context.global_function_component_triggers.rnJesus]); // <--- dependency
 
 
   return null;
 };
 
-export default FindFocusCell;
+export default RnJesus;
