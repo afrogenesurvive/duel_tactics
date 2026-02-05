@@ -9,6 +9,7 @@ import { GameContext } from "../gameContext";
 import { imageRefs } from "../imageRefs";
 import SetBackgroundImage from "./setBackgroundImage";
 import SetZoomPan from "./setZoomPan";
+import ProcessLevelData from "./processLevelData";
 
 
 
@@ -706,7 +707,7 @@ const DrawGridInit = () => {
       let sceneY = context.sceneY;
       let tileWidth = context.tileWidth;
 
-      
+
       setState((prevState) => ({
         ...prevState,
         global_function_component_triggers: {
@@ -723,24 +724,17 @@ const DrawGridInit = () => {
         },
       }));
 
+      // startProcessLevelData.jsx will set global_function_component_triggers.startProcessLevelData.next.processLevelData
+      // ProcessLevelData.jsx will trigger on global_function_component_triggers.startProcessLevelData.next.drawGridInit change
 
 
-      // FIX ME: must run after startProcessLevelData
+      // ---------------------------
 
 
-      setState((prevState) => ({
-        ...prevState,
-        global_function_component_triggers: {
-          ...prevState.global_function_component_triggers,
-          processLevelData: {
-            ...prevState.global_function_component_triggers.processLevelData,
-            main: context.global_function_component_triggers.processLevelData.main + 1,
-          }
-        },
-      }));
+    }, [context.global_function_component_triggers.drawGridInit.main]); // <--- dependency
 
 
-      // FIX ME: must run after processLevelData
+    useEffect(() => {
       
       players = context.players;
       gridInfo = context.gridInfo;
@@ -891,14 +885,7 @@ const DrawGridInit = () => {
       }));
 
 
-
-
-    }, [context.global_function_component_triggers.drawGridInit.main]); // <--- dependency
-
-
-    useEffect(() => {
-      // ...logic.
-    }, [context.gridInfo]);
+    }, [context.global_function_component_triggers.processLevelData.next.drawGridInit_1]);
 
   return null;
 };

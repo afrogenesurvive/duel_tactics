@@ -409,10 +409,17 @@ const ProcessLevelData = () => {
             ...prev.global_function_component_triggers.updatePathArray,
             main: context.global_function_component_triggers.updatePathArray.main + 1,
           },
+          processLevelData: {
+            ...prev.global_function_component_triggers.processLevelData,
+            next: prev.global_function_component_triggers.processLevelData.next + 1,
+          },
         }
       }));
 
-    }, [context.global_function_component_triggers.processLevelData]); // <--- dependency
+    }, [
+      context.global_function_component_triggers.processLevelData,
+      context.global_function_component_triggers.startProcessLevelData.next.processLevelData
+    ]);
 
 
   return null;
