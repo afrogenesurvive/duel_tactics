@@ -9,7 +9,7 @@ export function processLevelData(app, allCells) {
   for (let elem of allCells) {
     // APPLY LEVEL DATA TO GRID INFO CELLS!
     let levelData2Row = "row" + elem.number.x;
-    let elemLevelData = this["levelData" + app.gridWidth][levelData2Row][elem.number.y];
+    let elemLevelData = app["levelData" + app.gridWidth][levelData2Row][elem.number.y];
 
     if (
       (elemLevelData.split("_")[1] !== "*" &&
@@ -190,7 +190,7 @@ export function processLevelData(app, allCells) {
     // SET LEVEL DATA!
     let levelData2Row = "row" + elem2.number.x;
     let elemLevelData =
-      this["levelData" + app.settingsGridWidth][levelData2Row][elem2.number.y];
+      app["levelData" + app.settingsGridWidth][levelData2Row][elem2.number.y];
     if (
       (elemLevelData.split("_")[1] !== "*" &&
         app.terrainLevelDataRef[elemLevelData.split("_")[3]].type === "deep") ||

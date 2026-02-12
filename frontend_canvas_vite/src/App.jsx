@@ -30941,16 +30941,18 @@ class App extends Component {
             ref={this.popupProgressImgRef}
             alt="logo"
           />
+          <img
+            src={bgCompass}
+            className="hidden bgCompass"
+            ref={this.bgCompassRef}
+            alt="logo"
+          />
 
-          <ImageRefs />
-          <ImagePreloader refs={ImageRefs} />
+          {/* <ImageRefs /> */}
+          {/* <ImagePreloader refs={ImageRefs} /> */}
+          <ImagePreloader refsSource={this} />
 
-          {/* <img
-              src={bgCompass}
-              className="hidden bgCompass"
-              ref={this.bgCompassRef}
-              alt="logo"
-            />
+          {/* 
 
             <img
               src={backgroundField1}
