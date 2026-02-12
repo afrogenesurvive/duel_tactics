@@ -1,8 +1,6 @@
 import { playerUpdate } from "./playerUpdate";
 
 export function gameLoop(app) {
-  console.log(`gameLoop started!`);
-
   // IF PRESSED SETTINGS KEY, COUNT
   // PAUSE GAME IF SETTINGS OPENED
   if (app.showSettingsKeyPress.state === true) {
