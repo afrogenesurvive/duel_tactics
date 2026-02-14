@@ -23,25 +23,33 @@ import bgCompass from "./assets/bgCompass.png";
 
 import "./App.css";
 
-import DebugBox from "./debugBox";
-import Settings from "./settings";
-import CellInfo from "./cellInfo";
-import Loading from "./loading";
-import AiStatus from "./aiStatus";
-import CameraControl from "./cameraControl";
+import DebugBox from "./utils/components/debugBox";
+import Settings from "./utils/components/settings";
+import CellInfo from "./utils/components/cellInfo";
+import Loading from "./utils/components/loading";
+import AiStatus from "./utils/components/aiStatus";
+import CameraControl from "./utils/components/cameraControl";
 
 import pointInPolygon from "point-in-polygon";
 
-import { initialState, applyConstructorDefaults } from "./appState";
-import { ImagePreloader } from "./imagePreloader";
-import { ImageRefs, images } from "./imageResources";
+import { initialState, applyConstructorDefaults } from "./data/appState";
+import { ImagePreloader } from "./engine/imagePreloader";
+import { ImageRefs, images } from "./engine/imageResources";
 
-import { startProcessLevelData } from "./startProcessLevelData";
-import { processLevelData } from "./processLevelData";
+import { gameLoop } from "./engine/gameLoop";
+
+import { addListeners } from "./utils/functions/input/addListeners";
+import { handleKeyPress } from "./utils/functions/input/handleKeyPress";
+import { handleGamepadEvent } from "./utils/functions/input/handleGamepadEvent";
+import { getCanvasClick } from "./utils/functions/input/getCanvasClick";
+import { getSettingsCanvasClick } from "./utils/functions/input/getSettingsCanvasClick";
+
 import { drawGridInit } from "./drawGridInit";
-import { playerUpdate } from "./playerUpdate";
-import { drawPlayerStep } from "./drawPlayerStep";
-import { gameLoop } from "./gameLoop";
+import { startProcessLevelData } from "./engine/startProcessLevelData";
+import { processLevelData } from "./engine/processLevelData";
+
+import { playerUpdate } from "./engine/playerUpdate";
+import { drawPlayerStep } from "./engine/drawPlayerStep";
 
 class App extends Component {
   state = { ...initialState };
@@ -51,12 +59,20 @@ class App extends Component {
 
     applyConstructorDefaults(this);
 
+    this.gameLoop = () => gameLoop(this);
+
+    this.drawGridInit = (...args) => drawGridInit(this, ...args);
     this.startProcessLevelData = (...args) => startProcessLevelData(this, ...args);
     this.processLevelData = (...args) => processLevelData(this, ...args);
-    this.drawGridInit = (...args) => drawGridInit(this, ...args);
+
     this.playerUpdate = (...args) => playerUpdate(this, ...args);
     this.drawPlayerStep = (...args) => drawPlayerStep(this, ...args);
-    this.gameLoop = () => gameLoop(this);
+
+    this.addListeners = (...args) => addListeners(this, ...args);
+    this.handleKeyPress = (...args) => handleKeyPress(this, ...args);
+    this.handleGamepadEvent = (...args) => handleGamepadEvent(this, ...args);
+    this.getCanvasClick = (...args) => getCanvasClick(this, ...args);
+    this.getSettingsCanvasClick = (...args) => getSettingsCanvasClick(this, ...args);
   }
 
   componentDidMount() {
@@ -708,1068 +724,1068 @@ class App extends Component {
       }
     }
   };
-  addListeners = (canvas, canvas2) => {
-    // console.log('adding listeners');
-
-    canvas2.addEventListener("click", (e) => {
-      this.getCanvasClick(canvas2, e, "click");
-    });
-
-    window.addEventListener("gamepadconnected", (e) => {
-      // console.log('new gamepad?',e);
-      this.handleGamepadEvent(e, "connected");
-    });
-
-    window.addEventListener("gamepaddisconnected", (e) => {
-      // console.log('Lost connection with the gamepad.');
-      this.handleGamepadEvent(e, "disconnected");
-    });
-
-    // canvas3.addEventListener("click", e => {
-    //   this.getSettingsCanvasClick(canvas3, e)
-    // });
-
-    // if (this.showSettingsCanvasData.state === true) {
-    //   canvas3.addEventListener("click", e => {
-    //     this.getSettingsCanvasClick(canvas3, e)
-    //   });
-    // }
-
-    document.addEventListener("keydown", (e) => {
-      this.handleKeyPress(e, true);
-    });
-    document.addEventListener("keyup", (e) => {
-      this.handleKeyPress(e, false);
-    });
-
-    canvas2.addEventListener("mousemove", (e) => {
-      this.getCanvasClick(canvas2, e, "mousemove");
-    });
-  };
-  getCanvasClick = (canvas, event, type) => {
-    const rect = canvas.getBoundingClientRect();
-    const scale = rect.width / canvas.offsetWidth;
-    // const scale = (rect.width / canvas.offsetWidth)*this.camera.zoom.x;
-    // const scale = (rect.width / canvas.offsetWidth)*(this.camera.zoom.x-1);
-    const x = (event.clientX - rect.left) * scale;
-    const y = (event.clientY - rect.top) * scale;
-
-    // ADJUSTED FOR CANVAS SCALE & TRANSFORM
-    let newX = (x - this.camera.zoomFocusPan.x) / this.camera.zoom.x;
-    let newY = (y - this.camera.zoomFocusPan.y) / this.camera.zoom.y;
-
-    // console.log("clicked the canvas", 'x: ',x,'y: ',y,'newX',newX,'newY',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y);
-
-    let insideGrid = false;
-
-    for (const cell of this.gridInfo) {
-      let point = [newX, newY];
-      let polygon = [];
-      for (const vertex of cell.vertices) {
-        let vertexPoint = [vertex.x + 10, vertex.y + 5];
-        polygon.push(vertexPoint);
-      }
-      let pip = pointInPolygon(point, polygon);
-      if (pip === true) {
-        insideGrid = true;
-        // console.log("clicked or moused over a cell", cell.center, "x: " + x + " y: " + y);
-        this.cursorCoords = {
-          x: x,
-          y: y,
-        };
-        let player = undefined;
-        for (const plyr of this.players) {
-          if (
-            plyr.currentPosition.cell.number.x === cell.number.x &&
-            plyr.currentPosition.cell.number.y === cell.number.y
-          ) {
-            player = plyr;
-          }
-        }
-        if (type === "click" && this.cellInfoMouseOver !== true) {
-          // console.log("clicked on a cell", cell.center, "x: " + x + " y: " + y);
-          this.clicked.cell = cell;
-          if (player) {
-            this.clicked.player = player;
-          } else {
-            this.clicked.player = undefined;
-          }
-          this.showCellInfoBox = true;
-          this.mouseOverCell = {
-            state: true,
-            cell: cell,
-            count: 0,
-            threshold: this.mouseOverCell.threshold,
-          };
-        }
-
-        if (type === "mousemove") {
-          // console.log("moused over a cell", cell.center, "x: " + x + " y: " + y);
-          this.mouseMoving = true;
-
-          if (this.mouseOverCellSwitchOff.state === true) {
-            this.mouseOverCellSwitchOff.state = false;
-          }
-
-          if (this.cellInfoMouseOver !== true) {
-            if (this.mouseOverCell.cell) {
-              if (
-                this.mouseOverCell.cell.number.x === cell.number.x &&
-                this.mouseOverCell.cell.number.y === cell.number.y
-              ) {
-                if (this.mouseOverCell.state === true) {
-                  // console.log('do nothing');
-                } else {
-                  if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
-                    this.mouseOverCell.count++;
-                  }
-                  if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
-                    this.clicked.cell = cell;
-                    if (player) {
-                      this.clicked.player = player;
-                    } else {
-                      this.clicked.player = undefined;
-                    }
-                    this.showCellInfoBox = true;
-                    this.mouseOverCell = {
-                      state: true,
-                      cell: cell,
-                      count: 0,
-                      threshold: this.mouseOverCell.threshold,
-                    };
-                  }
-                }
-              } else {
-                this.mouseOverCell = {
-                  state: false,
-                  cell: cell,
-                  count: 0,
-                  threshold: this.mouseOverCell.threshold,
-                };
-              }
-            } else {
-              this.mouseOverCell = {
-                state: false,
-                cell: cell,
-                count: 0,
-                threshold: this.mouseOverCell.threshold,
-              };
-            }
-          } else {
-            // console.log("mouse in cell info box. do nothing");
-          }
-        }
-      }
-    }
-    if (insideGrid === false) {
-      this.cursorCoords = {
-        x: x,
-        y: y,
-      };
-      // console.log("clicked or moused over the canvas out of bounds", 'x: ',x,'y: ',y);
-      // console.log('clicked or mouse moved outside the grid',this.cellInfoMouseOver);
-      if (type === "click") {
-        // console.log("clicked on the canvas out of bounds", "x: ", x, "y: ", y);
-        if (this.mouseOverCellSwitchOff.state === true) {
-          this.mouseOverCellSwitchOff.state = false;
-        }
-        if (this.cellInfoMouseOver !== true) {
-          this.showCellInfoBox = false;
-          this.mouseOverCell = {
-            state: false,
-            cell: undefined,
-            count: 0,
-            threshold: this.mouseOverCell.threshold,
-          };
-        } else {
-          this.showCellInfoBox = true;
-        }
-      } else if (type === "mousemove") {
-        // console.log("moused over the canvas out of bounds", "x: ", x, "y: ", y);
-        if (this.cellInfoMouseOver !== true) {
-          if (this.mouseOverCellSwitchOff.state !== true) {
-            this.mouseOverCellSwitchOff.state = true;
-          }
-
-          if (
-            this.mouseOverCell.cell &&
-            this.mouseOverCell.state !== true &&
-            this.mouseOverCell.count > 1
-          ) {
-            this.mouseOverCell = {
-              state: false,
-              cell: undefined,
-              count: 0,
-              threshold: this.mouseOverCell.threshold,
-            };
-          }
-        } else {
-          // console.log("heeere!", this.cellInfoMouseOver);
-          this.cellInfoMouseOver = false;
-
-          this.showCellInfoBox = true;
-          this.mouseOverCell.state = false;
-          if (this.mouseOverCellSwitchOff.state === true) {
-            this.mouseOverCellSwitchOff.state = false;
-            this.mouseOverCellSwitchOff.count = 0;
-          }
-        }
-      }
-    }
-
-    if (type === "mousemove") {
-      this.mouseMoving = true;
-    }
-  };
-  getSettingsCanvasClick = (canvas, event) => {
-    // console.log('getSettingsCanvasClick');
-
-    const rect = canvas.getBoundingClientRect();
-
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    let insideGrid = false;
-
-    for (const cell of this.settingsGridInfo) {
-      let point = [x, y];
-      let polygon = [];
-      for (const vertex of cell.vertices) {
-        let vertexPoint = [vertex.x + 10 / 2, vertex.y + 5 / 2];
-
-        polygon.push(vertexPoint);
-      }
-      let pip = pointInPolygon(point, polygon);
-      if (pip === true) {
-        insideGrid = true;
-        // console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
-        this.settingsClicked = cell;
-      }
-    }
-    if (insideGrid === false) {
-      // console.log("clicked the settings canvas", 'x: ',x,'y: ',y);
-
-      this.settingsClicked = {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-        drawCenter: {
-          x: 0,
-          y: 0,
-        },
-        vertices: [
-          {
-            x: 0,
-            y: 0,
-          },
-          {
-            x: 0,
-            y: 0,
-          },
-          {
-            x: 0,
-            y: 0,
-          },
-          {
-            x: 0,
-            y: 0,
-          },
-        ],
-        side: 0,
-        levelData: "",
-        edge: {
-          state: false,
-          side: "",
-        },
-        terrain: {
-          name: "",
-          type: "",
-          effect: "",
-        },
-        item: {
-          name: "",
-          type: "",
-          subType: "",
-          effect: "",
-          initDrawn: false,
-        },
-        void: {
-          state: false,
-        },
-        obstacle: {
-          id: 0,
-          trap: {},
-          state: false,
-          name: "",
-          type: "",
-          hp: 2,
-          destructible: {
-            state: false,
-            weapons: [],
-            leaveRubble: false,
-          },
-          locked: {
-            state: false,
-            key: "",
-          },
-          weight: 1,
-          height: 0.5,
-          items: [],
-          effects: [],
-          moving: {
-            state: false,
-            step: 0,
-            origin: {
-              number: {
-                x: undefined,
-                y: undefined,
-              },
-              center: {
-                x: undefined,
-                y: undefined,
-              },
-            },
-            destination: {
-              number: {
-                x: undefined,
-                y: undefined,
-              },
-              center: {
-                x: undefined,
-                y: undefined,
-              },
-            },
-            currentPosition: {
-              x: undefined,
-              y: undefined,
-            },
-            nextPosition: {
-              x: undefined,
-              y: undefined,
-            },
-            moveSpeed: 0,
-            pushable: true,
-            pushed: false,
-            pusher: undefined,
-            falling: {
-              state: false,
-              count: 0,
-              limit: 10,
-            },
-          },
-        },
-        barrier: {
-          id: 0,
-          trap: {},
-          state: false,
-          name: "",
-          type: "",
-          hp: 2,
-          destructible: {
-            state: false,
-            weapons: [],
-            leaveRubble: false,
-          },
-          locked: {
-            state: false,
-            key: "",
-          },
-          position: "",
-          height: 1,
-        },
-        elevation: {
-          number: 0,
-          type: "",
-          position: "",
-        },
-        rubble: false,
-      };
-    }
-
-    if (this.showSettingsCanvasData.state === true) {
-      let availibleCells =
-        this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1]
-          .posArray;
-      if (this.settingsFormPlyrStartPosList.length < 0) {
-        availibleCells =
-          this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1]
-            .posArray;
-      }
-      let validCell = false;
-      for (const cell of availibleCells) {
-        if (
-          cell.x === this.settingsClicked.number.x &&
-          cell.y === this.settingsClicked.number.y
-        ) {
-          validCell = true;
-        }
-      }
-
-      if (validCell === true) {
-        if (this.showSettingsCanvasData.field.split("_")[0] === "human") {
-          let plyrNo = this.showSettingsCanvasData.plyrNo;
-
-          let newArray = this.settingsFormPlyrStartPosList.map(
-            (y) =>
-              (y = {
-                plyrNo: y.plyrNo,
-                selected: y.selected,
-              }),
-          );
-
-          let plyrChange = newArray.find((x) => x.plyrNo === plyrNo);
-          plyrChange.selected = {
-            x: this.settingsClicked.number.x,
-            y: this.settingsClicked.number.y,
-          };
-
-          this.getCustomPlyrStartPosList(newArray);
-
-          let newArray2 = this.settingsFormAiStartPosList.map(
-            (y) =>
-              (y = {
-                plyrNo: y.plyrNo,
-                mission: y.mission,
-                selected: y.selected,
-              }),
-          );
-
-          this.getCustomAiStartPosList(newArray2);
-        }
-
-        if (this.showSettingsCanvasData.field.split("_")[0] === "ai") {
-          let plyrNo =
-            this.showSettingsCanvasData.plyrNo - this.settingsFormPlyrStartPosList.length;
-          let type = this.showSettingsCanvasData.type;
-          let value = this.settingsClicked.number;
-
-          let newArray3 = this.settingsFormAiStartPosList.map(
-            (y) =>
-              (y = {
-                plyrNo: y.plyrNo,
-                mission: y.mission,
-                selected: y.selected,
-              }),
-          );
-
-          let plyrChange = newArray3.find((x) => x.plyrNo === plyrNo);
-
-          if (plyrChange.selected.length === 0) {
-            plyrChange.selected.push({
-              type: type,
-              cell: { x: value.x, y: value.y },
-            });
-          } else {
-            // console.log('plyrChange',plyrChange);
-            let selectedElem = plyrChange.selected.find((j) => j.type === type);
-            let indx = newArray3.findIndex((j) => j.plyrNo === plyrChange.plyrNo);
-            if (selectedElem) {
-              selectedElem.cell = { x: value.x, y: value.y };
-            } else {
-              plyrChange.selected.push({
-                type: type,
-                cell: { x: value.x, y: value.y },
-              });
-            }
-          }
-
-          this.getCustomAiStartPosList(newArray3);
-        }
-      } else {
-        // console.log('cant choose that cell',this.settingsClicked.number);
-      }
-    }
-
-    this.setState({
-      stateUpdater: "..",
-    });
-  };
-  handleKeyPress = (event, state) => {
-    // console.log('handling key press', event.key, state, event);
-
-    let direction;
-    let keyInput = event.key;
-
-    switch (keyInput) {
-      case "w":
-        this.keyPressed[0].north = state;
-        // direction = 'north';
-        this.players[0].turnCheckerDirection = "north";
-        this.currentPlayer = 1;
-        break;
-      case "a":
-        this.keyPressed[0].west = state;
-        // direction = 'west';
-        this.players[0].turnCheckerDirection = "west";
-        this.currentPlayer = 1;
-        break;
-      case "d":
-        this.keyPressed[0].east = state;
-        // direction = 'east';
-        this.players[0].turnCheckerDirection = "east";
-        this.currentPlayer = 1;
-        break;
-      case "s":
-        this.keyPressed[0].south = state;
-        // direction = 'south';
-        this.players[0].turnCheckerDirection = "south";
-        this.currentPlayer = 1;
-        break;
-      case "f":
-        this.keyPressed[0].attack = state;
-        this.currentPlayer = 1;
-        break;
-      case "v":
-        this.keyPressed[0].defend = state;
-        this.currentPlayer = 1;
-        break;
-      case "c":
-        this.keyPressed[0].dodge = state;
-        this.currentPlayer = 1;
-        break;
-      case "r":
-        this.keyPressed[0].pull = state;
-        this.currentPlayer = 1;
-        break;
-      case "Shift":
-        if (event.code === "ShiftLeft") {
-          this.keyPressed[0].kick = state;
-          this.currentPlayer = 1;
-        }
-
-        if (event.code === "ShiftRight") {
-          this.keyPressed[1].playerMenu = state;
-          this.currentPlayer = 2;
-        }
-
-        break;
-      case " ":
-        if (
-          state === false &&
-          this.players[0].moving.state === true &&
-          this.players[0].strafing.state === true
-        ) {
-          this.players[0].strafeReleaseHook = true;
-        }
-        if (
-          state === false &&
-          this.players[0].moving.state !== true &&
-          this.keyPressed[0].strafe === true
-        ) {
-          this.players[0].strafeReleaseHook = true;
-        } else {
-          this.keyPressed[0].strafe = state;
-          this.players[0].strafing.state = state;
-          this.currentPlayer = 1;
-        }
-        break;
-      case "q":
-        this.keyPressed[0].cycleWeapon = state;
-        this.currentPlayer = 1;
-        break;
-      case "e":
-        this.keyPressed[0].cycleArmor = state;
-        this.currentPlayer = 1;
-        break;
-      case "2":
-        this.keyPressed[0].discardWeapon = state;
-        this.currentPlayer = 1;
-        break;
-      case "3":
-        this.keyPressed[0].discardArmor = state;
-        this.currentPlayer = 1;
-        break;
-      case "Control":
-        this.keyPressed[0].playerMenu = state;
-        this.currentPlayer = 1;
-        break;
-      case "5":
-        this.keyPressed[0].uiMenu = state;
-        this.currentPlayer = 1;
-        break;
-      case "4":
-        this.showSettingsKeyPress.state = state;
-        this.currentPlayer = 1;
-        break;
-      case "1":
-        if (this.players[0].dead.state === true) {
-          this.respawn(this.players[0]);
-        }
-        break;
-      case "z":
-        this.keyPressed[0].rotateLeft = state;
-        this.currentPlayer = 1;
-        break;
-      case "x":
-        this.keyPressed[0].rotateRight = state;
-        this.currentPlayer = 1;
-        break;
-
-      case "6":
-        this.toggleCameraMode = state;
-        break;
-      case "7":
-        this.addAiPlayerKeyPress = state;
-        break;
-      case "`":
-        this.gameReset("soft");
-        break;
-
-      case "i":
-        this.keyPressed[1].north = state;
-        // direction = 'north';
-        this.players[1].turnCheckerDirection = "north";
-        this.currentPlayer = 2;
-        break;
-
-      case "j":
-        this.keyPressed[1].west = state;
-        // direction = 'west';
-        this.players[1].turnCheckerDirection = "west";
-        this.currentPlayer = 2;
-        break;
-      case "k":
-        this.keyPressed[1].south = state;
-        // direction = 'south';
-        this.players[1].turnCheckerDirection = "south";
-        this.currentPlayer = 2;
-        break;
-      case "l":
-        this.keyPressed[1].east = state;
-        // direction = 'east';
-        this.players[1].turnCheckerDirection = "east";
-        this.currentPlayer = 2;
-        break;
-      case ";":
-        this.keyPressed[1].attack = state;
-        this.currentPlayer = 2;
-        break;
-      case ".":
-        this.keyPressed[1].defend = state;
-        this.currentPlayer = 2;
-        break;
-      case "'":
-        this.keyPressed[1].dodge = state;
-        this.currentPlayer = 2;
-        break;
-      case "p":
-        this.keyPressed[1].pull = state;
-        this.currentPlayer = 2;
-        break;
-      case "Enter":
-        this.keyPressed[1].kick = state;
-        this.currentPlayer = 2;
-        break;
-      case "/":
-        if (
-          state === false &&
-          this.players[1].moving.state === true &&
-          this.players[1].strafing.state === true
-        ) {
-          this.players[1].strafeReleaseHook = true;
-        }
-        if (
-          state === false &&
-          this.players[1].moving.state !== true &&
-          this.keyPressed[1].strafe === true
-        ) {
-          this.players[1].strafeReleaseHook = true;
-        } else {
-          this.keyPressed[1].strafe = state;
-          this.players[1].strafing.state = state;
-          this.currentPlayer = 2;
-        }
-        break;
-
-      case "u":
-        this.keyPressed[1].cycleWeapon = state;
-        this.currentPlayer = 2;
-        break;
-      case "o":
-        this.keyPressed[1].cycleArmor = state;
-        this.currentPlayer = 2;
-        break;
-      case "8":
-        this.keyPressed[1].discardWeapon = state;
-        this.currentPlayer = 2;
-        break;
-      case "9":
-        this.keyPressed[1].discardArmor = state;
-        this.currentPlayer = 2;
-        break;
-      case "0":
-        this.keyPressed[1].uiMenu = state;
-        this.currentPlayer = 2;
-        break;
-
-      case "=":
-        if (this.players[1].dead.state === true) {
-          this.respawn(this.players[1]);
-        }
-        break;
-      case "-":
-        this.showSettingsKeyPress.state = state;
-        this.currentPlayer = 2;
-        break;
-      case "[":
-        this.keyPressed[1].rotateLeft = state;
-        this.currentPlayer = 2;
-        break;
-      case "]":
-        this.keyPressed[1].rotateRight = state;
-        this.currentPlayer = 2;
-        break;
-      default:
-        break;
-    }
-
-    let player = this.players[this.currentPlayer - 1];
-
-    // STEP GAME ON KEYPRESS FOR DEBUGGING
-    // for (const player of this.players) {
-    //   this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
-    // }
-    // this.time++
-    // this.setState({
-    //   stateUpdater: '..'
-    // })
-  };
-  handleGamepadEvent = (event, type) => {
-    if (type === "disconnected") {
-      this.connectedGamepadsInit = false;
-      this.showSettingsKeyPress.state = true;
-      console.log(
-        "connected gamepads state change! please re-configure controller/gamepad settings",
-      );
-    }
-  };
-
-  setCellInfoMouseOver = (state, origin) => {
-    // console.log("setCellInfoMouseOver", state, origin);
-
-    this.cellInfoMouseOver = state;
-    if (state === true) {
-      this.showCellInfoBox = true;
-      if (this.mouseOverCellSwitchOff.state === true) {
-        this.mouseOverCellSwitchOff.state = false;
-      }
-      if (this.mouseOverCell.cell && this.mouseOverCell.state !== true) {
-        this.mouseOverCell = {
-          state: false,
-          cell: undefined,
-          count: 0,
-          threshold: this.mouseOverCell.threshold,
-        };
-      }
-    } else {
-    }
-  };
-  closeCellInfoBox = () => {
-    this.cellInfoMouseOver = false;
-    this.showCellInfoBox = !this.showCellInfoBox;
-    if (this.mouseOverCellSwitchOff.state === true) {
-      this.mouseOverCellSwitchOff.state = false;
-    }
-
-    if (this.mouseOverCell.cell && this.mouseOverCell.state !== true) {
-      // this.mouseOverCell.cell = {
-      //   state: false,
-      //   cell: undefined,
-      //   count: 0,
-      //   threshold: this.mouseOverCell.threshold,
-      // };
-    }
-  };
-  loadSettings = (event) => {
-    event.preventDefault();
-
-    let gridSize = event.target.gridSize.value;
-
-    let playerNumber = event.target.humanPlayers.value;
-    let aiPlayerNumber = event.target.aiCount.value;
-
-    switch (gridSize) {
-      case "3":
-        this.gridWidth = 3;
-        this.sceneY = this.state.sceneY.three;
-        break;
-      case "6":
-        this.gridWidth = 6;
-        this.sceneY = this.state.sceneY.six;
-        break;
-      case "9":
-        this.gridWidth = 9;
-        this.sceneY = this.state.sceneY.nine;
-        break;
-      case "12":
-        this.gridWidth = 12;
-        this.sceneY = this.state.sceneY.twelve;
-        break;
-    }
-
-    if (this.gridWidth >= 12) {
-      if (window.innerWidth < 1100) {
-        this.zoomThresh = -0.25;
-      } else {
-        this.zoomThresh = -0.05;
-      }
-    } else {
-      // this.zoomThresh = -0.15;
-      this.zoomThresh = -0.05;
-    }
-
-    this.gamepadConfig = [];
-    for (const plyr2 of this.settingsFormPlayerData.input) {
-      this.gamepadConfig.push({
-        plyrNo: plyr2.plyrNo,
-        input: plyr2.input,
-        type: "",
-        id: "",
-        mapping: "",
-        gamepadIndex: undefined,
-      });
-      if (plyr2.input === "Gamepad") {
-        this.gamepad = true;
-      }
-      this.players[plyr2.plyrNo - 1].input = plyr2.input;
-    }
-    if (!this.settingsFormPlayerData.input.find((x) => x.input === "Gamepad")) {
-      this.gamepad = false;
-    }
-    this.connectedGamepadsInit = false;
-
-    for (const plyr3 of this.settingsFormPlayerData.team) {
-      this.players[plyr3.plyrNo - 1].team = plyr3.team;
-    }
-
-    // console.log('load settings this.gamepadConfig',this.gamepadConfig);
-
-    if (playerNumber < 2) {
-      this.players.splice(1, 1);
-      this.playerNumber = 1;
-    } else {
-      this.playerNumber = 2;
-    }
-
-    for (const plyr of this.settingsFormPlyrStartPosList) {
-      this.players[plyr.plyrNo - 1].startPosition.cell.number = plyr.selected;
-    }
-
-    if (this.updateSettingsFormAiDataData.startItems === true) {
-      this.disableInitItems = false;
-    } else {
-      this.disableInitItems = true;
-    }
-
-    this.gameReset("hard");
-
-    // this.placeItems({init: true, items: ''});
-
-    if (aiPlayerNumber > 0) {
-      this.loadAiSettings();
-    } else {
-      this.updateSettingsFormAiDataData = {
-        // count: {
-        //   count: '0'
-        // }
-      };
-      this.settingsFormAiStartPosList = [];
-      this.setState({
-        showSettings: false,
-      });
-      this.showSettingsCanvasData.state = false;
-    }
-
-    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
-    // console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
-    // console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
-  };
-  loadAiSettings = () => {
-    // console.log('this.settingsFormAiStartPosList.length',this.settingsFormAiStartPosList.length);
-
-    // if (this.settingsFormAiStartPosList.length > 0) {
-
-    let initArray = this.updateSettingsFormAiDataData.random.map(
-      (x) =>
-        (x = {
-          plyrNo: x.plyrNo,
-          random: x.random,
-          mode: null,
-          weapon: null,
-          armor: null,
-          team: null,
-          mission: null,
-          startPos: null,
-          otherPositions: [],
-        }),
-    );
-
-    for (const plyr of initArray) {
-      for (const elem of this.updateSettingsFormAiDataData.mode) {
-        if (elem.plyrNo === plyr.plyrNo) {
-          if (elem.mode === "random") {
-            let whatMode = this.rnJesus(1, 2);
-
-            switch (whatMode) {
-              case 1:
-                elem.mode = "aggressive";
-                break;
-              case 2:
-                elem.mode = "careful";
-                break;
-            }
-          }
-
-          plyr.mode = elem.mode;
-        }
-      }
-
-      for (const elem2 of this.updateSettingsFormAiDataData.weapon) {
-        if (elem2.plyrNo === plyr.plyrNo) {
-          plyr.weapon = elem2.weapons;
-        }
-      }
-
-      for (const elem5 of this.updateSettingsFormAiDataData.armor) {
-        if (elem5.plyrNo === plyr.plyrNo) {
-          plyr.armor = elem5.armor;
-        }
-      }
-
-      for (const elem3 of this.updateSettingsFormAiDataData.mission) {
-        if (elem3.plyrNo === plyr.plyrNo) {
-          plyr.mission = elem3.mission;
-        }
-      }
-
-      for (const elem6 of this.updateSettingsFormAiDataData.team) {
-        if (elem6.plyrNo === plyr.plyrNo) {
-          plyr.team = elem6.team;
-        }
-      }
-
-      for (const elem4 of this.settingsFormAiStartPosList) {
-        if (elem4.plyrNo === plyr.plyrNo) {
-          for (const cell of elem4.selected) {
-            if (cell.type === "start") {
-              plyr.startPos = cell.cell;
-            } else {
-              plyr.otherPositions.push(cell.cell);
-            }
-          }
-        }
-      }
-    }
-
-    if (this.updateSettingsFormAiDataData.startItems === true) {
-      this.disableInitItems = false;
-    } else {
-      this.disableInitItems = true;
-    }
-
-    // console.log('initArray',initArray);
-
-    for (let i = 1; i < initArray.length + 1; i++) {
-      setTimeout(() => {
-        // setTimeout(function timer() {
-
-        let elem5 = initArray[i - 1];
-
-        // console.log('plyr',elem5.plyrNo,'this.addAiCount.state',this.addAiCount.state);
-
-        if (elem5.random === "random") {
-          this.addAiRandomPlayer(elem5.random);
-        } else {
-          this.aiInitSettings = {
-            randomStart: false,
-            startPosition: {
-              number: {
-                x: elem5.startPos.x,
-                y: elem5.startPos.y,
-              },
-            },
-            primaryMission: elem5.mission,
-            mission: undefined,
-            mode: elem5.mode,
-            partolArea: elem5.otherPositions,
-            weapons: elem5.weapon,
-            armor: elem5.armor,
-            team: elem5.team,
-          };
-
-          this.addAiPlayer();
-        }
-      }, i * 1000);
-    }
-
-    // this.updateSettingsFormAiDataData = {};
-    // this.settingsFormAiStartPosList = [];
-    this.setState({
-      showSettings: false,
-    });
-
-    // }
-  };
-  cancelSettings = () => {
-    // this.updateSettingsFormAiDataData = {};
-    this.settingsFormAiStartPosList = [];
-    this.setState({
-      showSettings: false,
-    });
-    this.showSettingsCanvasData.state = false;
-  };
-  openSettings = () => {
-    this.setState({
-      showSettings: true,
-    });
-
-    // if (this.showSettingsCanvasData.state === true) {
-    //   this.settingsFormGridWidthUpdate(this.settingsGridWidth)
-    // }
-    //
-    // this.settingsFormAiGridInfo = this.gridInfo;
-    //
-    // this.getCustomPlyrStartPosList(
-    //   [
-    //     {
-    //       plyrNo: 1,
-    //       selected: undefined,
-    //       posArray: []
-    //     },
-    //     {
-    //       plyrNo: 2,
-    //       selected: undefined,
-    //       posArray: []
-    //     }
-    //   ]
-    // )
-  };
-  expandDebugBox = (plyrNo) => {
-    if (plyrNo === 1) {
-      this.debugBoxStyle = "debugDisplay openDebug";
-    }
-    if (plyrNo === 2) {
-      this.debugBoxStyle2 = "debugDisplay2 openDebug";
-    }
-  };
-  minimizeDebugBox = (plyrNo) => {
-    if (plyrNo === 1) {
-      this.debugBoxStyle = "debugDisplay closedDebug";
-    }
-    if (plyrNo === 2) {
-      this.debugBoxStyle2 = "debugDisplay2 closedDebug";
-    }
-  };
-  setBackgroundImage = (args) => {
-    document.getElementsByClassName(
-      this.state.containerInnerClass,
-    )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
-  };
+  // addListeners = (canvas, canvas2) => {
+  //   // console.log('adding listeners');
+
+  //   canvas2.addEventListener("click", (e) => {
+  //     this.getCanvasClick(canvas2, e, "click");
+  //   });
+
+  //   window.addEventListener("gamepadconnected", (e) => {
+  //     // console.log('new gamepad?',e);
+  //     this.handleGamepadEvent(e, "connected");
+  //   });
+
+  //   window.addEventListener("gamepaddisconnected", (e) => {
+  //     // console.log('Lost connection with the gamepad.');
+  //     this.handleGamepadEvent(e, "disconnected");
+  //   });
+
+  //   // canvas3.addEventListener("click", e => {
+  //   //   this.getSettingsCanvasClick(canvas3, e)
+  //   // });
+
+  //   // if (this.showSettingsCanvasData.state === true) {
+  //   //   canvas3.addEventListener("click", e => {
+  //   //     this.getSettingsCanvasClick(canvas3, e)
+  //   //   });
+  //   // }
+
+  //   document.addEventListener("keydown", (e) => {
+  //     this.handleKeyPress(e, true);
+  //   });
+  //   document.addEventListener("keyup", (e) => {
+  //     this.handleKeyPress(e, false);
+  //   });
+
+  //   canvas2.addEventListener("mousemove", (e) => {
+  //     this.getCanvasClick(canvas2, e, "mousemove");
+  //   });
+  // };
+  // getCanvasClick = (canvas, event, type) => {
+  //   const rect = canvas.getBoundingClientRect();
+  //   const scale = rect.width / canvas.offsetWidth;
+  //   // const scale = (rect.width / canvas.offsetWidth)*this.camera.zoom.x;
+  //   // const scale = (rect.width / canvas.offsetWidth)*(this.camera.zoom.x-1);
+  //   const x = (event.clientX - rect.left) * scale;
+  //   const y = (event.clientY - rect.top) * scale;
+
+  //   // ADJUSTED FOR CANVAS SCALE & TRANSFORM
+  //   let newX = (x - this.camera.zoomFocusPan.x) / this.camera.zoom.x;
+  //   let newY = (y - this.camera.zoomFocusPan.y) / this.camera.zoom.y;
+
+  //   // console.log("clicked the canvas", 'x: ',x,'y: ',y,'newX',newX,'newY',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y);
+
+  //   let insideGrid = false;
+
+  //   for (const cell of this.gridInfo) {
+  //     let point = [newX, newY];
+  //     let polygon = [];
+  //     for (const vertex of cell.vertices) {
+  //       let vertexPoint = [vertex.x + 10, vertex.y + 5];
+  //       polygon.push(vertexPoint);
+  //     }
+  //     let pip = pointInPolygon(point, polygon);
+  //     if (pip === true) {
+  //       insideGrid = true;
+  //       // console.log("clicked or moused over a cell", cell.center, "x: " + x + " y: " + y);
+  //       this.cursorCoords = {
+  //         x: x,
+  //         y: y,
+  //       };
+  //       let player = undefined;
+  //       for (const plyr of this.players) {
+  //         if (
+  //           plyr.currentPosition.cell.number.x === cell.number.x &&
+  //           plyr.currentPosition.cell.number.y === cell.number.y
+  //         ) {
+  //           player = plyr;
+  //         }
+  //       }
+  //       if (type === "click" && this.cellInfoMouseOver !== true) {
+  //         // console.log("clicked on a cell", cell.center, "x: " + x + " y: " + y);
+  //         this.clicked.cell = cell;
+  //         if (player) {
+  //           this.clicked.player = player;
+  //         } else {
+  //           this.clicked.player = undefined;
+  //         }
+  //         this.showCellInfoBox = true;
+  //         this.mouseOverCell = {
+  //           state: true,
+  //           cell: cell,
+  //           count: 0,
+  //           threshold: this.mouseOverCell.threshold,
+  //         };
+  //       }
+
+  //       if (type === "mousemove") {
+  //         // console.log("moused over a cell", cell.center, "x: " + x + " y: " + y);
+  //         this.mouseMoving = true;
+
+  //         if (this.mouseOverCellSwitchOff.state === true) {
+  //           this.mouseOverCellSwitchOff.state = false;
+  //         }
+
+  //         if (this.cellInfoMouseOver !== true) {
+  //           if (this.mouseOverCell.cell) {
+  //             if (
+  //               this.mouseOverCell.cell.number.x === cell.number.x &&
+  //               this.mouseOverCell.cell.number.y === cell.number.y
+  //             ) {
+  //               if (this.mouseOverCell.state === true) {
+  //                 // console.log('do nothing');
+  //               } else {
+  //                 if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
+  //                   this.mouseOverCell.count++;
+  //                 }
+  //                 if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
+  //                   this.clicked.cell = cell;
+  //                   if (player) {
+  //                     this.clicked.player = player;
+  //                   } else {
+  //                     this.clicked.player = undefined;
+  //                   }
+  //                   this.showCellInfoBox = true;
+  //                   this.mouseOverCell = {
+  //                     state: true,
+  //                     cell: cell,
+  //                     count: 0,
+  //                     threshold: this.mouseOverCell.threshold,
+  //                   };
+  //                 }
+  //               }
+  //             } else {
+  //               this.mouseOverCell = {
+  //                 state: false,
+  //                 cell: cell,
+  //                 count: 0,
+  //                 threshold: this.mouseOverCell.threshold,
+  //               };
+  //             }
+  //           } else {
+  //             this.mouseOverCell = {
+  //               state: false,
+  //               cell: cell,
+  //               count: 0,
+  //               threshold: this.mouseOverCell.threshold,
+  //             };
+  //           }
+  //         } else {
+  //           // console.log("mouse in cell info box. do nothing");
+  //         }
+  //       }
+  //     }
+  //   }
+  //   if (insideGrid === false) {
+  //     this.cursorCoords = {
+  //       x: x,
+  //       y: y,
+  //     };
+  //     // console.log("clicked or moused over the canvas out of bounds", 'x: ',x,'y: ',y);
+  //     // console.log('clicked or mouse moved outside the grid',this.cellInfoMouseOver);
+  //     if (type === "click") {
+  //       // console.log("clicked on the canvas out of bounds", "x: ", x, "y: ", y);
+  //       if (this.mouseOverCellSwitchOff.state === true) {
+  //         this.mouseOverCellSwitchOff.state = false;
+  //       }
+  //       if (this.cellInfoMouseOver !== true) {
+  //         this.showCellInfoBox = false;
+  //         this.mouseOverCell = {
+  //           state: false,
+  //           cell: undefined,
+  //           count: 0,
+  //           threshold: this.mouseOverCell.threshold,
+  //         };
+  //       } else {
+  //         this.showCellInfoBox = true;
+  //       }
+  //     } else if (type === "mousemove") {
+  //       // console.log("moused over the canvas out of bounds", "x: ", x, "y: ", y);
+  //       if (this.cellInfoMouseOver !== true) {
+  //         if (this.mouseOverCellSwitchOff.state !== true) {
+  //           this.mouseOverCellSwitchOff.state = true;
+  //         }
+
+  //         if (
+  //           this.mouseOverCell.cell &&
+  //           this.mouseOverCell.state !== true &&
+  //           this.mouseOverCell.count > 1
+  //         ) {
+  //           this.mouseOverCell = {
+  //             state: false,
+  //             cell: undefined,
+  //             count: 0,
+  //             threshold: this.mouseOverCell.threshold,
+  //           };
+  //         }
+  //       } else {
+  //         // console.log("heeere!", this.cellInfoMouseOver);
+  //         this.cellInfoMouseOver = false;
+
+  //         this.showCellInfoBox = true;
+  //         this.mouseOverCell.state = false;
+  //         if (this.mouseOverCellSwitchOff.state === true) {
+  //           this.mouseOverCellSwitchOff.state = false;
+  //           this.mouseOverCellSwitchOff.count = 0;
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   if (type === "mousemove") {
+  //     this.mouseMoving = true;
+  //   }
+  // };
+  // getSettingsCanvasClick = (canvas, event) => {
+  //   // console.log('getSettingsCanvasClick');
+
+  //   const rect = canvas.getBoundingClientRect();
+
+  //   const x = event.clientX - rect.left;
+  //   const y = event.clientY - rect.top;
+
+  //   let insideGrid = false;
+
+  //   for (const cell of this.settingsGridInfo) {
+  //     let point = [x, y];
+  //     let polygon = [];
+  //     for (const vertex of cell.vertices) {
+  //       let vertexPoint = [vertex.x + 10 / 2, vertex.y + 5 / 2];
+
+  //       polygon.push(vertexPoint);
+  //     }
+  //     let pip = pointInPolygon(point, polygon);
+  //     if (pip === true) {
+  //       insideGrid = true;
+  //       // console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
+  //       this.settingsClicked = cell;
+  //     }
+  //   }
+  //   if (insideGrid === false) {
+  //     // console.log("clicked the settings canvas", 'x: ',x,'y: ',y);
+
+  //     this.settingsClicked = {
+  //       number: {
+  //         x: 0,
+  //         y: 0,
+  //       },
+  //       center: {
+  //         x: 0,
+  //         y: 0,
+  //       },
+  //       drawCenter: {
+  //         x: 0,
+  //         y: 0,
+  //       },
+  //       vertices: [
+  //         {
+  //           x: 0,
+  //           y: 0,
+  //         },
+  //         {
+  //           x: 0,
+  //           y: 0,
+  //         },
+  //         {
+  //           x: 0,
+  //           y: 0,
+  //         },
+  //         {
+  //           x: 0,
+  //           y: 0,
+  //         },
+  //       ],
+  //       side: 0,
+  //       levelData: "",
+  //       edge: {
+  //         state: false,
+  //         side: "",
+  //       },
+  //       terrain: {
+  //         name: "",
+  //         type: "",
+  //         effect: "",
+  //       },
+  //       item: {
+  //         name: "",
+  //         type: "",
+  //         subType: "",
+  //         effect: "",
+  //         initDrawn: false,
+  //       },
+  //       void: {
+  //         state: false,
+  //       },
+  //       obstacle: {
+  //         id: 0,
+  //         trap: {},
+  //         state: false,
+  //         name: "",
+  //         type: "",
+  //         hp: 2,
+  //         destructible: {
+  //           state: false,
+  //           weapons: [],
+  //           leaveRubble: false,
+  //         },
+  //         locked: {
+  //           state: false,
+  //           key: "",
+  //         },
+  //         weight: 1,
+  //         height: 0.5,
+  //         items: [],
+  //         effects: [],
+  //         moving: {
+  //           state: false,
+  //           step: 0,
+  //           origin: {
+  //             number: {
+  //               x: undefined,
+  //               y: undefined,
+  //             },
+  //             center: {
+  //               x: undefined,
+  //               y: undefined,
+  //             },
+  //           },
+  //           destination: {
+  //             number: {
+  //               x: undefined,
+  //               y: undefined,
+  //             },
+  //             center: {
+  //               x: undefined,
+  //               y: undefined,
+  //             },
+  //           },
+  //           currentPosition: {
+  //             x: undefined,
+  //             y: undefined,
+  //           },
+  //           nextPosition: {
+  //             x: undefined,
+  //             y: undefined,
+  //           },
+  //           moveSpeed: 0,
+  //           pushable: true,
+  //           pushed: false,
+  //           pusher: undefined,
+  //           falling: {
+  //             state: false,
+  //             count: 0,
+  //             limit: 10,
+  //           },
+  //         },
+  //       },
+  //       barrier: {
+  //         id: 0,
+  //         trap: {},
+  //         state: false,
+  //         name: "",
+  //         type: "",
+  //         hp: 2,
+  //         destructible: {
+  //           state: false,
+  //           weapons: [],
+  //           leaveRubble: false,
+  //         },
+  //         locked: {
+  //           state: false,
+  //           key: "",
+  //         },
+  //         position: "",
+  //         height: 1,
+  //       },
+  //       elevation: {
+  //         number: 0,
+  //         type: "",
+  //         position: "",
+  //       },
+  //       rubble: false,
+  //     };
+  //   }
+
+  //   if (this.showSettingsCanvasData.state === true) {
+  //     let availibleCells =
+  //       this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1]
+  //         .posArray;
+  //     if (this.settingsFormPlyrStartPosList.length < 0) {
+  //       availibleCells =
+  //         this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1]
+  //           .posArray;
+  //     }
+  //     let validCell = false;
+  //     for (const cell of availibleCells) {
+  //       if (
+  //         cell.x === this.settingsClicked.number.x &&
+  //         cell.y === this.settingsClicked.number.y
+  //       ) {
+  //         validCell = true;
+  //       }
+  //     }
+
+  //     if (validCell === true) {
+  //       if (this.showSettingsCanvasData.field.split("_")[0] === "human") {
+  //         let plyrNo = this.showSettingsCanvasData.plyrNo;
+
+  //         let newArray = this.settingsFormPlyrStartPosList.map(
+  //           (y) =>
+  //             (y = {
+  //               plyrNo: y.plyrNo,
+  //               selected: y.selected,
+  //             }),
+  //         );
+
+  //         let plyrChange = newArray.find((x) => x.plyrNo === plyrNo);
+  //         plyrChange.selected = {
+  //           x: this.settingsClicked.number.x,
+  //           y: this.settingsClicked.number.y,
+  //         };
+
+  //         this.getCustomPlyrStartPosList(newArray);
+
+  //         let newArray2 = this.settingsFormAiStartPosList.map(
+  //           (y) =>
+  //             (y = {
+  //               plyrNo: y.plyrNo,
+  //               mission: y.mission,
+  //               selected: y.selected,
+  //             }),
+  //         );
+
+  //         this.getCustomAiStartPosList(newArray2);
+  //       }
+
+  //       if (this.showSettingsCanvasData.field.split("_")[0] === "ai") {
+  //         let plyrNo =
+  //           this.showSettingsCanvasData.plyrNo - this.settingsFormPlyrStartPosList.length;
+  //         let type = this.showSettingsCanvasData.type;
+  //         let value = this.settingsClicked.number;
+
+  //         let newArray3 = this.settingsFormAiStartPosList.map(
+  //           (y) =>
+  //             (y = {
+  //               plyrNo: y.plyrNo,
+  //               mission: y.mission,
+  //               selected: y.selected,
+  //             }),
+  //         );
+
+  //         let plyrChange = newArray3.find((x) => x.plyrNo === plyrNo);
+
+  //         if (plyrChange.selected.length === 0) {
+  //           plyrChange.selected.push({
+  //             type: type,
+  //             cell: { x: value.x, y: value.y },
+  //           });
+  //         } else {
+  //           // console.log('plyrChange',plyrChange);
+  //           let selectedElem = plyrChange.selected.find((j) => j.type === type);
+  //           let indx = newArray3.findIndex((j) => j.plyrNo === plyrChange.plyrNo);
+  //           if (selectedElem) {
+  //             selectedElem.cell = { x: value.x, y: value.y };
+  //           } else {
+  //             plyrChange.selected.push({
+  //               type: type,
+  //               cell: { x: value.x, y: value.y },
+  //             });
+  //           }
+  //         }
+
+  //         this.getCustomAiStartPosList(newArray3);
+  //       }
+  //     } else {
+  //       // console.log('cant choose that cell',this.settingsClicked.number);
+  //     }
+  //   }
+
+  //   this.setState({
+  //     stateUpdater: "..",
+  //   });
+  // };
+  // handleKeyPress = (event, state) => {
+  //   // console.log('handling key press', event.key, state, event);
+
+  //   let direction;
+  //   let keyInput = event.key;
+
+  //   switch (keyInput) {
+  //     case "w":
+  //       this.keyPressed[0].north = state;
+  //       // direction = 'north';
+  //       this.players[0].turnCheckerDirection = "north";
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "a":
+  //       this.keyPressed[0].west = state;
+  //       // direction = 'west';
+  //       this.players[0].turnCheckerDirection = "west";
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "d":
+  //       this.keyPressed[0].east = state;
+  //       // direction = 'east';
+  //       this.players[0].turnCheckerDirection = "east";
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "s":
+  //       this.keyPressed[0].south = state;
+  //       // direction = 'south';
+  //       this.players[0].turnCheckerDirection = "south";
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "f":
+  //       this.keyPressed[0].attack = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "v":
+  //       this.keyPressed[0].defend = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "c":
+  //       this.keyPressed[0].dodge = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "r":
+  //       this.keyPressed[0].pull = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "Shift":
+  //       if (event.code === "ShiftLeft") {
+  //         this.keyPressed[0].kick = state;
+  //         this.currentPlayer = 1;
+  //       }
+
+  //       if (event.code === "ShiftRight") {
+  //         this.keyPressed[1].playerMenu = state;
+  //         this.currentPlayer = 2;
+  //       }
+
+  //       break;
+  //     case " ":
+  //       if (
+  //         state === false &&
+  //         this.players[0].moving.state === true &&
+  //         this.players[0].strafing.state === true
+  //       ) {
+  //         this.players[0].strafeReleaseHook = true;
+  //       }
+  //       if (
+  //         state === false &&
+  //         this.players[0].moving.state !== true &&
+  //         this.keyPressed[0].strafe === true
+  //       ) {
+  //         this.players[0].strafeReleaseHook = true;
+  //       } else {
+  //         this.keyPressed[0].strafe = state;
+  //         this.players[0].strafing.state = state;
+  //         this.currentPlayer = 1;
+  //       }
+  //       break;
+  //     case "q":
+  //       this.keyPressed[0].cycleWeapon = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "e":
+  //       this.keyPressed[0].cycleArmor = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "2":
+  //       this.keyPressed[0].discardWeapon = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "3":
+  //       this.keyPressed[0].discardArmor = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "Control":
+  //       this.keyPressed[0].playerMenu = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "5":
+  //       this.keyPressed[0].uiMenu = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "4":
+  //       this.showSettingsKeyPress.state = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "1":
+  //       if (this.players[0].dead.state === true) {
+  //         this.respawn(this.players[0]);
+  //       }
+  //       break;
+  //     case "z":
+  //       this.keyPressed[0].rotateLeft = state;
+  //       this.currentPlayer = 1;
+  //       break;
+  //     case "x":
+  //       this.keyPressed[0].rotateRight = state;
+  //       this.currentPlayer = 1;
+  //       break;
+
+  //     case "6":
+  //       this.toggleCameraMode = state;
+  //       break;
+  //     case "7":
+  //       this.addAiPlayerKeyPress = state;
+  //       break;
+  //     case "`":
+  //       this.gameReset("soft");
+  //       break;
+
+  //     case "i":
+  //       this.keyPressed[1].north = state;
+  //       // direction = 'north';
+  //       this.players[1].turnCheckerDirection = "north";
+  //       this.currentPlayer = 2;
+  //       break;
+
+  //     case "j":
+  //       this.keyPressed[1].west = state;
+  //       // direction = 'west';
+  //       this.players[1].turnCheckerDirection = "west";
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "k":
+  //       this.keyPressed[1].south = state;
+  //       // direction = 'south';
+  //       this.players[1].turnCheckerDirection = "south";
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "l":
+  //       this.keyPressed[1].east = state;
+  //       // direction = 'east';
+  //       this.players[1].turnCheckerDirection = "east";
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case ";":
+  //       this.keyPressed[1].attack = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case ".":
+  //       this.keyPressed[1].defend = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "'":
+  //       this.keyPressed[1].dodge = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "p":
+  //       this.keyPressed[1].pull = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "Enter":
+  //       this.keyPressed[1].kick = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "/":
+  //       if (
+  //         state === false &&
+  //         this.players[1].moving.state === true &&
+  //         this.players[1].strafing.state === true
+  //       ) {
+  //         this.players[1].strafeReleaseHook = true;
+  //       }
+  //       if (
+  //         state === false &&
+  //         this.players[1].moving.state !== true &&
+  //         this.keyPressed[1].strafe === true
+  //       ) {
+  //         this.players[1].strafeReleaseHook = true;
+  //       } else {
+  //         this.keyPressed[1].strafe = state;
+  //         this.players[1].strafing.state = state;
+  //         this.currentPlayer = 2;
+  //       }
+  //       break;
+
+  //     case "u":
+  //       this.keyPressed[1].cycleWeapon = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "o":
+  //       this.keyPressed[1].cycleArmor = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "8":
+  //       this.keyPressed[1].discardWeapon = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "9":
+  //       this.keyPressed[1].discardArmor = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "0":
+  //       this.keyPressed[1].uiMenu = state;
+  //       this.currentPlayer = 2;
+  //       break;
+
+  //     case "=":
+  //       if (this.players[1].dead.state === true) {
+  //         this.respawn(this.players[1]);
+  //       }
+  //       break;
+  //     case "-":
+  //       this.showSettingsKeyPress.state = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "[":
+  //       this.keyPressed[1].rotateLeft = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     case "]":
+  //       this.keyPressed[1].rotateRight = state;
+  //       this.currentPlayer = 2;
+  //       break;
+  //     default:
+  //       break;
+  //   }
+
+  //   let player = this.players[this.currentPlayer - 1];
+
+  //   // STEP GAME ON KEYPRESS FOR DEBUGGING
+  //   // for (const player of this.players) {
+  //   //   this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
+  //   // }
+  //   // this.time++
+  //   // this.setState({
+  //   //   stateUpdater: '..'
+  //   // })
+  // };
+  // handleGamepadEvent = (event, type) => {
+  //   if (type === "disconnected") {
+  //     this.connectedGamepadsInit = false;
+  //     this.showSettingsKeyPress.state = true;
+  //     console.log(
+  //       "connected gamepads state change! please re-configure controller/gamepad settings",
+  //     );
+  //   }
+  // };
+
+  // setCellInfoMouseOver = (state, origin) => {
+  //   // console.log("setCellInfoMouseOver", state, origin);
+
+  //   this.cellInfoMouseOver = state;
+  //   if (state === true) {
+  //     this.showCellInfoBox = true;
+  //     if (this.mouseOverCellSwitchOff.state === true) {
+  //       this.mouseOverCellSwitchOff.state = false;
+  //     }
+  //     if (this.mouseOverCell.cell && this.mouseOverCell.state !== true) {
+  //       this.mouseOverCell = {
+  //         state: false,
+  //         cell: undefined,
+  //         count: 0,
+  //         threshold: this.mouseOverCell.threshold,
+  //       };
+  //     }
+  //   } else {
+  //   }
+  // };
+  // closeCellInfoBox = () => {
+  //   this.cellInfoMouseOver = false;
+  //   this.showCellInfoBox = !this.showCellInfoBox;
+  //   if (this.mouseOverCellSwitchOff.state === true) {
+  //     this.mouseOverCellSwitchOff.state = false;
+  //   }
+
+  //   if (this.mouseOverCell.cell && this.mouseOverCell.state !== true) {
+  //     // this.mouseOverCell.cell = {
+  //     //   state: false,
+  //     //   cell: undefined,
+  //     //   count: 0,
+  //     //   threshold: this.mouseOverCell.threshold,
+  //     // };
+  //   }
+  // };
+  // loadSettings = (event) => {
+  //   event.preventDefault();
+
+  //   let gridSize = event.target.gridSize.value;
+
+  //   let playerNumber = event.target.humanPlayers.value;
+  //   let aiPlayerNumber = event.target.aiCount.value;
+
+  //   switch (gridSize) {
+  //     case "3":
+  //       this.gridWidth = 3;
+  //       this.sceneY = this.state.sceneY.three;
+  //       break;
+  //     case "6":
+  //       this.gridWidth = 6;
+  //       this.sceneY = this.state.sceneY.six;
+  //       break;
+  //     case "9":
+  //       this.gridWidth = 9;
+  //       this.sceneY = this.state.sceneY.nine;
+  //       break;
+  //     case "12":
+  //       this.gridWidth = 12;
+  //       this.sceneY = this.state.sceneY.twelve;
+  //       break;
+  //   }
+
+  //   if (this.gridWidth >= 12) {
+  //     if (window.innerWidth < 1100) {
+  //       this.zoomThresh = -0.25;
+  //     } else {
+  //       this.zoomThresh = -0.05;
+  //     }
+  //   } else {
+  //     // this.zoomThresh = -0.15;
+  //     this.zoomThresh = -0.05;
+  //   }
+
+  //   this.gamepadConfig = [];
+  //   for (const plyr2 of this.settingsFormPlayerData.input) {
+  //     this.gamepadConfig.push({
+  //       plyrNo: plyr2.plyrNo,
+  //       input: plyr2.input,
+  //       type: "",
+  //       id: "",
+  //       mapping: "",
+  //       gamepadIndex: undefined,
+  //     });
+  //     if (plyr2.input === "Gamepad") {
+  //       this.gamepad = true;
+  //     }
+  //     this.players[plyr2.plyrNo - 1].input = plyr2.input;
+  //   }
+  //   if (!this.settingsFormPlayerData.input.find((x) => x.input === "Gamepad")) {
+  //     this.gamepad = false;
+  //   }
+  //   this.connectedGamepadsInit = false;
+
+  //   for (const plyr3 of this.settingsFormPlayerData.team) {
+  //     this.players[plyr3.plyrNo - 1].team = plyr3.team;
+  //   }
+
+  //   // console.log('load settings this.gamepadConfig',this.gamepadConfig);
+
+  //   if (playerNumber < 2) {
+  //     this.players.splice(1, 1);
+  //     this.playerNumber = 1;
+  //   } else {
+  //     this.playerNumber = 2;
+  //   }
+
+  //   for (const plyr of this.settingsFormPlyrStartPosList) {
+  //     this.players[plyr.plyrNo - 1].startPosition.cell.number = plyr.selected;
+  //   }
+
+  //   if (this.updateSettingsFormAiDataData.startItems === true) {
+  //     this.disableInitItems = false;
+  //   } else {
+  //     this.disableInitItems = true;
+  //   }
+
+  //   this.gameReset("hard");
+
+  //   // this.placeItems({init: true, items: ''});
+
+  //   if (aiPlayerNumber > 0) {
+  //     this.loadAiSettings();
+  //   } else {
+  //     this.updateSettingsFormAiDataData = {
+  //       // count: {
+  //       //   count: '0'
+  //       // }
+  //     };
+  //     this.settingsFormAiStartPosList = [];
+  //     this.setState({
+  //       showSettings: false,
+  //     });
+  //     this.showSettingsCanvasData.state = false;
+  //   }
+
+  //   // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
+  //   // console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
+  //   // console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
+  // };
+  // loadAiSettings = () => {
+  //   // console.log('this.settingsFormAiStartPosList.length',this.settingsFormAiStartPosList.length);
+
+  //   // if (this.settingsFormAiStartPosList.length > 0) {
+
+  //   let initArray = this.updateSettingsFormAiDataData.random.map(
+  //     (x) =>
+  //       (x = {
+  //         plyrNo: x.plyrNo,
+  //         random: x.random,
+  //         mode: null,
+  //         weapon: null,
+  //         armor: null,
+  //         team: null,
+  //         mission: null,
+  //         startPos: null,
+  //         otherPositions: [],
+  //       }),
+  //   );
+
+  //   for (const plyr of initArray) {
+  //     for (const elem of this.updateSettingsFormAiDataData.mode) {
+  //       if (elem.plyrNo === plyr.plyrNo) {
+  //         if (elem.mode === "random") {
+  //           let whatMode = this.rnJesus(1, 2);
+
+  //           switch (whatMode) {
+  //             case 1:
+  //               elem.mode = "aggressive";
+  //               break;
+  //             case 2:
+  //               elem.mode = "careful";
+  //               break;
+  //           }
+  //         }
+
+  //         plyr.mode = elem.mode;
+  //       }
+  //     }
+
+  //     for (const elem2 of this.updateSettingsFormAiDataData.weapon) {
+  //       if (elem2.plyrNo === plyr.plyrNo) {
+  //         plyr.weapon = elem2.weapons;
+  //       }
+  //     }
+
+  //     for (const elem5 of this.updateSettingsFormAiDataData.armor) {
+  //       if (elem5.plyrNo === plyr.plyrNo) {
+  //         plyr.armor = elem5.armor;
+  //       }
+  //     }
+
+  //     for (const elem3 of this.updateSettingsFormAiDataData.mission) {
+  //       if (elem3.plyrNo === plyr.plyrNo) {
+  //         plyr.mission = elem3.mission;
+  //       }
+  //     }
+
+  //     for (const elem6 of this.updateSettingsFormAiDataData.team) {
+  //       if (elem6.plyrNo === plyr.plyrNo) {
+  //         plyr.team = elem6.team;
+  //       }
+  //     }
+
+  //     for (const elem4 of this.settingsFormAiStartPosList) {
+  //       if (elem4.plyrNo === plyr.plyrNo) {
+  //         for (const cell of elem4.selected) {
+  //           if (cell.type === "start") {
+  //             plyr.startPos = cell.cell;
+  //           } else {
+  //             plyr.otherPositions.push(cell.cell);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   if (this.updateSettingsFormAiDataData.startItems === true) {
+  //     this.disableInitItems = false;
+  //   } else {
+  //     this.disableInitItems = true;
+  //   }
+
+  //   // console.log('initArray',initArray);
+
+  //   for (let i = 1; i < initArray.length + 1; i++) {
+  //     setTimeout(() => {
+  //       // setTimeout(function timer() {
+
+  //       let elem5 = initArray[i - 1];
+
+  //       // console.log('plyr',elem5.plyrNo,'this.addAiCount.state',this.addAiCount.state);
+
+  //       if (elem5.random === "random") {
+  //         this.addAiRandomPlayer(elem5.random);
+  //       } else {
+  //         this.aiInitSettings = {
+  //           randomStart: false,
+  //           startPosition: {
+  //             number: {
+  //               x: elem5.startPos.x,
+  //               y: elem5.startPos.y,
+  //             },
+  //           },
+  //           primaryMission: elem5.mission,
+  //           mission: undefined,
+  //           mode: elem5.mode,
+  //           partolArea: elem5.otherPositions,
+  //           weapons: elem5.weapon,
+  //           armor: elem5.armor,
+  //           team: elem5.team,
+  //         };
+
+  //         this.addAiPlayer();
+  //       }
+  //     }, i * 1000);
+  //   }
+
+  //   // this.updateSettingsFormAiDataData = {};
+  //   // this.settingsFormAiStartPosList = [];
+  //   this.setState({
+  //     showSettings: false,
+  //   });
+
+  //   // }
+  // };
+  // cancelSettings = () => {
+  //   // this.updateSettingsFormAiDataData = {};
+  //   this.settingsFormAiStartPosList = [];
+  //   this.setState({
+  //     showSettings: false,
+  //   });
+  //   this.showSettingsCanvasData.state = false;
+  // };
+  // openSettings = () => {
+  //   this.setState({
+  //     showSettings: true,
+  //   });
+
+  //   // if (this.showSettingsCanvasData.state === true) {
+  //   //   this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+  //   // }
+  //   //
+  //   // this.settingsFormAiGridInfo = this.gridInfo;
+  //   //
+  //   // this.getCustomPlyrStartPosList(
+  //   //   [
+  //   //     {
+  //   //       plyrNo: 1,
+  //   //       selected: undefined,
+  //   //       posArray: []
+  //   //     },
+  //   //     {
+  //   //       plyrNo: 2,
+  //   //       selected: undefined,
+  //   //       posArray: []
+  //   //     }
+  //   //   ]
+  //   // )
+  // };
+  // expandDebugBox = (plyrNo) => {
+  //   if (plyrNo === 1) {
+  //     this.debugBoxStyle = "debugDisplay openDebug";
+  //   }
+  //   if (plyrNo === 2) {
+  //     this.debugBoxStyle2 = "debugDisplay2 openDebug";
+  //   }
+  // };
+  // minimizeDebugBox = (plyrNo) => {
+  //   if (plyrNo === 1) {
+  //     this.debugBoxStyle = "debugDisplay closedDebug";
+  //   }
+  //   if (plyrNo === 2) {
+  //     this.debugBoxStyle2 = "debugDisplay2 closedDebug";
+  //   }
+  // };
+  // setBackgroundImage = (args) => {
+  //   document.getElementsByClassName(
+  //     this.state.containerInnerClass,
+  //   )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
+  // };
 
   getCustomPlyrStartPosList = (args) => {
     // console.log('getCustomPlyrStartPosList',this.gridInfo.length,args);
