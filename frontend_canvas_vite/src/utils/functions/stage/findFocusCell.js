@@ -1,12 +1,6 @@
-export function findFocusCell(
-  app,
-  inputType,
-  inputSubType,
-  focus,
-  canvas,
-  context,
-  speed,
-) {
+import pointInPolygon from "point-in-polygon";
+
+export function findFocusCell(app, inputType, inputSubType, focus, canvas, context, speed) {
   let cell = {
     x: undefined,
     y: undefined,
@@ -66,20 +60,14 @@ export function findFocusCell(
     app.easyStar.setAcceptableTiles([0]);
     app.easyStar.enableDiagonals();
 
-    let test2 = app.easyStar.findPath(
-      originCell.x,
-      originCell.y,
-      destCell.x,
-      destCell.y,
-      function (path) {
-        if (path === null) {
-          cancelPath = true;
-          console.log("Path was not found");
-        } else {
-          pathSet = path;
-        }
-      },
-    );
+    let test2 = app.easyStar.findPath(originCell.x, originCell.y, destCell.x, destCell.y, function (path) {
+      if (path === null) {
+        cancelPath = true;
+        console.log("Path was not found");
+      } else {
+        pathSet = path;
+      }
+    });
     app.easyStar.setIterationsPerCalculation(1000);
     app.easyStar.calculate();
     setTimeout(() => {
@@ -435,20 +423,10 @@ export function findFocusCell(
         }
 
         if (greater === "zoom" && remainder > 0) {
-          if (
-            app.camera.instructions[app.camera.instructions.length - 1].action2.split(
-              "_",
-            )[0] === "zoom"
-          ) {
-            app.camera.instructions[app.camera.instructions.length - 1].limit2 +=
-              remainder;
-          } else if (
-            app.camera.instructions[app.camera.instructions.length - 1].action3.split(
-              "_",
-            )[0] === "zoom"
-          ) {
-            app.camera.instructions[app.camera.instructions.length - 1].limit3 +=
-              remainder;
+          if (app.camera.instructions[app.camera.instructions.length - 1].action2.split("_")[0] === "zoom") {
+            app.camera.instructions[app.camera.instructions.length - 1].limit2 += remainder;
+          } else if (app.camera.instructions[app.camera.instructions.length - 1].action3.split("_")[0] === "zoom") {
+            app.camera.instructions[app.camera.instructions.length - 1].limit3 += remainder;
           }
         }
       };
@@ -749,19 +727,12 @@ export function findFocusCell(
       // console.log('panToCell camera.focusCell',app.camera.focusCell);
       if (app.highlightZoomPanFocusCell === true) {
         for (const cell2 of app.cellsToHighlight2) {
-          if (
-            cell2.number.x !== focusCell.number.x ||
-            cell2.number.y !== focusCell.number.y
-          ) {
+          if (cell2.number.x !== focusCell.number.x || cell2.number.y !== focusCell.number.y) {
             let indx = app.cellsToHighlight2.indexOf(cell2);
             app.cellsToHighlight2.splice(indx, 1);
           }
         }
-        if (
-          !app.cellsToHighlight2.find(
-            (x) => x.number.x === focusCell.number.x && x.number.y === focusCell.number.y,
-          )
-        ) {
+        if (!app.cellsToHighlight2.find((x) => x.number.x === focusCell.number.x && x.number.y === focusCell.number.y)) {
           app.cellsToHighlight2.push({
             number: {
               x: focusCell.number.x,
