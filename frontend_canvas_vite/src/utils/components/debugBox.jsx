@@ -17,38 +17,46 @@ import {
   faBriefcase,
   faLungs,
 } from "@fortawesome/free-solid-svg-icons";
-import attackInidcate from "./assets/indicators/attackx.png";
-import attackSuccessInidcate from "./assets/indicators/attackSuccess.png";
-import defendInidcate from "./assets/indicators/defend.png";
-import deflectInidcate from "./assets/indicators/deflect.png";
-import deflectInjuredInidcate from "./assets/indicators/deflectInjured.png";
-import pushbackInidcate from "./assets/indicators/pushback.png";
-import ghostInidcate from "./assets/indicators/ghost.png";
-import deathInidcate from "./assets/indicators/death.png";
-import preAttackInidcate from "./assets/indicators/preAttack.png";
-import stamina from "./assets/indicators/stamina.png";
+import attackInidcate from "../../assets/indicators/attackx.png";
+import attackSuccessInidcate from "../../assets/indicators/attackSuccess.png";
+import defendInidcate from "../../assets/indicators/defend.png";
+import deflectInidcate from "../../assets/indicators/deflect.png";
+import deflectInjuredInidcate from "../../assets/indicators/deflectInjured.png";
+import pushbackInidcate from "../../assets/indicators/pushback.png";
+import ghostInidcate from "../../assets/indicators/ghost.png";
+import deathInidcate from "../../assets/indicators/death.png";
+import preAttackInidcate from "../../assets/indicators/preAttack.png";
+import stamina from "../../assets/indicators/stamina.png";
 
-import bow from "./assets/items/bow.png";
-import spear from "./assets/items/spear.png";
-import sword from "./assets/items/sword.png";
-import mail from "./assets/items/mail1.png";
-import greaves from "./assets/items/greaves1.png";
-import helmet from "./assets/items/helmet1.png";
-import unarmed from "./assets/items/unarmed.png";
+import bow from "../../assets/items/bow.png";
+import spear from "../../assets/items/spear.png";
+import sword from "../../assets/items/sword.png";
+import mail from "../../assets/items/mail1.png";
+import greaves from "../../assets/items/greaves1.png";
+import helmet from "../../assets/items/helmet1.png";
+import unarmed from "../../assets/items/unarmed.png";
 
-import speed from "./assets/indicators/speed.png";
+import speed from "../../assets/indicators/speed.png";
 
 import "./debugBox.css";
 
 const DebugBox = (props) => {
   let singleHitCrit = Math.round((1 / (props.player.crits.singleHit + 0)) * 100);
-  let singleHitCritSpecialArmorMin = Math.round((1 / (props.player.crits.singleHit + 5)) * 100);
-  let singleHitCritSpecialArmorMax = Math.round((1 / (props.player.crits.singleHit + 10)) * 100);
+  let singleHitCritSpecialArmorMin = Math.round(
+    (1 / (props.player.crits.singleHit + 5)) * 100,
+  );
+  let singleHitCritSpecialArmorMax = Math.round(
+    (1 / (props.player.crits.singleHit + 10)) * 100,
+  );
   let doubleHitCrit = Math.round((1 / (props.player.crits.doubleHit + 0)) * 100);
   let doubleHitCritSpear = Math.round((1 / (props.player.crits.doubleHit + 5)) * 100);
   let doubleHitCritBackAttack = Math.round((1 / 2) * 100);
-  let doubleHitCritSpecialArmorMin = Math.round((1 / (props.player.crits.doubleHit + 5)) * 100);
-  let doubleHitCritSpecialArmorMax = Math.round((1 / (props.player.crits.doubleHit + 15)) * 100);
+  let doubleHitCritSpecialArmorMin = Math.round(
+    (1 / (props.player.crits.doubleHit + 5)) * 100,
+  );
+  let doubleHitCritSpecialArmorMax = Math.round(
+    (1 / (props.player.crits.doubleHit + 15)) * 100,
+  );
   let defendPushBackCrit = Math.round((1 / (props.player.crits.pushBack * 2)) * 100);
   let attackPushBackCrit = Math.round((1 / props.player.crits.pushBack) * 100);
   let gearDropCrit = Math.round((1 / (props.player.crits.pushBack + 3)) * 100);
@@ -87,7 +95,11 @@ const DebugBox = (props) => {
                   </Popover.Body>
                 </Popover>
               }>
-              <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon" />
+              <FontAwesomeIcon
+                icon={faSkullCrossbones}
+                size="sm"
+                className="debugBoxIcon"
+              />
             </OverlayTrigger>
 
             <p className="debugBoxText">{props.player.points}</p>
@@ -109,7 +121,11 @@ const DebugBox = (props) => {
               }>
               <FontAwesomeIcon icon={faLungs} size="sm" className="debugBoxIcon" />
             </OverlayTrigger>
-            <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor} />
+            <ProgressBar
+              className="staminaProgress"
+              now={staminaPercent}
+              variant={staminaColor}
+            />
           </li>
 
           <li className="debugBoxListItem">
@@ -204,28 +220,36 @@ const DebugBox = (props) => {
                 overlay={
                   <Popover id={`popover-positioned-${"bottom"}`}>
                     <Popover.Body>
-                      <strong>Player using a Sword: {props.player.currentWeapon.name}</strong>
+                      <strong>
+                        Player using a Sword: {props.player.currentWeapon.name}
+                      </strong>
                     </Popover.Body>
                   </Popover>
                 }>
                 <img src={sword} className="debugBoxImgSelected"></img>
               </OverlayTrigger>
             )}
-            {props.player.currentWeapon.type === "sword" && <p className="debugBoxText">{props.player.currentWeapon.effect}</p>}
+            {props.player.currentWeapon.type === "sword" && (
+              <p className="debugBoxText">{props.player.currentWeapon.effect}</p>
+            )}
             {props.player.currentWeapon.type === "spear" && (
               <OverlayTrigger
                 placement={"bottom"}
                 overlay={
                   <Popover id={`popover-positioned-${"bottom"}`}>
                     <Popover.Body>
-                      <strong>Player using a Spear: {props.player.currentWeapon.name}</strong>
+                      <strong>
+                        Player using a Spear: {props.player.currentWeapon.name}
+                      </strong>
                     </Popover.Body>
                   </Popover>
                 }>
                 <img src={spear} className="debugBoxImgSelected"></img>
               </OverlayTrigger>
             )}
-            {props.player.currentWeapon.type === "spear" && <p className="debugBoxText">{props.player.currentWeapon.effect}</p>}
+            {props.player.currentWeapon.type === "spear" && (
+              <p className="debugBoxText">{props.player.currentWeapon.effect}</p>
+            )}
 
             {props.player.currentWeapon.type === "crossbow" && (
               <OverlayTrigger
@@ -233,14 +257,18 @@ const DebugBox = (props) => {
                 overlay={
                   <Popover id={`popover-positioned-${"bottom"}`}>
                     <Popover.Body>
-                      <strong>Player using a Crossbow: {props.player.currentWeapon.name}</strong>
+                      <strong>
+                        Player using a Crossbow: {props.player.currentWeapon.name}
+                      </strong>
                     </Popover.Body>
                   </Popover>
                 }>
                 <img src={bow} className="debugBoxImgSelected"></img>
               </OverlayTrigger>
             )}
-            {props.player.currentWeapon.type === "crossbow" && <p className="debugBoxText">{props.player.items.ammo}</p>}
+            {props.player.currentWeapon.type === "crossbow" && (
+              <p className="debugBoxText">{props.player.items.ammo}</p>
+            )}
             {
               //   props.player.currentWeapon.name === weapon.name &&
               //   weapon.type === 'crossbow' && (
@@ -256,7 +284,9 @@ const DebugBox = (props) => {
                 overlay={
                   <Popover id={`popover-positioned-${"bottom"}`}>
                     <Popover.Body>
-                      <strong>Player is wearing Mail: {props.player.currentArmor.name}</strong>
+                      <strong>
+                        Player is wearing Mail: {props.player.currentArmor.name}
+                      </strong>
                     </Popover.Body>
                   </Popover>
                 }>
@@ -269,7 +299,9 @@ const DebugBox = (props) => {
                 overlay={
                   <Popover id={`popover-positioned-${"bottom"}`}>
                     <Popover.Body>
-                      <strong>Player is wearing Greaves: {props.player.currentArmor.name}</strong>
+                      <strong>
+                        Player is wearing Greaves: {props.player.currentArmor.name}
+                      </strong>
                     </Popover.Body>
                   </Popover>
                 }>
@@ -282,7 +314,9 @@ const DebugBox = (props) => {
                 overlay={
                   <Popover id={`popover-positioned-${"bottom"}`}>
                     <Popover.Body>
-                      <strong>Player is wearing a Helmet: {props.player.currentArmor.name}</strong>
+                      <strong>
+                        Player is wearing a Helmet: {props.player.currentArmor.name}
+                      </strong>
                     </Popover.Body>
                   </Popover>
                 }>
@@ -302,8 +336,15 @@ const DebugBox = (props) => {
                     </Popover.Body>
                   </Popover>
                 }>
-                <Button variant="outline-secondary" type="button" className="showCritsBtn">
-                  <FontAwesomeIcon icon={faBriefcase} size="lg" className="debugBoxIcon btnIcon" />
+                <Button
+                  variant="outline-secondary"
+                  type="button"
+                  className="showCritsBtn">
+                  <FontAwesomeIcon
+                    icon={faBriefcase}
+                    size="lg"
+                    className="debugBoxIcon btnIcon"
+                  />
                 </Button>
               </OverlayTrigger>
             </a>
@@ -320,8 +361,15 @@ const DebugBox = (props) => {
                     </Popover.Body>
                   </Popover>
                 }>
-                <Button variant="outline-secondary" type="button" className="showCritsBtn">
-                  <FontAwesomeIcon icon={faDice} size="lg" className="debugBoxIcon btnIcon" />
+                <Button
+                  variant="outline-secondary"
+                  type="button"
+                  className="showCritsBtn">
+                  <FontAwesomeIcon
+                    icon={faDice}
+                    size="lg"
+                    className="debugBoxIcon btnIcon"
+                  />
                 </Button>
               </OverlayTrigger>
             </a>
@@ -526,8 +574,15 @@ const DebugBox = (props) => {
           <ul className="debugBoxList">
             <li className="debugBoxListItem">
               <a onClick={() => handleStateChange("player", props.player.number)}>
-                <Button variant="outline-secondary" type="button" className="showCritsBtn">
-                  <FontAwesomeIcon icon={faUser} size="lg" className="debugBoxIcon btnIcon" />
+                <Button
+                  variant="outline-secondary"
+                  type="button"
+                  className="showCritsBtn">
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    size="lg"
+                    className="debugBoxIcon btnIcon"
+                  />
                 </Button>
               </a>
             </li>
@@ -543,7 +598,9 @@ const DebugBox = (props) => {
               <p className="debugBoxText">2 Damage w/ Spear: {doubleHitCritSpear} %</p>
             </li>
             <li className="debugBoxListItem">
-              <p className="debugBoxText">2 Damage from behind: max {doubleHitCritBackAttack} %</p>
+              <p className="debugBoxText">
+                2 Damage from behind: max {doubleHitCritBackAttack} %
+              </p>
             </li>
             <li className="debugBoxListItem">
               <p className="debugBoxText">Defend Pushback: {defendPushBackCrit} %</p>
@@ -562,12 +619,14 @@ const DebugBox = (props) => {
             </li>
             <li className="debugBoxListItem">
               <p className="debugBoxText">
-                1 Damage vs Evasive Armor: from {singleHitCritSpecialArmorMin} % to {singleHitCritSpecialArmorMax} %
+                1 Damage vs Evasive Armor: from {singleHitCritSpecialArmorMin} % to{" "}
+                {singleHitCritSpecialArmorMax} %
               </p>
             </li>
             <li className="debugBoxListItem">
               <p className="debugBoxText">
-                2 Damage vs Evasive Armor: from {doubleHitCritSpecialArmorMin} % to {doubleHitCritSpecialArmorMax} %
+                2 Damage vs Evasive Armor: from {doubleHitCritSpecialArmorMin} % to{" "}
+                {doubleHitCritSpecialArmorMax} %
               </p>
             </li>
           </ul>
@@ -578,8 +637,15 @@ const DebugBox = (props) => {
           <ul className="debugBoxList">
             <li className="debugBoxListItem">
               <a onClick={() => handleStateChange("player", props.player.number)}>
-                <Button variant="outline-secondary" type="button" className="showCritsBtn">
-                  <FontAwesomeIcon icon={faUser} size="lg" className="debugBoxIcon btnIcon" />
+                <Button
+                  variant="outline-secondary"
+                  type="button"
+                  className="showCritsBtn">
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    size="lg"
+                    className="debugBoxIcon btnIcon"
+                  />
                 </Button>
               </a>
             </li>
@@ -594,118 +660,130 @@ const DebugBox = (props) => {
 
             {props.player.items.weapons.map((weapon) => (
               <li className="debugBoxListItem">
-                {props.player.currentWeapon.name !== weapon.name && weapon.type === "sword" && (
-                  <div className="gearDetails">
-                    <img src={sword}></img>
-                    <p className="debugBoxText">Name: {weapon.name}</p>
-                    <p className="debugBoxText">Type: {weapon.type}</p>
-                    <p className="debugBoxText">Effect: {weapon.effect}</p>
-                  </div>
-                )}
+                {props.player.currentWeapon.name !== weapon.name &&
+                  weapon.type === "sword" && (
+                    <div className="gearDetails">
+                      <img src={sword}></img>
+                      <p className="debugBoxText">Name: {weapon.name}</p>
+                      <p className="debugBoxText">Type: {weapon.type}</p>
+                      <p className="debugBoxText">Effect: {weapon.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentWeapon.name !== weapon.name && weapon.type === "spear" && (
-                  <div className="gearDetails">
-                    <img src={spear}></img>
-                    <p className="debugBoxText">Name: {weapon.name}</p>
-                    <p className="debugBoxText">Type: {weapon.type}</p>
-                    <p className="debugBoxText">Effect: {weapon.effect}</p>
-                  </div>
-                )}
+                {props.player.currentWeapon.name !== weapon.name &&
+                  weapon.type === "spear" && (
+                    <div className="gearDetails">
+                      <img src={spear}></img>
+                      <p className="debugBoxText">Name: {weapon.name}</p>
+                      <p className="debugBoxText">Type: {weapon.type}</p>
+                      <p className="debugBoxText">Effect: {weapon.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentWeapon.name !== weapon.name && weapon.type === "crossbow" && (
-                  <div className="gearDetails">
-                    <img src={bow}></img>
-                    <p className="debugBoxText">Name: {weapon.name}</p>
-                    <p className="debugBoxText">Type: {weapon.type}</p>
-                    <p className="debugBoxText">Effect: {weapon.effect}</p>
-                    <p className="debugBoxText">Ammo: {props.player.items.ammo}</p>
-                  </div>
-                )}
+                {props.player.currentWeapon.name !== weapon.name &&
+                  weapon.type === "crossbow" && (
+                    <div className="gearDetails">
+                      <img src={bow}></img>
+                      <p className="debugBoxText">Name: {weapon.name}</p>
+                      <p className="debugBoxText">Type: {weapon.type}</p>
+                      <p className="debugBoxText">Effect: {weapon.effect}</p>
+                      <p className="debugBoxText">Ammo: {props.player.items.ammo}</p>
+                    </div>
+                  )}
 
-                {props.player.currentWeapon.name === weapon.name && weapon.type === "sword" && (
-                  <div className="gearDetails">
-                    <img src={sword} className="debugBoxImgSelected"></img>
-                    <p className="debugBoxText">Name: {weapon.name}</p>
-                    <p className="debugBoxText">Type: {weapon.type}</p>
-                    <p className="debugBoxText">Effect: {weapon.effect}</p>
-                  </div>
-                )}
+                {props.player.currentWeapon.name === weapon.name &&
+                  weapon.type === "sword" && (
+                    <div className="gearDetails">
+                      <img src={sword} className="debugBoxImgSelected"></img>
+                      <p className="debugBoxText">Name: {weapon.name}</p>
+                      <p className="debugBoxText">Type: {weapon.type}</p>
+                      <p className="debugBoxText">Effect: {weapon.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentWeapon.name === weapon.name && weapon.type === "spear" && (
-                  <div className="gearDetails">
-                    <img src={spear} className="debugBoxImgSelected"></img>
-                    <p className="debugBoxText">Name: {weapon.name}</p>
-                    <p className="debugBoxText">Type: {weapon.type}</p>
-                    <p className="debugBoxText">Effect: {weapon.effect}</p>
-                  </div>
-                )}
+                {props.player.currentWeapon.name === weapon.name &&
+                  weapon.type === "spear" && (
+                    <div className="gearDetails">
+                      <img src={spear} className="debugBoxImgSelected"></img>
+                      <p className="debugBoxText">Name: {weapon.name}</p>
+                      <p className="debugBoxText">Type: {weapon.type}</p>
+                      <p className="debugBoxText">Effect: {weapon.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentWeapon.name === weapon.name && weapon.type === "crossbow" && (
-                  <div className="gearDetails">
-                    <img src={bow} className="debugBoxImgSelected"></img>
-                    <p className="debugBoxText">Name: {weapon.name}</p>
-                    <p className="debugBoxText">Type: {weapon.type}</p>
-                    <p className="debugBoxText">Effect: {weapon.effect}</p>
-                    <p className="debugBoxText">Ammo: {props.player.items.ammo}</p>
-                  </div>
-                )}
+                {props.player.currentWeapon.name === weapon.name &&
+                  weapon.type === "crossbow" && (
+                    <div className="gearDetails">
+                      <img src={bow} className="debugBoxImgSelected"></img>
+                      <p className="debugBoxText">Name: {weapon.name}</p>
+                      <p className="debugBoxText">Type: {weapon.type}</p>
+                      <p className="debugBoxText">Effect: {weapon.effect}</p>
+                      <p className="debugBoxText">Ammo: {props.player.items.ammo}</p>
+                    </div>
+                  )}
               </li>
             ))}
             {props.player.items.armor.map((armor) => (
               <li className="debugBoxListItem">
-                {props.player.currentArmor.name !== armor.name && armor.type === "mail" && (
-                  <div className="gearDetails">
-                    <img src={mail}></img>
-                    <p className="debugBoxText">Name: {armor.name}</p>
-                    <p className="debugBoxText">Type: {armor.type}</p>
-                    <p className="debugBoxText">Effect: {armor.effect}</p>
-                  </div>
-                )}
+                {props.player.currentArmor.name !== armor.name &&
+                  armor.type === "mail" && (
+                    <div className="gearDetails">
+                      <img src={mail}></img>
+                      <p className="debugBoxText">Name: {armor.name}</p>
+                      <p className="debugBoxText">Type: {armor.type}</p>
+                      <p className="debugBoxText">Effect: {armor.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentArmor.name !== armor.name && armor.type === "greaves" && (
-                  <div className="gearDetails">
-                    <img src={greaves}></img>
-                    <p className="debugBoxText">Name: {armor.name}</p>
-                    <p className="debugBoxText">Type: {armor.type}</p>
-                    <p className="debugBoxText">Effect: {armor.effect}</p>
-                  </div>
-                )}
+                {props.player.currentArmor.name !== armor.name &&
+                  armor.type === "greaves" && (
+                    <div className="gearDetails">
+                      <img src={greaves}></img>
+                      <p className="debugBoxText">Name: {armor.name}</p>
+                      <p className="debugBoxText">Type: {armor.type}</p>
+                      <p className="debugBoxText">Effect: {armor.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentArmor.name !== armor.name && armor.type === "helmet" && (
-                  <div className="gearDetails">
-                    <img src={helmet}></img>
-                    <p className="debugBoxText">Name: {armor.name}</p>
-                    <p className="debugBoxText">Type: {armor.type}</p>
-                    <p className="debugBoxText">Effect: {armor.effect}</p>
-                  </div>
-                )}
+                {props.player.currentArmor.name !== armor.name &&
+                  armor.type === "helmet" && (
+                    <div className="gearDetails">
+                      <img src={helmet}></img>
+                      <p className="debugBoxText">Name: {armor.name}</p>
+                      <p className="debugBoxText">Type: {armor.type}</p>
+                      <p className="debugBoxText">Effect: {armor.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentArmor.name === armor.name && armor.type === "mail" && (
-                  <div className="gearDetails">
-                    <img src={mail} className="debugBoxImgSelected"></img>
-                    <p className="debugBoxText">Name: {armor.name}</p>
-                    <p className="debugBoxText">Type: {armor.type}</p>
-                    <p className="debugBoxText">Effect: {armor.effect}</p>
-                  </div>
-                )}
+                {props.player.currentArmor.name === armor.name &&
+                  armor.type === "mail" && (
+                    <div className="gearDetails">
+                      <img src={mail} className="debugBoxImgSelected"></img>
+                      <p className="debugBoxText">Name: {armor.name}</p>
+                      <p className="debugBoxText">Type: {armor.type}</p>
+                      <p className="debugBoxText">Effect: {armor.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentArmor.name === armor.name && armor.type === "greaves" && (
-                  <div className="gearDetails">
-                    <img src={greaves} className="debugBoxImgSelected"></img>
-                    <p className="debugBoxText">Name: {armor.name}</p>
-                    <p className="debugBoxText">Type: {armor.type}</p>
-                    <p className="debugBoxText">Effect: {armor.effect}</p>
-                  </div>
-                )}
+                {props.player.currentArmor.name === armor.name &&
+                  armor.type === "greaves" && (
+                    <div className="gearDetails">
+                      <img src={greaves} className="debugBoxImgSelected"></img>
+                      <p className="debugBoxText">Name: {armor.name}</p>
+                      <p className="debugBoxText">Type: {armor.type}</p>
+                      <p className="debugBoxText">Effect: {armor.effect}</p>
+                    </div>
+                  )}
 
-                {props.player.currentArmor.name === armor.name && armor.type === "helmet" && (
-                  <div className="gearDetails">
-                    <img src={helmet} className="debugBoxImgSelected"></img>
-                    <p className="debugBoxText">Name: {armor.name}</p>
-                    <p className="debugBoxText">Type: {armor.type}</p>
-                    <p className="debugBoxText">Effect: {armor.effect}</p>
-                  </div>
-                )}
+                {props.player.currentArmor.name === armor.name &&
+                  armor.type === "helmet" && (
+                    <div className="gearDetails">
+                      <img src={helmet} className="debugBoxImgSelected"></img>
+                      <p className="debugBoxText">Name: {armor.name}</p>
+                      <p className="debugBoxText">Type: {armor.type}</p>
+                      <p className="debugBoxText">Effect: {armor.effect}</p>
+                    </div>
+                  )}
               </li>
             ))}
           </ul>

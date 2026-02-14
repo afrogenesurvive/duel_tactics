@@ -1,3 +1,5 @@
+import pointInPolygon from "point-in-polygon";
+
 export function getSettingsCanvasClick(app, canvas, event) {
   // console.log('getSettingsCanvasClick');
 
@@ -10,6 +12,7 @@ export function getSettingsCanvasClick(app, canvas, event) {
 
   for (const cell of app.settingsGridInfo) {
     let point = [x, y];
+    4;
     let polygon = [];
     for (const vertex of cell.vertices) {
       let vertexPoint = [vertex.x + 10 / 2, vertex.y + 5 / 2];

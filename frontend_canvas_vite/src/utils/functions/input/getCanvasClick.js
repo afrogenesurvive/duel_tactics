@@ -1,3 +1,5 @@
+import pointInPolygon from "point-in-polygon";
+
 export function getCanvasClick(app, canvas, event, type) {
   const rect = canvas.getBoundingClientRect();
   const scale = rect.width / canvas.offsetWidth;
