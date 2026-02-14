@@ -1787,682 +1787,682 @@ class App extends Component {
   //   )[0].style.backgroundImage = `url('${this.backgroundImageRef[args].src}')`;
   // };
 
-  getCustomPlyrStartPosList = (args) => {
-    // console.log('getCustomPlyrStartPosList',this.gridInfo.length,args);
-    this.settingsFormPlyrGridInfo = this.gridInfo;
-
-    this.playerNumber = args.length;
-
-    let avoidCells = [];
-
-    this.settingsFormPlyrStartPosList = [];
-
-    for (const plyr of args) {
-      let array1 = [];
-
-      // AVOID ALREADY SELECTRED POSITIONS
-      if (plyr.selected) {
-        avoidCells.push(plyr.selected);
-      }
-
-      // NO POSITION SELECTED, GAME STARTING. USE DEFAULT START POSITIONS
-      if (!plyr.selected) {
-        if (
-          !this.gridInfo.find(
-            (x) =>
-              x.number.x === this.players[plyr.plyrNo - 1].startPosition.cell.number.x &&
-              x.number.y === this.players[plyr.plyrNo - 1].startPosition.cell.number.y,
-          )
-        ) {
-          let cll = { x: undefined, y: undefined };
-          let randomFreeCellChosen = false;
-
-          while (randomFreeCellChosen !== true) {
-            cll.x = this.rnJesus(0, this.gridWidth);
-            cll.y = this.rnJesus(0, this.gridWidth);
-            randomFreeCellChosen = this.checkCell(cll, ["all"]);
-          }
-
-          if (randomFreeCellChosen === true) {
-            this.players[plyr.plyrNo - 1].startPosition.cell.number = cll;
-          }
-        }
-
-        let playerStartPos = this.players[plyr.plyrNo - 1].startPosition.cell.number;
-
-        avoidCells.push({ x: playerStartPos.x, y: playerStartPos.y });
-      }
-
-      // CHECK FOR AI POSITIONS TO ADD TO CELLS TO AVOID
-      if (this.updateSettingsFormAiDataData.count) {
-        if (parseInt(this.updateSettingsFormAiDataData.count.count) > 0) {
-          for (const plyr2 of this.settingsFormAiStartPosList) {
-            for (const selected of plyr2.selected) {
-              avoidCells.push(selected.cell);
-            }
-          }
-        }
-      }
-
-      // BUILD AVALIBLE POSITION ARRAY EXCLUDING CELLS TO AVOID
-
-      for (const elem of this.settingsFormPlyrGridInfo) {
-        if (
-          this.plyrStartPosCheckCell({ x: elem.number.x, y: elem.number.y }) === true &&
-          !avoidCells.find(
-            (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y,
-          )
-        ) {
-          array1.push({ x: elem.number.x, y: elem.number.y });
-        }
-      }
-
-      // NO POSITION SELECTED, GAME STARTING. MARK PLAYR POSITION SELECTED
-      if (!plyr.selected) {
-        let playerStartPos = this.players[plyr.plyrNo - 1].startPosition.cell.number;
-
-        plyr.selected = { x: playerStartPos.x, y: playerStartPos.y };
-      }
-
-      // PUSH TO SETTINGS PLAYER POSITION DATA
-      this.settingsFormPlyrStartPosList.push({
-        plyrNo: plyr.plyrNo,
-        posArray: array1,
-        selected: plyr.selected,
-      });
-
-      // FORCE STATE UPDATE FOR SETTINGS COMPONENT
-      this.setState({
-        stateUpdater: "..",
-      });
-    }
-    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
-
-    // ADD 'RANDOM' CHOICE TO NEW POSITION AVAILIBLE ARRAY
-    let lastAvailiblePosArray =
-      this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1]
-        .posArray;
-    let hasRandomCell = lastAvailiblePosArray.find((x) => x === "random");
-    if (!hasRandomCell) {
-      lastAvailiblePosArray.push("random");
-    }
-    // console.log('lastAvailiblePosArray',lastAvailiblePosArray);
-    for (const elem of this.settingsFormPlyrStartPosList) {
-      // console.log('elem',elem);
-      elem.posArray = lastAvailiblePosArray;
-    }
-
-    this.setState({
-      stateUpdater: "..",
-    });
-
-    this.settingsFormGridWidthUpdate(this.settingsGridWidth);
-
-    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
-  };
-  plyrStartPosCheckCell = (cell) => {
-    let cellFree = true;
-    let cell2 = this.gridInfo.find(
-      (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
-    );
-    // if (
-    //   cell2.levelData.charAt(0) ===  'z' ||
-    //   cell2.levelData.charAt(0) ===  'y'
-    // ) {
-    //   cellFree = false;
-    // }
-    // if (cell2.item.name !== '') {
-    //   cellFree = false;
-    // }
-    // if (
-    //   cell2.terrain.type === 'deep' ||
-    //   cell2.terrain.type === 'hazard'
-    // ) {
-    //   cellFree = false;
-    // }
-
-    if (
-      cell2.obstacle.state === true ||
-      // cell2.barrier.state === true ||
-      cell2.item.name !== "" ||
-      cell2.terrain.type === "deep" ||
-      cell2.terrain.type === "hazard"
-    ) {
-      cellFree = false;
-    }
-
-    // PLAYERS 1&2 ALT RESPAWN POINTS!
-    if (cell.x === this.gridWidth && cell.y === this.gridWidth) {
-      cellFree = false;
-    }
-    if (cell.x === this.gridWidth && cell.y === 0) {
-      cellFree = false;
-    }
-
-    return cellFree;
-  };
-  getCustomAiStartPosList = (args) => {
-    // console.log('getCustomAiStartPosList',args);
-
-    let avoidCells = [];
-
-    if (args.length === 0) {
-      this.settingsFormAiStartPosList = [];
-
-      this.setState({
-        stateUpdater: "..",
-      });
-    } else {
-      avoidCells = [];
-      this.settingsFormAiStartPosList = [];
-      for (const plyr of args) {
-        // switch(plyr.mission) {
-        //   case 'pursue':
-        //
-        //   break;
-        //   case 'patrol':
-        //   break;
-        //   case 'defend':
-        //   break;
-        // }
-
-        let array1 = [];
-        if (plyr.selected.length > 0) {
-          for (const selected of plyr.selected) {
-            avoidCells.push(selected.cell);
-          }
-        }
-
-        if (this.settingsFormPlyrStartPosList[0]) {
-          for (const plyr2 of this.settingsFormPlyrStartPosList) {
-            avoidCells.push(plyr2.selected);
-          }
-        }
-
-        for (const elem of this.settingsFormAiGridInfo) {
-          if (
-            this.checkCell({ x: elem.number.x, y: elem.number.y }, ["all"]) === true &&
-            !avoidCells.find(
-              (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y,
-            )
-          ) {
-            array1.push({ x: elem.number.x, y: elem.number.y });
-          }
-        }
-        // console.log('this.settingsFormAiGridInfo',this.settingsFormAiGridInfo);
-        // console.log('array1',array1);
-
-        if (plyr.selected.length === 0) {
-          let doubleCheckArray = array1;
-
-          if (plyr.mission === "patrol") {
-            avoidCells.push({ x: array1[0].x, y: array1[0].y });
-            avoidCells.push({ x: array1[1].x, y: array1[1].y });
-            avoidCells.push({ x: array1[2].x, y: array1[2].y });
-
-            plyr.selected.push({
-              type: "start",
-              cell: { x: array1[0].x, y: array1[0].y },
-            });
-            plyr.selected.push({
-              type: "patrol1",
-              cell: { x: array1[1].x, y: array1[1].y },
-            });
-            plyr.selected.push({
-              type: "patrol2",
-              cell: { x: array1[2].x, y: array1[2].y },
-            });
-
-            doubleCheckArray = array1.filter((i) => i !== array1[0]);
-            doubleCheckArray = doubleCheckArray.filter((i) => i !== array1[1]);
-            doubleCheckArray = doubleCheckArray.filter((i) => i !== array1[2]);
-          }
-          if (plyr.mission === "defend") {
-            avoidCells.push({ x: array1[0].x, y: array1[0].y });
-            avoidCells.push({ x: array1[1].x, y: array1[1].y });
-
-            plyr.selected.push({
-              type: "start",
-              cell: { x: array1[0].x, y: array1[0].y },
-            });
-            plyr.selected.push({
-              type: "defend",
-              cell: { x: array1[1].x, y: array1[1].y },
-            });
-
-            doubleCheckArray = array1.filter((i) => i !== array1[0]);
-            doubleCheckArray = doubleCheckArray.filter((i) => i !== array1[1]);
-          }
-          if (plyr.mission === "pursue") {
-            avoidCells.push({ x: array1[0].x, y: array1[0].y });
-
-            plyr.selected.push({
-              type: "start",
-              cell: { x: array1[0].x, y: array1[0].y },
-            });
-
-            doubleCheckArray = array1.filter((i) => i !== array1[0]);
-          }
-
-          array1 = doubleCheckArray;
-        }
-
-        this.settingsFormAiStartPosList.push({
-          plyrNo: plyr.plyrNo,
-          mission: plyr.mission,
-          posArray: array1,
-          selected: plyr.selected,
-        });
-
-        this.setState({
-          stateUpdater: "..",
-        });
-      }
-
-      let lastAvailiblePosArray =
-        this.settingsFormAiStartPosList[this.settingsFormAiStartPosList.length - 1]
-          .posArray;
-      let hasRandomCell = lastAvailiblePosArray.find((x) => x === "random");
-      if (!hasRandomCell) {
-        lastAvailiblePosArray.push("random");
-      }
-
-      for (const elem of this.settingsFormAiStartPosList) {
-        // console.log('elem',elem);
-        elem.posArray = lastAvailiblePosArray;
-      }
-
-      this.setState({
-        stateUpdater: "..",
-      });
-    }
-    // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
-    this.settingsFormGridWidthUpdate(this.settingsGridWidth);
-  };
-  settingsFormGridWidthUpdate = (args) => {
-    // console.log('settingsFormGridWidthUpdate args',args);
-
-    // this.showSettingsCanvasData = {
-    //   state: true,
-    //   field: 'human_start',
-    //   plyrNo: 1,
-    //   type: 'start',
-    // }
-
-    if (this.gridWidth <= 9) {
-      this.camera.zoom.x = 1;
-      this.camera.zoom.y = 1;
-    }
-
-    let prevGridWidth = this.gridWidth;
-    let canvas = this.state.canvas;
-
-    this.gridWidth = args;
-
-    let gridInfo;
-
-    // ----------------
-    this.startProcessLevelData(this.state.canvas);
-    gridInfo = this.gridInfo;
-    this.processLevelData(gridInfo);
-    // ----------------
-
-    // this.settingsFormAiGridInfo = this.gridInfo;
-    this.settingsFormAiGridInfo = this.settingsGridInfo;
-
-    // console.log('post process barrier check settings',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
-
-    this.settingsGridWidth = args;
-
-    if (this.settingsGridWidth === 12) {
-      this.settingsCanvasWidth = 700;
-      this.settingsCanvasHeight = 400;
-      this.settingsSceneX = 350;
-      this.settingsSceneY = 50;
-    }
-    if (this.settingsGridWidth === 9) {
-      this.settingsCanvasWidth = 500;
-      this.settingsCanvasHeight = 300;
-      this.settingsSceneX = 250;
-      this.settingsSceneY = 40;
-    }
-    if (this.settingsGridWidth === 6) {
-      this.settingsCanvasWidth = 400;
-      this.settingsCanvasHeight = 250;
-      this.settingsSceneX = 200;
-      this.settingsSceneY = 50;
-    }
-    if (this.settingsGridWidth === 3) {
-      this.settingsCanvasWidth = 300;
-      this.settingsCanvasHeight = 150;
-      this.settingsSceneX = 150;
-      this.settingsSceneY = 40;
-    }
-
-    if (this.state.showSettings === true && this.showSettingsCanvasData.state === true) {
-      let canvas3 = this.canvasRef3.current;
-      let context3 = canvas3.getContext("2d");
-
-      canvas3.addEventListener("click", (e) => {
-        this.getSettingsCanvasClick(canvas3, e);
-      });
-
-      let canvas4;
-      let context4;
-
-      if (this.showSettingsCanvasData.field.split("_")[0] === "ai") {
-        canvas4 = this.canvasRef4.current;
-        context4 = canvas4.getContext("2d");
-        canvas4.addEventListener("click", (e) => {
-          this.getSettingsCanvasClick(canvas4, e);
-        });
-      }
-
-      setTimeout(() => {
-        this.redrawSettingsGrid(canvas3, context3, canvas4, context4);
-      }, 30);
-    }
-
-    // this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
-
-    // this.gridWidth = prevGridWidth;
-
-    // ----------------
-    // this.startProcessLevelData(this.state.canvas);
-    // gridInfo = this.gridInfo;
-    // this.processLevelData(gridInfo);
-    // ----------------
-
-    // this.setState({
-    //   stateUpdater: '..'
-    // })
-  };
-  updateSettingsFormAiData = (args) => {
-    this.updateSettingsFormAiDataData = {
-      startItems: args.startItems,
-      count: args.count,
-      random: args.random,
-      mode: args.mode,
-      weapon: args.weapon,
-      armor: args.armor,
-      team: args.team,
-      mission: args.mission,
-    };
-    this.setState({
-      stateUpdater: "..",
-    });
-    // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
-    this.settingsFormGridWidthUpdate(this.settingsGridWidth);
-  };
-  redrawSettingsGrid = (canvas3, context3, canvas4, context4) => {
-    // console.log('redrawSettingsGrid',this.settingsFormPlyrStartPosList);
-
-    let takenSpaces = [];
-    for (const elem of this.settingsFormPlyrStartPosList) {
-      takenSpaces.push({
-        plyrNo: elem.plyrNo,
-        type: "start",
-        pos: {
-          x: elem.selected.x,
-          y: elem.selected.y,
-        },
-      });
-    }
-    for (const elem2 of this.settingsFormAiStartPosList) {
-      let humanPlyrCount = this.settingsFormPlyrStartPosList.length;
-      let plyrNo = humanPlyrCount + elem2.plyrNo;
-
-      for (const elem3 of elem2.selected) {
-        takenSpaces.push({
-          plyrNo: plyrNo,
-          type: elem3.type,
-          pos: {
-            x: elem3.cell.x,
-            y: elem3.cell.y,
-          },
-        });
-      }
-    }
-
-    let floorImageWidth = this.floorImageWidth;
-    let floorImageHeight = this.floorImageHeight;
-    let wallImageWidth = this.wallImageWidth;
-    let wallImageHeight = this.wallImageHeight;
-    let sceneX = this.settingsSceneX;
-    let sceneY = this.settingsSceneY;
-    let tileWidth = this.tileWidth;
-
-    let wall = this.wallRef.current;
-    let wall2 = this.wall2Ref.current;
-    let wall3 = this.wall3Ref.current;
-
-    let floorImgs = this.floorImgs;
-    let obstacleImgs = this.obstacleImgs;
-    let barrierImgs = this.barrierImgs;
-
-    class Point {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-      }
-    }
-
-    for (var x = 0; x < this.settingsGridWidth + 1; x++) {
-      for (var y = 0; y < this.settingsGridWidth + 1; y++) {
-        let p2 = new Point();
-        p2.x = x * (tileWidth / 2);
-        p2.y = y * (tileWidth / 2);
-
-        let iso2 = this.cartesianToIsometric(p2);
-        let offset2 = { x: floorImageWidth / 2 / 2, y: floorImageHeight / 2 };
-
-        // apply offset to center scene for a better view
-        iso2.x += sceneX;
-        iso2.y += sceneY;
-
-        let center2 = {
-          x: iso2.x - offset2.x / 2 + this.cellCenterOffsetX / 2,
-          y: iso2.y - offset2.y / 2 - this.cellCenterOffsetY / 2,
-        };
-
-        let cell = this.settingsGridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y,
-        );
-        let cellLevelData = this.settingsGridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y,
-        ).levelData;
-
-        let floor = floorImgs[cell.terrain.name];
-
-        if (cell.void.state === true) {
-          // drawFloor = false;
-          floor = floorImgs.void3;
-        }
-
-        if (x === this.gridWidth && y === this.gridWidth) {
-          floor = floorImgs.void2;
-        }
-        if (x === this.gridWidth && y === 0) {
-          floor = floorImgs.void2;
-        }
-
-        context3.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
-
-        context3.fillStyle = "black";
-        context3.fillText(
-          "" + x + "," + y + "",
-          iso2.x - offset2.x / 2 + 5,
-          iso2.y - offset2.y / 2 + 2,
-        );
-
-        // context3.fillStyle = "black";
-        // context3.fillRect(center2.x, center2.y,2.5,2.5);
-
-        if (context4) {
-          context4.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
-          context4.fillStyle = "black";
-          context4.fillText(
-            "" + x + "," + y + "",
-            iso2.x - offset2.x / 2 + 5,
-            iso2.y - offset2.y / 2 + 2,
-          );
-        }
-
-        let vertices = [
-          { x: center2.x, y: center2.y + this.tileWidth / 4 },
-          { x: center2.x + this.tileWidth / 2, y: center2.y },
-          { x: center2.x, y: center2.y - this.tileWidth / 4 },
-          { x: center2.x - this.tileWidth / 2, y: center2.y },
-        ];
-
-        for (const vertex of vertices) {
-          context3.fillStyle = "yellow";
-          context3.fillRect(vertex.x - 1.5, vertex.y - 1.5, 2.5, 2.5);
-          if (context4) {
-            context4.fillStyle = "yellow";
-            context4.fillRect(vertex.x - 1.5, vertex.y - 1.5, 2.5, 2.5);
-          }
-        }
-
-        // TAKEN POSITIONS HIGHLIGHT!!
-        let floorHighlight;
-        for (const space of takenSpaces) {
-          if (x === space.pos.x && y === space.pos.y) {
-            switch (space.plyrNo) {
-              case 1:
-                floorHighlight = "blue";
-                break;
-              case 2:
-                floorHighlight = "red";
-                break;
-              case 3:
-                floorHighlight = "green";
-                break;
-              case 4:
-                floorHighlight = "purple";
-                break;
-              case 5:
-                floorHighlight = "orange";
-                break;
-              case 6:
-                floorHighlight = "black";
-                break;
-            }
-            context3.lineWidth = 5;
-            context3.beginPath();
-            if (context4) {
-              context4.lineWidth = 5;
-              context4.beginPath();
-            }
-            for (const vertex of vertices) {
-              context3.strokeStyle = floorHighlight;
-              context3.lineTo(vertex.x, vertex.y);
-              if (context4) {
-                context4.strokeStyle = floorHighlight;
-                context4.lineTo(vertex.x, vertex.y);
-              }
-            }
-            context3.closePath();
-            context3.stroke();
-            if (context4) {
-              context4.closePath();
-              context4.stroke();
-            }
-          }
-        }
-
-        // BARRIERS & OBSTACLES
-
-        if (cell.obstacle.state === true && cell.void.state !== true) {
-          // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-          let obstacleImg = obstacleImgs[cell.obstacle.type];
-
-          context3.drawImage(
-            obstacleImg,
-            iso2.x - offset2.x,
-            iso2.y - obstacleImg.height / 2,
-            obstacleImg.width / 2,
-            obstacleImg.height / 2,
-          );
-          if (context4) {
-            context4.drawImage(
-              obstacleImg,
-              iso2.x - offset2.x,
-              iso2.y - obstacleImg.height / 2,
-              obstacleImg.width / 2,
-              obstacleImg.height / 2,
-            );
-          }
-        }
-
-        if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position];
-          context3.drawImage(
-            barrierImg,
-            iso2.x - offset2.x,
-            iso2.y - barrierImg.height / 2,
-            barrierImg.width / 2,
-            barrierImg.height / 2,
-          );
-          if (context4) {
-            context4.drawImage(
-              barrierImg,
-              iso2.x - offset2.x,
-              iso2.y - barrierImg.height / 2,
-              barrierImg.width / 2,
-              barrierImg.height / 2,
-            );
-          }
-        }
-      }
-    }
-
-    this.setState({
-      stateUpdater: "..",
-    });
-  };
-  updateSettingsCanvasData = (args) => {
-    // console.log('updateSettingsCanvasData',args);
-
-    let el = document.getElementsByClassName("settingsOverlay")[0];
-    let el2 = document.getElementsByClassName("settingsContainer")[0];
-    // console.log('xx',el.scrollLeft, el.scrollTop);
-    // console.log('xx',el2.scrollLeft, el2.scrollTop);
-
-    let humanPlyrCount = this.settingsFormPlyrStartPosList.length;
-    let plyrNo = args.plyrNo;
-    if (args.type.split("_")[0] === "ai") {
-      plyrNo = humanPlyrCount + args.plyrNo;
-    }
-
-    this.showSettingsCanvasData = {
-      state: true,
-      field: args.type,
-      plyrNo: plyrNo,
-      type: args.type.split("_")[1],
-    };
-
-    this.setState({
-      stateUpdater: "..",
-    });
-
-    setTimeout(() => {
-      // this.redrawSettingsGrid(canvas3,context3,canvas4,context4);
-      this.settingsFormGridWidthUpdate(this.settingsGridWidth);
-    }, 30);
-    // this.settingsFormGridWidthUpdate(this.settingsGridWidth)
-
-    // this.setState({
-    //   stateUpdater: '..'
-    // })
-  };
-  updateSettingsFormPlayerData = (args) => {
-    this.settingsFormPlayerData = args;
-
-    this.setState({
-      stateUpdater: "..",
-    });
-  };
+  // getCustomPlyrStartPosList = (args) => {
+  //   // console.log('getCustomPlyrStartPosList',this.gridInfo.length,args);
+  //   this.settingsFormPlyrGridInfo = this.gridInfo;
+
+  //   this.playerNumber = args.length;
+
+  //   let avoidCells = [];
+
+  //   this.settingsFormPlyrStartPosList = [];
+
+  //   for (const plyr of args) {
+  //     let array1 = [];
+
+  //     // AVOID ALREADY SELECTRED POSITIONS
+  //     if (plyr.selected) {
+  //       avoidCells.push(plyr.selected);
+  //     }
+
+  //     // NO POSITION SELECTED, GAME STARTING. USE DEFAULT START POSITIONS
+  //     if (!plyr.selected) {
+  //       if (
+  //         !this.gridInfo.find(
+  //           (x) =>
+  //             x.number.x === this.players[plyr.plyrNo - 1].startPosition.cell.number.x &&
+  //             x.number.y === this.players[plyr.plyrNo - 1].startPosition.cell.number.y,
+  //         )
+  //       ) {
+  //         let cll = { x: undefined, y: undefined };
+  //         let randomFreeCellChosen = false;
+
+  //         while (randomFreeCellChosen !== true) {
+  //           cll.x = this.rnJesus(0, this.gridWidth);
+  //           cll.y = this.rnJesus(0, this.gridWidth);
+  //           randomFreeCellChosen = this.checkCell(cll, ["all"]);
+  //         }
+
+  //         if (randomFreeCellChosen === true) {
+  //           this.players[plyr.plyrNo - 1].startPosition.cell.number = cll;
+  //         }
+  //       }
+
+  //       let playerStartPos = this.players[plyr.plyrNo - 1].startPosition.cell.number;
+
+  //       avoidCells.push({ x: playerStartPos.x, y: playerStartPos.y });
+  //     }
+
+  //     // CHECK FOR AI POSITIONS TO ADD TO CELLS TO AVOID
+  //     if (this.updateSettingsFormAiDataData.count) {
+  //       if (parseInt(this.updateSettingsFormAiDataData.count.count) > 0) {
+  //         for (const plyr2 of this.settingsFormAiStartPosList) {
+  //           for (const selected of plyr2.selected) {
+  //             avoidCells.push(selected.cell);
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     // BUILD AVALIBLE POSITION ARRAY EXCLUDING CELLS TO AVOID
+
+  //     for (const elem of this.settingsFormPlyrGridInfo) {
+  //       if (
+  //         this.plyrStartPosCheckCell({ x: elem.number.x, y: elem.number.y }) === true &&
+  //         !avoidCells.find(
+  //           (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y,
+  //         )
+  //       ) {
+  //         array1.push({ x: elem.number.x, y: elem.number.y });
+  //       }
+  //     }
+
+  //     // NO POSITION SELECTED, GAME STARTING. MARK PLAYR POSITION SELECTED
+  //     if (!plyr.selected) {
+  //       let playerStartPos = this.players[plyr.plyrNo - 1].startPosition.cell.number;
+
+  //       plyr.selected = { x: playerStartPos.x, y: playerStartPos.y };
+  //     }
+
+  //     // PUSH TO SETTINGS PLAYER POSITION DATA
+  //     this.settingsFormPlyrStartPosList.push({
+  //       plyrNo: plyr.plyrNo,
+  //       posArray: array1,
+  //       selected: plyr.selected,
+  //     });
+
+  //     // FORCE STATE UPDATE FOR SETTINGS COMPONENT
+  //     this.setState({
+  //       stateUpdater: "..",
+  //     });
+  //   }
+  //   // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
+
+  //   // ADD 'RANDOM' CHOICE TO NEW POSITION AVAILIBLE ARRAY
+  //   let lastAvailiblePosArray =
+  //     this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1]
+  //       .posArray;
+  //   let hasRandomCell = lastAvailiblePosArray.find((x) => x === "random");
+  //   if (!hasRandomCell) {
+  //     lastAvailiblePosArray.push("random");
+  //   }
+  //   // console.log('lastAvailiblePosArray',lastAvailiblePosArray);
+  //   for (const elem of this.settingsFormPlyrStartPosList) {
+  //     // console.log('elem',elem);
+  //     elem.posArray = lastAvailiblePosArray;
+  //   }
+
+  //   this.setState({
+  //     stateUpdater: "..",
+  //   });
+
+  //   this.settingsFormGridWidthUpdate(this.settingsGridWidth);
+
+  //   // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
+  // };
+  // plyrStartPosCheckCell = (cell) => {
+  //   let cellFree = true;
+  //   let cell2 = this.gridInfo.find(
+  //     (elem) => elem.number.x === cell.x && elem.number.y === cell.y,
+  //   );
+  //   // if (
+  //   //   cell2.levelData.charAt(0) ===  'z' ||
+  //   //   cell2.levelData.charAt(0) ===  'y'
+  //   // ) {
+  //   //   cellFree = false;
+  //   // }
+  //   // if (cell2.item.name !== '') {
+  //   //   cellFree = false;
+  //   // }
+  //   // if (
+  //   //   cell2.terrain.type === 'deep' ||
+  //   //   cell2.terrain.type === 'hazard'
+  //   // ) {
+  //   //   cellFree = false;
+  //   // }
+
+  //   if (
+  //     cell2.obstacle.state === true ||
+  //     // cell2.barrier.state === true ||
+  //     cell2.item.name !== "" ||
+  //     cell2.terrain.type === "deep" ||
+  //     cell2.terrain.type === "hazard"
+  //   ) {
+  //     cellFree = false;
+  //   }
+
+  //   // PLAYERS 1&2 ALT RESPAWN POINTS!
+  //   if (cell.x === this.gridWidth && cell.y === this.gridWidth) {
+  //     cellFree = false;
+  //   }
+  //   if (cell.x === this.gridWidth && cell.y === 0) {
+  //     cellFree = false;
+  //   }
+
+  //   return cellFree;
+  // };
+  // getCustomAiStartPosList = (args) => {
+  //   // console.log('getCustomAiStartPosList',args);
+
+  //   let avoidCells = [];
+
+  //   if (args.length === 0) {
+  //     this.settingsFormAiStartPosList = [];
+
+  //     this.setState({
+  //       stateUpdater: "..",
+  //     });
+  //   } else {
+  //     avoidCells = [];
+  //     this.settingsFormAiStartPosList = [];
+  //     for (const plyr of args) {
+  //       // switch(plyr.mission) {
+  //       //   case 'pursue':
+  //       //
+  //       //   break;
+  //       //   case 'patrol':
+  //       //   break;
+  //       //   case 'defend':
+  //       //   break;
+  //       // }
+
+  //       let array1 = [];
+  //       if (plyr.selected.length > 0) {
+  //         for (const selected of plyr.selected) {
+  //           avoidCells.push(selected.cell);
+  //         }
+  //       }
+
+  //       if (this.settingsFormPlyrStartPosList[0]) {
+  //         for (const plyr2 of this.settingsFormPlyrStartPosList) {
+  //           avoidCells.push(plyr2.selected);
+  //         }
+  //       }
+
+  //       for (const elem of this.settingsFormAiGridInfo) {
+  //         if (
+  //           this.checkCell({ x: elem.number.x, y: elem.number.y }, ["all"]) === true &&
+  //           !avoidCells.find(
+  //             (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y,
+  //           )
+  //         ) {
+  //           array1.push({ x: elem.number.x, y: elem.number.y });
+  //         }
+  //       }
+  //       // console.log('this.settingsFormAiGridInfo',this.settingsFormAiGridInfo);
+  //       // console.log('array1',array1);
+
+  //       if (plyr.selected.length === 0) {
+  //         let doubleCheckArray = array1;
+
+  //         if (plyr.mission === "patrol") {
+  //           avoidCells.push({ x: array1[0].x, y: array1[0].y });
+  //           avoidCells.push({ x: array1[1].x, y: array1[1].y });
+  //           avoidCells.push({ x: array1[2].x, y: array1[2].y });
+
+  //           plyr.selected.push({
+  //             type: "start",
+  //             cell: { x: array1[0].x, y: array1[0].y },
+  //           });
+  //           plyr.selected.push({
+  //             type: "patrol1",
+  //             cell: { x: array1[1].x, y: array1[1].y },
+  //           });
+  //           plyr.selected.push({
+  //             type: "patrol2",
+  //             cell: { x: array1[2].x, y: array1[2].y },
+  //           });
+
+  //           doubleCheckArray = array1.filter((i) => i !== array1[0]);
+  //           doubleCheckArray = doubleCheckArray.filter((i) => i !== array1[1]);
+  //           doubleCheckArray = doubleCheckArray.filter((i) => i !== array1[2]);
+  //         }
+  //         if (plyr.mission === "defend") {
+  //           avoidCells.push({ x: array1[0].x, y: array1[0].y });
+  //           avoidCells.push({ x: array1[1].x, y: array1[1].y });
+
+  //           plyr.selected.push({
+  //             type: "start",
+  //             cell: { x: array1[0].x, y: array1[0].y },
+  //           });
+  //           plyr.selected.push({
+  //             type: "defend",
+  //             cell: { x: array1[1].x, y: array1[1].y },
+  //           });
+
+  //           doubleCheckArray = array1.filter((i) => i !== array1[0]);
+  //           doubleCheckArray = doubleCheckArray.filter((i) => i !== array1[1]);
+  //         }
+  //         if (plyr.mission === "pursue") {
+  //           avoidCells.push({ x: array1[0].x, y: array1[0].y });
+
+  //           plyr.selected.push({
+  //             type: "start",
+  //             cell: { x: array1[0].x, y: array1[0].y },
+  //           });
+
+  //           doubleCheckArray = array1.filter((i) => i !== array1[0]);
+  //         }
+
+  //         array1 = doubleCheckArray;
+  //       }
+
+  //       this.settingsFormAiStartPosList.push({
+  //         plyrNo: plyr.plyrNo,
+  //         mission: plyr.mission,
+  //         posArray: array1,
+  //         selected: plyr.selected,
+  //       });
+
+  //       this.setState({
+  //         stateUpdater: "..",
+  //       });
+  //     }
+
+  //     let lastAvailiblePosArray =
+  //       this.settingsFormAiStartPosList[this.settingsFormAiStartPosList.length - 1]
+  //         .posArray;
+  //     let hasRandomCell = lastAvailiblePosArray.find((x) => x === "random");
+  //     if (!hasRandomCell) {
+  //       lastAvailiblePosArray.push("random");
+  //     }
+
+  //     for (const elem of this.settingsFormAiStartPosList) {
+  //       // console.log('elem',elem);
+  //       elem.posArray = lastAvailiblePosArray;
+  //     }
+
+  //     this.setState({
+  //       stateUpdater: "..",
+  //     });
+  //   }
+  //   // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
+  //   this.settingsFormGridWidthUpdate(this.settingsGridWidth);
+  // };
+  // settingsFormGridWidthUpdate = (args) => {
+  //   // console.log('settingsFormGridWidthUpdate args',args);
+
+  //   // this.showSettingsCanvasData = {
+  //   //   state: true,
+  //   //   field: 'human_start',
+  //   //   plyrNo: 1,
+  //   //   type: 'start',
+  //   // }
+
+  //   if (this.gridWidth <= 9) {
+  //     this.camera.zoom.x = 1;
+  //     this.camera.zoom.y = 1;
+  //   }
+
+  //   let prevGridWidth = this.gridWidth;
+  //   let canvas = this.state.canvas;
+
+  //   this.gridWidth = args;
+
+  //   let gridInfo;
+
+  //   // ----------------
+  //   this.startProcessLevelData(this.state.canvas);
+  //   gridInfo = this.gridInfo;
+  //   this.processLevelData(gridInfo);
+  //   // ----------------
+
+  //   // this.settingsFormAiGridInfo = this.gridInfo;
+  //   this.settingsFormAiGridInfo = this.settingsGridInfo;
+
+  //   // console.log('post process barrier check settings',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+
+  //   this.settingsGridWidth = args;
+
+  //   if (this.settingsGridWidth === 12) {
+  //     this.settingsCanvasWidth = 700;
+  //     this.settingsCanvasHeight = 400;
+  //     this.settingsSceneX = 350;
+  //     this.settingsSceneY = 50;
+  //   }
+  //   if (this.settingsGridWidth === 9) {
+  //     this.settingsCanvasWidth = 500;
+  //     this.settingsCanvasHeight = 300;
+  //     this.settingsSceneX = 250;
+  //     this.settingsSceneY = 40;
+  //   }
+  //   if (this.settingsGridWidth === 6) {
+  //     this.settingsCanvasWidth = 400;
+  //     this.settingsCanvasHeight = 250;
+  //     this.settingsSceneX = 200;
+  //     this.settingsSceneY = 50;
+  //   }
+  //   if (this.settingsGridWidth === 3) {
+  //     this.settingsCanvasWidth = 300;
+  //     this.settingsCanvasHeight = 150;
+  //     this.settingsSceneX = 150;
+  //     this.settingsSceneY = 40;
+  //   }
+
+  //   if (this.state.showSettings === true && this.showSettingsCanvasData.state === true) {
+  //     let canvas3 = this.canvasRef3.current;
+  //     let context3 = canvas3.getContext("2d");
+
+  //     canvas3.addEventListener("click", (e) => {
+  //       this.getSettingsCanvasClick(canvas3, e);
+  //     });
+
+  //     let canvas4;
+  //     let context4;
+
+  //     if (this.showSettingsCanvasData.field.split("_")[0] === "ai") {
+  //       canvas4 = this.canvasRef4.current;
+  //       context4 = canvas4.getContext("2d");
+  //       canvas4.addEventListener("click", (e) => {
+  //         this.getSettingsCanvasClick(canvas4, e);
+  //       });
+  //     }
+
+  //     setTimeout(() => {
+  //       this.redrawSettingsGrid(canvas3, context3, canvas4, context4);
+  //     }, 30);
+  //   }
+
+  //   // this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
+
+  //   // this.gridWidth = prevGridWidth;
+
+  //   // ----------------
+  //   // this.startProcessLevelData(this.state.canvas);
+  //   // gridInfo = this.gridInfo;
+  //   // this.processLevelData(gridInfo);
+  //   // ----------------
+
+  //   // this.setState({
+  //   //   stateUpdater: '..'
+  //   // })
+  // };
+  // updateSettingsFormAiData = (args) => {
+  //   this.updateSettingsFormAiDataData = {
+  //     startItems: args.startItems,
+  //     count: args.count,
+  //     random: args.random,
+  //     mode: args.mode,
+  //     weapon: args.weapon,
+  //     armor: args.armor,
+  //     team: args.team,
+  //     mission: args.mission,
+  //   };
+  //   this.setState({
+  //     stateUpdater: "..",
+  //   });
+  //   // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
+  //   this.settingsFormGridWidthUpdate(this.settingsGridWidth);
+  // };
+  // redrawSettingsGrid = (canvas3, context3, canvas4, context4) => {
+  //   // console.log('redrawSettingsGrid',this.settingsFormPlyrStartPosList);
+
+  //   let takenSpaces = [];
+  //   for (const elem of this.settingsFormPlyrStartPosList) {
+  //     takenSpaces.push({
+  //       plyrNo: elem.plyrNo,
+  //       type: "start",
+  //       pos: {
+  //         x: elem.selected.x,
+  //         y: elem.selected.y,
+  //       },
+  //     });
+  //   }
+  //   for (const elem2 of this.settingsFormAiStartPosList) {
+  //     let humanPlyrCount = this.settingsFormPlyrStartPosList.length;
+  //     let plyrNo = humanPlyrCount + elem2.plyrNo;
+
+  //     for (const elem3 of elem2.selected) {
+  //       takenSpaces.push({
+  //         plyrNo: plyrNo,
+  //         type: elem3.type,
+  //         pos: {
+  //           x: elem3.cell.x,
+  //           y: elem3.cell.y,
+  //         },
+  //       });
+  //     }
+  //   }
+
+  //   let floorImageWidth = this.floorImageWidth;
+  //   let floorImageHeight = this.floorImageHeight;
+  //   let wallImageWidth = this.wallImageWidth;
+  //   let wallImageHeight = this.wallImageHeight;
+  //   let sceneX = this.settingsSceneX;
+  //   let sceneY = this.settingsSceneY;
+  //   let tileWidth = this.tileWidth;
+
+  //   let wall = this.wallRef.current;
+  //   let wall2 = this.wall2Ref.current;
+  //   let wall3 = this.wall3Ref.current;
+
+  //   let floorImgs = this.floorImgs;
+  //   let obstacleImgs = this.obstacleImgs;
+  //   let barrierImgs = this.barrierImgs;
+
+  //   class Point {
+  //     constructor(x, y) {
+  //       this.x = x;
+  //       this.y = y;
+  //     }
+  //   }
+
+  //   for (var x = 0; x < this.settingsGridWidth + 1; x++) {
+  //     for (var y = 0; y < this.settingsGridWidth + 1; y++) {
+  //       let p2 = new Point();
+  //       p2.x = x * (tileWidth / 2);
+  //       p2.y = y * (tileWidth / 2);
+
+  //       let iso2 = this.cartesianToIsometric(p2);
+  //       let offset2 = { x: floorImageWidth / 2 / 2, y: floorImageHeight / 2 };
+
+  //       // apply offset to center scene for a better view
+  //       iso2.x += sceneX;
+  //       iso2.y += sceneY;
+
+  //       let center2 = {
+  //         x: iso2.x - offset2.x / 2 + this.cellCenterOffsetX / 2,
+  //         y: iso2.y - offset2.y / 2 - this.cellCenterOffsetY / 2,
+  //       };
+
+  //       let cell = this.settingsGridInfo.find(
+  //         (elem) => elem.number.x === x && elem.number.y === y,
+  //       );
+  //       let cellLevelData = this.settingsGridInfo.find(
+  //         (elem) => elem.number.x === x && elem.number.y === y,
+  //       ).levelData;
+
+  //       let floor = floorImgs[cell.terrain.name];
+
+  //       if (cell.void.state === true) {
+  //         // drawFloor = false;
+  //         floor = floorImgs.void3;
+  //       }
+
+  //       if (x === this.gridWidth && y === this.gridWidth) {
+  //         floor = floorImgs.void2;
+  //       }
+  //       if (x === this.gridWidth && y === 0) {
+  //         floor = floorImgs.void2;
+  //       }
+
+  //       context3.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+
+  //       context3.fillStyle = "black";
+  //       context3.fillText(
+  //         "" + x + "," + y + "",
+  //         iso2.x - offset2.x / 2 + 5,
+  //         iso2.y - offset2.y / 2 + 2,
+  //       );
+
+  //       // context3.fillStyle = "black";
+  //       // context3.fillRect(center2.x, center2.y,2.5,2.5);
+
+  //       if (context4) {
+  //         context4.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+  //         context4.fillStyle = "black";
+  //         context4.fillText(
+  //           "" + x + "," + y + "",
+  //           iso2.x - offset2.x / 2 + 5,
+  //           iso2.y - offset2.y / 2 + 2,
+  //         );
+  //       }
+
+  //       let vertices = [
+  //         { x: center2.x, y: center2.y + this.tileWidth / 4 },
+  //         { x: center2.x + this.tileWidth / 2, y: center2.y },
+  //         { x: center2.x, y: center2.y - this.tileWidth / 4 },
+  //         { x: center2.x - this.tileWidth / 2, y: center2.y },
+  //       ];
+
+  //       for (const vertex of vertices) {
+  //         context3.fillStyle = "yellow";
+  //         context3.fillRect(vertex.x - 1.5, vertex.y - 1.5, 2.5, 2.5);
+  //         if (context4) {
+  //           context4.fillStyle = "yellow";
+  //           context4.fillRect(vertex.x - 1.5, vertex.y - 1.5, 2.5, 2.5);
+  //         }
+  //       }
+
+  //       // TAKEN POSITIONS HIGHLIGHT!!
+  //       let floorHighlight;
+  //       for (const space of takenSpaces) {
+  //         if (x === space.pos.x && y === space.pos.y) {
+  //           switch (space.plyrNo) {
+  //             case 1:
+  //               floorHighlight = "blue";
+  //               break;
+  //             case 2:
+  //               floorHighlight = "red";
+  //               break;
+  //             case 3:
+  //               floorHighlight = "green";
+  //               break;
+  //             case 4:
+  //               floorHighlight = "purple";
+  //               break;
+  //             case 5:
+  //               floorHighlight = "orange";
+  //               break;
+  //             case 6:
+  //               floorHighlight = "black";
+  //               break;
+  //           }
+  //           context3.lineWidth = 5;
+  //           context3.beginPath();
+  //           if (context4) {
+  //             context4.lineWidth = 5;
+  //             context4.beginPath();
+  //           }
+  //           for (const vertex of vertices) {
+  //             context3.strokeStyle = floorHighlight;
+  //             context3.lineTo(vertex.x, vertex.y);
+  //             if (context4) {
+  //               context4.strokeStyle = floorHighlight;
+  //               context4.lineTo(vertex.x, vertex.y);
+  //             }
+  //           }
+  //           context3.closePath();
+  //           context3.stroke();
+  //           if (context4) {
+  //             context4.closePath();
+  //             context4.stroke();
+  //           }
+  //         }
+  //       }
+
+  //       // BARRIERS & OBSTACLES
+
+  //       if (cell.obstacle.state === true && cell.void.state !== true) {
+  //         // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+  //         let obstacleImg = obstacleImgs[cell.obstacle.type];
+
+  //         context3.drawImage(
+  //           obstacleImg,
+  //           iso2.x - offset2.x,
+  //           iso2.y - obstacleImg.height / 2,
+  //           obstacleImg.width / 2,
+  //           obstacleImg.height / 2,
+  //         );
+  //         if (context4) {
+  //           context4.drawImage(
+  //             obstacleImg,
+  //             iso2.x - offset2.x,
+  //             iso2.y - obstacleImg.height / 2,
+  //             obstacleImg.width / 2,
+  //             obstacleImg.height / 2,
+  //           );
+  //         }
+  //       }
+
+  //       if (cell.barrier.state === true && cell.void.state !== true) {
+  //         let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position];
+  //         context3.drawImage(
+  //           barrierImg,
+  //           iso2.x - offset2.x,
+  //           iso2.y - barrierImg.height / 2,
+  //           barrierImg.width / 2,
+  //           barrierImg.height / 2,
+  //         );
+  //         if (context4) {
+  //           context4.drawImage(
+  //             barrierImg,
+  //             iso2.x - offset2.x,
+  //             iso2.y - barrierImg.height / 2,
+  //             barrierImg.width / 2,
+  //             barrierImg.height / 2,
+  //           );
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   this.setState({
+  //     stateUpdater: "..",
+  //   });
+  // };
+  // updateSettingsCanvasData = (args) => {
+  //   // console.log('updateSettingsCanvasData',args);
+
+  //   let el = document.getElementsByClassName("settingsOverlay")[0];
+  //   let el2 = document.getElementsByClassName("settingsContainer")[0];
+  //   // console.log('xx',el.scrollLeft, el.scrollTop);
+  //   // console.log('xx',el2.scrollLeft, el2.scrollTop);
+
+  //   let humanPlyrCount = this.settingsFormPlyrStartPosList.length;
+  //   let plyrNo = args.plyrNo;
+  //   if (args.type.split("_")[0] === "ai") {
+  //     plyrNo = humanPlyrCount + args.plyrNo;
+  //   }
+
+  //   this.showSettingsCanvasData = {
+  //     state: true,
+  //     field: args.type,
+  //     plyrNo: plyrNo,
+  //     type: args.type.split("_")[1],
+  //   };
+
+  //   this.setState({
+  //     stateUpdater: "..",
+  //   });
+
+  //   setTimeout(() => {
+  //     // this.redrawSettingsGrid(canvas3,context3,canvas4,context4);
+  //     this.settingsFormGridWidthUpdate(this.settingsGridWidth);
+  //   }, 30);
+  //   // this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+
+  //   // this.setState({
+  //   //   stateUpdater: '..'
+  //   // })
+  // };
+  // updateSettingsFormPlayerData = (args) => {
+  //   this.settingsFormPlayerData = args;
+
+  //   this.setState({
+  //     stateUpdater: "..",
+  //   });
+  // };
 
   findFocusCell = (inputType, inputSubType, focus, canvas, context, speed) => {
     let cell = {
