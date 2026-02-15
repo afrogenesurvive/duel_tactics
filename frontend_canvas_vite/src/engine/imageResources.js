@@ -179,8 +179,14 @@ import boltSouth from "../assets/items/boltSouth.png";
 import boltEast from "../assets/items/boltEast.png";
 import boltWest from "../assets/items/boltWest.png";
 import spear from "../assets/items/spear.png";
+import spear1 from "../assets/items/spear.png";
+import spear2 from "../assets/items/spear.png";
 import sword from "../assets/items/sword.png";
+import sword1 from "../assets/items/sword.png";
+import sword2 from "../assets/items/sword.png";
 import crossbow from "../assets/items/crossbow.png";
+import crossbow1 from "../assets/items/crossbow.png";
+import crossbow2 from "../assets/items/crossbow.png";
 
 import playerImgIdleSheet from "../assets/player/sheet1.png";
 import player2ImgIdleSheet from "../assets/player/sheet2.png";
@@ -383,8 +389,14 @@ const refKeys = [
   "boltEast",
   "boltWest",
   "spear",
+  "spear1",
+  "spear2",
   "sword",
+  "sword1",
+  "sword2",
   "crossbow",
+  "crossbow1",
+  "crossbow2",
 
   "playerImgIdleSheet",
   "player2ImgIdleSheet",
@@ -569,30 +581,36 @@ export const images = {
   eastDirectionIndicateRef: eastDirectionIndicate,
   westDirectionIndicateRef: westDirectionIndicate,
 
-  mail1Ref: mail1,
-  mail2Ref: mail2,
-  mail3Ref: mail3,
-  greaves1Ref: greaves1,
-  greaves2Ref: greaves2,
-  greaves3Ref: greaves3,
-  helmet1Ref: helmet1,
-  hpUpRef: hpUp,
-  hpDownRef: hpDown,
-  spdUpRef: spdUp,
-  spdDownRef: spdDown,
-  strUpRef: strUp,
-  strDownRef: strDown,
-  focusUpRef: focusUp,
-  focusDownRef: focusDown,
-  ammoRef: ammo,
-  bowRef: bow,
-  boltNorthRef: boltNorth,
-  boltSouthRef: boltSouth,
-  boltEastRef: boltEast,
-  boltWestRef: boltWest,
-  spearRef: spear,
-  swordRef: sword,
-  crossbowRef: crossbow,
+  itemMail1Ref: mail1,
+  itemMail2Ref: mail2,
+  itemMail3Ref: mail3,
+  itemGreaves1Ref: greaves1,
+  itemGreaves2Ref: greaves2,
+  itemGreaves3Ref: greaves3,
+  itemHelmet1Ref: helmet1,
+  itemHpUpRef: hpUp,
+  itemHpDownRef: hpDown,
+  itemSpdUpRef: spdUp,
+  itemSpdDownRef: spdDown,
+  itemStrUpRef: strUp,
+  itemStrDownRef: strDown,
+  itemFocusUpRef: focusUp,
+  itemFocusDownRef: focusDown,
+  itemAmmoRef: ammo,
+  itemBowRef: bow,
+  itemBoltNorthRef: boltNorth,
+  itemBoltSouthRef: boltSouth,
+  itemBoltEastRef: boltEast,
+  itemBoltWestRef: boltWest,
+  itemSpearRef: spear,
+  itemSpear1Ref: spear1,
+  itemSpear2Ref: spear2,
+  itemSwordRef: sword,
+  itemSword1Ref: sword1,
+  itemSword2Ref: sword2,
+  itemCrossbowRef: crossbow,
+  itemCrossbow1Ref: crossbow1,
+  itemCrossbow2Ref: crossbow2,
 
   playerImgIdleSheetRef: playerImgIdleSheet,
   player2ImgIdleSheetRef: player2ImgIdleSheet,

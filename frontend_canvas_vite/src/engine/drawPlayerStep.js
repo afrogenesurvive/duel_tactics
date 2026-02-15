@@ -80,9 +80,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
 
       let floor;
       let drawFloor = true;
-      let gridInfoCell = app.gridInfo.find(
-        (elem) => elem.number.x === x && elem.number.y === y,
-      );
+      let gridInfoCell = app.gridInfo.find((elem) => elem.number.x === x && elem.number.y === y);
       gridInfoCell.center = center;
       gridInfoCell.drawCenter = center;
       floor = app.floorImgs[gridInfoCell.terrain.name];
@@ -94,18 +92,11 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         floor = app.floorImgs.void3;
       }
       //BLINKER!!
-      if (
-        app.cellToVoid.state === true &&
-        app.cellToVoid.x === x &&
-        app.cellToVoid.y === y
-      ) {
+      if (app.cellToVoid.state === true && app.cellToVoid.x === x && app.cellToVoid.y === y) {
         if (app.cellToVoid.count === 1) {
           if (
             !app.cellPopups.find(
-              (x) =>
-                x.msg === "cellVoiding" &&
-                x.cell.number.x === gridInfoCell.number.x &&
-                x.cell.number.y === gridInfoCell.number.y,
+              (x) => x.msg === "cellVoiding" && x.cell.number.x === gridInfoCell.number.x && x.cell.number.y === gridInfoCell.number.y,
             )
           ) {
             app.cellPopups.push({
@@ -117,11 +108,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               msg: "cellVoiding",
               color: "",
               img: "",
-              cell: app.gridInfo.find(
-                (x) =>
-                  x.number.x === gridInfoCell.number.x &&
-                  x.number.y === gridInfoCell.number.y,
-              ),
+              cell: app.gridInfo.find((x) => x.number.x === gridInfoCell.number.x && x.number.y === gridInfoCell.number.y),
             });
           }
         }
@@ -137,10 +124,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
       // DROWNING
       for (const plyrb of app.players) {
         if (plyrb.drowning === true) {
-          if (
-            plyrb.currentPosition.cell.number.x === x &&
-            plyrb.currentPosition.cell.number.y === y
-          ) {
+          if (plyrb.currentPosition.cell.number.x === x && plyrb.currentPosition.cell.number.y === y) {
             // console.log('player',plyrb.number,'drowning count',plyrb.falling.count,'position',plyrb.nextPosition);
             if (plyrb.falling.count % 2 === 0) {
               // drawFloor = false;
@@ -154,11 +138,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
       }
 
       // FALLING OBSTACLE DEEP BLINKER
-      if (
-        gridInfoCell.obstacle.state === true &&
-        gridInfoCell.obstacle.moving.falling.state === true &&
-        gridInfoCell.terrain.type === "deep"
-      ) {
+      if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true && gridInfoCell.terrain.type === "deep") {
         if (gridInfoCell.obstacle.moving.falling.count % 3 === 0) {
           floor = app.floorImgs.void3;
         } else {
@@ -211,11 +191,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
       // CELL COORD LABEL
       context.font = "10px Arial";
       context.fillStyle = "black";
-      context.fillText(
-        "" + x + "," + y + "",
-        iso.x - offset.x / 2 + 18,
-        iso.y - offset.y / 2 + 12,
-      );
+      context.fillText("" + x + "," + y + "", iso.x - offset.x / 2 + 18, iso.y - offset.y / 2 + 12);
 
       context.fillStyle = "black";
       context.fillRect(center.x, center.y, 5, 5);
@@ -237,12 +213,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
       let floorHighlight;
       for (const plyr3 of app.players) {
         if (x === plyr3.target.cell1.number.x && y === plyr3.target.cell1.number.y) {
-          if (
-            plyr3.ai.state !== true &&
-            plyr3.dead.state !== true &&
-            plyr3.falling.state !== true &&
-            plyr3.drowning !== true
-          ) {
+          if (plyr3.ai.state !== true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
             switch (plyr3.number) {
               case 1:
                 floorHighlight = "purple";
@@ -252,12 +223,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                 break;
             }
           }
-          if (
-            plyr3.ai.state === true &&
-            plyr3.dead.state !== true &&
-            plyr3.falling.state !== true &&
-            plyr3.drowning !== true
-          ) {
+          if (plyr3.ai.state === true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
             floorHighlight = "brown";
           }
           if (plyr3.dead.state !== true) {
@@ -275,11 +241,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
       }
 
       // MOUSED OVER CELL
-      if (
-        app.mouseOverCell.state === true &&
-        x === app.mouseOverCell.cell.number.x &&
-        y === app.mouseOverCell.cell.number.y
-      ) {
+      if (app.mouseOverCell.state === true && x === app.mouseOverCell.cell.number.x && y === app.mouseOverCell.cell.number.y) {
         context.lineWidth = 5;
         context.beginPath();
         for (const vertex of vertices) {
@@ -295,17 +257,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         let hide = false;
         if (app.obstacleItemsToDrop.length > 0) {
           for (const cell of app.obstacleItemsToDrop) {
-            if (
-              gridInfoCell.number.x === cell.target.x &&
-              gridInfoCell.number.y === cell.target.y &&
-              gridInfoCell.item.name === cell.item.name
-            ) {
+            if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y && gridInfoCell.item.name === cell.item.name) {
               hide = true;
             }
           }
         }
 
         if (hide !== true) {
+          console.log("Drawing item:", gridInfoCell.item);
           let itemImg;
           let fillClr;
           if (gridInfoCell.item.type === "item") {
@@ -395,11 +354,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
       //POPUPS
       // CELL HIGHLIGHT
       for (const popup of app.cellPopups) {
-        if (
-          popup.state === true &&
-          x === popup.cell.number.x &&
-          y === popup.cell.number.y
-        ) {
+        if (popup.state === true && x === popup.cell.number.x && y === popup.cell.number.y) {
           context.lineWidth = 5;
           context.beginPath();
           for (const vertex of vertices) {
@@ -442,11 +397,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         // console.log("-- moving step --", plyr.moving.step);
         // console.log("-- target --", plyr.target.cell1.number.x, plyr.target.cell1.number.y);
         // console.log("-- direction --", plyr.direction);
-        console.log(
-          "-- origin --",
-          plyr.moving.origin.number.x,
-          plyr.moving.origin.number.y,
-        );
+        console.log("-- origin --", plyr.moving.origin.number.x, plyr.moving.origin.number.y);
         // console.log("-- action --", plyr.action);
         // console.log("updatedPlayerImg", updatedPlayerImg);
 
@@ -489,11 +440,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         let newIndex;
         // SET ANIMATION INDEX USED FOR SPRITE SHEET STEPPING BASED ON ACTION
         // FOR TESTING BY CALLING ONLY @ 1 CELL
-        if (
-          plyr.currentPosition.cell.number.x === x &&
-          plyr.currentPosition.cell.number.y === y &&
-          plyr.number === 1
-        ) {
+        if (plyr.currentPosition.cell.number.x === x && plyr.currentPosition.cell.number.y === y && plyr.number === 1) {
           switch (plyr.action) {
             case "moving":
               let moveSpeed = plyr.speed.move;
@@ -515,16 +462,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
               let moveAnimIndex = app.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
               finalAnimIndex = moveAnimIndex + 1;
-              console.log(
-                "anim testing mv spd",
-                plyr.speed.move,
-                "step",
-                plyr.moving.step,
-                "plyr",
-                plyr.number,
-                "index",
-                finalAnimIndex,
-              );
+              console.log("anim testing mv spd", plyr.speed.move, "step", plyr.moving.step, "plyr", plyr.number, "index", finalAnimIndex);
               if (plyr.target.cell1.void == true) {
                 // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               }
@@ -538,18 +476,9 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             case "strafe moving":
               if (plyr.pushBack.state === true) {
                 let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
-                let moveAnimIndex3 = app.moveStepRef[rangeIndex3].indexOf(
-                  plyr.moving.step,
-                );
+                let moveAnimIndex3 = app.moveStepRef[rangeIndex3].indexOf(plyr.moving.step);
                 finalAnimIndex = moveAnimIndex3;
-                console.log(
-                  "anim testing pushback spd",
-                  plyr.speed.move,
-                  "step",
-                  plyr.moving.step,
-                  "indx",
-                  finalAnimIndex,
-                );
+                console.log("anim testing pushback spd", plyr.speed.move, "step", plyr.moving.step, "indx", finalAnimIndex);
               } else {
                 let moveSpeed = plyr.speed.move;
                 // if (plyr.pushing.state === true) {
@@ -565,32 +494,16 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   moveSpeed = plyr.pulled.moveSpeed;
                 }
                 let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
-                let moveAnimIndex2 = app.moveStepRef[rangeIndex2].indexOf(
-                  plyr.moving.step,
-                );
+                let moveAnimIndex2 = app.moveStepRef[rangeIndex2].indexOf(plyr.moving.step);
                 finalAnimIndex = moveAnimIndex2;
-                console.log(
-                  "anim testing strafe mv spd",
-                  plyr.speed.move,
-                  "step",
-                  plyr.moving.step,
-                  "indx",
-                  finalAnimIndex,
-                );
+                console.log("anim testing strafe mv spd", plyr.speed.move, "step", plyr.moving.step, "indx", finalAnimIndex);
               }
               break;
             case "flanking":
               let rangeIndex6 = plyr.speed.range.indexOf(0.2);
               let moveAnimIndex6 = app.moveStepRef[rangeIndex6].indexOf(plyr.moving.step);
               finalAnimIndex = moveAnimIndex6;
-              console.log(
-                "flanking step",
-                plyr.flanking.step,
-                "step",
-                plyr.moving.step,
-                "anim indx",
-                finalAnimIndex,
-              );
+              console.log("flanking step", plyr.flanking.step, "step", plyr.moving.step, "anim indx", finalAnimIndex);
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               break;
             case "attacking":
@@ -625,13 +538,8 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               // }
               animIndex = plyr.attacking.count - 1;
 
-              frameIndexBase =
-                app.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
-                app.actionAnimFrameTypeCountRef[plyr.action].typeCount;
-              increment = Math.ceil(
-                plyr[plyr.action].limit /
-                  app.actionAnimFrameTypeCountRef[plyr.action].typeCount,
-              );
+              frameIndexBase = app.actionAnimFrameTypeCountRef[plyr.action].sheetLength / app.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+              increment = Math.ceil(plyr[plyr.action].limit / app.actionAnimFrameTypeCountRef[plyr.action].typeCount);
               frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
               remainder = plyr[plyr.action].count % increment;
               newIndex = frameIndexBase * frameTypeIndex + remainder;
@@ -671,13 +579,8 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               //   }
               //   finalAnimIndex = animIndex2;
               // }
-              frameIndexBase =
-                app.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
-                app.actionAnimFrameTypeCountRef[plyr.action].typeCount;
-              increment = Math.ceil(
-                plyr[plyr.action].limit /
-                  app.actionAnimFrameTypeCountRef[plyr.action].typeCount,
-              );
+              frameIndexBase = app.actionAnimFrameTypeCountRef[plyr.action].sheetLength / app.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+              increment = Math.ceil(plyr[plyr.action].limit / app.actionAnimFrameTypeCountRef[plyr.action].typeCount);
               frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
               remainder = plyr[plyr.action].count % increment;
               newIndex = frameIndexBase * frameTypeIndex + remainder;
@@ -793,12 +696,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               //   }
               // }
               finalAnimIndex = animIndex7;
-              console.log(
-                "anim testing dodge",
-                plyr.dodging.count,
-                "indx",
-                finalAnimIndex,
-              );
+              console.log("anim testing dodge", plyr.dodging.count, "indx", finalAnimIndex);
               break;
           }
         }
@@ -904,13 +802,8 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
 
             // animIndex = plyr.attacking.count - 1;
             // finalAnimIndex = animIndex;
-            frameIndexBase =
-              app.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
-              app.actionAnimFrameTypeCountRef[plyr.action].typeCount;
-            increment = Math.ceil(
-              plyr[plyr.action].limit /
-                app.actionAnimFrameTypeCountRef[plyr.action].typeCount,
-            );
+            frameIndexBase = app.actionAnimFrameTypeCountRef[plyr.action].sheetLength / app.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+            increment = Math.ceil(plyr[plyr.action].limit / app.actionAnimFrameTypeCountRef[plyr.action].typeCount);
             frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
             remainder = plyr[plyr.action].count % increment;
             newIndex = frameIndexBase * frameTypeIndex + remainder;
@@ -945,13 +838,8 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             //   }
             //   finalAnimIndex = animIndex2;
             // }
-            frameIndexBase =
-              app.actionAnimFrameTypeCountRef[plyr.action].sheetLength /
-              app.actionAnimFrameTypeCountRef[plyr.action].typeCount;
-            increment = Math.ceil(
-              plyr[plyr.action].limit /
-                app.actionAnimFrameTypeCountRef[plyr.action].typeCount,
-            );
+            frameIndexBase = app.actionAnimFrameTypeCountRef[plyr.action].sheetLength / app.actionAnimFrameTypeCountRef[plyr.action].typeCount;
+            increment = Math.ceil(plyr[plyr.action].limit / app.actionAnimFrameTypeCountRef[plyr.action].typeCount);
             frameTypeIndex = Math.floor(plyr[plyr.action].count / increment);
             remainder = plyr[plyr.action].count % increment;
             newIndex = frameIndexBase * frameTypeIndex + remainder;
@@ -1216,21 +1104,9 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         if (app.showPlayerOutlines === true) {
           // PLAYER OUTLINES
           let popupCoordObject = {
-            north: app.popupDrawCalc(
-              "north",
-              { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-              plyr.number,
-            ),
-            west: app.popupDrawCalc(
-              "west",
-              { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-              plyr.number,
-            ),
-            south: app.popupDrawCalc(
-              "south",
-              { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 },
-              plyr.number,
-            ),
+            north: app.popupDrawCalc("north", { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 }, plyr.number),
+            west: app.popupDrawCalc("west", { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 }, plyr.number),
+            south: app.popupDrawCalc("south", { x: plyr.nextPosition.x - 25, y: plyr.nextPosition.y - 25 }, plyr.number),
           };
           let origin = popupCoordObject.west;
           let width = popupCoordObject.north.pt4.x - origin.pt3.x;
@@ -1245,22 +1121,12 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             x: plyr.nextPosition.x - app.floorImageHeight / 2,
             y: plyr.nextPosition.y - app.floorImageHeight,
           };
-          let height2 =
-            plyr.nextPosition.y +
-            app.floorImageHeight / 2 +
-            2 -
-            (plyr.nextPosition.y - app.floorImageHeight);
+          let height2 = plyr.nextPosition.y + app.floorImageHeight / 2 + 2 - (plyr.nextPosition.y - app.floorImageHeight);
           let width2 = app.playerDrawWidth + 2;
           context2.strokeStyle = "blue";
           context2.lineWidth = 2;
           context2.beginPath();
-          context2.roundRect(
-            origin2.x,
-            origin2.y,
-            width2 + 2,
-            app.playerDrawHeight * 1.5,
-            2,
-          );
+          context2.roundRect(origin2.x, origin2.y, width2 + 2, app.playerDrawHeight * 1.5, 2);
           // context2.roundRect(origin2.x, origin2.y, width2, height2, 2);
           // context2.roundRect(
           //   origin2.x,
@@ -1299,12 +1165,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         };
 
         // IN-GRID MOVING & MID STRAFE KEY RELEASE
-        if (
-          plyr.target.cell1.void === false &&
-          plyr.moving.state === true &&
-          plyr.falling.state !== true &&
-          plyr.jumping.state !== true
-        ) {
+        if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
           let jumpYCalc = 10 - app.moveStepRef[1].indexOf(plyr.moving.step);
 
           let direction = plyr.direction;
@@ -1314,10 +1175,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           }
 
           // if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-          if (
-            x === plyr.currentPosition.cell.number.x &&
-            y === plyr.currentPosition.cell.number.y
-          ) {
+          if (x === plyr.currentPosition.cell.number.x && y === plyr.currentPosition.cell.number.y) {
             if (plyr.jumping.state === true) {
               context2.drawImage(
                 updatedPlayerImg,
@@ -1487,21 +1345,9 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           plyr.action !== "attacking"
         ) {
           if (plyr.halfPushBack.state === true && plyr.success.deflected.state !== true) {
-            elasticCountCalcResult = app.calcElasticCountCoords(
-              "halfPushBack",
-              "player",
-              plyr,
-            );
-            let finalCoords = app.calcElasticCountCoords(
-              "halfPushBack",
-              "player",
-              plyr,
-            ).coords;
-            let drawCell = app.calcElasticCountCoords(
-              "halfPushBack",
-              "player",
-              plyr,
-            ).drawCell;
+            elasticCountCalcResult = app.calcElasticCountCoords("halfPushBack", "player", plyr);
+            let finalCoords = app.calcElasticCountCoords("halfPushBack", "player", plyr).coords;
+            let drawCell = app.calcElasticCountCoords("halfPushBack", "player", plyr).drawCell;
             plyr = app.calcElasticCountCoords("halfPushBack", "player", plyr).player;
 
             if (x === 0 && y === 0) {
@@ -1516,10 +1362,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             finalCoords.x -= 5;
             finalCoords.y -= 10;
 
-            if (
-              x === plyr.currentPosition.cell.number.x &&
-              y === plyr.currentPosition.cell.number.y
-            ) {
+            if (x === plyr.currentPosition.cell.number.x && y === plyr.currentPosition.cell.number.y) {
               setCurrentPlayerDrawCell(x, y, "non-elastic");
               context2.drawImage(
                 updatedPlayerImg,
@@ -1647,11 +1490,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             //   }
             // }
           } else {
-            if (
-              x === plyr.moving.origin.number.x &&
-              y === plyr.moving.origin.number.y &&
-              plyr.success.deflected.state === false
-            ) {
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               setCurrentPlayerDrawCell(x, y, "non-elastic");
               context2.drawImage(
                 updatedPlayerImg,
@@ -1668,12 +1507,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           }
         }
         // VOID/EDGE MOVE
-        else if (
-          plyr.target.cell1.void === true &&
-          plyr.moving.state === true &&
-          plyr.falling.state !== true &&
-          plyr.jumping.state !== true
-        ) {
+        else if (plyr.target.cell1.void === true && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
           // console.log('heading for thevoid @ draw step');
           // if (
           //   x === plyr.currentPosition.cell.number.x &&
@@ -1682,15 +1516,8 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           //   console.log('heading for thevoid @ draw step',plyr.target.cell1.number);
           // }
 
-          if (
-            plyr.moving.origin.number.x === app.gridWidth &&
-            plyr.moving.origin.number.y !== 0 &&
-            plyr.moving.origin.number.y !== app.gridWidth
-          ) {
-            if (
-              x === plyr.moving.origin.number.x &&
-              y === plyr.moving.origin.number.y + 1
-            ) {
+          if (plyr.moving.origin.number.x === app.gridWidth && plyr.moving.origin.number.y !== 0 && plyr.moving.origin.number.y !== app.gridWidth) {
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
               context2.drawImage(
                 updatedPlayerImg,
                 sx,
@@ -1706,10 +1533,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               // context2.fillRect(point.x, point.y,5,5);
             }
           }
-          if (
-            plyr.moving.origin.number.x === app.gridWidth &&
-            plyr.moving.origin.number.y === 0
-          ) {
+          if (plyr.moving.origin.number.x === app.gridWidth && plyr.moving.origin.number.y === 0) {
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
               context2.drawImage(
                 updatedPlayerImg,
@@ -1726,10 +1550,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               // context2.fillRect(point.x, point.y,5,5);
             }
           }
-          if (
-            plyr.moving.origin.number.x === app.gridWidth &&
-            plyr.moving.origin.number.y === app.gridWidth
-          ) {
+          if (plyr.moving.origin.number.x === app.gridWidth && plyr.moving.origin.number.y === app.gridWidth) {
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
               context2.drawImage(
                 updatedPlayerImg,
@@ -1746,10 +1567,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               // context2.fillRect(point.x, point.y,5,5);
             }
           }
-          if (
-            plyr.moving.origin.number.x === 0 &&
-            plyr.moving.origin.number.y === app.gridWidth
-          ) {
+          if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === app.gridWidth) {
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
               context2.drawImage(
                 updatedPlayerImg,
@@ -1783,10 +1601,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               // context2.fillRect(point.x, point.y,5,5);
             }
           } else {
-            if (
-              x === plyr.moving.origin.number.x + 1 &&
-              y === plyr.moving.origin.number.y
-            ) {
+            if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
               context2.drawImage(
                 updatedPlayerImg,
                 sx,
@@ -1811,20 +1626,9 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           plyr.ghost.state !== true &&
           plyr.dodging.state !== true
         ) {
-          if (
-            plyr.elasticCounter.state === true &&
-            plyr.elasticCounter.type === "attacking"
-          ) {
-            let finalCoords = app.calcElasticCountCoords(
-              "attacking",
-              "player",
-              plyr,
-            ).coords;
-            let drawCell = app.calcElasticCountCoords(
-              "attacking",
-              "player",
-              plyr,
-            ).drawCell;
+          if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "attacking") {
+            let finalCoords = app.calcElasticCountCoords("attacking", "player", plyr).coords;
+            let drawCell = app.calcElasticCountCoords("attacking", "player", plyr).drawCell;
             plyr = app.calcElasticCountCoords("attacking", "player", plyr).player;
             finalCoords.x -= 5;
             finalCoords.y -= 10;
@@ -1857,10 +1661,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               }
             }
 
-            if (
-              x === plyr.currentPosition.cell.number.x &&
-              y === plyr.currentPosition.cell.number.y
-            ) {
+            if (x === plyr.currentPosition.cell.number.x && y === plyr.currentPosition.cell.number.y) {
               setCurrentPlayerDrawCell(x, y, "elastic");
               context2.drawImage(
                 updatedPlayerImg,
@@ -1988,11 +1789,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             //   }
             // }
           } else {
-            if (
-              x === plyr.moving.origin.number.x &&
-              y === plyr.moving.origin.number.y &&
-              plyr.success.deflected.state === false
-            ) {
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               setCurrentPlayerDrawCell(x, y, "elastic");
               context2.drawImage(
                 updatedPlayerImg,
@@ -2021,20 +1818,9 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           plyr.ghost.state !== true &&
           plyr.dodging.state !== true
         ) {
-          if (
-            plyr.elasticCounter.state === true &&
-            plyr.elasticCounter.type === "defending"
-          ) {
-            let finalCoords = app.calcElasticCountCoords(
-              "defending",
-              "player",
-              plyr,
-            ).coords;
-            let drawCell = app.calcElasticCountCoords(
-              "defending",
-              "player",
-              plyr,
-            ).drawCell;
+          if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "defending") {
+            let finalCoords = app.calcElasticCountCoords("defending", "player", plyr).coords;
+            let drawCell = app.calcElasticCountCoords("defending", "player", plyr).drawCell;
             plyr = app.calcElasticCountCoords("defending", "player", plyr).player;
 
             finalCoords.x -= 5;
@@ -2069,10 +1855,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               }
             }
 
-            if (
-              x === plyr.currentPosition.cell.number.x &&
-              y === plyr.currentPosition.cell.number.y
-            ) {
+            if (x === plyr.currentPosition.cell.number.x && y === plyr.currentPosition.cell.number.y) {
               setCurrentPlayerDrawCell(x, y, "elastic");
               context2.drawImage(
                 updatedPlayerImg,
@@ -2200,11 +1983,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             //   }
             // }
           } else {
-            if (
-              x === plyr.moving.origin.number.x &&
-              y === plyr.moving.origin.number.y &&
-              plyr.success.deflected.state === false
-            ) {
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               setCurrentPlayerDrawCell(x, y, "elastic");
               context2.drawImage(
                 updatedPlayerImg,
@@ -2243,13 +2022,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               context.beginPath();
               context.moveTo(animAction.points[0].x, animAction.points[0].y);
               for (var i = 1; i < animAction.points.length - 1; i++) {
-                context.arcTo(
-                  animAction.points[i].x,
-                  animAction.points[i].y,
-                  animAction.points[i + 1].x,
-                  animAction.points[i + 1].y,
-                  40,
-                );
+                context.arcTo(animAction.points[i].x, animAction.points[i].y, animAction.points[i + 1].x, animAction.points[i + 1].y, 40);
               }
 
               lastPoint = animAction.points[animAction.points.length - 1];
@@ -2263,13 +2036,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                 context.beginPath();
                 context.moveTo(animAction.points[0].x2, animAction.points[0].y2);
                 for (var i = 1; i < animAction.points.length - 1; i++) {
-                  context.arcTo(
-                    animAction.points[i].x2,
-                    animAction.points[i].y2,
-                    animAction.points[i + 1].x2,
-                    animAction.points[i + 1].y2,
-                    30,
-                  );
+                  context.arcTo(animAction.points[i].x2, animAction.points[i].y2, animAction.points[i + 1].x2, animAction.points[i + 1].y2, 30);
                 }
                 lastPoint = animAction.points[animAction.points.length - 1];
                 context.lineTo(lastPoint.x2, lastPoint.y2);
@@ -2393,11 +2160,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           }
         }
         // STRAFE MOVEMENT
-        if (
-          plyr.strafing.state === true &&
-          plyr.falling.state !== true &&
-          plyr.jumping.state !== true
-        ) {
+        if (plyr.strafing.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
           // if (
           //   plyr.strafing.direction === "north" ||
           //   plyr.strafing.direction === "northWest" ||
@@ -2521,10 +2284,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           }
         }
         // FLANKING
-        if (
-          (plyr.flanking.state === true || plyr.action === "flanking") &&
-          plyr.falling.state !== true
-        ) {
+        if ((plyr.flanking.state === true || plyr.action === "flanking") && plyr.falling.state !== true) {
           // if (plyr.flanking.step === 1) {
           //   if (plyr.flanking.direction === "north") {
           //     if (
@@ -2744,28 +2504,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         }
         // DEFLECTED
         if (plyr.success.deflected.state === true) {
-          if (
-            plyr.elasticCounter.state === true &&
-            plyr.elasticCounter.type === "deflected"
-          ) {
-            let finalCoords = app.calcElasticCountCoords(
-              "deflected",
-              "player",
-              plyr,
-            ).coords;
-            let drawCell = app.calcElasticCountCoords(
-              "deflected",
-              "player",
-              plyr,
-            ).drawCell;
+          if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "deflected") {
+            let finalCoords = app.calcElasticCountCoords("deflected", "player", plyr).coords;
+            let drawCell = app.calcElasticCountCoords("deflected", "player", plyr).drawCell;
             plyr = app.calcElasticCountCoords("deflected", "player", plyr).player;
             finalCoords.x -= 5;
             finalCoords.y -= 10;
 
-            if (
-              x === plyr.currentPosition.cell.number.x &&
-              y === plyr.currentPosition.cell.number.y
-            ) {
+            if (x === plyr.currentPosition.cell.number.x && y === plyr.currentPosition.cell.number.y) {
               context2.drawImage(
                 updatedPlayerImg,
                 sx,
@@ -2887,26 +2633,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             //   }
             // }
           }
-          if (
-            plyr.elasticCounter.state !== true &&
-            plyr.elasticCounter.type === "deflected" &&
-            x === app.gridWidth &&
-            y === app.gridWidth
-          ) {
+          if (plyr.elasticCounter.state !== true && plyr.elasticCounter.type === "deflected" && x === app.gridWidth && y === app.gridWidth) {
             // console.log('deflected elastic counter overflow?',plyr.success.deflected.count);
           }
         }
         // DODGING
         if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
-          if (
-            plyr.elasticCounter.state === true &&
-            plyr.elasticCounter.type === "dodging"
-          ) {
-            let finalCoords = app.calcElasticCountCoords(
-              "dodging",
-              "player",
-              plyr,
-            ).coords;
+          if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "dodging") {
+            let finalCoords = app.calcElasticCountCoords("dodging", "player", plyr).coords;
             let drawCell = app.calcElasticCountCoords("dodging", "player", plyr).drawCell;
 
             plyr = app.calcElasticCountCoords("dodging", "player", plyr).player;
@@ -2929,10 +2663,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               }
             }
 
-            if (
-              x === plyr.currentPosition.cell.number.x &&
-              y === plyr.currentPosition.cell.number.y
-            ) {
+            if (x === plyr.currentPosition.cell.number.x && y === plyr.currentPosition.cell.number.y) {
               context2.drawImage(
                 updatedPlayerImg,
                 sx,
@@ -3060,88 +2791,53 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
 
         // RESPAWN
         if (plyr.respawn === true) {
-          if (
-            x === plyr.startPosition.cell.number.x &&
-            y === plyr.startPosition.cell.number.y
-          ) {
+          if (x === plyr.startPosition.cell.number.x && y === plyr.startPosition.cell.number.y) {
             // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
 
             let canRespawn = false;
             let positionOccupied = false;
             let respawnPosCellRef = app.gridInfo.find(
-              (x) =>
-                x.number.x === plyr.startPosition.cell.number.x &&
-                x.number.y === plyr.startPosition.cell.number.y,
+              (x) => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y,
             );
             let respawnCellNo;
             let respawnCellCenter;
 
             for (const plyrx of app.players) {
               if (
-                plyrx.currentPosition.cell.number.x ===
-                  plyr.startPosition.cell.number.x &&
+                plyrx.currentPosition.cell.number.x === plyr.startPosition.cell.number.x &&
                 plyrx.currentPosition.cell.number.y === plyr.startPosition.cell.number.y
               ) {
                 positionOccupied = true;
               }
             }
-            if (
-              respawnPosCellRef.obstacle.state === true ||
-              respawnPosCellRef.terrain.type === "deep" ||
-              respawnPosCellRef.void === true
-            ) {
+            if (respawnPosCellRef.obstacle.state === true || respawnPosCellRef.terrain.type === "deep" || respawnPosCellRef.void === true) {
               positionOccupied = true;
             }
 
             if (positionOccupied === true) {
               respawnCellNo = app.getRandomFreeCell();
-              respawnPosCellRef = app.gridInfo.find(
-                (x) =>
-                  x.number.x === respawnCellNo.number.x &&
-                  x.number.y === respawnCellNo.number.y,
-              );
+              respawnPosCellRef = app.gridInfo.find((x) => x.number.x === respawnCellNo.number.x && x.number.y === respawnCellNo.number.y);
 
               if (respawnCellNo) {
                 canRespawn = true;
               } else {
-                console.log(
-                  "no cells for respawn. Unlikely but true. Reassign obstacle cell",
-                );
+                console.log("no cells for respawn. Unlikely but true. Reassign obstacle cell");
                 if (app.gridInfo.filter((x) => x.obstacle.state === true)[0]) {
-                  app.gridInfo.filter(
-                    (x) => x.obstacle.state === true,
-                  )[0].obstacle.state = false;
-                  respawnPosCellRef = app.gridInfo.find(
-                    (x) =>
-                      x.number.x === respawnCellNo.number.x &&
-                      x.number.y === respawnCellNo.number.y,
-                  );
-                  let oldLvlData = app.gridInfo
-                    .filter((x) => x.obstacle.state === true)[0]
-                    .levelData.split("_");
+                  app.gridInfo.filter((x) => x.obstacle.state === true)[0].obstacle.state = false;
+                  respawnPosCellRef = app.gridInfo.find((x) => x.number.x === respawnCellNo.number.x && x.number.y === respawnCellNo.number.y);
+                  let oldLvlData = app.gridInfo.filter((x) => x.obstacle.state === true)[0].levelData.split("_");
                   oldLvlData[1] = "*";
-                  app.gridInfo.filter((x) => x.obstacle.state === true)[0].levelData =
-                    oldLvlData.join("_");
+                  app.gridInfo.filter((x) => x.obstacle.state === true)[0].levelData = oldLvlData.join("_");
                   canRespawn = true;
                 } else {
-                  console.log(
-                    "no free cells for respawn and no obstacle cell to comandeer. Highly unlikley",
-                  );
+                  console.log("no free cells for respawn and no obstacle cell to comandeer. Highly unlikley");
 
                   if (app.gridInfo.filter((x) => x.void.state === true)[0]) {
-                    app.gridInfo.filter((x) => x.void.state === true)[0].void.state =
-                      false;
-                    respawnPosCellRef = app.gridInfo.find(
-                      (x) =>
-                        x.number.x === respawnCellNo.number.x &&
-                        x.number.y === respawnCellNo.number.y,
-                    );
-                    let oldLvlData = app.gridInfo
-                      .filter((x) => x.void.state === true)[0]
-                      .levelData.split("_");
+                    app.gridInfo.filter((x) => x.void.state === true)[0].void.state = false;
+                    respawnPosCellRef = app.gridInfo.find((x) => x.number.x === respawnCellNo.number.x && x.number.y === respawnCellNo.number.y);
+                    let oldLvlData = app.gridInfo.filter((x) => x.void.state === true)[0].levelData.split("_");
                     oldLvlData[3] = "a";
-                    app.gridInfo.filter((x) => x.void.state === true)[0].levelData =
-                      oldLvlData.join("_");
+                    app.gridInfo.filter((x) => x.void.state === true)[0].levelData = oldLvlData.join("_");
                     canRespawn = true;
                   }
                 }
@@ -3215,31 +2911,15 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           }
         }
         // DEAD
-        if (
-          plyr.dead.state === true &&
-          player.dead.count > 0 &&
-          plyr.dead.count < plyr.dead.limit
-        ) {
-          if (
-            x === plyr.ghost.position.cell.number.x &&
-            y === plyr.ghost.position.cell.number.y
-          ) {
+        if (plyr.dead.state === true && player.dead.count > 0 && plyr.dead.count < plyr.dead.limit) {
+          if (x === plyr.ghost.position.cell.number.x && y === plyr.ghost.position.cell.number.y) {
             // console.log('player',plyr.number,'dying',player.dead.count);
-            context2.drawImage(
-              app.indicatorImgs.death,
-              plyr.ghost.position.cell.center.x - 15,
-              plyr.ghost.position.cell.center.y - 15,
-              25,
-              25,
-            );
+            context2.drawImage(app.indicatorImgs.death, plyr.ghost.position.cell.center.x - 15, plyr.ghost.position.cell.center.y - 15, 25, 25);
           }
         }
         // GHOST
         if (plyr.ghost.state === true && player.dead.count === 0) {
-          if (
-            x === plyr.ghost.position.cell.number.x &&
-            y === plyr.ghost.position.cell.number.y
-          ) {
+          if (x === plyr.ghost.position.cell.number.x && y === plyr.ghost.position.cell.number.y) {
             // console.log(
             //   "player ",
             //   plyr.number,
@@ -3247,13 +2927,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             //   plyr.ghost.position.cell.number,
             //   plyr.ghost.position.cell.center
             // );
-            context2.drawImage(
-              app.indicatorImgs.ghost,
-              plyr.ghost.position.cell.center.x - 20,
-              plyr.ghost.position.cell.center.y - 20,
-              25,
-              25,
-            );
+            context2.drawImage(app.indicatorImgs.ghost, plyr.ghost.position.cell.center.x - 20, plyr.ghost.position.cell.center.y - 20, 25, 25);
           }
         }
 
@@ -3269,16 +2943,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                 if (popup.position === "" || !popup.position) {
                   let currentPopups = plyr.popups.filter((x) => x.state === true);
                   // let positions = ['north','east','south','west','northEast','southEast','southWest']
-                  let positions = [
-                    "north",
-                    "east",
-                    "south",
-                    "west",
-                    "northEast",
-                    "northWest",
-                    "southEast",
-                    "southWest",
-                  ];
+                  let positions = ["north", "east", "south", "west", "northEast", "northWest", "southEast", "southWest"];
 
                   // REMOVE 1ST FREE POSITION IF IT'S THE SAME AS PLAYER'S DIRECTION
                   if (plyr.strafing.state === true) {
@@ -3308,8 +2973,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   for (const plyr2 of app.players) {
                     if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                       let myPos = plyr.currentPosition.cell.number;
-                      let invalidPos =
-                        app.players[plyr2.number - 1].currentPosition.cell.number;
+                      let invalidPos = app.players[plyr2.number - 1].currentPosition.cell.number;
 
                       dir = undefined;
                       // let invalidPositions = [invalidPos];
@@ -3333,11 +2997,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                             y: undefined,
                           };
 
-                          invalidPos2 = app.getCellFromDirection(
-                            1,
-                            invalidPos,
-                            pop.position,
-                          );
+                          invalidPos2 = app.getCellFromDirection(1, invalidPos, pop.position);
 
                           dir = app.getDirectionFromCells(myPos, invalidPos2);
 
@@ -3426,20 +3086,13 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   }
 
                   if (popup.msg.split("_")) {
-                    if (
-                      popup.msg.split("_")[0] === "hpUp" ||
-                      popup.msg.split("_")[0] === "hpDown"
-                    ) {
+                    if (popup.msg.split("_")[0] === "hpUp" || popup.msg.split("_")[0] === "hpDown") {
                       writeValue = true;
                       popup.img = app.popupImageRef[popup.msg.split("_")[0]];
                     }
                   }
 
-                  popupDrawCoords = app.popupDrawCalc(
-                    popup.position,
-                    { x: point.x - 25, y: point.y - 25 },
-                    plyr.number,
-                  );
+                  popupDrawCoords = app.popupDrawCalc(popup.position, { x: point.x - 25, y: point.y - 25 }, plyr.number);
 
                   app.drawPopupBubble(
                     context2,
@@ -3461,13 +3114,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                     // context2.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+app.popupSize, app.popupSize, app.popupSize*perc, 5);
                     // context2.stroke();
                     context2.fillStyle = app.popupProgressImgGradColor1;
-                    context2.roundRect(
-                      popupDrawCoords.origin.x,
-                      popupDrawCoords.origin.y + app.popupSize,
-                      10,
-                      app.popupSize * perc,
-                      5,
-                    );
+                    context2.roundRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y + app.popupSize, 10, app.popupSize * perc, 5);
                     context2.fill();
                     // console.log("playerPopupProgress init", perc);
                   }
@@ -3477,8 +3124,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                     context2.fillStyle = "black";
                     context2.fillText(
                       popup.msg.split("_")[1],
-                      popupDrawCoords.origin.x +
-                        (app.popupSize - popup.msg.split("_")[1].length * 7) / 2,
+                      popupDrawCoords.origin.x + (app.popupSize - popup.msg.split("_")[1].length * 7) / 2,
                       popupDrawCoords.origin.y + 15,
                     );
 
@@ -3509,8 +3155,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   for (const plyr2 of app.players) {
                     if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                       let myPos = plyr.currentPosition.cell.number;
-                      let invalidPos =
-                        app.players[plyr2.number - 1].currentPosition.cell.number;
+                      let invalidPos = app.players[plyr2.number - 1].currentPosition.cell.number;
 
                       dir = app.getDirectionFromCells(myPos, invalidPos);
 
@@ -3526,11 +3171,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                           y: undefined,
                         };
 
-                        invalidPos2 = app.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position,
-                        );
+                        invalidPos2 = app.getCellFromDirection(1, invalidPos, pop.position);
 
                         dir = app.getDirectionFromCells(myPos, invalidPos2);
 
@@ -3573,10 +3214,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   if (dirs.find((x) => x === popup.position)) {
                     plyr.popups.find((x) => x.msg === popup.msg).position = "";
                     plyr.popups.find((x) => x.msg === popup.msg).state = false;
-                    console.log(
-                      "A new invalid direction === popup's position. reconsidering...",
-                      popup.msg,
-                    );
+                    console.log("A new invalid direction === popup's position. reconsidering...", popup.msg);
                   } else {
                     let popupProgress = false;
                     let showProgress = false;
@@ -3610,20 +3248,13 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                     }
 
                     if (popup.msg.split("_")) {
-                      if (
-                        popup.msg.split("_")[0] === "hpUp" ||
-                        popup.msg.split("_")[0] === "hpDown"
-                      ) {
+                      if (popup.msg.split("_")[0] === "hpUp" || popup.msg.split("_")[0] === "hpDown") {
                         writeValue = true;
                         popup.img = app.popupImageRef[popup.msg.split("_")[0]];
                       }
                     }
 
-                    popupDrawCoords = app.popupDrawCalc(
-                      popup.position,
-                      { x: point.x - 25, y: point.y - 25 },
-                      plyr.number,
-                    );
+                    popupDrawCoords = app.popupDrawCalc(popup.position, { x: point.x - 25, y: point.y - 25 }, plyr.number);
                     app.drawPopupBubble(
                       context2,
                       popupDrawCoords.origin.x,
@@ -3644,13 +3275,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                       // context2.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+app.popupSize, app.popupSize, app.popupSize*perc, 5);
                       // context2.stroke();
                       context2.fillStyle = app.popupProgressImgGradColor1;
-                      context2.roundRect(
-                        popupDrawCoords.origin.x,
-                        popupDrawCoords.origin.y + app.popupSize,
-                        10,
-                        app.popupSize * perc,
-                        5,
-                      );
+                      context2.roundRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y + app.popupSize, 10, app.popupSize * perc, 5);
                       context2.fill();
                       // console.log(
                       //   "playerPopupProgress continue",
@@ -3664,8 +3289,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                       context2.fillStyle = "black";
                       context2.fillText(
                         popup.msg.split("_")[1],
-                        popupDrawCoords.origin.x +
-                          (app.popupSize - popup.msg.split("_")[1].length * 7) / 2,
+                        popupDrawCoords.origin.x + (app.popupSize - popup.msg.split("_")[1].length * 7) / 2,
                         popupDrawCoords.origin.y + 15,
                       );
 
@@ -3683,11 +3307,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                           popup.img = app.popupImageRef.defending_1;
                         }
                         if (player.defending.decay.state === true) {
-                          let prog =
-                            100 -
-                            (player.defending.decay.count /
-                              player.defending.decay.limit) *
-                              100;
+                          let prog = 100 - (player.defending.decay.count / player.defending.decay.limit) * 100;
                           if (prog > 10) {
                             popup.img = app.popupImageRef.defending_4;
                           }
@@ -3742,13 +3362,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           context.beginPath();
           context.moveTo(animAction.points[0].x, animAction.points[0].y);
           for (var i = 1; i < animAction.points.length - 1; i++) {
-            context.arcTo(
-              animAction.points[i].x,
-              animAction.points[i].y,
-              animAction.points[i + 1].x,
-              animAction.points[i + 1].y,
-              40,
-            );
+            context.arcTo(animAction.points[i].x, animAction.points[i].y, animAction.points[i + 1].x, animAction.points[i + 1].y, 40);
           }
           lastPoint = animAction.points[animAction.points.length - 1];
           context.lineTo(lastPoint.x, lastPoint.y);
@@ -3761,13 +3375,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             context.beginPath();
             context.moveTo(animAction.points[0].x2, animAction.points[0].y2);
             for (var i = 1; i < animAction.points.length - 1; i++) {
-              context.arcTo(
-                animAction.points[i].x2,
-                animAction.points[i].y2,
-                animAction.points[i + 1].x2,
-                animAction.points[i + 1].y2,
-                30,
-              );
+              context.arcTo(animAction.points[i].x2, animAction.points[i].y2, animAction.points[i + 1].x2, animAction.points[i + 1].y2, 30);
             }
             lastPoint = animAction.points[animAction.points.length - 1];
             context.lineTo(lastPoint.x, lastPoint.y);
@@ -3807,17 +3415,10 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
 
       // FALLING
       // IN BOUNDS
-      if (
-        gridInfoCell.obstacle.state === true &&
-        gridInfoCell.obstacle.moving.falling.state === true
-      ) {
+      if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
         let obstacleImg = app.obstacleImgs[gridInfoCell.obstacle.type];
 
-        context.drawImage(
-          obstacleImg,
-          gridInfoCell.obstacle.moving.nextPosition.x,
-          gridInfoCell.obstacle.moving.nextPosition.y,
-        );
+        context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y);
         gridInfoCell.obstacle.moving.nextPosition.y += 2;
 
         // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
@@ -3826,17 +3427,10 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
       for (const obstacle of app.obstaclesOutOfBoundsFall) {
         // here!! draw at origin cell x/y
         // if (x === 0 && y === 0) {
-        if (
-          x === obstacle.moving.origin.number.x &&
-          y === obstacle.moving.origin.number.y
-        ) {
+        if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
           // console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
           let obstacleImg = app.obstacleImgs[obstacle.type];
-          context.drawImage(
-            obstacleImg,
-            obstacle.moving.nextPosition.x,
-            obstacle.moving.nextPosition.y,
-          );
+          context.drawImage(obstacleImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y);
           obstacle.moving.nextPosition = {
             x: obstacle.moving.nextPosition.x,
             y: obstacle.moving.nextPosition.y + 2,
@@ -3871,10 +3465,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           let obstacleImg = app.obstacleImgs[gridInfoCell.obstacle.type];
 
           for (const obs of app.halfPushBackObstacles) {
-            if (
-              obs.myCellNo.x === gridInfoCell.number.x &&
-              obs.myCellNo.y === gridInfoCell.number.y
-            ) {
+            if (obs.myCellNo.x === gridInfoCell.number.x && obs.myCellNo.y === gridInfoCell.number.y) {
               if (obs.state === true) {
                 if (obs.countUp.state === true) {
                   hide = true;
@@ -3904,28 +3495,16 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             y: cell.obstacle.moving.origin.number.y,
           };
           let direction = undefined;
-          if (
-            cell.obstacle.moving.destination.number.y ===
-            cell.obstacle.moving.origin.number.y + 1
-          ) {
+          if (cell.obstacle.moving.destination.number.y === cell.obstacle.moving.origin.number.y + 1) {
             direction = "south";
           }
-          if (
-            cell.obstacle.moving.destination.number.y ===
-            cell.obstacle.moving.origin.number.y - 1
-          ) {
+          if (cell.obstacle.moving.destination.number.y === cell.obstacle.moving.origin.number.y - 1) {
             direction = "north";
           }
-          if (
-            cell.obstacle.moving.destination.number.x ===
-            cell.obstacle.moving.origin.number.x - 1
-          ) {
+          if (cell.obstacle.moving.destination.number.x === cell.obstacle.moving.origin.number.x - 1) {
             direction = "west";
           }
-          if (
-            cell.obstacle.moving.destination.number.x ===
-            cell.obstacle.moving.origin.number.x + 1
-          ) {
+          if (cell.obstacle.moving.destination.number.x === cell.obstacle.moving.origin.number.x + 1) {
             direction = "east";
           }
 
@@ -3946,8 +3525,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             context2.drawImage(
               obstacleImg,
               cell.obstacle.moving.nextPosition.x - offset.x,
-              cell.obstacle.moving.nextPosition.y -
-                Math.ceil(obstacleImg.height / 2, 30, 30),
+              cell.obstacle.moving.nextPosition.y - Math.ceil(obstacleImg.height / 2, 30, 30),
             );
           }
 
@@ -3983,11 +3561,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           //     }
           //   }
           // }
-          if (
-            obs.myCellNo.x === gridInfoCell.number.x &&
-            obs.myCellNo.y === gridInfoCell.number.y &&
-            gridInfoCell.obstacle.type
-          ) {
+          if (obs.myCellNo.x === gridInfoCell.number.x && obs.myCellNo.y === gridInfoCell.number.y && gridInfoCell.obstacle.type) {
             if (obs.state === true) {
               if (obs.countUp.state === true) {
                 let obstacleImg = app.obstacleImgs[gridInfoCell.obstacle.type];
@@ -3998,11 +3572,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   };
                   context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
                 } else {
-                  obs.coords = app.calcElasticCountCoords(
-                    "halfPushBack",
-                    "obstacle",
-                    obs,
-                  ).coords;
+                  obs.coords = app.calcElasticCountCoords("halfPushBack", "obstacle", obs).coords;
                   context2.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
                 }
               }
@@ -4013,40 +3583,23 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
 
       // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
       for (const cell of app.obstacleBarrierToDestroy) {
-        if (
-          gridInfoCell.number.x === cell.cell.number.x &&
-          gridInfoCell.number.y === cell.cell.number.y
-        ) {
+        if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y) {
           // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && (cell.cell.obstacle.type || cell.cell.barrier.type)) {
           if (cell.count % 3 === 0) {
             if (cell.type === "obstacle" && cell.cell.obstacle.type) {
               let obstacleImg = app.obstacleImgs[cell.cell.obstacle.type];
-              context2.drawImage(
-                obstacleImg,
-                iso.x - offset.x,
-                iso.y - obstacleImg.height,
-              );
+              context2.drawImage(obstacleImg, iso.x - offset.x, iso.y - obstacleImg.height);
             }
             if (cell.type === "barrier" && cell.cell.barrier.type) {
-              let barrierImg =
-                app.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
-              context2.drawImage(
-                barrierImg,
-                iso.x - offset.x,
-                iso.y - barrierImg.height,
-                barrierImg.width,
-                barrierImg.height,
-              );
+              let barrierImg = app.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
+              context2.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
             }
           }
         }
       }
       for (const cell of app.obstacleItemsToDrop) {
         // console.log('obstacleItemsToDrop',cell);
-        if (
-          gridInfoCell.number.x === cell.target.x &&
-          gridInfoCell.number.y === cell.target.y
-        ) {
+        if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y) {
           if (cell.count % 3 === 0) {
             let itemImg;
             if (cell.item.type === "item") {
@@ -4078,15 +3631,8 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         }
 
         if (hide !== true) {
-          let barrierImg =
-            app.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
-          context2.drawImage(
-            barrierImg,
-            iso.x - offset.x,
-            iso.y - barrierImg.height,
-            barrierImg.width,
-            barrierImg.height,
-          );
+          let barrierImg = app.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
+          context2.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
         }
       }
 
@@ -4113,13 +3659,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           // context2.fillStyle = "black";
           // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
           // app.testDraw.push({color:'green',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y})
-          context2.drawImage(
-            boltImg,
-            bolt.currentPosition.center.x - 15,
-            bolt.currentPosition.center.y - 15,
-            35,
-            35,
-          );
+          context2.drawImage(boltImg, bolt.currentPosition.center.x - 15, bolt.currentPosition.center.y - 15, 35, 35);
         }
       }
 
@@ -4138,26 +3678,12 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               if (popup.position === "" || !popup.position) {
                 let currentPopups = app.cellPopups.filter((x) => x.state === true);
                 let currentPopupsThisCell = app.cellPopups.filter(
-                  (x) =>
-                    x.state === true &&
-                    x.cell.number.x === popup.cell.number.x &&
-                    x.cell.number.y === popup.cell.number.y,
+                  (x) => x.state === true && x.cell.number.x === popup.cell.number.x && x.cell.number.y === popup.cell.number.y,
                 );
-                let positions = [
-                  "north",
-                  "east",
-                  "south",
-                  "west",
-                  "northEast",
-                  "northWest",
-                  "southEast",
-                  "southWest",
-                ];
+                let positions = ["north", "east", "south", "west", "northEast", "northWest", "southEast", "southWest"];
 
                 if (popup.color === "") {
-                  popup.color = app.cellColorRef.find(
-                    (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y,
-                  ).color;
+                  popup.color = app.cellColorRef.find((x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y).color;
                 }
 
                 // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
@@ -4174,8 +3700,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                 for (const plyr2 of app.players) {
                   if (plyr2.ai.state !== true) {
                     let myPos = popup.cell.number;
-                    let invalidPos =
-                      app.players[plyr2.number - 1].currentPosition.cell.number;
+                    let invalidPos = app.players[plyr2.number - 1].currentPosition.cell.number;
                     // let invalidPositions = [invalidPos];
 
                     // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
@@ -4196,11 +3721,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                           y: undefined,
                         };
 
-                        invalidPos2 = app.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position,
-                        );
+                        invalidPos2 = app.getCellFromDirection(1, invalidPos, pop.position);
 
                         // let dir = undefined;
 
@@ -4253,11 +3774,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
 
                 popup.img = app.popupImageRef[popup.msg];
 
-                popupDrawCoords = app.popupDrawCalc(
-                  popup.position,
-                  { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 },
-                  0,
-                );
+                popupDrawCoords = app.popupDrawCalc(popup.position, { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 }, 0);
                 app.drawPopupBubble(
                   context2,
                   popupDrawCoords.origin.x,
@@ -4286,17 +3803,13 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
 
                 let currentPopupsNotThis = app.cellPopups.filter(
                   (x) =>
-                    x.state === true &&
-                    x.msg !== popup.msg &&
-                    x.cell.number.x !== popup.cell.number.x &&
-                    x.cell.number.y !== popup.cell.number.y,
+                    x.state === true && x.msg !== popup.msg && x.cell.number.x !== popup.cell.number.x && x.cell.number.y !== popup.cell.number.y,
                 );
 
                 for (const plyr2 of app.players) {
                   if (plyr2.ai.state !== true) {
                     let myPos = popup.cell.number;
-                    let invalidPos =
-                      app.players[plyr2.number - 1].currentPosition.cell.number;
+                    let invalidPos = app.players[plyr2.number - 1].currentPosition.cell.number;
 
                     // invalidpostions2 push plyr2 position
                     // for player popups
@@ -4314,11 +3827,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                           y: undefined,
                         };
 
-                        invalidPos2 = app.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position,
-                        );
+                        invalidPos2 = app.getCellFromDirection(1, invalidPos, pop.position);
 
                         dir = app.getDirectionFromCells(myPos, invalidPos2);
 
@@ -4359,16 +3868,10 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   //   pop.state = false;
                   // }
                   app.cellPopups.find(
-                    (x) =>
-                      x.msg === popup.msg &&
-                      x.cell.number.x === popup.cell.number.x &&
-                      x.cell.number.x === popup.cell.number.x,
+                    (x) => x.msg === popup.msg && x.cell.number.x === popup.cell.number.x && x.cell.number.x === popup.cell.number.x,
                   ).state = false;
                   app.cellPopups.find(
-                    (x) =>
-                      x.msg === popup.msg &&
-                      x.cell.number.x === popup.cell.number.x &&
-                      x.cell.number.x === popup.cell.number.x,
+                    (x) => x.msg === popup.msg && x.cell.number.x === popup.cell.number.x && x.cell.number.x === popup.cell.number.x,
                   ).position = "";
                   // console.log('reconsidering...',popup.msg);
                 } else {
@@ -4437,13 +3940,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
           context.beginPath();
           context.moveTo(app.testDraw[0].x, app.testDraw[0].y);
           for (var i = 1; i < app.testDraw.length - 1; i++) {
-            context.arcTo(
-              app.testDraw[i].x,
-              app.testDraw[i].y,
-              app.testDraw[i + 1].x,
-              app.testDraw[i + 1].y,
-              20,
-            );
+            context.arcTo(app.testDraw[i].x, app.testDraw[i].y, app.testDraw[i + 1].x, app.testDraw[i + 1].y, 20);
           }
           lastPoint = app.testDraw[app.testDraw.length - 1];
           context.lineTo(lastPoint.x, lastPoint.y);
@@ -4456,13 +3953,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             context.beginPath();
             context.moveTo(app.testDraw[0].x2, app.testDraw[0].y2);
             for (var i = 1; i < app.testDraw.length - 1; i++) {
-              context.arcTo(
-                app.testDraw[i].x2,
-                app.testDraw[i].y2,
-                app.testDraw[i + 1].x2,
-                app.testDraw[i + 1].y2,
-                30,
-              );
+              context.arcTo(app.testDraw[i].x2, app.testDraw[i].y2, app.testDraw[i + 1].x2, app.testDraw[i + 1].y2, 30);
             }
             lastPoint = app.testDraw[app.testDraw.length - 1];
             context.lineTo(lastPoint.x, lastPoint.y);

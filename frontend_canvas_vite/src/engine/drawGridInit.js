@@ -530,8 +530,14 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
     strengthUp: app.itemStrUpRef.current,
     strengthDown: app.itemStrDownRef.current,
     sword: app.itemSwordRef.current,
+    sword1: app.itemSword1Ref.current,
+    sword2: app.itemSword2Ref.current,
     spear: app.itemSpearRef.current,
+    spear1: app.itemSpear1Ref.current,
+    spear2: app.itemSpear2Ref.current,
     crossbow: app.itemBowRef.current,
+    crossbow1: app.itemBowRef.current,
+    crossbow2: app.itemBowRef.current,
     helmet: app.itemHelmet1Ref.current,
     ammo5: app.itemAmmoRef.current,
     ammo10: app.itemAmmoRef.current,
@@ -648,13 +654,7 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
   // RESET START POSITION IF DOESN'T EXIST IN CURRENT GRID OR CONFLICTING W/ THIS MAP
   for (const plyr of app.players) {
     // if (!app.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y)) {
-    if (
-      !app.gridInfo.find(
-        (x) =>
-          x.number.x === plyr.startPosition.cell.number.x &&
-          x.number.y === plyr.startPosition.cell.number.y,
-      )
-    ) {
+    if (!app.gridInfo.find((x) => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y)) {
       let cll = { x: undefined, y: undefined };
       let randomFreeCellChosen = false;
 
@@ -671,26 +671,14 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
 
     // RECONSIDER/RANDOM CHOOSE START POSTION IF CONFLICTING W/ THIS MAP
     if (
-      app.gridInfo.find(
-        (x) =>
-          x.number.x === plyr.startPosition.cell.number.x &&
-          x.number.y === plyr.startPosition.cell.number.y,
-      ).terrain.type === "deep" ||
-      app.gridInfo.find(
-        (x) =>
-          x.number.x === plyr.startPosition.cell.number.x &&
-          x.number.y === plyr.startPosition.cell.number.y,
-      ).terrain.type === "void" ||
-      app.gridInfo.find(
-        (x) =>
-          x.number.x === plyr.startPosition.cell.number.x &&
-          x.number.y === plyr.startPosition.cell.number.y,
-      ).void.state === true ||
-      app.gridInfo.find(
-        (x) =>
-          x.number.x === plyr.startPosition.cell.number.x &&
-          x.number.y === plyr.startPosition.cell.number.y,
-      ).obstacle.state === true
+      app.gridInfo.find((x) => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y).terrain.type ===
+        "deep" ||
+      app.gridInfo.find((x) => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y).terrain.type ===
+        "void" ||
+      app.gridInfo.find((x) => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y).void.state ===
+        true ||
+      app.gridInfo.find((x) => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y).obstacle.state ===
+        true
     ) {
       let cll = { x: undefined, y: undefined };
       let randomFreeCellChosen = false;
@@ -764,19 +752,12 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
   app.placeItems({ init: true, items: "" });
 
   // CELL COLOR REF
-  let preCellColorRef = app.gridInfo.map(
-    (x) => (x = { x: x.number.x, y: x.number.y, color: "" }),
-  );
+  let preCellColorRef = app.gridInfo.map((x) => (x = { x: x.number.x, y: x.number.y, color: "" }));
   for (const cell of preCellColorRef) {
     let colorCheckPass = false;
     while (colorCheckPass === false) {
-      let randomColor = `rgb(${app.rnJesus(0, 255)},${app.rnJesus(
-        0,
-        255,
-      )},${app.rnJesus(0, 255)})`;
-      let colorsInUse = preCellColorRef
-        .filter((x) => x.color !== "")
-        .map((y) => y === y.color);
+      let randomColor = `rgb(${app.rnJesus(0, 255)},${app.rnJesus(0, 255)},${app.rnJesus(0, 255)})`;
+      let colorsInUse = preCellColorRef.filter((x) => x.color !== "").map((y) => y === y.color);
       if (colorsInUse.find((x) => x === randomColor)) {
         colorCheckPass = false;
       } else {
@@ -806,9 +787,7 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
       };
 
       let cell = app.gridInfo.find((elem) => elem.number.x === x && elem.number.y === y);
-      let cellLevelData = app.gridInfo.find(
-        (elem) => elem.number.x === x && elem.number.y === y,
-      ).levelData;
+      let cellLevelData = app.gridInfo.find((elem) => elem.number.x === x && elem.number.y === y).levelData;
 
       floor = app.floorImgs[cell.terrain.name];
 
@@ -821,11 +800,7 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
       context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
 
       context.fillStyle = "black";
-      context.fillText(
-        "" + x + "," + y + "",
-        iso.x - offset.x / 2 + 18,
-        iso.y - offset.y / 2 + 12,
-      );
+      context.fillText("" + x + "," + y + "", iso.x - offset.x / 2 + 18, iso.y - offset.y / 2 + 12);
 
       context.fillStyle = "black";
       context.fillRect(center.x, center.y, 5, 5);
@@ -934,10 +909,7 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
       }
 
       for (const player of app.players) {
-        if (
-          x === player.startPosition.cell.number.x &&
-          y === player.startPosition.cell.number.y
-        ) {
+        if (x === player.startPosition.cell.number.x && y === player.startPosition.cell.number.y) {
           let playerImg;
           let playerImgIndex;
           let atkType = player.currentWeapon.type;
@@ -974,9 +946,7 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
           };
 
           let cell = app.gridInfo.find(
-            (elem) =>
-              elem.number.x === player.startPosition.cell.number.x &&
-              elem.number.y === player.startPosition.cell.number.y,
+            (elem) => elem.number.x === player.startPosition.cell.number.x && elem.number.y === player.startPosition.cell.number.y,
           );
           point.x = cell.center.x;
           point.y = cell.center.y;
@@ -1024,30 +994,14 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
             y: player.nextPosition.y - app.floorImageHeight,
           };
 
-          context2.drawImage(
-            playerImg,
-            sx,
-            sy,
-            sWidth,
-            sHeight,
-            newCharDrawPoint.x,
-            newCharDrawPoint.y,
-            app.playerDrawWidth2,
-            app.playerDrawHeight2,
-          );
+          context2.drawImage(playerImg, sx, sy, sWidth, sHeight, newCharDrawPoint.x, newCharDrawPoint.y, app.playerDrawWidth2, app.playerDrawHeight2);
         }
       }
 
       // OBSTACLES & BARRIERS
       if (cell.barrier.state === true && cell.void.state !== true) {
         let barrierImg = app.barrierImgs[cell.barrier.type][cell.barrier.position];
-        context2.drawImage(
-          barrierImg,
-          iso.x - offset.x,
-          iso.y - barrierImg.height,
-          barrierImg.width,
-          barrierImg.height,
-        );
+        context2.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
       }
 
       if (cell.obstacle.state === true && cell.void.state !== true) {
