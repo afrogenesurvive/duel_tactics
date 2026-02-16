@@ -264,7 +264,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         }
 
         if (hide !== true) {
-          console.log("Drawing item:", gridInfoCell.item);
+          // console.log("Drawing item:", gridInfoCell.item);
           let itemImg;
           let fillClr;
           if (gridInfoCell.item.type === "item") {
@@ -462,7 +462,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
               let moveAnimIndex = app.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
               finalAnimIndex = moveAnimIndex + 1;
-              console.log("anim testing mv spd", plyr.speed.move, "step", plyr.moving.step, "plyr", plyr.number, "index", finalAnimIndex);
+              // console.log("move anim testing mv spd", plyr.speed.move, "step", plyr.moving.step, "plyr", plyr.number, "index", finalAnimIndex);
               if (plyr.target.cell1.void == true) {
                 // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               }

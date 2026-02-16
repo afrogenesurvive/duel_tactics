@@ -172,6 +172,7 @@ export function checkDeflection(app, player) {
 
     if (player.dead.state !== true && player.falling.state !== true) {
       let shouldDeflectDrop = app.rnJesus(1, player.crits.guardBreak);
+      //   let shouldDeflectDrop = 1;
       if (shouldDeflectDrop === 1) {
         app.deflectDrop(player);
       }

@@ -1,7 +1,11 @@
 export function checkStamina(app, player) {
   if (player.stamina.current < player.stamina.max) {
-    player.stamina.current += 0.05;
-    player.stamina.current = +(Math.round(player.stamina.current + "e+" + 3) + "e-" + 3);
+    if (player.moving.state !== true) {
+      player.stamina.current += 0.05;
+      player.stamina.current = +(Math.round(player.stamina.current + "e+" + 3) + "e-" + 3);
+    } else {
+      // DON'T INCRMENT STAMINA MID MOVE. SINCE if (player.stamina.current < 1) moveSpeed = 0.05;
+    }
 
     if (player.stamina.current >= player.stamina.max) {
       player.stamina.current = player.stamina.max;

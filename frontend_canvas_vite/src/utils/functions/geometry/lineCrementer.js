@@ -56,6 +56,8 @@ export function lineCrementer(app, player) {
   }
 
   // console.log('mover stepper',player.moving.step);
+  console.log(`lineCrementer: move step ${player.moving.step} movespeed ${moveSpeed}, stamina ${player.stamina.current}`);
+
   player.moving.step = +(Math.round(player.moving.step + moveSpeed + "e+" + 3) + "e-" + 3);
   // player.moving.step = player.moving.step + moveSpeed;
   // console.log("mover stepper", player.moving.step);

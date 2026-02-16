@@ -1,4 +1,4 @@
-export function checkObstacleBarrier(app, player) {
+export function checkObstacleBarrier(app, player, nextPosition) {
   // MOVING & FALLING
   // CHECK OBSTACLE/BARRIER TRAPS AND UPDATE CELL BARRIER/OBSTACLE
   for (let cell of app.gridInfo) {

@@ -1,23 +1,17 @@
 export function checkMoveProgress(app, player, nextPosition) {
   if (player.moving.state === true) {
-    // console.log(
-    //   "player ",
-    //   player.number,
-    //   " ",
-    //   player.action,
-    //   " : ",
-    //   player.moving.step
-    // );
+    console.log("checkMoveProgress", {
+      plyr_number: player.number,
+      action: player.action,
+      step: player.moving.step,
+      move_speed: player.speed.move,
+      stamina: player.stamina.current,
+    });
 
     nextPosition = app.lineCrementer(player);
     player.nextPosition = nextPosition;
     if (player.moveCancel.state === true) {
-      // console.log(
-      //   "move cancel/ returning...",
-      //   player.moving.step,
-      //   nextPosition,
-      //   player.currentPosition.cell.numbers
-      // );
+      console.log("move cancel/ returning...", player.moving.step, nextPosition, player.currentPosition.cell.numbers);
     }
 
     let atDestRanges1 = [false, false, false, false];
@@ -181,7 +175,7 @@ export function checkMoveProgress(app, player, nextPosition) {
 
           // PUSHBACK MOVEMENT
           if (player.pushBack.state === true) {
-            // console.log('player',player.number,'finished moving pushed back',player.flanking.state);
+            console.log("player", player.number, "finished moving pushed back", player.flanking.state);
 
             // CANCEL AI ATTACK, DEFEND!!
             if (player.ai.state === true) {
