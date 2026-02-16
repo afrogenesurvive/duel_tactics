@@ -1,6 +1,8 @@
 export function checkDeflection(app, player) {
   // if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit && player.success.deflected.predeflect !== true) {
   if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
+    console.log("player deflected");
+
     player.action = "deflected";
     player.success.deflected.count++;
 
@@ -72,7 +74,7 @@ export function checkDeflection(app, player) {
   }
   //END DEFLECTION, SPIN & DROP
   else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
-    // console.log('deflect end',player.success.deflected.type);
+    console.log("deflect end", player.success.deflected.type);
     // DEFLECT SPIN!
     let shouldSpin;
     if (player.success.deflected.type === "attacked") {

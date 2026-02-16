@@ -1,12 +1,12 @@
 export function checkMoveProgress(app, player, nextPosition) {
   if (player.moving.state === true) {
-    console.log("checkMoveProgress", {
-      plyr_number: player.number,
-      action: player.action,
-      step: player.moving.step,
-      move_speed: player.speed.move,
-      stamina: player.stamina.current,
-    });
+    // console.log("checkMoveProgress", {
+    //   plyr_number: player.number,
+    //   action: player.action,
+    //   step: player.moving.step,
+    //   move_speed: player.speed.move,
+    //   stamina: player.stamina.current,
+    // });
 
     nextPosition = app.lineCrementer(player);
     player.nextPosition = nextPosition;
