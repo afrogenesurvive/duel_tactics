@@ -6,7 +6,7 @@ export function checkDeflectionElasticCounter(app, player) {
     if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "start") {
       player.elasticCounter.pause.preState = false;
       player.elasticCounter.pause.state = true;
-      // console.log('start pause, turn on pause');
+      // console.log("start pause, turn on pause");
     }
 
     // IF PAUSE IS NOT START, COUNT UP
@@ -23,11 +23,11 @@ export function checkDeflectionElasticCounter(app, player) {
     if (player.elasticCounter.countUp.state === true) {
       if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit + 1) {
         if (player.elasticCounter.countUp.count === 0) {
-          // console.log('elastic count up start');
+          // console.log("elastic count up start");
         }
 
         player.elasticCounter.countUp.count++;
-        // console.log('elastic counting up: ',player.elasticCounter.countUp.count);
+        // console.log("elastic counting up: ", player.elasticCounter.countUp.count);
       }
 
       // FINISH COUNT UP
@@ -44,13 +44,13 @@ export function checkDeflectionElasticCounter(app, player) {
         if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "peak") {
           player.elasticCounter.pause.preState = false;
           player.elasticCounter.pause.state = true;
-          // console.log('peak pause. turn on pause');
+          // console.log("peak pause. turn on pause");
         }
 
         // IF PAUSE IS NOT PEAK, COUNT DOWM
         if (player.elasticCounter.pause.type !== "peak") {
           player.elasticCounter.countDown.state = true;
-          // console.log('pause is not peak. count down');
+          // console.log("pause is not peak. count down");
         }
       }
     }
@@ -62,27 +62,27 @@ export function checkDeflectionElasticCounter(app, player) {
       // COUNT PAUSE
       if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit + 1) {
         if (player.elasticCounter.pause.count === 0) {
-          // console.log('pause count start');
+          // console.log("pause count start");
         }
 
         player.elasticCounter.pause.count++;
-        // console.log('pause counting: ',player.elasticCounter.pause.count);
+        // console.log("pause counting: ", player.elasticCounter.pause.count);
       }
 
       // FINISH PAUSE
       if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit + 1) {
-        // console.log('pause count finished');
+        // console.log("pause count finished");
 
         // IF PAUSE IS START, COUNT UP
         if (player.elasticCounter.pause.type === "start") {
           player.elasticCounter.countUp.state = true;
-          // console.log('start pause count finished. count up');
+          // console.log("start pause count finished. count up");
         }
 
         // IF PAUSE IS PEAK, COUNT DOWN
         if (player.elasticCounter.pause.type === "peak") {
           player.elasticCounter.countDown.state = true;
-          // console.log('peak pause count finished. count down');
+          // console.log("peak pause count finished. count down");
         }
 
         // IF PAUSE IS END, TURN OFF ELASTIC COUNT
@@ -91,7 +91,7 @@ export function checkDeflectionElasticCounter(app, player) {
           player.elasticCounter.type = "";
           player.elasticCounter.subType = "";
           // player.action = "idle";
-          // console.log('end pause count finished. turn off elastic count');
+          // console.log("end pause count finished. turn off elastic count");
         }
 
         // RESET PAUSE COUNT
@@ -109,7 +109,7 @@ export function checkDeflectionElasticCounter(app, player) {
         }
 
         player.elasticCounter.countDown.count++;
-        // console.log('elastic counting down: ',player.elasticCounter.countDown.count);
+        // console.log("elastic counting down: ", player.elasticCounter.countDown.count);
       }
 
       // FINISH COUNT DOWN
@@ -119,7 +119,7 @@ export function checkDeflectionElasticCounter(app, player) {
           count: 0,
           limit: player.elasticCounter.countDown.limit,
         };
-        // console.log('finished count down. elastic counter end');
+        // console.log("finished count down. elastic counter end");
 
         // IF PAUSE IS END, COUNT PAUSE
         if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "end") {

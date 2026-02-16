@@ -1,7 +1,7 @@
 export function checkDeflection(app, player) {
   // if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit && player.success.deflected.predeflect !== true) {
   if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
-    console.log("player deflected");
+    // console.log("player deflected");
 
     player.action = "deflected";
     player.success.deflected.count++;

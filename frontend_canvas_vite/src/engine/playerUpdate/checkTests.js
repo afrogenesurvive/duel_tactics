@@ -116,6 +116,10 @@ export function checkTests(app, player) {
   }
   // DEFLECTION TESTING
   // if (app.time === 100 && player.number === 1) {
-  //   app.setDeflection(player, "defended", false);
+  //   app.setDeflection(player, "parried", false);
+  // }
+  // if (app.time === 250 && player.number === 1) {
+  //   // app.setDeflection(player, "attacked", false);
+  //   app.setDeflection(player, "outOfStamina", false);
   // }
 }

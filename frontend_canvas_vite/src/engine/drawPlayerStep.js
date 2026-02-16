@@ -653,7 +653,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                 }
               }
               finalAnimIndex = animIndex5;
-              // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+              // console.log("anim testing dflct", {
+              //   // plyr_number: plyr.number,
+              //   count: plyr.success.deflected.count,
+              //   // elastic_count_countUp: plyr.elasticCounter.countUp.count,
+              //   elastic_count_pause: plyr.elasticCounter.pause.count,
+              //   // elastic_count_countDown: plyr.elasticCounter.countDown.count,
+              //   finalAnimIndex: finalAnimIndex,
+              // });
               break;
             case "dodging":
               let animIndex7 = plyr.dodging.count - 1;
@@ -2527,6 +2534,13 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             finalCoords.y -= 10;
 
             if (x === plyr.currentPosition.cell.number.x && y === plyr.currentPosition.cell.number.y) {
+              // console.log("drawPlyr dflct dpth srt", {
+              //   drawCellx: drawCell.x,
+              //   drawCelly: drawCell.y,
+              //   finalCoordsx: finalCoords.x,
+              //   finalCoordsy: finalCoords.y,
+              // });
+
               context2.drawImage(
                 updatedPlayerImg,
                 sx,
@@ -2649,7 +2663,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
             // }
           }
           if (plyr.elasticCounter.state !== true && plyr.elasticCounter.type === "deflected" && x === app.gridWidth && y === app.gridWidth) {
-            // console.log('deflected elastic counter overflow?',plyr.success.deflected.count);
+            // console.log("deflected elastic counter overflow?", plyr.success.deflected.count);
           }
         }
         // DODGING

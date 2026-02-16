@@ -1,5 +1,5 @@
 export function setElasticCounter(app, type, subType, pause, player) {
-  // console.log('setElasticCounter');
+  // console.log("setElasticCounter");
 
   if (type === "deflected") {
     let point = {
@@ -14,6 +14,7 @@ export function setElasticCounter(app, type, subType, pause, player) {
       countCalc = 6;
       countCalcPause = player.success.deflected.limit - 12;
     }
+    // console.log(`countCalc: ${countCalc}, countCalcPause: ${countCalcPause}`);
 
     player.elasticCounter = {
       state: true,
