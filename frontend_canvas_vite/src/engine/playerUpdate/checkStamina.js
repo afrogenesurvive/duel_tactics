@@ -14,7 +14,11 @@ export function checkStamina(app, player) {
       // console.log('stamina lower limit reset for player ',player.number);
       player.stamina.current = 0;
     }
-    if (player.stamina.current === 0) {
+
+    if (
+      player.stamina.current === 0
+      // player.stamina.current === 1
+    ) {
       console.log(`checkStamina: player ${player.number} is out of stamina!`);
       player.flanking = {
         checking: false,

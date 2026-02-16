@@ -466,13 +466,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
               let moveAnimIndex = app.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
               finalAnimIndex = moveAnimIndex + 1;
-              console.log("draw player step", {
-                plyr_number: plyr.number,
-                move_speed: plyr.speed.move,
-                moveSpeed: moveSpeed,
-                step: plyr.moving.step,
-                finalAnimIndex: finalAnimIndex,
-              });
+              // console.log("draw player step", {
+              //   plyr_number: plyr.number,
+              //   move_speed: plyr.speed.move,
+              //   moveSpeed: moveSpeed,
+              //   step: plyr.moving.step,
+              //   stamina: plyr.stamina.current,
+              //   finalAnimIndex: finalAnimIndex,
+              // });
 
               if (plyr.target.cell1.void == true) {
                 // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
@@ -717,6 +718,9 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         switch (plyr.action) {
           case "moving":
             let moveSpeed = plyr.speed.move;
+            if (plyr.stamina.current < 1) {
+              moveSpeed = 0.05;
+            }
             if (plyr.terrainMoveSpeed.state === true) {
               moveSpeed = plyr.terrainMoveSpeed.speed;
             }

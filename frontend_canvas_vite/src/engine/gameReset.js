@@ -1,5 +1,5 @@
 export function gameReset(app, type) {
-  // console.log('resetting');
+  console.log("resetting");
 
   app.setState({
     loading: true,

@@ -1,41 +1,81 @@
-{
-  "name": "dueal_tactics_frontend_vite",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.4.0",
-    "@fortawesome/free-brands-svg-icons": "^6.4.0",
-    "@fortawesome/free-regular-svg-icons": "^6.4.0",
-    "@fortawesome/free-solid-svg-icons": "^6.4.0",
-    "@fortawesome/react-fontawesome": "^0.2.0",
-    "astar-typescript": "^1.2.7",
-    "bootstrap": "^5.3.0",
-    "easystarjs": "^0.4.4",
-    "pathfinding": "^0.4.18",
-    "point-in-polygon": "^1.1.0",
-    "react": "^18.2.0",
-    "react-bootstrap": "^2.8.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.10.0",
-    "svgo": "^3.0.2",
-    "vite-plugin-svgr": "^3.2.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.21.4",
-    "@babel/preset-react": "^7.18.6",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react": "^4.0.0-beta.0",
-    "eslint": "^8.38.0",
-    "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "vite": "^4.3.0"
-  }
-}
+Start movment for player 1. Stamina: current 0.19999999999999998 / cost 0.1 
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.05, finalAnimIndex: 1}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.05, finalAnimIndex: 1}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.1, finalAnimIndex: 2}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.1, finalAnimIndex: 2}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.15, finalAnimIndex: 3}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.15, finalAnimIndex: 3}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.2, finalAnimIndex: 4}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.2, finalAnimIndex: 4}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.25, finalAnimIndex: 5}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.25, finalAnimIndex: 5}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.3, finalAnimIndex: 6}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.3, finalAnimIndex: 6}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.35, finalAnimIndex: 7}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.35, finalAnimIndex: 7}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.4, finalAnimIndex: 8}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.4, finalAnimIndex: 8}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.45, finalAnimIndex: 9}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.45, finalAnimIndex: 9}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.5, finalAnimIndex: 10}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.5, finalAnimIndex: 10}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.55, finalAnimIndex: 11}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.55, finalAnimIndex: 11}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.6, finalAnimIndex: 12}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.6, finalAnimIndex: 12}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.65, finalAnimIndex: 13}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.65, finalAnimIndex: 13}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.7, finalAnimIndex: 14}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.7, finalAnimIndex: 14}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.75, finalAnimIndex: 15}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.75, finalAnimIndex: 15}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.8, finalAnimIndex: 16}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.8, finalAnimIndex: 16}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.85, finalAnimIndex: 17}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.85, finalAnimIndex: 17}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.9, finalAnimIndex: 18}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.9, finalAnimIndex: 18}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.95, finalAnimIndex: 19}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.1, moveSpeed: 0.05, step: 0.95, finalAnimIndex: 19}
+
+
+
+Start movment for player 1. Stamina: current 2.05 / cost 0.1 
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.05, finalAnimIndex: 1}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.05, finalAnimIndex: 1}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.1, finalAnimIndex: 2}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.1, finalAnimIndex: 2}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.15, finalAnimIndex: 3}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.15, finalAnimIndex: 3}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.2, finalAnimIndex: 4}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.2, finalAnimIndex: 4}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.25, finalAnimIndex: 5}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.25, finalAnimIndex: 5}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.3, finalAnimIndex: 6}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.3, finalAnimIndex: 6}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.35, finalAnimIndex: 7}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.35, finalAnimIndex: 7}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.4, finalAnimIndex: 8}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.4, finalAnimIndex: 8}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.45, finalAnimIndex: 9}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.45, finalAnimIndex: 9}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.5, finalAnimIndex: 10}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.5, finalAnimIndex: 10}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.55, finalAnimIndex: 11}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.55, finalAnimIndex: 11}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.6, finalAnimIndex: 12}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.6, finalAnimIndex: 12}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.65, finalAnimIndex: 13}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.65, finalAnimIndex: 13}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.7, finalAnimIndex: 14}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.7, finalAnimIndex: 14}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.75, finalAnimIndex: 15}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.75, finalAnimIndex: 15}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.8, finalAnimIndex: 16}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.8, finalAnimIndex: 16}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.85, finalAnimIndex: 17}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.85, finalAnimIndex: 17}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.9, finalAnimIndex: 18}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.9, finalAnimIndex: 18}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.95, finalAnimIndex: 19}
+drawPlayerStep.js?t=1771201714535:469 draw player step {plyr_number: 1, move_speed: 0.05, moveSpeed: 0.05, step: 0.95, finalAnimIndex: 19}

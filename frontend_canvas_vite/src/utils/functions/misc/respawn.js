@@ -1,5 +1,5 @@
 export function respawn(app, player) {
-  // console.log('respawning',player.number,player);
+  console.log("respawning", player.number, player);
 
   if (app.camera.state !== true) {
     app.resetTarget(player);

@@ -118,8 +118,4 @@ export function checkTests(app, player) {
   // if (app.time === 100 && player.number === 1) {
   //   app.setDeflection(player, "defended", false);
   // }
-
-  if (player.number === 1 && app.time > 50 && app.time < 200) {
-    player.stamina.current = 0;
-  }
 }
