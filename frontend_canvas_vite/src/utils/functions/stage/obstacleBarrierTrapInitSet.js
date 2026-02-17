@@ -1,5 +1,5 @@
 export function obstacleBarrierTrapInitSet(app, superType, type, data) {
-  // console.log("  obstacleBarrierTrapInitSet", data[type].trap.state);
+  console.log("  obstacleBarrierTrapInitSet", data[type]);
   let trap = data[type].trap;
   let item = app.itemList.find((x) => {
     return x.name === trap.itemNameRef;

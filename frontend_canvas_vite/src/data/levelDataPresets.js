@@ -1,3 +1,5 @@
+// _*_0.0_a_0 barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
+
 export const levelDataPresets = {
   levelData12: {
     row0: [
@@ -247,7 +249,7 @@ export const levelDataPresets = {
     ],
     row4: [
       "**_*_4.0_a_0a*",
-      "**_*_4.1_a_0a*",
+      "**_c_4.1_a_0a*",
       "**_*_4.2_f_0a*",
       "**_*_4.3_f_0a*",
       "**_h_4.4_a_0a*",

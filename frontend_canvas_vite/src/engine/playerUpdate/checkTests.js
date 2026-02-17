@@ -26,6 +26,7 @@ export function checkTests(app, player) {
     // }
     // player = app.setElasticCounter("test", "start", true, player);
   }
+  // TRAPS
   if (app.time === 100 && player.number === 1) {
     // app.setBackgroundImage("sea_clouds_1");
     // app.testCount.state = true;

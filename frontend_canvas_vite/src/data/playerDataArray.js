@@ -4,8 +4,8 @@ export const playerDataArray = [
     startPosition: {
       cell: {
         number: {
-          x: 3,
-          y: 5,
+          x: 2,
+          y: 1,
         },
         center: {
           x: 0,
@@ -64,7 +64,7 @@ export const playerDataArray = [
       },
       myCellBlock: false,
     },
-    direction: "east",
+    direction: "south",
     turning: {
       state: false,
       toDirection: "",

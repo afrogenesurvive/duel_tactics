@@ -1,3 +1,38 @@
+// player target
+// - dodging
+// - - all directions
+// - back attack
+// - side attack
+// - - armed
+// - - - peak attack
+// - - - - correct direction
+// - - - - incorrect direction
+// - - unarmed
+// - - defending
+// - - - unarmed
+// - - - armed
+// - - - - correct direction
+// - - - - - peak defend
+// - - - - - off-peak defend
+// - - - - incorrect direction
+// - - no attack or defend
+// - frontal attack
+// - - peak attack unarmed
+// - - correct direction
+// - - - peak attack armed
+// - - incorrect direction
+// - - - peak attack armed
+// - - defending
+// - - - correct direction
+// - - - - unarmed
+// - - - - - peak
+// - - - - - off-peak
+// - - - - armed
+// - - - - - peak
+// - - - - - off-peak
+// - - - incorrect direction
+// - - no attack or defend
+
 export function projectileAttackParse(app, bolt, ownerType, targetType, target) {
   // console.log("projectileAttackParse");
 
@@ -657,7 +692,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               "from the front. by",
               bolt.ownerType,
               bolt.owner,
-              "but they defended unsuccessfully & unarmed due to action direction . Damage, Deflect?",
+              "but they defended unsuccessfully due to action direction . Damage, Deflect?",
             );
             app.handleProjectileDamage(bolt, ownerType, "player", target);
             app.setDeflection(target, "attacked", false);

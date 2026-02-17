@@ -1,4 +1,6 @@
 export function getDirectionFromCells(app, cell1Number, cell2Number) {
+  console.log(`getDirectionFromCells cell1Number ${cell1Number?.x},${cell1Number?.y} cell2Number ${cell2Number?.x},${cell2Number?.y}`);
+
   let direction = "";
 
   if (cell2Number.x === cell1Number.x && cell2Number.y === cell1Number.y - 1) {

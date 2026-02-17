@@ -61,6 +61,8 @@ export function handleProjectileDamage(app, bolt, ownerType, targetType, target)
       if (doubleHit !== 1) {
         damage = 2;
       }
+      console.log(`handleProjectileDamage: dmg ${damage}`);
+
       // BACK ATTACK ADDS DMG +1
       if (target.direction === bolt.direction) {
         damage += 1;
