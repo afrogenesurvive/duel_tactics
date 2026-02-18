@@ -222,7 +222,7 @@ export const obstacleBarrierDataRefs = {
       type: "barrel",
       hp: 2,
       destructible: {
-        state: false,
+        state: true,
         weapons: ["sword1", "bolt", "spear1"],
         leaveRubble: true,
       },

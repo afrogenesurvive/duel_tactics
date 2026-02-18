@@ -1,5 +1,5 @@
 export function getDirectionFromCells(app, cell1Number, cell2Number) {
-  console.log(`getDirectionFromCells cell1Number ${cell1Number?.x},${cell1Number?.y} cell2Number ${cell2Number?.x},${cell2Number?.y}`);
+  // console.log(`getDirectionFromCells cell1Number ${cell1Number?.x},${cell1Number?.y} cell2Number ${cell2Number?.x},${cell2Number?.y}`);
 
   let direction = "";
 

@@ -1,5 +1,5 @@
 export function obstacleBarrierTrapInitSet(app, superType, type, data) {
-  console.log("  obstacleBarrierTrapInitSet", data[type]);
+  // console.log("  obstacleBarrierTrapInitSet", data[type]);
   let trap = data[type].trap;
   let item = app.itemList.find((x) => {
     return x.name === trap.itemNameRef;
@@ -12,6 +12,7 @@ export function obstacleBarrierTrapInitSet(app, superType, type, data) {
     subType: item.subType,
     effect: item.effect,
   };
+
   if (trap.item.effect.split("+")[0] === "ammo") {
     trap.ammo = parseInt(trap.item.effect.split("+")[1]);
     // trap.ammo = 100;
@@ -35,7 +36,11 @@ export function obstacleBarrierTrapInitSet(app, superType, type, data) {
               trap.target = availibleCells
                 .slice()
                 .reverse()
-                .find((x) => (x.x === data.number.x && x.y === data.number.y + 3) || (x.y === data.number.y && x.x === data.number.x + 3));
+                .find(
+                  (x) =>
+                    (x.x === data.number.x && (x.y === data.number.y + 3 || x.y === data.number.y - 3)) ||
+                    (x.y === data.number.y && (x.x === data.number.x + 3 || x.x === data.number.x - 3)),
+                );
             } else {
               if (trap.item.subType === "spear") {
                 // trap.target = availibleCells[1];
@@ -62,6 +67,8 @@ export function obstacleBarrierTrapInitSet(app, superType, type, data) {
                   );
               }
             }
+            // console.log(`trap target ${trap.target}, trap.item.subType ${trap.item.subType}, availibleCells`, availibleCells);
+
             trap.direction = app.getDirectionFromCells(data.number, trap.target);
             // console.log("availibleCells", data.number, availibleCells, trap.target);
             // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);

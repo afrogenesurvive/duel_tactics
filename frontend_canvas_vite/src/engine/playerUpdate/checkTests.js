@@ -28,13 +28,8 @@ export function checkTests(app, player) {
   }
   // TRAPS
   if (app.time === 100 && player.number === 1) {
-    // app.setBackgroundImage("sea_clouds_1");
-    // app.testCount.state = true;
-    // app.testCount.limit = 10;
-    // app.pushBack(player, "east");
-    // app.setDeflection(player, "parried", false);
     // let testTraps = app.customObstacleBarrierTrapSet("refreshActive", "");
-    let testTraps = app.customObstacleBarrierTrapSet("activateInactive", "");
+    // let testTraps = app.customObstacleBarrierTrapSet("activateInactive", "");
   }
   if (app.time === 120 && player.number === 1) {
     // app.setDeflection(player, "defended", true);
