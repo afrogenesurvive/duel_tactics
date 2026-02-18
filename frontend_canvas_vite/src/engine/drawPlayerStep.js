@@ -616,7 +616,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
 
       // OBSTACLES & BARRIERS
 
-      drawObstaclesBarriers(app, context, context2, x, y, gridInfoCell, iso, offset);
+      drawObstaclesBarriers(app, context, context2, x, y, gridInfoCell, iso, offset, center);
 
       // PROJECTILES
       for (const bolt of app.projectiles) {

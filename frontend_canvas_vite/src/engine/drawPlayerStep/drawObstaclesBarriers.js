@@ -1,4 +1,4 @@
-export function drawObstaclesBarriers(app, context, context2, x, y, gridInfoCell, iso, offset) {
+export function drawObstaclesBarriers(app, context, context2, x, y, gridInfoCell, iso, offset, center) {
   // OBSTACLE BARRIER DIRECTIONAL ACTION ANIM
   for (const animAction of app.obstacleBarrierActionAnimationArray) {
     let lnWdth = 5;
