@@ -130,6 +130,7 @@ export const playerDataArray = [
       peak: false,
       charge: 0,
       chargePeak: false,
+      maxCharge: 15,
       peakCount: 0,
       blunt: false,
       clashing: {
@@ -639,6 +640,7 @@ export const playerDataArray = [
       peakCount: 0,
       charge: 0,
       chargePeak: false,
+      maxCharge: 15,
       blunt: false,
       clashing: {
         state: false,

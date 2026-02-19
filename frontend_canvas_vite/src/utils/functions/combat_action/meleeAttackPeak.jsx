@@ -266,6 +266,9 @@ export function meleeAttackPeak(app, ownerType, owner) {
               targetCell1.number,
               "w/",
               ownerWeaponType,
+              owner.attacking.direction,
+              "time",
+              app.time,
             );
           }
         }

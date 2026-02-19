@@ -57,6 +57,7 @@ export function playerPopupProgressCalc(app, player, popup) {
 
     if (player.attacking.peak === true || player.attacking.chargePeak === true || player.attacking.count === player.attacking.peakCount) {
       phase = "peak";
+      // console.log(`playerPopupProgressCalc: ${player.number} ${player.action} peak!! ${app.time}`);
     } else if (player.attacking.count < end) {
       // if count is less or > peak!!!
 

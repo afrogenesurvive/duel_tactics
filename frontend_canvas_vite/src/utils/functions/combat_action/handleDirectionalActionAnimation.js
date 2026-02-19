@@ -39,7 +39,7 @@ export function handleDirectionalActionAnimation(app, ownerType, action, phase, 
   let delay = 20;
 
   if (ownerType === "player" || ownerType === "obstacle" || ownerType === "barrier") {
-    console.log("directional action anim count", xCount);
+    // console.log("directional action anim count", xCount);
     countLimit = xCount;
     if (countLimit > 18) {
       countLimit = 18;

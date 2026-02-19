@@ -27,11 +27,7 @@ export function checkAttacking(app, player) {
         attackPeak = player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][chargeType];
       }
 
-      if (
-        player.attacking.peakCount === 0 ||
-        player.attacking.count < player.attacking.peakCount
-        // chargeType === "charged"
-      ) {
+      if (player.attacking.peakCount === 0 || player.attacking.count < player.attacking.peakCount) {
         // console.log(
         //   "attacking peakCount changed. was",
         //   player.attacking.peakCount,
@@ -41,11 +37,7 @@ export function checkAttacking(app, player) {
         player.attacking.peakCount = attackPeak;
       }
 
-      if (
-        player.attacking.limit === 0 ||
-        player.attacking.count < player.attacking.peakCount
-        // chargeType === "charged"
-      ) {
+      if (player.attacking.limit === 0 || player.attacking.count < player.attacking.peakCount) {
         // console.log(
         //   "attacking limit changed. was",
         //   player.attacking.limit,
@@ -313,17 +305,15 @@ export function checkAttacking(app, player) {
 
           let melee = true;
 
-          // console.log(
-          //   "atk peak:",
-          //   player.attacking.direction,
-          //   "counts:",
-          //   player.attacking.count,
-          //   player.attacking.peakCount,
-          //   player.attacking.limit,
-          //   chargeType === "charged",
-          //   "blunt:",
-          //   player.attacking.blunt
-          // );
+          console.log(`Attack peak!`, {
+            plyr_no: player.number,
+            atk_count: player.attacking.count,
+            peak_count: player.attacking.peakCount,
+            limit: player.attacking.limit,
+            charge_type: chargeType,
+            blunt: player.attacking.blunt,
+            time: app.time,
+          });
 
           player = app.setElasticCounter("attacking", "peak", false, player);
 

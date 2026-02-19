@@ -34,7 +34,7 @@
 // - - no attack or defend
 
 export function projectileAttackParse(app, bolt, ownerType, targetType, target) {
-  // console.log("projectileAttackParse");
+  console.log("projectileAttackParse", app.time, target.attacking.peakCount);
 
   let deflected = false;
   let x;
@@ -116,7 +116,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
       if (target.direction !== bolt.direction && target.direction !== app.getOppositeDirection(bolt.direction) && deflected !== true) {
         // PLAYER IS ATTACKING ARMED
 
-        if (target.attacking.peak === true && weapon !== "unarmed") {
+        if ((target.attacking.peak === true || target.attacking.count < target.attacking.limit - 5) && weapon !== "unarmed") {
           // CHANCE TO KILL BOLT & PUSHBACK
           // ONLY SLASH IN OPPOSITE DIRECTION CAN KILL BOLT
           if (target.attacking.directionType === "slash" && target.attacking.direction === app.getOppositeDirection(bolt.direction)) {

@@ -57,7 +57,7 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
           let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
           let moveAnimIndex3 = app.moveStepRef[rangeIndex3].indexOf(plyr.moving.step);
           finalAnimIndex = moveAnimIndex3;
-          console.log("anim testing pushback spd", plyr.speed.move, "step", plyr.moving.step, "indx", finalAnimIndex);
+          //   console.log("anim testing pushback spd", plyr.speed.move, "step", plyr.moving.step, "indx", finalAnimIndex);
         } else {
           let moveSpeed = plyr.speed.move;
           // if (plyr.pushing.state === true) {
@@ -75,7 +75,7 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
           let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
           let moveAnimIndex2 = app.moveStepRef[rangeIndex2].indexOf(plyr.moving.step);
           finalAnimIndex = moveAnimIndex2;
-          console.log("anim testing strafe mv spd", plyr.speed.move, "step", plyr.moving.step, "indx", finalAnimIndex);
+          //   console.log("anim testing strafe mv spd", plyr.speed.move, "step", plyr.moving.step, "indx", finalAnimIndex);
         }
         break;
       case "flanking":
