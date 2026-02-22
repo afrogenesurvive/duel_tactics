@@ -116,7 +116,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
       if (target.direction !== bolt.direction && target.direction !== app.getOppositeDirection(bolt.direction) && deflected !== true) {
         // PLAYER IS ATTACKING ARMED
 
-        if ((target.attacking.peak === true || target.attacking.count < target.attacking.limit - 5) && weapon !== "unarmed") {
+        if (
+          (target.attacking.peak === true ||
+            (target.attacking.count > target.attacking.peak &&
+              target.attacking.count < target.attacking.peak + target.attacking.effectivenessAllowance)) &&
+          weapon !== "unarmed"
+        ) {
           // CHANCE TO KILL BOLT & PUSHBACK
           // ONLY SLASH IN OPPOSITE DIRECTION CAN KILL BOLT
           if (target.attacking.directionType === "slash" && target.attacking.direction === app.getOppositeDirection(bolt.direction)) {
@@ -396,7 +401,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
       // FRONTAL ATTACK
       if (bolt.direction === app.getOppositeDirection(target.direction) && deflected !== true) {
         // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-        if (target.attacking.peak === true && weapon === "unarmed") {
+        if (
+          (target.attacking.peak === true ||
+            (target.attacking.count > target.attacking.peak &&
+              target.attacking.count < target.attacking.peak + target.attacking.effectivenessAllowance)) &&
+          weapon === "unarmed"
+        ) {
           console.log(
             "bolt hit plyr",
             target.number,
@@ -420,7 +430,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
           target.attacking.directionType === "slash" &&
           (target.attacking.direction === app.getOppositeDirection(bolt.direction) || target.attacking.direction === bolt.direction)
         ) {
-          if (target.attacking.peak === true && weapon !== "unarmed") {
+          if (
+            (target.attacking.peak === true ||
+              (target.attacking.count > target.attacking.peak &&
+                target.attacking.count < target.attacking.peak + target.attacking.effectivenessAllowance)) &&
+            weapon !== "unarmed"
+          ) {
             console.log(
               "bolt hit plyr",
               target.number,
@@ -459,7 +474,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         // TAKE DAMAGE/BE INJURED
-        else if (target.attacking.peak === true && weapon !== "unarmed") {
+        else if (
+          (target.attacking.peak === true ||
+            (target.attacking.count > target.attacking.peak &&
+              target.attacking.count < target.attacking.peak + target.attacking.effectivenessAllowance)) &&
+          weapon !== "unarmed"
+        ) {
           console.log(
             "bolt hit plyr",
             target.number,
