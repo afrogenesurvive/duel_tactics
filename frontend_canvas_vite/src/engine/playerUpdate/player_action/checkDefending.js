@@ -89,7 +89,8 @@ export function checkDefending(app, player) {
     // SET DIRECTIONAL DEFEND ANIMATIONS
     if (app.showDirectionalActionAnimation === true) {
       let dirAnimSetCalcMod = 5;
-      const decayLimit = Math.ceil((player.defending.limit - defendPeak) * defendDecayLimitPercentage);
+      // const decayLimit = Math.ceil((player.defending.limit - defendPeak) * defendDecayLimitPercentage);
+      const decayLimit = Math.ceil((player.defending.decay.limit - defendPeak) * defendDecayLimitPercentage);
       let xTime = player.defending.peakCount + decayLimit + dirAnimSetCalcMod - player.defending.count;
       let existingDefendAnim = player.actionDirectionAnimationArray.find((x) => x.action === "defending");
       // if (player.defending.count === directionalActionResult.inputThresh) {
@@ -119,13 +120,15 @@ export function checkDefending(app, player) {
 
     // PEAK, START DECAY
     if (executeDefend === true) {
+      console.log(`Execute defend`);
+
       if (player.stamina.current - app.staminaCostRef.defend.peak >= 0) {
         player.action = "defending";
         player.defending.peak = true;
         player.defending.count++;
         player.defending.decay.state = true;
         player.defending.decay.count = 0;
-        player.defending.decay.limit = Math.ceil((player.defending.limit - defendPeak) * defendDecayLimitPercentage);
+        player.defending.decay.limit = Math.ceil((player.defending.decay.limit - defendPeak) * defendDecayLimitPercentage);
         player.stamina.current = player.stamina.current - app.staminaCostRef.defend.peak;
 
         if (!player.popups.find((x) => x.msg === "defending")) {
@@ -168,7 +171,7 @@ export function checkDefending(app, player) {
           decay: {
             state: false,
             count: 0,
-            limit: player.defending.decay.limit,
+            limit: app.defendAnimRef.limit[player.currentWeapon.type].slash - app.defendAnimRef.peak[player.currentWeapon.type].slash,
           },
           direction: "",
           directionType: "", //thrust or slash
@@ -202,13 +205,12 @@ export function checkDefending(app, player) {
         player.defending.decay.count++;
         if (player.defending.decay.count >= app.defendPeakAllowance) {
           player.defending.peak = false;
-          // console.log(
-          //   "peak defend over: count",
-          //   player.defending.count,
-          //   defendPeak,
-          //   player.defending.decay.state
-          // );
+          // console.log("peak defend over: count", player.defending.count, defendPeak, player.defending.decay.state);
         }
+        console.log("Defend decay", {
+          count: player.defending.decay.count,
+          limit: player.defending.decay.limit,
+        });
 
         if (!player.popups.find((x) => x.msg === "defending")) {
           player.popups.push({
@@ -293,7 +295,7 @@ export function checkDefending(app, player) {
           decay: {
             state: false,
             count: 0,
-            limit: player.defending.decay.limit,
+            limit: app.defendAnimRef.limit[player.currentWeapon.type].slash - app.defendAnimRef.peak[player.currentWeapon.type].slash,
           },
           direction: "",
           directionType: "", //thrust or slash

@@ -31,7 +31,7 @@ export function checkFeintsCancels(mode, app, player) {
           decay: {
             state: false,
             count: 0,
-            limit: player.defending.decay.limit,
+            limit: app.defendAnimRef.limit[player.currentWeapon.type].slash - app.defendAnimRef.peak[player.currentWeapon.type].slash,
           },
           direction: "",
           directionType: "", //thrust or slash

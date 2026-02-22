@@ -102,7 +102,7 @@ export function killPlayer(app, player) {
     decay: {
       state: false,
       count: 0,
-      limit: 25,
+      limit: app.defendAnimRef.limit.sword.slash - app.defendAnimRef.peak.sword.slash,
     },
     direction: "",
     directionType: "", //thrust or slash

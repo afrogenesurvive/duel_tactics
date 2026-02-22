@@ -68,7 +68,7 @@ export function discardGear(app, player, type) {
             decay: {
               state: false,
               count: 0,
-              limit: app.players[player.number - 1].defending.decay.limit,
+              limit: app.defendAnimRef.limit.unarmed.slash - app.defendAnimRef.peak.unarmed.slash,
             },
             direction: "",
             directionType: "", //thrust or slash
@@ -140,7 +140,7 @@ export function discardGear(app, player, type) {
             decay: {
               state: false,
               count: 0,
-              limit: app.players[player.number - 1].defending.decay.limit,
+              limit: app.defendAnimRef.limit.unarmed.slash - app.defendAnimRef.peak.unarmed.slash,
             },
             direction: "",
             directionType: "", //thrust or slash
