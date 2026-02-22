@@ -61,9 +61,10 @@ export function playerPopupProgressCalc(app, player, popup) {
     } else if (player.attacking.count < end) {
       // if count is less or > peak!!!
 
-      if (player.attacking.count < player.attacking.peakCount) {
+      if (player.attacking.count <= player.attacking.peakCount) {
         phase = "windup";
         if (popup.msg === "charging") {
+          perc = (player.attacking.charge / player.attacking.maxCharge) * 100;
         } else {
           perc = (player.attacking.count / player.attacking.peakCount) * 100;
         }
@@ -154,7 +155,7 @@ export function playerPopupProgressCalc(app, player, popup) {
   }
   if (popup.msg === "charging") {
     phase = "windup";
-    perc = (player.attacking.charge / 33) * 100;
+    perc = (player.attacking.charge / player.attacking.maxCharge) * 100;
   }
 
   if (phase === "windup") {

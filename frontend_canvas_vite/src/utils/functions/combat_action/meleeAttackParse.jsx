@@ -594,7 +594,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         attackerArmed = unarmed;
       }
 
-      attackerDirectionalInputThresh = Math.ceil(owner.attacking.animRef.peak[attackerArmed][owner.attacking.directionType].normal / 2);
+      attackerDirectionalInputThresh = Math.ceil(owner.attacking.animRef.peak[attackerArmed][owner.attacking.directionType] / 2);
 
       result1 = (owner.attacking.charge / (owner.attacking.peakCount - attackerDirectionalInputThresh)) * 100;
     }

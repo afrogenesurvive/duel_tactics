@@ -115,6 +115,11 @@ export function checkFeintsCancels(mode, app, player) {
       }
 
       if (player.attacking.count < player.attacking.peakCount) {
+        console.log(`attack feint?`, {
+          count: player.attacking.count,
+          peakCount: player.attacking.peakCount,
+        });
+
         // console.log("attack windup key release before peak. feinting. refund stamina part");
         let dir = player.attacking.direction;
         player.action = "idle";

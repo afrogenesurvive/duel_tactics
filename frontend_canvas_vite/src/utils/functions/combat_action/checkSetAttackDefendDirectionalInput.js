@@ -2,6 +2,8 @@
 // dirInputThresh/ - the count at which directional input will be set. Before this count, player can change direction of attack;
 
 export function checkSetAttackDefendDirectionalInput(app, mode, action, player) {
+  // console.log(`checkSetAttackDefendDirectionalInput: ${mode}`);
+
   // stage is either 'init' or 'windup'
   let charging = false;
   let input = false;
@@ -13,21 +15,25 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
 
   // COLLECT DIRECTIONS OF ALL BUTTONS CURRENTLY BEING PRESSED
   if (app.keyPressed[player.number - 1].north === true) {
+    // console.log(`north`);
     input = true;
     inputDirections.push("north");
     inputCount++;
   }
   if (app.keyPressed[player.number - 1].south === true) {
+    // console.log(`south`);
     input = true;
     inputDirections.push("south");
     inputCount++;
   }
   if (app.keyPressed[player.number - 1].east === true) {
+    // console.log(`east`);
     input = true;
     inputDirections.push("east");
     inputCount++;
   }
   if (app.keyPressed[player.number - 1].west === true) {
+    // console.log(`west`);
     input = true;
     inputDirections.push("west");
     inputCount++;
@@ -40,7 +46,7 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
       player.popups.push({
         state: false,
         count: 0,
-        limit: 10,
+        limit: player.attacking.maxCharge,
         type: "",
         position: "",
         msg: "charging",
@@ -160,7 +166,7 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
   };
 
   if (action === "attacking") {
-    directionalInputThresh = Math.ceil(player[action].animRef.peak.unarmed.thrust.normal / 2);
+    directionalInputThresh = Math.ceil(player[action].animRef.peak[player.currentWeapon.type].thrust / 2);
     if (player.currentWeapon.type === "crossbow") {
       if (mode === "init") {
         player[action].direction = "none";
@@ -234,8 +240,20 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             player[action].directionType = "thrust";
           }
         }
+        // console.log(`attack init directional input:`, {
+        //   input,
+        //   inputDirection,
+        //   actionDirection: player[action].direction,
+        //   actionDirectionType: player[action].directionType,
+        // });
       }
       if (mode === "windup") {
+        // console.log(`attack windup directional input:`, {
+        //   input,
+        //   inputDirection,
+        //   actionDirection: player[action].direction,
+        //   actionDirectionType: player[action].directionType,
+        // });
         if (player[action].count < directionalInputThresh) {
           if (input === true) {
             if (inputCount > 1) {
@@ -243,6 +261,11 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
               inputDirection = inputDirections[0];
             } else {
               inputDirection = inputDirections[0];
+            }
+
+            if (player[action].direction === "none" || player[action].directionType === "thrust") {
+              player[action].direction = inputDirection;
+              player[action].directionType = "slash";
             }
 
             if (inputDirection === player[action].direction) {
@@ -277,6 +300,12 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
               feintAttack();
             }
             if (inputDirection === player[action].direction) {
+              if (player[action].chargeCount > 0 && player[action].chargeCount < player[action].maxCharge) {
+                charge();
+              }
+            }
+          } else {
+            if (player[action].direction === "none" || player[action].directionType === "thrust") {
               if (player[action].chargeCount > 0 && player[action].chargeCount < player[action].maxCharge) {
                 charge();
               }

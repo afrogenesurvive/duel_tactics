@@ -41,7 +41,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
   let boltChargePercentage = 0;
   let boltOwner;
   if (ownerType === "player") {
-    const directionalInputThresh = Math.ceil(app.players[bolt.owner - 1].attacking.animRef.peak.crossbow.slash.normal / 2);
+    const directionalInputThresh = Math.ceil(app.players[bolt.owner - 1].attacking.animRef.peak.crossbow.slash / 2);
     boltChargePercentage = (bolt.charge / (app.players[bolt.owner - 1].attacking.peakCount - directionalInputThresh)) * 100;
   }
 

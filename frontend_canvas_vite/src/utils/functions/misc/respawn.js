@@ -190,7 +190,7 @@ export function respawn(app, player) {
     player.attacking = {
       state: false,
       count: 0,
-      limit: app.attackAnimRef.limit.sword.slash.normal,
+      limit: app.attackAnimRef.limit.sword.slash,
       strength: 0,
       direction: "",
       directionType: "", //thrust or slash

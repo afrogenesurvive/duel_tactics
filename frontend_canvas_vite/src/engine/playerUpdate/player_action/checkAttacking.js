@@ -4,6 +4,12 @@ export function checkAttacking(app, player) {
   if (player.attacking.state === true) {
     let directionalActionResult = app.checkSetAttackDefendDirectionalInput("windup", "attacking", player);
     player = directionalActionResult.player;
+    // console.log(`checkAttacking: directionalActionResult player attacking`, {
+    //   state: player.attacking.state,
+    //   count: player.attacking.count,
+    //   limit: player.attacking.limit,
+    // });
+
     if (player.attacking.state === true) {
       let attackPeak;
       let stamAtkType = player.currentWeapon.type;
@@ -39,13 +45,20 @@ export function checkAttacking(app, player) {
 
           player.attacking.peak = false;
           player.attacking.chargePeak = false;
+          // console.log(`Stepping attack count ${player.attacking.count}`);
         }
 
         // COUNT HAS REACHED PEAK BUT STILL HELD AND LESS THAN MAX CHARGE
         if (player.attacking.count === player.attacking.peakCount) {
           player.attacking.peak = true;
+          // console.log(`Attack count peak ${player.attacking.peakCount}`);
+
           if (player.attacking.chargeCount < player.attacking.maxCharge) {
             player.attacking.chargeCount++;
+            // console.log(`Charing attack`, {
+            //   count: player.attacking.chargeCount,
+            //   limit: player.attacking.maxCharge,
+            // });
           }
         }
 
@@ -229,19 +242,19 @@ export function checkAttacking(app, player) {
           player.attacking.count < player.attacking.peakCount &&
           player.attacking.count === directionalActionResult.inputThresh + Math.ceil(xTime / 2)
         ) {
-          player.actionDirectionAnimationArray = [];
-          player = app.handleDirectionalActionAnimation(
-            "player",
-            "attacking",
-            "release",
-            player,
-            null,
-            // player.attacking.peakCount +
-            //   dirAnimSetCalcMod -
-            //   (directionalActionResult.inputThresh + Math.ceil(xTime / 2)),
-            Math.ceil(xTime / 2),
-            app.directionalAnimShape,
-          );
+          // player.actionDirectionAnimationArray = [];
+          // player = app.handleDirectionalActionAnimation(
+          //   "player",
+          //   "attacking",
+          //   "release",
+          //   player,
+          //   null,
+          //   // player.attacking.peakCount +
+          //   //   dirAnimSetCalcMod -
+          //   //   (directionalActionResult.inputThresh + Math.ceil(xTime / 2)),
+          //   Math.ceil(xTime / 2),
+          //   app.directionalAnimShape,
+          // );
         }
       }
 
@@ -253,14 +266,33 @@ export function checkAttacking(app, player) {
 
           let melee = true;
 
-          console.log(`Attack peak!`, {
-            plyr_no: player.number,
-            atk_count: player.attacking.count,
-            peak_count: player.attacking.peakCount,
-            limit: player.attacking.limit,
-            blunt: player.attacking.blunt,
-            time: app.time,
-          });
+          // console.log(`Attack peak!`, {
+          //   plyr_no: player.number,
+          //   atk_count: player.attacking.count,
+          //   peak_count: player.attacking.peakCount,
+          //   limit: player.attacking.limit,
+          //   blunt: player.attacking.blunt,
+          //   time: app.time,
+          // });
+
+          if (app.showDirectionalActionAnimation === true) {
+            let dirAnimSetCalcMod = 5;
+            let xTime = player.attacking.peakCount + dirAnimSetCalcMod - directionalActionResult.inputThresh;
+
+            player.actionDirectionAnimationArray = [];
+            player = app.handleDirectionalActionAnimation(
+              "player",
+              "attacking",
+              "release",
+              player,
+              null,
+              // player.attacking.peakCount +
+              //   dirAnimSetCalcMod -
+              //   (directionalActionResult.inputThresh + Math.ceil(xTime / 2)),
+              Math.ceil(xTime / 2),
+              app.directionalAnimShape,
+            );
+          }
 
           player = app.setElasticCounter("attacking", "peak", false, player);
 
@@ -314,7 +346,7 @@ export function checkAttacking(app, player) {
             app.meleeAttackPeak("player", player);
           }
 
-          player.attacking.peakCount = 0;
+          // player.attacking.peakCount = 0;
           player.attacking.execute = false;
           // THIS WILL SKIP COUNT TO POINT OF COOLDOWN
           player.attacking.count = player.attacking.peakCount + 1;
@@ -335,7 +367,7 @@ export function checkAttacking(app, player) {
 
       // ATTACK COOLDOWN AND END!
       if (
-        executeAttack !== true &&
+        player.attacking.execute !== true &&
         player.attacking.count !== 0 &&
         // player.attacking.peakCount !== 0 &&
         player.attacking.count > player.attacking.peakCount &&
@@ -346,6 +378,12 @@ export function checkAttacking(app, player) {
         player.attacking.blunt = false;
         player.attacking.chargeCount = 0;
         player.attacking.charge = 0;
+        player.attacking.count++;
+
+        // console.log(`attack cooldown`, {
+        //   limit: player.attacking.limit,
+        //   count: player.attacking.count,
+        // });
 
         // let popup;
         // let popupsToRemove = [

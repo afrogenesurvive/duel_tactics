@@ -10,7 +10,7 @@ export function handleProjectileDamage(app, bolt, ownerType, targetType, target)
       damage = 0;
       let boltChargePercentage = 0;
 
-      const directionalInputThresh = Math.ceil(boltOwner.attacking.animRef.peak.crossbow.slash.normal / 2);
+      const directionalInputThresh = Math.ceil(boltOwner.attacking.animRef.peak.crossbow.slash / 2);
       boltChargePercentage = (bolt.charge / (app.players[bolt.owner - 1].attacking.peakCount - directionalInputThresh)) * 100;
 
       doubleHitChance = boltOwner.crits.doubleHit;

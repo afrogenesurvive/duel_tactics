@@ -124,7 +124,7 @@ export function setElasticCounter(app, type, subType, pause, player) {
     // }
     let pauseLimit = 0;
     if (subType === "windup") {
-      let dirInputThresh = Math.ceil(player[type].animRef.peak.unarmed.thrust.normal / 2);
+      let dirInputThresh = Math.ceil(player[type].animRef.peak.unarmed.thrust / 2);
       countCalcUp = Math.floor(dirInputThresh / 2);
     }
 

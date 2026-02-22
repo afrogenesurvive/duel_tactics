@@ -285,7 +285,7 @@ export function gameReset(app, type) {
       player.attacking = {
         state: false,
         count: 0,
-        limit: app.attackAnimRef.limit[currentWeapon.type].slash.normal,
+        limit: app.attackAnimRef.limit[currentWeapon.type].slash,
         strength: 0,
         direction: "",
         directionType: "", //thrust or slash
