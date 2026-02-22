@@ -378,22 +378,32 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
         if (targetDefending !== true && target.attacking.peak !== true) {
-          console.log(
-            "bolt hit plyr",
-            target.number,
-            "from the side. by",
-            bolt.ownerType,
-            bolt.owner,
-            "but theyre not defending or attacking or dodging. Damage, Deflect?",
-          );
+          let takeDamage = true;
+          if (target.attacking.state === true && target.attacking.charge > 0) {
+            let chargePerc = Match.ceil((target.attacking.charge / target.attacking.maxCharge) * 10);
+            if (app.rnJesus(1, target.crits.guardBreak + chargePerc) === 1) {
+              takeDamage = false;
+            }
+          }
+          if (takeDamage) {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the side. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but theyre not defending or attacking or dodging. Damage, Deflect?",
+            );
 
-          app.handleProjectileDamage(bolt, ownerType, "player", target);
-          app.setDeflection(target, "attacked", false);
-          deflected = true;
-          // FINISH
-          x = app.projectiles.find((x) => x.id === bolt.id);
-          x = bolt;
-          app.players[target.number - 1] = target;
+            app.handleProjectileDamage(bolt, ownerType, "player", target);
+            app.setDeflection(target, "attacked", false);
+            deflected = true;
+            // FINISH
+            x = app.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            app.players[target.number - 1] = target;
+          }
+
           return;
         }
       }
@@ -725,23 +735,33 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
           }
         }
 
-        //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
+        //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE OR ROLL FOR HYPER ARMOUR IF CHARGING
         if (targetDefending !== true && target.attacking.peak !== true) {
-          console.log(
-            "bolt hit plyr",
-            target.number,
-            "from the front. by",
-            bolt.ownerType,
-            bolt.owner,
-            "but arent defending or attacking. Damage Deflect?",
-          );
-          app.handleProjectileDamage(bolt, ownerType, "player", target);
-          app.setDeflection(target, "attacked", false);
-          deflected = true;
-          // FINISH
-          x = app.projectiles.find((x) => x.id === bolt.id);
-          x = bolt;
-          app.players[target.number - 1] = target;
+          let takeDamage = true;
+          if (target.attacking.state === true && target.attacking.charge > 0) {
+            let chargePerc = Match.ceil((target.attacking.charge / target.attacking.maxCharge) * 10);
+            if (app.rnJesus(1, target.crits.guardBreak + chargePerc) === 1) {
+              takeDamage = false;
+            }
+          }
+          if (takeDamage) {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the front. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but arent defending or attacking. Damage Deflect?",
+            );
+            app.handleProjectileDamage(bolt, ownerType, "player", target);
+            app.setDeflection(target, "attacked", false);
+            deflected = true;
+            // FINISH
+            x = app.projectiles.find((x) => x.id === bolt.id);
+            x = bolt;
+            app.players[target.number - 1] = target;
+          }
+
           return;
         }
       }

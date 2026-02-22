@@ -50,7 +50,6 @@ export function checkAttacking(app, player) {
 
         // COUNT HAS REACHED PEAK BUT STILL HELD AND LESS THAN MAX CHARGE
         if (player.attacking.count === player.attacking.peakCount) {
-          player.attacking.peak = true;
           // console.log(`Attack count peak ${player.attacking.peakCount}`);
 
           if (player.attacking.chargeCount < player.attacking.maxCharge) {
@@ -346,7 +345,6 @@ export function checkAttacking(app, player) {
             app.meleeAttackPeak("player", player);
           }
 
-          // player.attacking.peakCount = 0;
           player.attacking.execute = false;
           // THIS WILL SKIP COUNT TO POINT OF COOLDOWN
           player.attacking.count = player.attacking.peakCount + 1;

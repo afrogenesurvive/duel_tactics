@@ -183,29 +183,38 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       }
       // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
       else {
-        console.log(
-          "executing melee attack: ",
-          ownerType,
-          owner.number,
-          owner.id,
-          "attacked a player",
-          targetPlayerRef.number,
-          "from the",
-          attackPosition,
-          " w/ ",
-          ownerWeaponType,
-          "@",
-          logCellNo,
-          "successfully. damage,deflect target/defender",
-        );
-        app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+        let takeDamage = true;
+        if (targetPlayerRef.attacking.state === true && targetPlayerRef.attacking.charge > 0) {
+          let chargePerc = Math.ceil((targetPlayerRef.attacking.charge / targetPlayerRef.attacking.maxCharge) * 10);
+          if (app.rnJesus(1, targetPlayerRef.crits.guardBreak + chargePerc) === 1) {
+            takeDamage = false;
+          }
+        }
+        if (takeDamage) {
+          console.log(
+            "executing melee attack: ",
+            ownerType,
+            owner.number,
+            owner.id,
+            "attacked a player",
+            targetPlayerRef.number,
+            "from the",
+            attackPosition,
+            " w/ ",
+            ownerWeaponType,
+            "@",
+            logCellNo,
+            "successfully. damage,deflect target/defender",
+          );
+          app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
 
-        app.setDeflection(targetPlayerRef, "attacked", false);
-        owner.success.attackSuccess = {
-          state: true,
-          count: 1,
-          limit: owner.success.attackSuccess.limit,
-        };
+          app.setDeflection(targetPlayerRef, "attacked", false);
+          owner.success.attackSuccess = {
+            state: true,
+            count: 1,
+            limit: owner.success.attackSuccess.limit,
+          };
+        }
       }
     } else {
       console.log(
