@@ -1,13 +1,10 @@
+// dirInputThresh/ - the count at which directional input will be set. Before this count, player can change direction of attack
+
 export function checkAttacking(app, player) {
   if (player.attacking.state === true) {
     let directionalActionResult = app.checkSetAttackDefendDirectionalInput("windup", "attacking", player);
     player = directionalActionResult.player;
     if (player.attacking.state === true) {
-      let chargeType = "normal";
-      if (directionalActionResult.charging === true) {
-        chargeType = "charged";
-      }
-
       let attackPeak;
       let stamAtkType = player.currentWeapon.type;
 
@@ -24,49 +21,35 @@ export function checkAttacking(app, player) {
       if (player.attacking.directionType === "") {
         attackPeak = 0;
       } else {
-        attackPeak = player.attacking.animRef.peak[stamAtkType][player.attacking.directionType][chargeType];
+        attackPeak = player.attacking.animRef.peak[stamAtkType][player.attacking.directionType];
       }
 
       if (player.attacking.peakCount === 0 || player.attacking.count < player.attacking.peakCount) {
-        // console.log(
-        //   "attacking peakCount changed. was",
-        //   player.attacking.peakCount,
-        //   "now",
-        //   attackPeak
-        // );
         player.attacking.peakCount = attackPeak;
       }
 
-      if (player.attacking.limit === 0 || player.attacking.count < player.attacking.peakCount) {
-        // console.log(
-        //   "attacking limit changed. was",
-        //   player.attacking.limit,
-        //   "now",
-        //   player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][
-        //     chargeType
-        //   ]
-        // );
-        player.attacking.limit = player.attacking.animRef.limit[stamAtkType][player.attacking.directionType][chargeType];
+      if (player.attacking.limit === 0) {
+        player.attacking.limit = player.attacking.animRef.limit[stamAtkType][player.attacking.directionType];
       }
 
       // STEP ATTACKING COUNT
       if (player.attacking.count < player.attacking.limit) {
         if (player.attacking.count < player.attacking.peakCount) {
-          // console.log(
-          //   "atk windup:",
-          //   player.attacking.direction,
-          //   "counts:",
-          //   player.attacking.count,
-          //   player.attacking.peakCount,
-          //   player.attacking.limit,
-          //   chargeType === "charged"
-          // );
+          player.attacking.count++;
+
           player.attacking.peak = false;
           player.attacking.chargePeak = false;
         }
 
+        // COUNT HAS REACHED PEAK BUT STILL HELD AND LESS THAN MAX CHARGE
+        if (player.attacking.count === player.attacking.peakCount) {
+          player.attacking.peak = true;
+          if (player.attacking.chargeCount < player.attacking.maxCharge) {
+            player.attacking.chargeCount++;
+          }
+        }
+
         player.action = "attacking";
-        player.attacking.count++;
 
         // APPLY BLUNT ATTACK
         if (player.dodging.countState === true || player.dodging.state === true || app.keyPressed[player.number - 1].dodge === true) {
@@ -213,8 +196,10 @@ export function checkAttacking(app, player) {
           //   player.popups.find(x => x.msg === "attacking").limit = player.attacking.animRef.limit[stamAtkType]-player.attacking.count
           // }
         }
-        let dirInputThresh = Math.ceil(player.attacking.animRef.peak.unarmed.thrust.normal / 2);
-        if (player.attacking.count === dirInputThresh) {
+
+        // let dirInputThresh = Math.ceil(player.attacking.animRef.peak.unarmed.thrust.normal / 2);
+        // if (player.attacking.count === dirInputThresh) {
+        if (player.attacking.count === directionalActionResult.inputThresh) {
           if (player.elasticCounter.state !== true) {
             player = app.setElasticCounter("attacking", "windup", false, player);
           }
@@ -260,45 +245,8 @@ export function checkAttacking(app, player) {
         }
       }
 
-      let executeAttack = false;
-      if (player.elasticCounter.state !== true && player.elasticCounter.type !== "attacking" && player.elasticCounter.subType !== "peak") {
-        if (
-          chargeType !== "charged" &&
-          player.attacking.charge > 0 &&
-          player.attacking.count > player.attacking.animRef.peak[stamAtkType][player.attacking.directionType].normal &&
-          player.attacking.count < player.attacking.animRef.peak[stamAtkType][player.attacking.directionType].charged
-        ) {
-          // console.log(
-          //   "not currently charging, but past non charge peak. charge attack released early...adjusting peak"
-          // );
-          // console.log(
-          //   "counts",
-          //   player.attacking.count,
-          //   player.attacking.animRef.peak[stamAtkType][
-          //     player.attacking.directionType
-          //   ].normal
-          // );
-          executeAttack = true;
-          attackPeak = player.attacking.animRef.peak[stamAtkType][player.attacking.directionType].normal;
-          player.attacking.limit = player.attacking.animRef.limit[stamAtkType][player.attacking.directionType].charged;
-          player.attacking.peakCount = attackPeak;
-        } else if (player.attacking.count === attackPeak) {
-          executeAttack = true;
-          player.attacking.peakCount = attackPeak;
-          // console.log(
-          //   "execute ",
-          //   chargeType,
-          //   " attack at peak normally",
-          //   player.attacking.charge,
-          //   player.attacking.blunt
-          // );
-        }
-      } else {
-        // console.log("attack peak already reached/passed");
-      }
-
       // TIME TO ATTACK IS NOW!
-      if (executeAttack === true) {
+      if (player.attacking.execute === true) {
         // WEAPON STAMINA COST!!
         if (player.stamina.current - app.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
           player.stamina.current -= app.staminaCostRef.attack[stamAtkType][blunt].peak;
@@ -310,7 +258,6 @@ export function checkAttacking(app, player) {
             atk_count: player.attacking.count,
             peak_count: player.attacking.peakCount,
             limit: player.attacking.limit,
-            charge_type: chargeType,
             blunt: player.attacking.blunt,
             time: app.time,
           });
@@ -366,6 +313,11 @@ export function checkAttacking(app, player) {
             app.getTarget(player);
             app.meleeAttackPeak("player", player);
           }
+
+          player.attacking.peakCount = 0;
+          player.attacking.execute = false;
+          // THIS WILL SKIP COUNT TO POINT OF COOLDOWN
+          player.attacking.count = player.attacking.peakCount + 1;
         }
 
         // OUT OF STAMINA
@@ -385,22 +337,15 @@ export function checkAttacking(app, player) {
       if (
         executeAttack !== true &&
         player.attacking.count !== 0 &&
-        player.attacking.peakCount !== 0 &&
+        // player.attacking.peakCount !== 0 &&
         player.attacking.count > player.attacking.peakCount &&
         player.attacking.count < player.attacking.limit
       ) {
-        // console.log(
-        //   "atk cooldown:",
-        //   player.attacking.direction,
-        //   "counts:",
-        //   player.attacking.count,
-        //   player.attacking.peakCount,
-        //   player.attacking.limit,
-        //   chargeType === "charged"
-        // );
         player.attacking.peak = false;
         player.attacking.chargePeak = false;
         player.attacking.blunt = false;
+        player.attacking.chargeCount = 0;
+        player.attacking.charge = 0;
 
         // let popup;
         // let popupsToRemove = [
@@ -440,6 +385,10 @@ export function checkAttacking(app, player) {
             count: 0,
             limit: player.attacking.clashing.limit,
           },
+          maxCharge: 15,
+          chargeCount: 0,
+          execute: false,
+          effectivenessAllowance: 3,
         };
         player.action = "idle";
 

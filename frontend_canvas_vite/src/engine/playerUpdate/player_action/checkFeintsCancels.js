@@ -103,10 +103,6 @@ export function checkFeintsCancels(mode, app, player) {
     if (app.keyPressed[player.number - 1].attack === false && player.attacking.state === true) {
       let directionalActionResult = app.checkSetAttackDefendDirectionalInput("windup", "attacking", player);
       player = directionalActionResult.player;
-      let chargeType = "normal";
-      if (directionalActionResult.charging === true) {
-        chargeType = "charged";
-      }
 
       let atkPeak;
       let atkType = player.currentWeapon.type;
@@ -119,10 +115,7 @@ export function checkFeintsCancels(mode, app, player) {
       }
 
       if (player.attacking.count < player.attacking.peakCount) {
-        console
-          .log
-          // "attack windup key release before peak. feinting. refund stamina part"
-          ();
+        // console.log("attack windup key release before peak. feinting. refund stamina part");
         let dir = player.attacking.direction;
         player.action = "idle";
         player.attacking = {
@@ -143,6 +136,10 @@ export function checkFeintsCancels(mode, app, player) {
             count: 0,
             limit: player.attacking.clashing.limit,
           },
+          maxCharge: 15,
+          chargeCount: 0,
+          execute: false,
+          effectivenessAllowance: 3,
         };
         player.stamina.current += app.staminaCostRef.attack[atkType][blunt].pre;
 
@@ -173,7 +170,11 @@ export function checkFeintsCancels(mode, app, player) {
 
         player.actionDirectionAnimationArray = [];
       } else {
-        // console.log("too late to feint attack");
+        if (player.attacking.peak === true || player.attacking.chargeCount > 0) {
+          player.attacking.charge = player.attacking.chargeCount;
+          player.attacking.execute = true;
+          console.log("attack key released after peak or with charge. execute attack.");
+        }
       }
     }
 

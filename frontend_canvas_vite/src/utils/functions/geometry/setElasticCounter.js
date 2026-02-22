@@ -122,9 +122,17 @@ export function setElasticCounter(app, type, subType, pause, player) {
     // if (countCalcUp > 10) {
     //   countCalcUp = 10;
     // }
+    let pauseLimit = 0;
     if (subType === "windup") {
       let dirInputThresh = Math.ceil(player[type].animRef.peak.unarmed.thrust.normal / 2);
       countCalcUp = Math.floor(dirInputThresh / 2);
+    }
+
+    // if subType  is peak && charging, pause is true and pause count is equal or proportional to charge (match ceil charge * 1.5 || 2)
+    if (subType === "peak" && (player.attacking.charge > 0 || player.attacking.chargeCount > 0)) {
+      pause = true;
+      // pauseLimit = Math.ceil(player.attacking.charge * 1.5);
+      pauseLimit = player.attacking.charge;
     }
 
     let direction = player.attacking.direction;
@@ -158,7 +166,7 @@ export function setElasticCounter(app, type, subType, pause, player) {
         state: false,
         type: "",
         count: 0,
-        limit: 0,
+        limit: pauseLimit,
       },
     };
   }

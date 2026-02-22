@@ -759,86 +759,38 @@ export function applyConstructorDefaults(app) {
   app.attackAnimRef = {
     limit: {
       unarmed: {
-        thrust: {
-          normal: 30,
-          charged: 40,
-        },
-        slash: {
-          normal: 35,
-          charged: 45,
-        },
+        thrust: 30,
+        slash: 35,
       },
       sword: {
-        thrust: {
-          normal: 40,
-          charged: 50,
-        },
-        slash: {
-          normal: 45,
-          charged: 55,
-        },
+        thrust: 40,
+        slash: 45,
       },
       spear: {
-        thrust: {
-          normal: 50,
-          charged: 60,
-        },
-        slash: {
-          normal: 55,
-          charged: 65,
-        },
+        thrust: 50,
+        slash: 55,
       },
       crossbow: {
-        thrust: {
-          normal: 40,
-          charged: 50,
-        },
-        slash: {
-          normal: 50,
-          charged: 60,
-        },
+        thrust: 40,
+        slash: 50,
       },
     },
     peak: {
       unarmed: {
-        thrust: {
-          normal: 15,
-          charged: 25,
-        },
-        slash: {
-          normal: 20,
-          charged: 30,
-        },
+        thrust: 15,
+        slash: 20,
       },
       sword: {
-        thrust: {
-          normal: 25,
-          charged: 35,
-        },
-        slash: {
-          normal: 30,
-          charged: 40,
-        },
+        thrust: 25,
+        slash: 30,
       },
       spear: {
-        thrust: {
-          normal: 35,
-          charged: 45,
-        },
-        slash: {
-          normal: 40,
-          charged: 50,
-        },
+        thrust: 35,
+        slash: 40,
       },
       crossbow: {
-        thrust: {
-          normal: 35,
-          charged: 45,
-        },
-        slash: {
-          normal: 35,
-          charged: 45,
-        },
+        thrust: 35,
+        slash: 35,
       },
     },
   };

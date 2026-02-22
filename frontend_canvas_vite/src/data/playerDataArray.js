@@ -132,12 +132,14 @@ export const playerDataArray = [
       chargePeak: false,
       maxCharge: 15,
       peakCount: 0,
+      chargeCount: 0,
       blunt: false,
       clashing: {
         state: false,
         count: 0,
         limit: 10,
       },
+      execute: false,
       effectivenessAllowance: 3, // max = 5 || limit - peak / 2 (??) - allows for some leniency in timing for parrying projectiles and attacks. only applies when player is armed and attacking.
     },
     defending: {
@@ -639,6 +641,7 @@ export const playerDataArray = [
       animRef: {},
       peak: false,
       peakCount: 0,
+      chargeCount: 0,
       charge: 0,
       chargePeak: false,
       maxCharge: 15,
@@ -648,6 +651,7 @@ export const playerDataArray = [
         count: 0,
         limit: 10,
       },
+      execute: false,
       effectivenessAllowance: 3, // max = 5 || limit - peak / 2 (??) - allows for some leniency in timing for parrying projectiles and attacks. only applies when player is armed and attacking.
     },
     defending: {

@@ -76,14 +76,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
     }
 
     // IS TARGET DEFENDING?
-    let playerDefending = false;
+    let targetDefending = false;
     let defendType = target.currentWeapon.type;
     if (target.currentWeapon.name === "") {
       defendType = "unarmed";
     }
     let defendPeak = target.defending.peakCount;
     if ((target.defending.count > 0 && target.defending.count === defendPeak) || target.defending.decay.state === true) {
-      playerDefending = true;
+      targetDefending = true;
     }
 
     //BOLT TARGET DODGING
@@ -223,7 +223,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         // PLAYER DEFENDING
-        if (playerDefending === true) {
+        if (targetDefending === true) {
           // UNARMED DEFENSE = DAMAGE.
           if (weapon === "unarmed" || defendType === "unarmed") {
             console.log(
@@ -246,7 +246,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
           // ARMED DEFENSE
           else {
             // ONLY SLASH IN OPPOSITE DIRECTION CAN DEFEND BOLT
-            if (target.attacking.directionType === "slash" && target.attacking.direction === app.getOppositeDirection(bolt.direction)) {
+            if (target.defending.directionType === "slash" && target.defending.direction === app.getOppositeDirection(bolt.direction)) {
               // PEAK DEFENSE IS GUARANTEED DEFEND SUCCESS
               // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
               if (target.defending.peak === true) {
@@ -377,7 +377,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-        if (playerDefending !== true && target.attacking.peak !== true) {
+        if (targetDefending !== true && target.attacking.peak !== true) {
           console.log(
             "bolt hit plyr",
             target.number,
@@ -499,11 +499,11 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         // PLAYER DEFENDING
-        if (playerDefending === true) {
-          // ONLY SLASH ON SAME AXIS CAN ATTACK/DEFEND BOLT
+        if (targetDefending === true) {
+          // ONLY SLASH ON SAME AXIS CAN DEFEND BOLT
           if (
-            target.attacking.directionType === "slash" &&
-            (target.attacking.direction === app.getOppositeDirection(bolt.direction) || target.attacking.direction === bolt.direction)
+            target.defending.directionType === "slash" &&
+            (target.defending.direction === app.getOppositeDirection(bolt.direction) || target.defending.direction === bolt.direction)
           ) {
             // UNARMED DEFENSE
             if (weapon === "unarmed") {
@@ -726,7 +726,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-        if (playerDefending !== true && target.attacking.peak !== true) {
+        if (targetDefending !== true && target.attacking.peak !== true) {
           console.log(
             "bolt hit plyr",
             target.number,

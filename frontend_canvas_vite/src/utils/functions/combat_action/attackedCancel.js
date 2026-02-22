@@ -31,6 +31,10 @@ export function attackedCancel(app, player) {
           count: 0,
           limit: player.attacking.clashing.limit,
         },
+        chargeCount: 0,
+        maxCharge: 15,
+        execute: false,
+        effectivenessAllowance: 3,
       };
       player.idleAnim = {
         state: false,

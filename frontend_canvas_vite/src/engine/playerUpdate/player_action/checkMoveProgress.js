@@ -198,6 +198,10 @@ export function checkMoveProgress(app, player, nextPosition) {
                     count: 0,
                     limit: player.attacking.clashing.limit,
                   },
+                  maxCharge: 15,
+                  chargeCount: 0,
+                  execute: false,
+                  effectivenessAllowance: 3,
                 };
               }
 

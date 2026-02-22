@@ -1,3 +1,6 @@
+// only show charge popup if chargeCount > 0;
+// dirInputThresh/ - the count at which directional input will be set. Before this count, player can change direction of attack;
+
 export function checkSetAttackDefendDirectionalInput(app, mode, action, player) {
   // stage is either 'init' or 'windup'
   let charging = false;
@@ -7,6 +10,8 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
   let directionalInputThresh = 0;
   let directionChanged = false;
   let inputCount = 0;
+
+  // COLLECT DIRECTIONS OF ALL BUTTONS CURRENTLY BEING PRESSED
   if (app.keyPressed[player.number - 1].north === true) {
     input = true;
     inputDirections.push("north");
@@ -85,6 +90,10 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
           count: 0,
           limit: player.attacking.clashing.limit,
         },
+        maxCharge: 15,
+        chargeCount: 0,
+        execute: false,
+        effectivenessAllowance: 3,
       };
       player.stamina.current += app.staminaCostRef.attack[atkType][blunt].pre;
 
@@ -159,6 +168,7 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
         // popup("none");
       }
       if (mode === "windup") {
+        // dirInputThresh/ - the count at which directional input will be set. Before this count, player can change direction of attack
         if (player[action].count < directionalInputThresh) {
           if (input === true) {
             if (inputCount > 1) {
@@ -168,6 +178,7 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
               inputDirection = inputDirections[0];
             }
 
+            // IF NOT THRUSTING (NO THRUST FOR CROSSBOW), ONLY SLASH IF DIRECTIONAL INPUT === PLAYER DIRECTION. OTHERWISE FEINT ATTACK
             if (inputDirection === player.direction) {
               popup(inputDirection, player[action].direction);
               player[action].direction = inputDirection;
@@ -177,7 +188,9 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
               feintAttack();
             }
           }
-        } else {
+        }
+        // DIRECTIONAL ACTION INPUT THRESHOLD PASSED.
+        else {
           if (input === true) {
             // console.log("input thresh passed.");
             if (inputCount > 1) {
@@ -192,15 +205,8 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
               feintAttack();
             }
             if (inputDirection === player[action].direction) {
-              if (player[action].count > player[action].peakCount) {
-                // console.log("past peak. no charging");
-              } else {
-                if (inputCount > 1) {
-                  console.log("directional attack w/ multiple inputs. feint attack");
-                  feintAttack();
-                } else {
-                  charge();
-                }
+              if (player[action].chargeCount > 0 && player[action].chargeCount < player[action].maxCharge) {
+                charge();
               }
             }
           }
@@ -238,15 +244,8 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             } else {
               inputDirection = inputDirections[0];
             }
-            // console.log("y");
+
             if (inputDirection === player[action].direction) {
-              // charge();
-            } else {
-              // console.log(
-              //   "still time to set attack direction. changing direction",
-              //   player[action].direction,
-              //   inputDirection
-              // );
               popup(inputDirection, player[action].direction);
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
@@ -260,7 +259,9 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             }
             // console.log(" direction and type should already be set, do nothing");
           }
-        } else {
+        }
+        // DIRECTIONAL ACTION INPUT THRESHOLD PASSED.
+        else {
           if (input === true) {
             // console.log("input thresh passed.");
 
@@ -276,15 +277,8 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
               feintAttack();
             }
             if (inputDirection === player[action].direction) {
-              if (player[action].count > player[action].peakCount) {
-                // console.log("past peak. no charging");
-              } else {
-                if (inputCount > 1) {
-                  console.log("directional attack w/ multiple inputs. feint attack");
-                  feintAttack();
-                } else {
-                  charge();
-                }
+              if (player[action].chargeCount > 0 && player[action].chargeCount < player[action].maxCharge) {
+                charge();
               }
             }
           }
@@ -301,7 +295,7 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
         if (player[action].direction === "" || player[action].directionType === "") {
           player[action].direction = inputDirection;
           player[action].directionType = "slash";
-          // popup(inputDirection);
+          popup(inputDirection);
         } else {
           // console.log("do nothing");
         }
@@ -337,6 +331,7 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
           }
 
           if (player[action].direction === inputDirection) {
+            // console.log("same as init, do nothing");
           } else {
             console.log("changing defend direction before thresh. from", player[action].direction, "to", inputDirection);
             directionChanged = true;
@@ -353,7 +348,9 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
           player[action].direction = "none";
           player[action].directionType = "thrust";
         }
-      } else {
+      }
+      // DIRECTIONAL ACTION INPUT THRESHOLD PASSED.
+      else {
         if (input === true) {
           // console.log("too late to change defend direction: count");
         } else {
