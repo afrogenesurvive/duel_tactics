@@ -56,7 +56,6 @@ export function voidSummon(app, cell) {
         img: "",
       });
 
-      app.moveSpeed = plyr.speed.move;
       app.players[plyr.number - 1].target = app.resetTarget();
 
       app.players[plyr.number - 1].moving = {

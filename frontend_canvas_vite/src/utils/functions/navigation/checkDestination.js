@@ -381,8 +381,6 @@ export function checkDestination(app, player, pickupOnly) {
         });
       }
 
-      // app.moveSpeed = plyr.speed.move;
-      // app.players[player.number-1].target = app.resetTarget();
       app.players[player.number - 1].target.cell1.number = player.currentPosition.cell.number;
       app.players[player.number - 1].target.cell1.center = player.currentPosition.cell.center;
 
@@ -421,8 +419,6 @@ export function checkDestination(app, player, pickupOnly) {
         });
       }
 
-      // app.moveSpeed = plyr.speed.move;
-      // app.players[player.number-1].target = app.resetTarget();
       app.players[player.number - 1].target.cell1.number = player.currentPosition.cell.number;
       app.players[player.number - 1].target.cell1.center = player.currentPosition.cell.center;
 

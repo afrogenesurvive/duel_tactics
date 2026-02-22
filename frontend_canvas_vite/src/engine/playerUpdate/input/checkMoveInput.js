@@ -87,8 +87,6 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
           if (player.stamina.current - app.staminaCostRef.move >= 0) {
             player.stamina.current -= app.staminaCostRef.move;
 
-            app.moveSpeed = player.speed.move;
-
             player.moving = {
               state: true,
               step: 0,
@@ -154,7 +152,6 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
         if (target.cell1.free === true && target.myCellBlock !== true) {
           if (player.stamina.current - app.staminaCostRef.strafe >= 0) {
             player.stamina.current -= app.staminaCostRef.strafe;
-            app.moveSpeed = player.speed.move;
 
             // console.log('start strafing');
             player.action = "strafe moving";

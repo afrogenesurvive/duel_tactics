@@ -71,7 +71,6 @@ export function checkMoveCancel(app, player, nextPosition) {
           if (player.stamina.current - app.staminaCostRef.move >= 0) {
             player.stamina.current -= app.staminaCostRef.move;
 
-            app.moveSpeed = player.speed.move;
             if (player.jumping.state === true) {
               player.jumping = {
                 checking: false,
