@@ -118,8 +118,8 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
         if (
           (target.attacking.peak === true ||
-            (target.attacking.count > target.attacking.peak &&
-              target.attacking.count < target.attacking.peak + target.attacking.effectivenessAllowance)) &&
+            (target.attacking.count > target.attacking.peakCount &&
+              target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
           weapon !== "unarmed"
         ) {
           // CHANCE TO KILL BOLT & PUSHBACK
@@ -203,7 +203,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-        if (target.attacking.peak === true && weapon === "unarmed") {
+        if (
+          (target.attacking.peak === true ||
+            (target.attacking.count > target.attacking.peakCount &&
+              target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
+          weapon === "unarmed"
+        ) {
           console.log(
             "bolt hit plyr",
             target.number,
@@ -377,7 +382,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-        if (targetDefending !== true && target.attacking.peak !== true) {
+        if (
+          targetDefending !== true &&
+          target.attacking.peak !== true &&
+          (target.attacking.count < target.attacking.peakCount ||
+            target.attacking.count > target.attacking.peakCount + target.attacking.effectivenessAllowance)
+        ) {
           let takeDamage = true;
           if (target.attacking.state === true && target.attacking.charge > 0) {
             let chargePerc = Match.ceil((target.attacking.charge / target.attacking.maxCharge) * 10);
@@ -413,8 +423,8 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
         if (
           (target.attacking.peak === true ||
-            (target.attacking.count > target.attacking.peak &&
-              target.attacking.count < target.attacking.peak + target.attacking.effectivenessAllowance)) &&
+            (target.attacking.count > target.attacking.peakCount &&
+              target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
           weapon === "unarmed"
         ) {
           console.log(
@@ -485,9 +495,9 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
         // TAKE DAMAGE/BE INJURED
         else if (
-          (target.attacking.peak === true ||
-            (target.attacking.count > target.attacking.peak &&
-              target.attacking.count < target.attacking.peak + target.attacking.effectivenessAllowance)) &&
+          target.attacking.peak === true &&
+          (target.attacking.count < target.attacking.peakCount ||
+            target.attacking.count > target.attacking.peakCount + target.attacking.effectivenessAllowance) &&
           weapon !== "unarmed"
         ) {
           console.log(
@@ -736,7 +746,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE OR ROLL FOR HYPER ARMOUR IF CHARGING
-        if (targetDefending !== true && target.attacking.peak !== true) {
+        if (
+          targetDefending !== true &&
+          target.attacking.peak !== true &&
+          (target.attacking.count < target.attacking.peakCount ||
+            target.attacking.count > target.attacking.peakCount + target.attacking.effectivenessAllowance)
+        ) {
           let takeDamage = true;
           if (target.attacking.state === true && target.attacking.charge > 0) {
             let chargePerc = Match.ceil((target.attacking.charge / target.attacking.maxCharge) * 10);

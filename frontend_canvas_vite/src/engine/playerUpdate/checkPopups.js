@@ -9,7 +9,11 @@ export function checkPopups(app, player) {
             popup.count++;
           }
           if (popup.count >= popup.limit) {
-            player.popups.splice(indx, 1);
+            if (popup.msg === "charging" && player.attacking.charge > 0) {
+              // do nothing
+            } else {
+              player.popups.splice(indx, 1);
+            }
           }
         }
         if (popup.limit === 0) {

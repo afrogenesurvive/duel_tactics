@@ -68,7 +68,7 @@ export function checkFeintsCancels(mode, app, player) {
         }
 
         player.actionDirectionAnimationArray = [];
-        console.log("defend feinted");
+        // console.log("defend feinted");
       } else {
         if (player.defending.peak === true) {
           console.log("peak defense. cant feint");
@@ -178,7 +178,7 @@ export function checkFeintsCancels(mode, app, player) {
         if (player.attacking.peak === true || player.attacking.chargeCount > 0) {
           player.attacking.charge = player.attacking.chargeCount;
           player.attacking.execute = true;
-          console.log("attack key released after peak or with charge. execute attack.");
+          // console.log("attack key released after peak or with charge. execute attack.");
         }
       }
     }

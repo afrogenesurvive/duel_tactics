@@ -78,7 +78,7 @@ export function checkNonMoveInput(app, player, plyrPullPushed, plyrPullPushedPly
         player.attacking.state = true;
         player.attacking.count = 1;
 
-        console.log("start attack");
+        // console.log("start attack");
 
         if (plyrPullPushed === true) {
           breakPulledPushed = true;
