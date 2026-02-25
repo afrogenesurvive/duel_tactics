@@ -179,7 +179,9 @@ export function setElasticCounter(app, type, subType, pause, player) {
       // Math.floor(
       //   (player.defending.limit - player.defending.peakCount) / 2
       // );
-
+      if (countCalcUp > 10) {
+        countCalcUp = 10;
+      }
       if (direction === "none") {
         direction = player.direction;
       }
@@ -225,10 +227,9 @@ export function setElasticCounter(app, type, subType, pause, player) {
       //   (player.defending.limit - (defendPeak + player.defending.decay.limit)) / 2
       // );
       // console.log("beep", countCalcUp);
-      // if (countCalcUp > 10) {
-      //   countCalcUp = 10;
-      // }
-
+      if (countCalcUp > 10) {
+        countCalcUp = 10;
+      }
       if (direction === "none") {
         direction = player.direction;
       }

@@ -37,12 +37,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
   // console.log("projectileAttackParse", app.time, target.attacking.peakCount);
   console.log("projectileAttackParse", {
     time: app.time,
-    target_atk_peak: target.attacking.peak,
-    target_atk_count: target.attacking.count,
-    target_atk_peakCount: target.attacking.peakCount,
-    allowance: target.attacking.peakCount + target.attacking.effectivenessAllowance,
-    count_is_peak: target.attacking.count >= target.attacking.peakCount,
-    count_is_within_effectiveness: target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance,
+    bolt_direction: bolt.direction,
+    // target_atk_peak: target.attacking.peak,
+    // target_atk_count: target.attacking.count,
+    // target_atk_peakCount: target.attacking.peakCount,
+    // allowance: target.attacking.peakCount + target.attacking.effectivenessAllowance,
+    // count_is_peak: target.attacking.count >= target.attacking.peakCount,
+    // count_is_within_effectiveness: target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance,
+    defend_direction: target.defending.direction,
   });
 
   let deflected = false;
@@ -267,7 +269,10 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
             if (target.defending.directionType === "slash" && target.defending.direction === app.getOppositeDirection(bolt.direction)) {
               // PEAK DEFENSE IS GUARANTEED DEFEND SUCCESS
               // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
-              if (target.defending.peak === true) {
+              if (
+                target.defending.peak === true ||
+                (target.defending.decay.state === true && target.defending.decay.count < app.defendPeakAllowance)
+              ) {
                 console.log("bolt hit plyr", target.number, "from the side. by", bolt.ownerType, bolt.owner, "but they parried. Pushback?");
                 target.stamina.current += app.staminaCostRef.defend.peak;
                 target.success.defendSuccess = {
@@ -295,7 +300,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                 // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
                 if (app.rnJesus(1, target.crits.pushBack + bolt.charge) !== 1) {
                   console.log("and was pushed back due to bolt charge");
-                  app.pushBack(target, app.getOppositeDirection(target.direction));
+                  app.pushBack(target, bolt.direction);
                 }
 
                 // FINISH
@@ -395,12 +400,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-        if (
-          targetDefending !== true &&
-          target.attacking.peak !== true &&
-          (target.attacking.count < target.attacking.peakCount ||
-            target.attacking.count > target.attacking.peakCount + target.attacking.effectivenessAllowance)
-        ) {
+        if (targetDefending !== true && target.attacking.peak !== true && (target.action !== "attacking" || target.attacking.count === 0)) {
           let takeDamage = true;
           if (target.attacking.state === true && target.attacking.charge > 0) {
             let chargePerc = Match.ceil((target.attacking.charge / target.attacking.maxCharge) * 10);
@@ -543,7 +543,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
             // UNARMED DEFENSE
             if (weapon === "unarmed") {
               // UNARMED PEAK DEFEND, BOLT CHRG RNG SUCCESS ?
-              if (target.defending.peak === true) {
+              if (target.defending.peak === true || (target.defending.decay.state === true && target.defending.decay.count < 4)) {
                 // PARRIED & OVERCOME BOLT CHARGE
 
                 if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
@@ -761,12 +761,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE OR ROLL FOR HYPER ARMOUR IF CHARGING
-        if (
-          targetDefending !== true &&
-          target.attacking.peak !== true &&
-          (target.attacking.count < target.attacking.peakCount ||
-            target.attacking.count > target.attacking.peakCount + target.attacking.effectivenessAllowance)
-        ) {
+        if (targetDefending !== true && target.attacking.peak !== true && (target.action !== "attacking" || target.attacking.count === 0)) {
           let takeDamage = true;
           if (target.attacking.state === true && target.attacking.charge > 0) {
             let chargePerc = Match.ceil((target.attacking.charge / target.attacking.maxCharge) * 10);

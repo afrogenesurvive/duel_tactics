@@ -120,7 +120,7 @@ export function checkDefending(app, player) {
 
     // PEAK, START DECAY
     if (executeDefend === true) {
-      console.log(`Execute defend`);
+      console.log(`Execute defend`, player.defending.direction);
 
       if (player.stamina.current - app.staminaCostRef.defend.peak >= 0) {
         player.action = "defending";
