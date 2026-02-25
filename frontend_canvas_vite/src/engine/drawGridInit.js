@@ -2,7 +2,7 @@ import { startProcessLevelData } from "./startProcessLevelData";
 import { processLevelData } from "./processLevelData";
 
 export function drawGridInit(app, canvas, context, canvas2, context2) {
-  // console.log('drawing initial');
+  console.log("drawGridInit");
 
   context.clearRect(0, 0, app.canvasWidth, app.canvasHeight);
   context2.clearRect(0, 0, app.canvasWidth, app.canvasHeight);
@@ -1010,7 +1010,7 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
       }
 
       app.init = false;
-      console.log(`drawGridInit!!!!!`);
+      // console.log(`drawGridInit!!!!!`);
 
       app.setState({
         loading: false,

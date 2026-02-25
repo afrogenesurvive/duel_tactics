@@ -55,7 +55,7 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
               ) {
                 app.clicked.player = undefined;
               }
-              console.log(`Start movment for player ${player.number}. Stamina: current ${player.stamina.current} / cost ${app.staminaCostRef.move} `);
+              // console.log(`Start movment for player ${player.number}. Stamina: current ${player.stamina.current} / cost ${app.staminaCostRef.move} `);
             } else {
               player.stamina.current = 0;
               player.statusDisplay = {

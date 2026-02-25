@@ -1,4 +1,6 @@
 export function loadSettings(app, event) {
+  console.log("loadSettings");
+
   event.preventDefault();
 
   let gridSize = event.target.gridSize.value;

@@ -543,7 +543,10 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
             // UNARMED DEFENSE
             if (weapon === "unarmed") {
               // UNARMED PEAK DEFEND, BOLT CHRG RNG SUCCESS ?
-              if (target.defending.peak === true || (target.defending.decay.state === true && target.defending.decay.count < 4)) {
+              if (
+                target.defending.peak === true ||
+                (target.defending.decay.state === true && target.defending.decay.count < app.defendPeakAllowance)
+              ) {
                 // PARRIED & OVERCOME BOLT CHARGE
 
                 if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
@@ -629,7 +632,10 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
             // ARMED DEFENSE
             else {
               // ARMED PEAK DEFEND
-              if (target.defending.peak === true) {
+              if (
+                target.defending.peak === true ||
+                (target.defending.decay.state === true && target.defending.decay.count < app.defendPeakAllowance)
+              ) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
