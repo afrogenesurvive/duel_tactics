@@ -2,7 +2,7 @@
 // dirInputThresh/ - the count at which directional input will be set. Before this count, player can change direction of attack;
 
 export function checkSetAttackDefendDirectionalInput(app, mode, action, player) {
-  // console.log(`checkSetAttackDefendDirectionalInput: ${mode}`);
+  // console.log(`checkSetAttackDefendDirectionalInput: ${mode} ${JSON.stringify(player.currentWeapon)}`);
 
   // stage is either 'init' or 'windup'
   let charging = false;
@@ -96,10 +96,10 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
           count: 0,
           limit: player.attacking.clashing.limit,
         },
-        maxCharge: 15,
+        maxCharge: player.attacking.maxCharge,
         chargeCount: 0,
         execute: false,
-        effectivenessAllowance: 3,
+        effectivenessAllowance: player.attacking.effectivenessAllowance,
       };
       player.stamina.current += app.staminaCostRef.attack[atkType][blunt].pre;
 
@@ -166,8 +166,8 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
   };
 
   if (action === "attacking") {
-    directionalInputThresh = Math.ceil(player[action].animRef.peak[player.currentWeapon.type].thrust / 2);
-    if (player.currentWeapon.type === "crossbow") {
+    directionalInputThresh = Math.ceil(player[action].animRef.peak[player.currentWeapon?.type || "unarmed"].thrust / 2);
+    if (player.currentWeapon?.type === "crossbow") {
       if (mode === "init") {
         player[action].direction = "none";
         player[action].directionType = "thrust";

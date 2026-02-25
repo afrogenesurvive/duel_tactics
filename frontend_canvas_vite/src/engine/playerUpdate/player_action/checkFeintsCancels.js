@@ -68,7 +68,7 @@ export function checkFeintsCancels(mode, app, player) {
         }
 
         player.actionDirectionAnimationArray = [];
-        // console.log("defend feinted");
+        console.log("defend feinted");
       } else {
         if (player.defending.peak === true) {
           console.log("peak defense. cant feint");
@@ -141,10 +141,10 @@ export function checkFeintsCancels(mode, app, player) {
             count: 0,
             limit: player.attacking.clashing.limit,
           },
-          maxCharge: 15,
+          maxCharge: player.attacking.maxCharge,
           chargeCount: 0,
           execute: false,
-          effectivenessAllowance: 3,
+          effectivenessAllowance: player.attacking.effectivenessAllowance,
         };
         player.stamina.current += app.staminaCostRef.attack[atkType][blunt].pre;
 

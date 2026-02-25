@@ -208,7 +208,7 @@ export function respawn(app, player) {
       maxCharge: 15,
       chargeCount: 0,
       execute: false,
-      effectivenessAllowance: 3,
+      effectivenessAllowance: 10,
     };
     player.defending = {
       state: false,

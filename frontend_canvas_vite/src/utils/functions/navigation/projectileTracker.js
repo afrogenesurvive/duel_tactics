@@ -5,14 +5,14 @@ export function projectileTracker(app) {
     if (bolt.kill === true) {
       let index = app.projectiles.findIndex((blt) => blt.id === bolt.id);
       app.projectiles.splice(index, 1);
-      // console.log(
-      //   "kill bolt",
-      //   bolt.currentPosition.number,
-      //   // app.players[bolt.owner - 1].currentPosition.cell.number,
-      //   app.projectiles,
-      //   app.settingAutoCamera,
-      //   app.settingAutoCameraFollowBolt
-      // );
+      console.log(
+        "kill bolt",
+        bolt.currentPosition.number,
+        // app.players[bolt.owner - 1].currentPosition.cell.number,
+        app.projectiles,
+        app.settingAutoCamera,
+        app.settingAutoCameraFollowBolt,
+      );
       if (app.settingAutoCameraFollowBolt === true) {
         app.setAutoCamera("zoomReset", "");
       }

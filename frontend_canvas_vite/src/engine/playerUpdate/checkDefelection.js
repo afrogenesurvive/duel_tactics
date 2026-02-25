@@ -150,10 +150,10 @@ export function checkDeflection(app, player) {
             count: 0,
             limit: player.attacking.clashing.limit,
           },
-          maxCharge: 15,
+          maxCharge: player.attacking.maxCharge,
           chargeCount: 0,
           execute: false,
-          effectivenessAllowance: 3,
+          effectivenessAllowance: player.attacking.effectivenessAllowance,
         };
       }
 

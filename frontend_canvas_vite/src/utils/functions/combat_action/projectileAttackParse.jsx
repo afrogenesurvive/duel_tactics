@@ -34,7 +34,16 @@
 // - - no attack or defend
 
 export function projectileAttackParse(app, bolt, ownerType, targetType, target) {
-  console.log("projectileAttackParse", app.time, target.attacking.peakCount);
+  // console.log("projectileAttackParse", app.time, target.attacking.peakCount);
+  console.log("projectileAttackParse", {
+    time: app.time,
+    target_atk_peak: target.attacking.peak,
+    target_atk_count: target.attacking.count,
+    target_atk_peakCount: target.attacking.peakCount,
+    allowance: target.attacking.peakCount + target.attacking.effectivenessAllowance,
+    count_is_peak: target.attacking.count >= target.attacking.peakCount,
+    count_is_within_effectiveness: target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance,
+  });
 
   let deflected = false;
   let x;
@@ -118,7 +127,8 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
         if (
           (target.attacking.peak === true ||
-            (target.attacking.count > target.attacking.peakCount &&
+            (target.action === "attacking" &&
+              target.attacking.count >= target.attacking.peakCount &&
               target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
           weapon !== "unarmed"
         ) {
@@ -126,7 +136,9 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
           // ONLY SLASH IN OPPOSITE DIRECTION CAN KILL BOLT
           if (target.attacking.directionType === "slash" && target.attacking.direction === app.getOppositeDirection(bolt.direction)) {
             // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF ATTACK SUCCESS
+
             if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
+              // if (app.rnJesus(1, 1) <= 1) {
               console.log(
                 "bolt hit plyr",
                 target.number,
@@ -146,7 +158,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                   img: "",
                 });
               }
-              app.pushBack(target, app.getOppositeDirection(target.direction));
+              app.pushBack(target, bolt.direction);
               target.success.attackSuccess = {
                 state: true,
                 count: 1,
@@ -205,7 +217,8 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
         if (
           (target.attacking.peak === true ||
-            (target.attacking.count > target.attacking.peakCount &&
+            (target.action === "attacking" &&
+              target.attacking.count >= target.attacking.peakCount &&
               target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
           weapon === "unarmed"
         ) {
@@ -423,7 +436,8 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
         if (
           (target.attacking.peak === true ||
-            (target.attacking.count > target.attacking.peakCount &&
+            (target.action === "attacking" &&
+              target.attacking.count >= target.attacking.peakCount &&
               target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
           weapon === "unarmed"
         ) {
@@ -452,8 +466,9 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         ) {
           if (
             (target.attacking.peak === true ||
-              (target.attacking.count > target.attacking.peak &&
-                target.attacking.count < target.attacking.peak + target.attacking.effectivenessAllowance)) &&
+              (target.action === "attacking" &&
+                target.attacking.count >= target.attacking.peakCount &&
+                target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
             weapon !== "unarmed"
           ) {
             console.log(

@@ -32,9 +32,9 @@ export function attackedCancel(app, player) {
           limit: player.attacking.clashing.limit,
         },
         chargeCount: 0,
-        maxCharge: 15,
+        maxCharge: player.attacking.maxCharge,
         execute: false,
-        effectivenessAllowance: 3,
+        effectivenessAllowance: player.attacking.effectivenessAllowance,
       };
       player.idleAnim = {
         state: false,

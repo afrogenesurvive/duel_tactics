@@ -652,7 +652,7 @@ export const playerDataArray = [
         limit: 10,
       },
       execute: false,
-      effectivenessAllowance: 3, // max = 5 || limit - peak / 2 (??) - allows for some leniency in timing for parrying projectiles and attacks. only applies when player is armed and attacking.
+      effectivenessAllowance: 10, // max = 5 || limit - peak / 2 (??) - allows for some leniency in timing for parrying projectiles and attacks. only applies when player is armed and attacking.
     },
     defending: {
       state: false,

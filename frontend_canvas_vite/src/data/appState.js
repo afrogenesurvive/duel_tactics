@@ -809,26 +809,26 @@ export function applyConstructorDefaults(app) {
   app.defendAnimRef = {
     limit: {
       unarmed: {
-        thrust: 20,
-        slash: 20,
-      },
-      sword: {
-        thrust: 30,
-        slash: 30,
-      },
-      spear: {
         thrust: 40,
         slash: 40,
       },
+      sword: {
+        thrust: 45,
+        slash: 45,
+      },
+      spear: {
+        thrust: 50,
+        slash: 50,
+      },
       crossbow: {
-        thrust: 30,
-        slash: 30,
+        thrust: 47,
+        slash: 47,
       },
     },
     peak: {
       unarmed: {
-        thrust: 11,
-        slash: 11,
+        thrust: 10,
+        slash: 10,
         // 7
       },
       sword: {
