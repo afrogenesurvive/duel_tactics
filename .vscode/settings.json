@@ -1,5 +1,6 @@
 {
-  "prettier.printWidth": 90
+  "prettier.printWidth": 150,
+  "html.format.wrapLineLength": 200
 } // {
 //   "editor.foldingStrategy": "indentation",
 //   "editor.folding": true,

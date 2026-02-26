@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
+import Terminal from "vite-plugin-terminal";
 
 // const sourceJSPattern = /\/src\/.*\.js$/;
 // const rollupPlugin = (matchers) => ({
@@ -21,6 +22,10 @@ export default defineConfig({
         ref: true,
       },
     }),
+    // Terminal({
+    //   console: "terminal", // Redirects standard console methods to the terminal
+    //   output: ["terminal", "console"], // Optional: also keeps logs in the browser console
+    // }),
   ],
   optimizeDeps: {
     include: ["react", "react-dom"],
