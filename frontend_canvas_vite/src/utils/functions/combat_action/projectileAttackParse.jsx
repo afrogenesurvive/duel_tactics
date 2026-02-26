@@ -38,12 +38,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
   console.log("projectileAttackParse", {
     time: app.time,
     bolt_direction: bolt.direction,
-    // target_atk_peak: target.attacking.peak,
-    // target_atk_count: target.attacking.count,
-    // target_atk_peakCount: target.attacking.peakCount,
-    // allowance: target.attacking.peakCount + target.attacking.effectivenessAllowance,
-    // count_is_peak: target.attacking.count >= target.attacking.peakCount,
-    // count_is_within_effectiveness: target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance,
+    target_atk_peak: target.attacking.peak,
+    target_atk_count: target.attacking.count,
+    target_atk_peakCount: target.attacking.peakCount,
+    allowance: target.attacking.peakCount + target.attacking.effectivenessAllowance,
+    count_is_peak: target.attacking.count >= target.attacking.peakCount,
+    count_is_within_effectiveness: target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance,
     defend_direction: target.defending.direction,
   });
 
@@ -400,7 +400,10 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-        if (targetDefending !== true && target.attacking.peak !== true && (target.action !== "attacking" || target.attacking.count === 0)) {
+        if (
+          (targetDefending !== true && target.attacking.peak !== true && (target.action !== "attacking" || target.attacking.count === 0)) ||
+          target.attacking.directionType !== "slash"
+        ) {
           let takeDamage = true;
           if (target.attacking.state === true && target.attacking.charge > 0) {
             let chargePerc = Match.ceil((target.attacking.charge / target.attacking.maxCharge) * 10);
@@ -415,7 +418,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               "from the side. by",
               bolt.ownerType,
               bolt.owner,
-              "but theyre not defending or attacking or dodging. Damage, Deflect?",
+              "but theyre not defending or attacking or slashing or dodging. Damage, Deflect?",
             );
 
             app.handleProjectileDamage(bolt, ownerType, "player", target);
@@ -767,7 +770,10 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         }
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE OR ROLL FOR HYPER ARMOUR IF CHARGING
-        if (targetDefending !== true && target.attacking.peak !== true && (target.action !== "attacking" || target.attacking.count === 0)) {
+        if (
+          (targetDefending !== true && target.attacking.peak !== true && (target.action !== "attacking" || target.attacking.count === 0)) ||
+          target.defending.directionType !== "slash"
+        ) {
           let takeDamage = true;
           if (target.attacking.state === true && target.attacking.charge > 0) {
             let chargePerc = Match.ceil((target.attacking.charge / target.attacking.maxCharge) * 10);
@@ -782,7 +788,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               "from the front. by",
               bolt.ownerType,
               bolt.owner,
-              "but arent defending or attacking. Damage Deflect?",
+              "but arent defending or attacking or are thrusting. Damage Deflect?",
             );
             app.handleProjectileDamage(bolt, ownerType, "player", target);
             app.setDeflection(target, "attacked", false);
