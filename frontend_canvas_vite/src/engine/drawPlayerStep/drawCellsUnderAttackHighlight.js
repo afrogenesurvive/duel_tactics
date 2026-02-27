@@ -30,4 +30,6 @@ export function drawCellsUnderAttackHighlight(app, x, y, floor) {
       }
     }
   }
+
+  return floor;
 }

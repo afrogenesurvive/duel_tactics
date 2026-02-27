@@ -152,7 +152,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         }
       }
 
-      drawCellsUnderAttackHighlight(app, x, y, floor);
+      floor = drawCellsUnderAttackHighlight(app, x, y, floor);
 
       // FLOOR
       if (drawFloor === true) {

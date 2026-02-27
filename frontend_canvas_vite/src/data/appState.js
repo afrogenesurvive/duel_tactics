@@ -192,7 +192,7 @@ export function applyConstructorDefaults(app) {
       persistent: true,
       remaining: 15,
       timerEnabled: true,
-      timerLimit: 20,
+      timerLimit: 50,
       triggerType: "any",
       itemNameRef: "crossbow1",
       type: "obstacle",
