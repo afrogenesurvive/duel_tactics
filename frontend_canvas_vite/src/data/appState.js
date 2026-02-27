@@ -175,30 +175,34 @@ export function applyConstructorDefaults(app) {
   // OBSTACLES HAVE MAX 5 ITEMS
   Object.assign(app, obstacleBarrierDataRefs);
   app.customTrapSetNewCustomTestData = [
+    // {
+    //   persistent: false,
+    //   remaining: 5,
+    //   timerEnabled: true,
+    //   timerLimit: 70,
+    //   triggerType: "any",
+    //   itemNameRef: "spear2",
+    //   type: "obstacle",
+    //   location: {
+    //     x: 2,
+    //     y: 3,
+    //   },
+    // },
     {
-      persistent: false,
-      remaining: 5,
-      timerEnabled: true,
-      timerLimit: 70,
-      triggerType: "any",
-      itemNameRef: "spear2",
-      type: "obstacle",
-      location: {
-        x: 2,
-        y: 3,
-      },
-    },
-    {
-      persistent: false,
+      persistent: true,
       remaining: 15,
-      timerEnabled: false,
-      timerLimit: 0,
+      timerEnabled: true,
+      timerLimit: 20,
       triggerType: "any",
       itemNameRef: "crossbow1",
       type: "obstacle",
       location: {
-        x: 3,
-        y: 6,
+        x: 4,
+        y: 1,
+      },
+      target: {
+        x: 0,
+        y: 1,
       },
     },
   ];

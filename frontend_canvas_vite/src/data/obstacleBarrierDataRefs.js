@@ -190,7 +190,7 @@ export const obstacleBarrierDataRefs = {
     c: {
       id: 0,
       trap: {
-        state: false,
+        state: true,
         persistent: false,
         remaining: 5,
         direction: "",

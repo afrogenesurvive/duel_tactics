@@ -1,6 +1,7 @@
 export function obstacleBarrierTrapInitSet(app, superType, type, data) {
-  // console.log("  obstacleBarrierTrapInitSet", data[type]);
+  // console.log("  obstacleBarrierTrapInitSet", data[type].trap.target);
   let trap = data[type].trap;
+
   let item = app.itemList.find((x) => {
     return x.name === trap.itemNameRef;
   });
@@ -27,7 +28,7 @@ export function obstacleBarrierTrapInitSet(app, superType, type, data) {
   let availibleCells = [];
 
   if (trap.state === true) {
-    if (!trap.target.x || trap.target.x === undefined) {
+    if (trap.target.x === undefined || trap.target.x === null) {
       if (type === "obstacle") {
         if (trap.direction === "") {
           availibleCells = app.getSurroundingCells(data.number, 45, "walkable", false, false);
@@ -124,7 +125,7 @@ export function obstacleBarrierTrapInitSet(app, superType, type, data) {
       }
     } else {
       if (trap.target.x) {
-        // console.log("app traps target is already set", trap.target, data.number, type);
+        console.log("app traps target is already set", trap.target, data.number, type);
       }
     }
   }

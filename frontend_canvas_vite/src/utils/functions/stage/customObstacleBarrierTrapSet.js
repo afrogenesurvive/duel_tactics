@@ -313,7 +313,7 @@ export function customObstacleBarrierTrapSet(app, instructionType, data) {
             persistent: elem.persistent,
             remaining: elem.remaining,
             direction: "",
-            target: {},
+            target: elem.target || {},
             timer: {
               enabled: elem.timerEnabled,
               state: false,
@@ -359,7 +359,7 @@ export function customObstacleBarrierTrapSet(app, instructionType, data) {
             persistent: elem.persistent,
             remaining: elem.remaining,
             direction: "",
-            target: {},
+            target: elem.target || {},
             timer: {
               enabled: elem.timerEnabled,
               state: false,
