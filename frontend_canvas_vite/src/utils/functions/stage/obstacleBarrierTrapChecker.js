@@ -211,7 +211,7 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
               app.cellPopups.push({
                 state: false,
                 count: 0,
-                limit: 35,
+                limit: trap.timer.limit,
                 type: "",
                 position: "",
                 msg: "timer",
@@ -273,7 +273,7 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
                 app.cellPopups.push({
                   state: false,
                   count: 0,
-                  limit: 10,
+                  limit: trap.timer.limit,
                   type: "",
                   position: "",
                   msg: "timer",

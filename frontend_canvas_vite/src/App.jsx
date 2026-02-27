@@ -102,6 +102,7 @@ import { obstacleMoveCrementer } from "./utils/functions/geometry/obstacleMoveCr
 import { drawPopupBubble } from "./utils/functions/geometry/drawPopupBubble";
 import { popupDrawCalc } from "./utils/functions/geometry/popupDrawCalc";
 import { playerPopupProgressCalc } from "./utils/functions/geometry/playerPopupProgressCalc";
+import { cellPopupProgressCalc } from "./utils/functions/geometry/cellPopupProgressCalc";
 
 import { setElasticCounter } from "./utils/functions/geometry/setElasticCounter";
 import { calcElasticCountCoords } from "./utils/functions/geometry/calcElasticCountCoords";
@@ -267,6 +268,7 @@ class App extends Component {
     this.drawPopupBubble = (...args) => drawPopupBubble(this, ...args);
     this.popupDrawCalc = (...args) => popupDrawCalc(this, ...args);
     this.playerPopupProgressCalc = (...args) => playerPopupProgressCalc(this, ...args);
+    this.cellPopupProgressCalc = (...args) => cellPopupProgressCalc(this, ...args);
     this.setElasticCounter = (...args) => setElasticCounter(this, ...args);
     this.calcElasticCountCoords = (...args) => calcElasticCountCoords(this, ...args);
 
