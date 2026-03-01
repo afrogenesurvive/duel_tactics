@@ -846,12 +846,18 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         //   ". attackCellContents"
         // );
         if (
-          targetCell1.obstacle.trap.state === true &&
-          targetCell1.obstacle.trap.acting.state === true &&
-          targetCell1.obstacle.trap.action === "attacking" &&
-          (targetCell1.obstacle.trap.item.subType === "sword" || targetCell1.obstacle.trap.item.subType === "spear") &&
-          targetCell1.obstacle.trap.acting.count === targetCell1.obstacle.trap.acting.peak &&
-          targetCell1.obstacle.trap.acting.direction === app.getOppositeDirection(owner.direction)
+          (targetCell1.obstacle.trap.state === true &&
+            targetCell1.obstacle.trap.acting.state === true &&
+            targetCell1.obstacle.trap.action === "attacking" &&
+            (targetCell1.obstacle.trap.item.subType === "sword" || targetCell1.obstacle.trap.item.subType === "spear") &&
+            targetCell1.obstacle.trap.acting.count === targetCell1.obstacle.trap.acting.peak &&
+            targetCell1.obstacle.trap.acting.direction === app.getOppositeDirection(owner.direction)) ||
+          (targetCell1.barrier.trap.state === true &&
+            targetCell1.barrier.trap.acting.state === true &&
+            targetCell1.barrier.trap.action === "attacking" &&
+            (targetCell1.barrier.trap.item.subType === "sword" || targetCell1.barrier.trap.item.subType === "spear") &&
+            targetCell1.barrier.trap.acting.count === targetCell1.barrier.trap.acting.peak &&
+            targetCell1.barrier.trap.acting.direction === app.getOppositeDirection(owner.direction))
         ) {
           console.log("traps clashing!!");
         }
@@ -909,12 +915,18 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         //   ". attackCellContents"
         // );
         if (
-          targetCell1.obstacle.trap.state === true &&
-          targetCell1.obstacle.trap.acting.state === true &&
-          targetCell1.obstacle.trap.action === "attacking" &&
-          (targetCell1.obstacle.trap.item.subType === "sword" || targetCell1.obstacle.trap.item.subType === "spear") &&
-          targetCell1.obstacle.trap.acting.count === targetCell1.obstacle.trap.acting.peak &&
-          targetCell1.obstacle.trap.acting.direction === app.getOppositeDirection(owner.direction)
+          (targetCell2.obstacle.trap.state === true &&
+            targetCell2.obstacle.trap.acting.state === true &&
+            targetCell2.obstacle.trap.action === "attacking" &&
+            (targetCell2.obstacle.trap.item.subType === "sword" || targetCell2.obstacle.trap.item.subType === "spear") &&
+            targetCell2.obstacle.trap.acting.count === targetCell2.obstacle.trap.acting.peak &&
+            targetCell2.obstacle.trap.acting.direction === app.getOppositeDirection(owner.direction)) ||
+          (targetCell2.barrier.trap.state === true &&
+            targetCell2.barrier.trap.acting.state === true &&
+            targetCell2.barrier.trap.action === "attacking" &&
+            (targetCell2.barrier.trap.item.subType === "sword" || targetCell2.barrier.trap.item.subType === "spear") &&
+            targetCell2.barrier.trap.acting.count === targetCell2.barrier.trap.acting.peak &&
+            targetCell2.barrier.trap.acting.direction === app.getOppositeDirection(owner.direction))
         ) {
           console.log("traps clashing!!");
         }
@@ -936,7 +948,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       }
     }
   }
-  if (targetPlayerRef) {
+  if (ownerType === "player" && targetPlayerRef) {
     // IS TARGET DEFENDING?
     let targetDefending = setTargetDefending();
     advantage = setAdvantage();
