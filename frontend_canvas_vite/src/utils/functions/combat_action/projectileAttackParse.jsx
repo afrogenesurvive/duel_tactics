@@ -804,6 +804,8 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
       }
     }
   } else {
+    console.log("non-player target", target);
+
     let cell = app.gridInfo.find((x) => x[targetType].id === target.id);
     console.log("bolt hit ", targetType, "at", target.number, " by", bolt.ownerType, bolt.owner, ".");
 
@@ -812,6 +814,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
     );
     if (boltOwner.trap.action === "attack" && boltOwner.trap.acting.state === true && boltOwner.trap.acting.directionType === "slash") {
       // LATERAL/SIDE ATTACK
+
       if (boltOwner.trap.direction !== bolt.direction && boltOwner.trap.direction !== app.getOppositeDirection(bolt.direction)) {
         if (boltOwner.acting.direction === app.getOppositeDirection(bolt.direction)) {
           console.log(targetType, "hit by bolt from the side by", bolt.ownerType, bolt.owner, "but they attacked it successfully.");

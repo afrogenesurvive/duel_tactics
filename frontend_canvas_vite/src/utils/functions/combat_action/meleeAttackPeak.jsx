@@ -417,6 +417,7 @@ export function meleeAttackPeak(app, ownerType, owner) {
             }
           }
         }
+      } else {
       }
     }
 

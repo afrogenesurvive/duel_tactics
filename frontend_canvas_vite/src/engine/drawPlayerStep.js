@@ -152,7 +152,7 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
         }
       }
 
-      drawCellsUnderAttackHighlight(app, x, y, floor);
+      floor = drawCellsUnderAttackHighlight(app, x, y, floor);
 
       // FLOOR
       if (drawFloor === true) {
@@ -754,6 +754,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   popup.position = positions[0];
                 }
 
+                let popupProgress = false;
+                let showProgress = false;
+
+                if (popup.msg === "timer") {
+                  showProgress = true;
+                  popupProgress = true;
+                }
+
                 popup.img = app.popupImageRef[popup.msg];
 
                 popupDrawCoords = app.popupDrawCalc(popup.position, { x: popup.cell.center.x - 25, y: popup.cell.center.y - 15 }, 0);
@@ -779,6 +787,15 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   app.popupImgSize,
                   app.popupImgSize,
                 );
+
+                if (showProgress === true && popupProgress === true) {
+                  let perc = app.cellPopupProgressCalc(app, popup);
+                  context2.fillStyle = app.popupProgressImgGradColor2;
+                  context2.beginPath();
+                  context2.fillStyle = app.popupProgressImgGradColor1;
+                  context2.roundRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y + app.popupSize, 10, app.popupSize * perc, 5);
+                  context2.fill();
+                }
               } else {
                 let dir = undefined;
                 let dirs = [];
@@ -857,6 +874,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   ).position = "";
                   // console.log('reconsidering...',popup.msg);
                 } else {
+                  let popupProgress = false;
+                  let showProgress = false;
+
+                  if (popup.msg === "timer") {
+                    showProgress = true;
+                    popupProgress = true;
+                  }
+
                   popup.img = app.popupImageRef[popup.msg];
                   popupDrawCoords = app.popupDrawCalc(
                     popup.position,
@@ -889,6 +914,15 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                     app.popupImgSize,
                     app.popupImgSize,
                   );
+
+                  if (showProgress === true && popupProgress === true) {
+                    let perc = app.cellPopupProgressCalc(popup);
+                    context2.fillStyle = app.popupProgressImgGradColor2;
+                    context2.beginPath();
+                    context2.fillStyle = app.popupProgressImgGradColor1;
+                    context2.roundRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y + app.popupSize, 10, app.popupSize * perc, 5);
+                    context2.fill();
+                  }
                 }
               }
             }

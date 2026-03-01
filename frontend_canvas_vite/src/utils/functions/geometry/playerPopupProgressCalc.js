@@ -274,5 +274,6 @@ export function playerPopupProgressCalc(app, player, popup) {
   // console.log("playerPopupProgressCalc perc: ",((100-perc)/100).toFixed(2) ,(perc/100).toFixed(2));
 
   // return (100-perc)/100;
+  // console.log(-(perc / 100).toFixed(2));
   return -(perc / 100).toFixed(2);
 }

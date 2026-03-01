@@ -17,10 +17,7 @@ export function checkTests(app, player) {
     // let testTraps = app.customObstacleBarrierTrapSet("shuffleActive","")
     // let testTraps = app.customObstacleBarrierTrapSet("refreshActive","")
     // let testTraps = app.customObstacleBarrierTrapSet("setNewRandom", "");
-    // let testTraps = app.customObstacleBarrierTrapSet(
-    //   "setNewCustom",
-    //   app.customTrapSetNewCustomTestData
-    // );
+    app.customObstacleBarrierTrapSet("setNewCustom", app.customTrapSetNewCustomTestData);
     // for (const trap of testTraps) {
     //   app.gridInfo.find((x) => x.number.x === trap.location.x && x.number.y === trap.location.y)[trap.type].trap = trap.trap;
     // }

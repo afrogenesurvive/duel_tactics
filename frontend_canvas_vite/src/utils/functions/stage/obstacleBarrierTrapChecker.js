@@ -201,9 +201,8 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
           if (trap.timer.count < trap.timer.limit) {
             trap.timer.count++;
             higlightCell();
-            // console.log("persistent trap timer count up", trap.timer.count);
             if (trap.timer.count === 1) {
-              // console.log("trap has been triggered at ", trap.target, "by", triggerType);
+              console.log("trap has been triggered at ", trap.target, "by", triggerType);
             }
             if (
               !app.cellPopups.find((x) => x.msg === "timer" && x.cell.number.x === locationCell.number.x && x.cell.number.y === locationCell.number.y)
@@ -211,7 +210,7 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
               app.cellPopups.push({
                 state: false,
                 count: 0,
-                limit: 35,
+                limit: trap.timer.limit,
                 type: "",
                 position: "",
                 msg: "timer",
@@ -263,7 +262,7 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
               higlightCell();
               // console.log("limited trap timer count up", trap.timer.count);
               if (trap.timer.count === 1) {
-                // console.log("trap has been triggered at ", trap.target, "by", triggerType);
+                console.log("trap has been triggered at ", trap.target, "by", triggerType);
               }
               if (
                 !app.cellPopups.find(
@@ -273,7 +272,7 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
                 app.cellPopups.push({
                   state: false,
                   count: 0,
-                  limit: 10,
+                  limit: trap.timer.limit,
                   type: "",
                   position: "",
                   msg: "timer",
@@ -313,6 +312,7 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
       }
     }
   };
+
   if (trap.state === true) {
     if (trap.acting.state === true) {
       executeTrapAction();
