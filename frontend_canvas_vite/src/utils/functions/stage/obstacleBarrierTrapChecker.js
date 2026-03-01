@@ -201,7 +201,6 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
           if (trap.timer.count < trap.timer.limit) {
             trap.timer.count++;
             higlightCell();
-            console.log("persistent trap timer count up", trap.timer.count);
             if (trap.timer.count === 1) {
               console.log("trap has been triggered at ", trap.target, "by", triggerType);
             }
@@ -261,7 +260,7 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
             if (trap.timer.count < trap.timer.limit) {
               trap.timer.count++;
               higlightCell();
-              console.log("limited trap timer count up", trap.timer.count);
+              // console.log("limited trap timer count up", trap.timer.count);
               if (trap.timer.count === 1) {
                 console.log("trap has been triggered at ", trap.target, "by", triggerType);
               }
@@ -313,6 +312,7 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
       }
     }
   };
+
   if (trap.state === true) {
     if (trap.acting.state === true) {
       executeTrapAction();

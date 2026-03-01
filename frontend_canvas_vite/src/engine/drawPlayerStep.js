@@ -754,12 +754,13 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   popup.position = positions[0];
                 }
 
-                // FINISH HERE!!
+                let popupProgress = false;
+                let showProgress = false;
 
-                // if popup msg is timer
-                // if cellinfo has obstacle/barrier w/ trap and it's timer is counting
-                // let popupProgress = false;
-                // let showProgress = false;
+                if (popup.msg === "timer") {
+                  showProgress = true;
+                  popupProgress = true;
+                }
 
                 popup.img = app.popupImageRef[popup.msg];
 
@@ -787,19 +788,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   app.popupImgSize,
                 );
 
-                // FINISH HERE!!
-
-                // if (showProgress === true && popupProgress === true) {
-                //   let perc = app.cellPopupProgressCalc(plyr, popup);
-                //   context2.fillStyle = app.popupProgressImgGradColor2;
-                //   context2.beginPath();
-                //   // context2.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+app.popupSize, app.popupSize, app.popupSize*perc, 5);
-                //   // context2.stroke();
-                //   context2.fillStyle = app.popupProgressImgGradColor1;
-                //   context2.roundRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y + app.popupSize, 10, app.popupSize * perc, 5);
-                //   context2.fill();
-                //   // console.log("playerPopupProgress init", perc);
-                // }
+                if (showProgress === true && popupProgress === true) {
+                  let perc = app.cellPopupProgressCalc(app, popup);
+                  context2.fillStyle = app.popupProgressImgGradColor2;
+                  context2.beginPath();
+                  context2.fillStyle = app.popupProgressImgGradColor1;
+                  context2.roundRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y + app.popupSize, 10, app.popupSize * perc, 5);
+                  context2.fill();
+                }
               } else {
                 let dir = undefined;
                 let dirs = [];
@@ -878,6 +874,14 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                   ).position = "";
                   // console.log('reconsidering...',popup.msg);
                 } else {
+                  let popupProgress = false;
+                  let showProgress = false;
+
+                  if (popup.msg === "timer") {
+                    showProgress = true;
+                    popupProgress = true;
+                  }
+
                   popup.img = app.popupImageRef[popup.msg];
                   popupDrawCoords = app.popupDrawCalc(
                     popup.position,
@@ -910,6 +914,15 @@ export function drawPlayerStep(app, playerNumber, canvas, context, canvas2, cont
                     app.popupImgSize,
                     app.popupImgSize,
                   );
+
+                  if (showProgress === true && popupProgress === true) {
+                    let perc = app.cellPopupProgressCalc(popup);
+                    context2.fillStyle = app.popupProgressImgGradColor2;
+                    context2.beginPath();
+                    context2.fillStyle = app.popupProgressImgGradColor1;
+                    context2.roundRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y + app.popupSize, 10, app.popupSize * perc, 5);
+                    context2.fill();
+                  }
                 }
               }
             }

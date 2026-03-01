@@ -213,7 +213,7 @@ export const obstacleBarrierDataRefs = {
           direction: "",
           directionType: "",
         },
-        itemNameRef: "crossbow1",
+        itemNameRef: "sword1",
         item: {},
         ammo: 0,
       },

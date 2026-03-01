@@ -1,5 +1,5 @@
 export function obstacleBarrierTrapInitSet(app, superType, type, data) {
-  // console.log("  obstacleBarrierTrapInitSet", data[type].trap.target);
+  // console.log("  obstacleBarrierTrapInitSet", data[type].trap.direction);
   let trap = data[type].trap;
 
   let item = app.itemList.find((x) => {

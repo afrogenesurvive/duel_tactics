@@ -1,5 +1,6 @@
-// __*_0.0_a_0 barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
+// **_*_0.0_a_0 barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
 
+// 'ROWS' ARE VERTICAL (NORTH/SOUTH)
 export const levelDataPresets = {
   levelData12: {
     row0: [
@@ -225,7 +226,7 @@ export const levelDataPresets = {
     ],
     row2: [
       "**_*_2.0_a_0a*",
-      "**_*_2.1_a_0a*",
+      "**_c_2.1_a_0a*",
       "**_*_2.2_a_0a*",
       "**_*_2.3_a_0a*",
       "**_*_2.4_a_0a*",
