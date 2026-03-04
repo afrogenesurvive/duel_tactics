@@ -265,14 +265,14 @@ export function checkAttacking(app, player) {
 
           let melee = true;
 
-          // console.log(`Attack peak!`, {
-          //   plyr_no: player.number,
-          //   atk_count: player.attacking.count,
-          //   peak_count: player.attacking.peakCount,
-          //   limit: player.attacking.limit,
-          //   blunt: player.attacking.blunt,
-          //   time: app.time,
-          // });
+          console.log(`Attack peak!`, {
+            plyr_no: player.number,
+            atk_count: player.attacking.count,
+            // peak_count: player.attacking.peakCount,
+            // limit: player.attacking.limit,
+            // blunt: player.attacking.blunt,
+            time: app.time,
+          });
 
           if (app.showDirectionalActionAnimation === true) {
             let dirAnimSetCalcMod = 5;
@@ -381,6 +381,7 @@ export function checkAttacking(app, player) {
         // console.log(`attack cooldown`, {
         //   limit: player.attacking.limit,
         //   count: player.attacking.count,
+        //   time: app.time,
         // });
 
         // let popup;
@@ -421,10 +422,10 @@ export function checkAttacking(app, player) {
             count: 0,
             limit: player.attacking.clashing.limit,
           },
-          maxCharge: 15,
+          maxCharge: player.attacking.maxCharge,
           chargeCount: 0,
           execute: false,
-          effectivenessAllowance: 3,
+          effectivenessAllowance: player.attacking.effectivenessAllowance,
         };
         player.action = "idle";
 

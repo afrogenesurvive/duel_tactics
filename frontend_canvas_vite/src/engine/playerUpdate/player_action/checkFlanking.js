@@ -1,4 +1,4 @@
-export function checkFlanking(app, player) {
+export function checkFlanking(app, player, keyPressedDirection, nextPosition) {
   // CHECK/SET STATE
   if (player.flanking.state === true) {
     // RESET DODGING
@@ -455,4 +455,6 @@ export function checkFlanking(app, player) {
       }
     }
   }
+
+  return nextPosition;
 }
