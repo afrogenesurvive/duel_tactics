@@ -170,7 +170,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
     if (targetPlayerRef.currentWeapon.name === "") {
       defendType = "unarmed";
     }
-    let defendPeak = target.defending.peakCount;
+    let defendPeak = targetPlayerRef.defending.peakCount;
     if ((targetPlayerRef.defending.count > 0 && targetPlayerRef.defending.count === defendPeak) || targetPlayerRef.defending.decay.state === true) {
       return true;
     } else {
@@ -270,7 +270,6 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         owner.trap.acting.direction,
       );
       app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
-
       app.setDeflection(targetPlayerRef, "attacked", false);
     }
   };
@@ -371,7 +370,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         if (sideAttack === true || faceToFace === true) {
           if (
             targetPlayerRef.defending.peak === true ||
-            (target.defending.decay.state === true && target.defending.decay.count < app.defendPeakAllowance)
+            (target.defending.decay.state === true && targetPlayerRef.defending.decay.count < app.defendPeakAllowance)
           ) {
             console.log(
               "target defending:",
@@ -821,7 +820,6 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
   if (cellNo === 1) {
     logCellNo = targetCell1.number;
     let cellObstacleBarrier = targetCell1.obstacle.state === true ? "obstacle" : targetCell1.barrier.state === true ? "barrier" : "";
-    console.log(`Non-player melee attack target. cell1`, targetCell1[cellObstacleBarrier]);
     //TARGET IS PROJECTILE!!
     if (app.isBoltInCell(targetCell1.number) === true) {
       console.log(
@@ -883,11 +881,11 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         ) {
           let ownerCell = app.gridInfo.find((x) => x[cellObstacleBarrier].id === owner.id);
           if (owner.trap.acting.direction === app.getOppositeDirection(targetCell1[cellObstacleBarrier].trap.acting.direction)) {
-            console.log("traps clashing!!", owner.trap.acting);
+            console.log("traps clashing!!");
             app.canPushObstacle(ownerType, owner, targetCell1, `hitPush`);
             app.canPushObstacle(cellObstacleBarrier, targetCell1[cellObstacleBarrier], ownerCell, `hitPush`);
           } else {
-            console.log("traps trading!!", owner.trap.acting);
+            console.log("traps trading!!");
             app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
             let x = app.gridInfo.find(
               (x) =>
@@ -906,7 +904,6 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
   if (cellNo === 2) {
     logCellNo = targetCell2.number;
     let cellObstacleBarrier = targetCell2.obstacle.state === true ? "obstacle" : targetCell2.barrier.state === true ? "barrier" : "";
-    console.log(`Non-player melee attack target. cell2`, targetCell2[cellObstacleBarrier]);
     //TARGET IS PROJECTILE!!
     if (app.isBoltInCell(targetCell2.number) === true) {
       console.log(
@@ -963,11 +960,11 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         ) {
           let ownerCell = app.gridInfo.find((x) => x[cellObstacleBarrier].id === owner.id);
           if (owner.trap.acting.direction === app.getOppositeDirection(targetCell2[cellObstacleBarrier].trap.acting.direction)) {
-            console.log("traps clashing!!", owner.trap.acting);
+            console.log("traps clashing!!");
             app.canPushObstacle(ownerType, owner, targetCell2, `hitPush`);
             app.canPushObstacle(cellObstacleBarrier, targetCell2[cellObstacleBarrier], ownerCell, `hitPush`);
           } else {
-            console.log("traps trading!!", owner.trap.acting);
+            console.log("traps trading!!");
             app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
             let x = app.gridInfo.find(
               (x) =>
@@ -996,7 +993,11 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       }
     }
   }
-  if (ownerType === "player" && targetPlayerRef) {
+  if (targetPlayerRef) {
+    console.log(
+      `meleeAttackParse: target is a player: ${targetPlayerRef.number}, ${ownerDirection}, ${app.getOppositeDirection(targetPlayerRef.direction)}`,
+    );
+
     // IS TARGET DEFENDING?
     let targetDefending = setTargetDefending();
     advantage = setAdvantage();
@@ -1048,7 +1049,8 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
       if (
         targetPlayerRef.attacking.peak === true ||
-        (targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount &&
+        (targetPlayerRef.action === "attacking" &&
+          targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount &&
           targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance)
       ) {
         simultaneousAttack = true;
@@ -1174,6 +1176,8 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       attackPosition = "front";
       // TARGET DODGING
       if (targetPlayerRef.dodging.state === true) {
+        console.log("gg");
+
         handleTargetDodging();
 
         if (ownerType === "player") {
@@ -1188,15 +1192,10 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         defenderWeaponType = "unarmed";
       }
       let simultaneousAttack = false;
-      // console.log(
-      //   "here",
-      //   owner.attacking.count,
-      //   targetPlayerRef.attacking.count,
-      //   targetPlayerRef.attacking.animRef.peak[defenderWeaponType] - app.simultaneousAttackAllowance
-      // );
       if (
         targetPlayerRef.attacking.peak === true ||
-        (targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount &&
+        (targetPlayerRef.action === "attacking" &&
+          targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount &&
           targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance)
       ) {
         simultaneousAttack = true;

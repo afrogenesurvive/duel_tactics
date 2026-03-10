@@ -183,7 +183,7 @@ export function applyConstructorDefaults(app) {
       triggerType: "any",
       itemNameRef: "spear1",
       type: "obstacle",
-      direction: "east",
+      direction: "south",
       location: {
         x: 1,
         y: 1,

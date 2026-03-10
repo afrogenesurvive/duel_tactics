@@ -4,8 +4,8 @@ export const playerDataArray = [
     startPosition: {
       cell: {
         number: {
-          x: 5,
-          y: 1,
+          x: 1,
+          y: 4,
         },
         center: {
           x: 0,
