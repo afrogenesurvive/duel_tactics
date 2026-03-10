@@ -739,12 +739,21 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
           logCellNo,
           ". damage both players, deflect both players",
         );
-        app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
-        app.setDeflection(targetPlayerRef, "attacked", false);
+
+        if (ownerType === "player" && owner.attacking.blunt === true) {
+          app.setDeflection(targetPlayerRef, "bluntAttacked", false);
+        } else {
+          app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+          app.setDeflection(targetPlayerRef, "attacked", false);
+        }
 
         if (ownerType === "player") {
-          app.handleMeleeDamage("player", targetPlayerRef, owner);
-          app.setDeflection(owner, "attacked", false);
+          if (targetPlayerRef.attacking.blunt === true) {
+            app.setDeflection(owner, "bluntAttacked", false);
+          } else {
+            app.handleMeleeDamage("player", targetPlayerRef, owner);
+            app.setDeflection(owner, "attacked", false);
+          }
         } else {
           app.attackCellContents("melee", "player", targetPlayerRef, targetCell, targetCell2, myCell, undefined);
         }
@@ -770,8 +779,12 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         };
       }
 
-      app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
-      app.setDeflection(targetPlayerRef, "attacked", false);
+      if (owner.attacking.blunt === true) {
+        app.setDeflection(targetPlayerRef, "bluntAttacked", false);
+      } else {
+        app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+        app.setDeflection(targetPlayerRef, "attacked", false);
+      }
     }
 
     // TARGET ADVANTAGE
@@ -786,8 +799,12 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         "are unevenly matched in combat advantage. target/defender advantage (attacker is likely unarmed) damage, deflect attacker",
       );
       if (ownerType === "player") {
-        app.handleMeleeDamage("player", targetPlayerRef, owner);
-        app.setDeflection(owner, "attacked", false);
+        if (targetPlayerRef.attacking.blunt === true) {
+          app.setDeflection(owner, "bluntAttacked", false);
+        } else {
+          app.handleMeleeDamage("player", targetPlayerRef, owner);
+          app.setDeflection(owner, "attacked", false);
+        }
       } else {
         app.attackCellContents("melee", "player", targetPlayerRef, targetCell, targetCell2, myCell, undefined);
       }
@@ -802,9 +819,9 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
   // PROJECTILE, ITEM, RUBBLE, OBSTACLE, BARRIER TARGETS
   if (cellNo === 1) {
-    console.log(`Non-player melee attack target.`, targetCell1.number);
-
     logCellNo = targetCell1.number;
+    let cellObstacleBarrier = targetCell1.obstacle.state === true ? "obstacle" : targetCell1.barrier.state === true ? "barrier" : "";
+    console.log(`Non-player melee attack target. cell1`, targetCell1[cellObstacleBarrier]);
     //TARGET IS PROJECTILE!!
     if (app.isBoltInCell(targetCell1.number) === true) {
       console.log(
@@ -851,29 +868,45 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         //   ownerWeaponType,
         //   ". attackCellContents"
         // );
+        console.log("...", {
+          cell1Item,
+          cell1Rubble,
+        });
+
         if (
-          (targetCell1.obstacle.trap.state === true &&
-            targetCell1.obstacle.trap.acting.state === true &&
-            targetCell1.obstacle.trap.action === "attacking" &&
-            (targetCell1.obstacle.trap.item.subType === "sword" || targetCell1.obstacle.trap.item.subType === "spear") &&
-            targetCell1.obstacle.trap.acting.count === targetCell1.obstacle.trap.acting.peak &&
-            targetCell1.obstacle.trap.acting.direction === app.getOppositeDirection(owner.direction)) ||
-          (targetCell1.barrier.trap.state === true &&
-            targetCell1.barrier.trap.acting.state === true &&
-            targetCell1.barrier.trap.action === "attacking" &&
-            (targetCell1.barrier.trap.item.subType === "sword" || targetCell1.barrier.trap.item.subType === "spear") &&
-            targetCell1.barrier.trap.acting.count === targetCell1.barrier.trap.acting.peak &&
-            targetCell1.barrier.trap.acting.direction === app.getOppositeDirection(owner.direction))
+          targetCell1[cellObstacleBarrier]?.trap.state === true &&
+          targetCell1[cellObstacleBarrier]?.trap.acting.state === true &&
+          targetCell1[cellObstacleBarrier]?.trap.action === "attack" &&
+          (targetCell1[cellObstacleBarrier]?.trap.item.subType === "sword" || targetCell1[cellObstacleBarrier]?.trap.item.subType === "spear") &&
+          targetCell1[cellObstacleBarrier]?.trap.acting.count === targetCell1[cellObstacleBarrier]?.trap.acting.peak &&
+          targetCell1[cellObstacleBarrier]?.trap.direction === app.getOppositeDirection(owner.trap.direction)
         ) {
-          console.log("traps clashing!!");
+          let ownerCell = app.gridInfo.find((x) => x[cellObstacleBarrier].id === owner.id);
+          if (owner.trap.acting.direction === app.getOppositeDirection(targetCell1[cellObstacleBarrier].trap.acting.direction)) {
+            console.log("traps clashing!!", owner.trap.acting);
+            app.canPushObstacle(ownerType, owner, targetCell1, `hitPush`);
+            app.canPushObstacle(cellObstacleBarrier, targetCell1[cellObstacleBarrier], ownerCell, `hitPush`);
+          } else {
+            console.log("traps trading!!", owner.trap.acting);
+            app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
+            let x = app.gridInfo.find(
+              (x) =>
+                x.number.x === app.getCellFromDirection(2, targetCell1.number, targetCell1[cellObstacleBarrier].trap.direction).x &&
+                x.number.y === app.getCellFromDirection(2, targetCell1.number, targetCell1[cellObstacleBarrier].trap.direction).y,
+            );
+            app.attackCellContents("melee", cellObstacleBarrier, targetCell1[cellObstacleBarrier], ownerCell, x, targetCell1, undefined);
+          }
+        } else {
+          app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
         }
-        app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
       }
     }
   }
+
   if (cellNo === 2) {
-    console.log(`Non-player melee attack target.`, targetCell2.number);
     logCellNo = targetCell2.number;
+    let cellObstacleBarrier = targetCell2.obstacle.state === true ? "obstacle" : targetCell2.barrier.state === true ? "barrier" : "";
+    console.log(`Non-player melee attack target. cell2`, targetCell2[cellObstacleBarrier]);
     //TARGET IS PROJECTILE!!
     if (app.isBoltInCell(targetCell2.number) === true) {
       console.log(
@@ -921,22 +954,31 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         //   ". attackCellContents"
         // );
         if (
-          (targetCell2.obstacle.trap.state === true &&
-            targetCell2.obstacle.trap.acting.state === true &&
-            targetCell2.obstacle.trap.action === "attacking" &&
-            (targetCell2.obstacle.trap.item.subType === "sword" || targetCell2.obstacle.trap.item.subType === "spear") &&
-            targetCell2.obstacle.trap.acting.count === targetCell2.obstacle.trap.acting.peak &&
-            targetCell2.obstacle.trap.acting.direction === app.getOppositeDirection(owner.direction)) ||
-          (targetCell2.barrier.trap.state === true &&
-            targetCell2.barrier.trap.acting.state === true &&
-            targetCell2.barrier.trap.action === "attacking" &&
-            (targetCell2.barrier.trap.item.subType === "sword" || targetCell2.barrier.trap.item.subType === "spear") &&
-            targetCell2.barrier.trap.acting.count === targetCell2.barrier.trap.acting.peak &&
-            targetCell2.barrier.trap.acting.direction === app.getOppositeDirection(owner.direction))
+          targetCell2[cellObstacleBarrier]?.trap.state === true &&
+          targetCell2[cellObstacleBarrier]?.trap.acting.state === true &&
+          targetCell2[cellObstacleBarrier]?.trap.action === "attack" &&
+          (targetCell2[cellObstacleBarrier]?.trap.item.subType === "sword" || targetCell2[cellObstacleBarrier]?.trap.item.subType === "spear") &&
+          targetCell2[cellObstacleBarrier]?.trap.acting.count === targetCell2[cellObstacleBarrier]?.trap.acting.peak &&
+          targetCell2[cellObstacleBarrier]?.trap.direction === app.getOppositeDirection(owner.trap.direction)
         ) {
-          console.log("traps clashing!!");
+          let ownerCell = app.gridInfo.find((x) => x[cellObstacleBarrier].id === owner.id);
+          if (owner.trap.acting.direction === app.getOppositeDirection(targetCell2[cellObstacleBarrier].trap.acting.direction)) {
+            console.log("traps clashing!!", owner.trap.acting);
+            app.canPushObstacle(ownerType, owner, targetCell2, `hitPush`);
+            app.canPushObstacle(cellObstacleBarrier, targetCell2[cellObstacleBarrier], ownerCell, `hitPush`);
+          } else {
+            console.log("traps trading!!", owner.trap.acting);
+            app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
+            let x = app.gridInfo.find(
+              (x) =>
+                x.number.x === app.getCellFromDirection(2, targetCell2.number, targetCell2[cellObstacleBarrier].trap.direction).x &&
+                x.number.y === app.getCellFromDirection(2, targetCell2.number, targetCell2[cellObstacleBarrier].trap.direction).y,
+            );
+            app.attackCellContents("melee", cellObstacleBarrier, targetCell2[cellObstacleBarrier], ownerCell, x, targetCell2, undefined);
+          }
+        } else {
+          app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
         }
-        app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
       }
     }
   }
