@@ -1,5 +1,10 @@
 export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
-  // console.log("canPushObstacle");
+  console.log("canPushObstacle", {
+    ownerType,
+    owner,
+    obstacleCell,
+    type,
+  });
   // let pusherCellRef = app.gridInfo.find(x=> x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
   let resetPush = false;
   let thresholdMultiplier = app.rnJesus(1, 3);
@@ -65,6 +70,9 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
       impactDirection = owner.direction;
     } else {
       let myCell = app.gridInfo.find((x) => x[ownerType].state === true && x[ownerType].id === owner.id);
+      if (!myCell && owner.trap.state === true) {
+        myCell = app.gridInfo.find((x) => x[ownerType].id === owner.id);
+      }
       impactDirection = app.getDirectionFromCells(myCell.number, owner.trap.target);
     }
   }

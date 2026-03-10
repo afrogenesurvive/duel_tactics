@@ -235,7 +235,16 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
                 let index = player.actionDirectionAnimationArray.findIndex((x) => {
                   return x.id === elem.id;
                 });
-                player.actionDirectionAnimationArray.splice(index, 1);
+                if (
+                  elem.ownerType === "player" &&
+                  elem.action === "attacking" &&
+                  player.attacking.peak === false &&
+                  player.attacking.chargeCount > 0
+                ) {
+                  // console.log("player attack charging/held. Do nothing");
+                } else {
+                  player.actionDirectionAnimationArray.splice(index, 1);
+                }
               }
             }
           }
@@ -256,7 +265,16 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
                 let index = player.actionDirectionAnimationArray.findIndex((x) => {
                   return x.id === elem.id;
                 });
-                player.actionDirectionAnimationArray.splice(index, 1);
+                if (
+                  elem.ownerType === "player" &&
+                  elem.action === "attacking" &&
+                  player.attacking.peak === false &&
+                  player.attacking.chargeCount > 0
+                ) {
+                  // console.log("player attack charging/held. Do nothing");
+                } else {
+                  player.actionDirectionAnimationArray.splice(index, 1);
+                }
               }
             }
           }
@@ -350,7 +368,7 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
       checkPlayerGear(app, player);
 
       // FLANKING!
-      checkFlanking(app, player);
+      nextPosition = checkFlanking(app, player, keyPressedDirection, nextPosition);
 
       // BREAK FROM PULLED/PUSHED CHECK
       let plyrPullPushed = false;

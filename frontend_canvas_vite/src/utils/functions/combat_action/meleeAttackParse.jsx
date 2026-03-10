@@ -1,3 +1,39 @@
+// Simulataneaous Attack resolutions:
+// Face to face:
+
+// slash vs thrust in opposte directions favors a slash (thrusting player gets damaged)
+// slash v slash on same axis is a clash
+// slash v slash on different axes is a trade
+// thrust v thrust in opposite direction is a clash
+
+// Target side facing attacker
+// Only a target player slash the opposite to the attacker facing has an effect
+
+// if attacker is thrusting, they may trade
+// if attacker is slashing on a different axis, they may trade
+// if attacker is slashing on the same axis, they may clash
+
+// target defending resolutions
+// face to face:
+
+// if attacker and defender are thrusting and opposite direction, handle defense
+// if attacker and defender slashing and same direction, handle defense
+// if attacker and defender action type are different, defender attacked
+// if attacker and defender are slashing in diffferent directions, defender attacked
+
+// Target side facing attacker
+// Only a target player slash the opposite to the attacker facing has an effect
+
+// if attacker is thrusting, defender attacked
+// if defender is slashing on a different axis, or same direction, defender attacked
+// if defender is slashing on the same axis but opposite direction, handle defense
+
+// if attack is blunt, break defense
+// else check advantage
+// if defender has advantage or evenly matched
+// if peak defense deflect and possible pushback attacker
+// if off peak, just deflect attacker
+
 export function meleeAttackParse(app, ownerType, owner, cellNo) {
   // console.log("meleeAttackParse");
 
@@ -134,7 +170,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
     if (targetPlayerRef.currentWeapon.name === "") {
       defendType = "unarmed";
     }
-    let defendPeak = target.defending.peakCount;
+    let defendPeak = targetPlayerRef.defending.peakCount;
     if ((targetPlayerRef.defending.count > 0 && targetPlayerRef.defending.count === defendPeak) || targetPlayerRef.defending.decay.state === true) {
       return true;
     } else {
@@ -234,7 +270,6 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         owner.trap.acting.direction,
       );
       app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
-
       app.setDeflection(targetPlayerRef, "attacked", false);
     }
   };
@@ -333,7 +368,10 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         // SIDE ATTACK OR FACE TO FACE
         // PEAK DEFEND/PARRY
         if (sideAttack === true || faceToFace === true) {
-          if (targetPlayerRef.defending.peak === true) {
+          if (
+            targetPlayerRef.defending.peak === true ||
+            (target.defending.decay.state === true && targetPlayerRef.defending.decay.count < app.defendPeakAllowance)
+          ) {
             console.log(
               "target defending:",
               ownerType,
@@ -423,7 +461,11 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
         // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
         // if (targetPlayerRef.defending.decay.state === true && targetPlayerRef.defending.peak !== true) {
-        if (targetPlayerRef.defending.peak !== true) {
+        if (
+          targetPlayerRef.defending.peak !== true &&
+          targetPlayerRef.defending.decay.state === true &&
+          targetPlayerRef.defending.decay.count > app.defendPeakAllowance
+        ) {
           if (sideAttack === true) {
             if (app.rnJesus(1, targetPlayerRef.crits.guardBreak) !== 1) {
               console.log(
@@ -626,6 +668,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         "are evenly matched in combat advantage. clashing!! pushback one or both players w/o damage",
       );
 
+      // PUSHBACK ATTACKER/PLAYER BASED ON charge difference
       if (additional === "clash") {
         if (ownerType === "player") {
           targetPlayerRef.attacking.clashing.state = true;
@@ -679,44 +722,6 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
             }
           }
         }
-
-        // // PUSHBACK ATTACKER/PLAYER
-        // let set = false;
-        // let pushWho = app.rnJesus(0, 2);
-        // if (pushWho === 0 && set !== true) {
-        //   if (ownerType === "obstacle") {
-        //     app.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
-        //     set = true;
-        //   }
-        //   if (ownerType === "player") {
-        //     app.pushBack(owner, app.getOppositeDirection(owner.direction));
-        //     set = true;
-        //   }
-        // }
-        // // PUSHBACK DEFENDER/TARGET
-        // if (pushWho === 1 && set !== true) {
-        //   app.pushBack(
-        //     targetPlayerRef,
-        //     app.getOppositeDirection(targetPlayerRef.direction)
-        //   );
-        //   set = true;
-        // }
-        // // PUSHBACK BOTH PLAYERS
-        // if (pushWho === 2 && set !== true) {
-        //   if (ownerType === "obstacle") {
-        //     app.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
-        //     set = true;
-        //   }
-        //   if (ownerType === "player") {
-        //     app.pushBack(owner, app.getOppositeDirection(owner.direction));
-        //     set = true;
-        //   }
-        //   app.pushBack(
-        //     targetPlayerRef,
-        //     app.getOppositeDirection(targetPlayerRef.direction)
-        //   );
-        //   set = true;
-        // }
       }
       if (additional === "trade") {
         console.log(
@@ -733,12 +738,21 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
           logCellNo,
           ". damage both players, deflect both players",
         );
-        app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
-        app.setDeflection(targetPlayerRef, "attacked", false);
+
+        if (ownerType === "player" && owner.attacking.blunt === true) {
+          app.setDeflection(targetPlayerRef, "bluntAttacked", false);
+        } else {
+          app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+          app.setDeflection(targetPlayerRef, "attacked", false);
+        }
 
         if (ownerType === "player") {
-          app.handleMeleeDamage("player", targetPlayerRef, owner);
-          app.setDeflection(owner, "attacked", false);
+          if (targetPlayerRef.attacking.blunt === true) {
+            app.setDeflection(owner, "bluntAttacked", false);
+          } else {
+            app.handleMeleeDamage("player", targetPlayerRef, owner);
+            app.setDeflection(owner, "attacked", false);
+          }
         } else {
           app.attackCellContents("melee", "player", targetPlayerRef, targetCell, targetCell2, myCell, undefined);
         }
@@ -764,8 +778,12 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         };
       }
 
-      app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
-      app.setDeflection(targetPlayerRef, "attacked", false);
+      if (owner.attacking.blunt === true) {
+        app.setDeflection(targetPlayerRef, "bluntAttacked", false);
+      } else {
+        app.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+        app.setDeflection(targetPlayerRef, "attacked", false);
+      }
     }
 
     // TARGET ADVANTAGE
@@ -780,8 +798,12 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         "are unevenly matched in combat advantage. target/defender advantage (attacker is likely unarmed) damage, deflect attacker",
       );
       if (ownerType === "player") {
-        app.handleMeleeDamage("player", targetPlayerRef, owner);
-        app.setDeflection(owner, "attacked", false);
+        if (targetPlayerRef.attacking.blunt === true) {
+          app.setDeflection(owner, "bluntAttacked", false);
+        } else {
+          app.handleMeleeDamage("player", targetPlayerRef, owner);
+          app.setDeflection(owner, "attacked", false);
+        }
       } else {
         app.attackCellContents("melee", "player", targetPlayerRef, targetCell, targetCell2, myCell, undefined);
       }
@@ -796,9 +818,8 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
   // PROJECTILE, ITEM, RUBBLE, OBSTACLE, BARRIER TARGETS
   if (cellNo === 1) {
-    console.log(`Non-player melee attack target.`, targetCell1.number);
-
     logCellNo = targetCell1.number;
+    let cellObstacleBarrier = targetCell1.obstacle.state === true ? "obstacle" : targetCell1.barrier.state === true ? "barrier" : "";
     //TARGET IS PROJECTILE!!
     if (app.isBoltInCell(targetCell1.number) === true) {
       console.log(
@@ -845,23 +866,44 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         //   ownerWeaponType,
         //   ". attackCellContents"
         // );
+        console.log("...", {
+          cell1Item,
+          cell1Rubble,
+        });
+
         if (
-          targetCell1.obstacle.trap.state === true &&
-          targetCell1.obstacle.trap.acting.state === true &&
-          targetCell1.obstacle.trap.action === "attacking" &&
-          (targetCell1.obstacle.trap.item.subType === "sword" || targetCell1.obstacle.trap.item.subType === "spear") &&
-          targetCell1.obstacle.trap.acting.count === targetCell1.obstacle.trap.acting.peak &&
-          targetCell1.obstacle.trap.acting.direction === app.getOppositeDirection(owner.direction)
+          targetCell1[cellObstacleBarrier]?.trap.state === true &&
+          targetCell1[cellObstacleBarrier]?.trap.acting.state === true &&
+          targetCell1[cellObstacleBarrier]?.trap.action === "attack" &&
+          (targetCell1[cellObstacleBarrier]?.trap.item.subType === "sword" || targetCell1[cellObstacleBarrier]?.trap.item.subType === "spear") &&
+          targetCell1[cellObstacleBarrier]?.trap.acting.count === targetCell1[cellObstacleBarrier]?.trap.acting.peak &&
+          targetCell1[cellObstacleBarrier]?.trap.direction === app.getOppositeDirection(owner.trap.direction)
         ) {
-          console.log("traps clashing!!");
+          let ownerCell = app.gridInfo.find((x) => x[cellObstacleBarrier].id === owner.id);
+          if (owner.trap.acting.direction === app.getOppositeDirection(targetCell1[cellObstacleBarrier].trap.acting.direction)) {
+            console.log("traps clashing!!");
+            app.canPushObstacle(ownerType, owner, targetCell1, `hitPush`);
+            app.canPushObstacle(cellObstacleBarrier, targetCell1[cellObstacleBarrier], ownerCell, `hitPush`);
+          } else {
+            console.log("traps trading!!");
+            app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
+            let x = app.gridInfo.find(
+              (x) =>
+                x.number.x === app.getCellFromDirection(2, targetCell1.number, targetCell1[cellObstacleBarrier].trap.direction).x &&
+                x.number.y === app.getCellFromDirection(2, targetCell1.number, targetCell1[cellObstacleBarrier].trap.direction).y,
+            );
+            app.attackCellContents("melee", cellObstacleBarrier, targetCell1[cellObstacleBarrier], ownerCell, x, targetCell1, undefined);
+          }
+        } else {
+          app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
         }
-        app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
       }
     }
   }
+
   if (cellNo === 2) {
-    console.log(`Non-player melee attack target.`, targetCell2.number);
     logCellNo = targetCell2.number;
+    let cellObstacleBarrier = targetCell2.obstacle.state === true ? "obstacle" : targetCell2.barrier.state === true ? "barrier" : "";
     //TARGET IS PROJECTILE!!
     if (app.isBoltInCell(targetCell2.number) === true) {
       console.log(
@@ -909,16 +951,31 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         //   ". attackCellContents"
         // );
         if (
-          targetCell1.obstacle.trap.state === true &&
-          targetCell1.obstacle.trap.acting.state === true &&
-          targetCell1.obstacle.trap.action === "attacking" &&
-          (targetCell1.obstacle.trap.item.subType === "sword" || targetCell1.obstacle.trap.item.subType === "spear") &&
-          targetCell1.obstacle.trap.acting.count === targetCell1.obstacle.trap.acting.peak &&
-          targetCell1.obstacle.trap.acting.direction === app.getOppositeDirection(owner.direction)
+          targetCell2[cellObstacleBarrier]?.trap.state === true &&
+          targetCell2[cellObstacleBarrier]?.trap.acting.state === true &&
+          targetCell2[cellObstacleBarrier]?.trap.action === "attack" &&
+          (targetCell2[cellObstacleBarrier]?.trap.item.subType === "sword" || targetCell2[cellObstacleBarrier]?.trap.item.subType === "spear") &&
+          targetCell2[cellObstacleBarrier]?.trap.acting.count === targetCell2[cellObstacleBarrier]?.trap.acting.peak &&
+          targetCell2[cellObstacleBarrier]?.trap.direction === app.getOppositeDirection(owner.trap.direction)
         ) {
-          console.log("traps clashing!!");
+          let ownerCell = app.gridInfo.find((x) => x[cellObstacleBarrier].id === owner.id);
+          if (owner.trap.acting.direction === app.getOppositeDirection(targetCell2[cellObstacleBarrier].trap.acting.direction)) {
+            console.log("traps clashing!!");
+            app.canPushObstacle(ownerType, owner, targetCell2, `hitPush`);
+            app.canPushObstacle(cellObstacleBarrier, targetCell2[cellObstacleBarrier], ownerCell, `hitPush`);
+          } else {
+            console.log("traps trading!!");
+            app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
+            let x = app.gridInfo.find(
+              (x) =>
+                x.number.x === app.getCellFromDirection(2, targetCell2.number, targetCell2[cellObstacleBarrier].trap.direction).x &&
+                x.number.y === app.getCellFromDirection(2, targetCell2.number, targetCell2[cellObstacleBarrier].trap.direction).y,
+            );
+            app.attackCellContents("melee", cellObstacleBarrier, targetCell2[cellObstacleBarrier], ownerCell, x, targetCell2, undefined);
+          }
+        } else {
+          app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
         }
-        app.attackCellContents("melee", ownerType, owner, targetCell1, targetCell2, myCell, undefined);
       }
     }
   }
@@ -937,9 +994,14 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
     }
   }
   if (targetPlayerRef) {
+    console.log(
+      `meleeAttackParse: target is a player: ${targetPlayerRef.number}, ${ownerDirection}, ${app.getOppositeDirection(targetPlayerRef.direction)}`,
+    );
+
     // IS TARGET DEFENDING?
     let targetDefending = setTargetDefending();
     advantage = setAdvantage();
+    const sameAxis = app.isSameAxisDirection(ownerActionDirection, targetPlayerRef.attacking.direction);
 
     // BACK ATTACK
     if (ownerDirection === targetPlayerRef.direction) {
@@ -987,7 +1049,8 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
       if (
         targetPlayerRef.attacking.peak === true ||
-        (targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount &&
+        (targetPlayerRef.action === "attacking" &&
+          targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount &&
           targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance)
       ) {
         simultaneousAttack = true;
@@ -996,11 +1059,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       if (simultaneousAttack === true) {
         // SIDE ATTACK CAN ONLY TRADE OR CLASH IF SLASHING IN THE OPPOSITE DIRECTION OF THE ATTACKER
         if (targetPlayerRef.attacking.directionType === "slash" && targetPlayerRef.attacking.direction === app.getOppositeDirection(ownerDirection)) {
-          if (
-            targetPlayerRef.attacking.direction === ownerActionDirection ||
-            targetPlayerRef.attacking.direction === app.getOppositeDirection(ownerActionDirection) ||
-            ownerActionDirectionType === "thrust"
-          ) {
+          if (sameAxis !== true || ownerActionDirectionType === "thrust") {
             console.log(
               "Compatible lateral attack directions: opposite axis",
               ownerType,
@@ -1014,11 +1073,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
             );
             handleTargetAttacking("trade");
           }
-          if (
-            targetPlayerRef.attacking.direction !== ownerActionDirection &&
-            targetPlayerRef.attacking.direction !== app.getOppositeDirection(ownerActionDirection) &&
-            ownerActionDirectionType !== "thrust"
-          ) {
+          if (sameAxis === true && ownerActionDirectionType !== "thrust") {
             console.log(
               "Compatible lateral attack directions: same axis",
               ownerType,
@@ -1051,11 +1106,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       else if (targetDefending === true) {
         // SIDE ATTACK CAN ONLY BE DEFENDED AGAINST IF IT IS A SLASH IN THE OPPOSITE DIRECTION OF THE ATTACKER
         if (targetPlayerRef.defending.directionType === "slash" && targetPlayerRef.defending.direction === app.getOppositeDirection(ownerDirection)) {
-          if (
-            targetPlayerRef.defending.direction === ownerActionDirection ||
-            targetPlayerRef.defending.direction === app.getOppositeDirection(ownerActionDirection) ||
-            ownerActionDirectionType === "thrust"
-          ) {
+          if (sameAxis === false || ownerActionDirectionType === "thrust") {
             console.log(
               "Incompatible lateral defend directions: opposite axis or thrust",
               ownerType,
@@ -1068,10 +1119,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
             );
             executeAttack();
           }
-          if (
-            targetPlayerRef.attacking.direction !== ownerActionDirection &&
-            targetPlayerRef.attacking.direction !== app.getOppositeDirection(ownerActionDirection)
-          ) {
+          if (sameAxis === true && ownerActionDirectionType !== "thrust") {
             console.log(
               "Compatible lateral defend directions: same axis",
               ownerType,
@@ -1128,6 +1176,8 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       attackPosition = "front";
       // TARGET DODGING
       if (targetPlayerRef.dodging.state === true) {
+        console.log("gg");
+
         handleTargetDodging();
 
         if (ownerType === "player") {
@@ -1142,15 +1192,10 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         defenderWeaponType = "unarmed";
       }
       let simultaneousAttack = false;
-      // console.log(
-      //   "here",
-      //   owner.attacking.count,
-      //   targetPlayerRef.attacking.count,
-      //   targetPlayerRef.attacking.animRef.peak[defenderWeaponType] - app.simultaneousAttackAllowance
-      // );
       if (
         targetPlayerRef.attacking.peak === true ||
-        (targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount &&
+        (targetPlayerRef.action === "attacking" &&
+          targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount &&
           targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance)
       ) {
         simultaneousAttack = true;
@@ -1159,38 +1204,75 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       // TARGET ALSO ATTACKING
 
       if (simultaneousAttack === true) {
-        // update:
-        // slash vs thrust in opposte directions favors a slash
-        // slash v slash on same axis is a clash
-        // slash v slash on different axes is a trade
-        // thrust v thrust in opposite direction is a clash
+        const targetAttackDirection = targetPlayerRef.attacking.direction;
+        const targetAttackDirectionType = targetPlayerRef.attacking.directionType;
+        const directionsOpposed = ownerActionDirection === app.getOppositeDirection(targetAttackDirection);
+        const sameAxis = app.isSameAxisDirection(ownerActionDirection, targetAttackDirection);
 
-        if (ownerActionDirection === targetPlayerRef.attacking.direction) {
+        if (ownerActionDirectionType === "slash" && targetAttackDirectionType === "thrust") {
           console.log(
-            "Compatible frontal attack directions: same direction. Perfect!",
+            "Frontal simultaneous: slash beats thrust in opposite directions. Owner damages target.",
+            ownerType,
+            owner.number,
+            owner.id,
+            ownerActionDirectionType,
+            "vs",
+            targetAttackDirectionType,
+          );
+          executeAttack();
+          resolved = true;
+        } else if (ownerActionDirectionType === "thrust" && targetAttackDirectionType === "slash") {
+          console.log(
+            "Frontal simultaneous: slash beats thrust in opposite directions. Target damages owner.",
+            ownerType,
+            owner.number,
+            owner.id,
+            ownerActionDirectionType,
+            "vs",
+            targetAttackDirectionType,
+          );
+          app.handleMeleeDamage("player", targetPlayerRef, owner);
+          app.setDeflection(owner, "attacked", false);
+          targetPlayerRef.success.attackSuccess = {
+            state: true,
+            count: 1,
+            limit: targetPlayerRef.success.attackSuccess.limit,
+          };
+          resolved = true;
+        } else if (ownerActionDirectionType === "slash" && targetAttackDirectionType === "slash") {
+          if (sameAxis) {
+            console.log(
+              "Frontal simultaneous: slash vs slash on same axis. Clash!",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              targetAttackDirection,
+            );
+            handleTargetAttacking("clash");
+          } else {
+            console.log(
+              "Frontal simultaneous: slash vs slash on different axes. Trade!",
+              ownerType,
+              owner.number,
+              owner.id,
+              ownerActionDirection,
+              targetAttackDirection,
+            );
+            handleTargetAttacking("trade");
+          }
+          resolved = true;
+        } else if (ownerActionDirectionType === "thrust" && targetAttackDirectionType === "thrust" && directionsOpposed) {
+          console.log(
+            "Frontal simultaneous: thrust vs thrust in opposite directions. Clash!",
             ownerType,
             owner.number,
             owner.id,
             ownerActionDirection,
-            ". Target -",
-            targetPlayerRef.number,
-            targetPlayerRef.attacking.direction,
-            " They may clash",
+            targetAttackDirection,
           );
           handleTargetAttacking("clash");
-        } else {
-          console.log(
-            "Incompatible frontal attack directions: different directions.",
-            ownerType,
-            owner.number,
-            owner.id,
-            ownerActionDirection,
-            ". Target -",
-            targetPlayerRef.number,
-            targetPlayerRef.attacking.direction,
-            " They may trade",
-          );
-          handleTargetAttacking("trade");
+          resolved = true;
         }
 
         if (ownerType === "player") {
@@ -1202,7 +1284,27 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
       // TARGET DEFENDING
       if (targetDefending === true) {
-        if (ownerActionDirection === targetPlayerRef.defending.direction) {
+        if (
+          ownerActionDirectionType === "thrust" &&
+          targetPlayerRef.defending.directionType === "thrust" &&
+          ownerActionDirection === app.getOppositeDirection(targetPlayerRef.defending.direction)
+        ) {
+          console.log(
+            "Compatible frontal defend directions: thrust & opposite direction. Perfect!",
+            ownerType,
+            owner.number,
+            owner.id,
+            ownerActionDirection,
+            ". Target -",
+            targetPlayerRef.number,
+            targetPlayerRef.defending.direction,
+          );
+          handleTargetDefending();
+        } else if (
+          ownerActionDirectionType === "slash" &&
+          targetPlayerRef.defending.directionType === "slash" &&
+          ownerActionDirection === targetPlayerRef.defending.direction
+        ) {
           console.log(
             "Compatible frontal defend directions: same direction. Perfect!",
             ownerType,

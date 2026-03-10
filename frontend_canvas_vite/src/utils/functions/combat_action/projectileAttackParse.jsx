@@ -313,7 +313,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               // OFF PEAK DEFEND
               // CHANCE FOR DEFEND SUCCESS
               // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF DEFEND SUCCESS
-              if (target.defending.peak !== true) {
+              if (target.defending.peak !== true && target.defending.decay.state === true && target.defending.decay.count > app.defendPeakAllowance) {
                 if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
                   console.log(
                     "bolt hit plyr",
@@ -612,7 +612,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               }
 
               // UNARMED OFF PEAK DEFEND, TAKE DAMAGE
-              if (target.defending.peak !== true) {
+              if (target.defending.peak !== true && target.defending.decay.state === true && target.defending.decay.count > app.defendPeakAllowance) {
                 console.log(
                   "bolt hit plyr",
                   target.number,
@@ -683,7 +683,7 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
               // ARMED OFF PEAK DEFEND
               // IF BOLT CHARGE PERC IS OVER 90%, CHANCE TO DEFEND BREAK/TAKE DMG
-              if (target.defending.peak !== true) {
+              if (target.defending.peak !== true && target.defending.decay.state === true && target.defending.decay.count > app.defendPeakAllowance) {
                 if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
                   console.log(
                     "bolt hit plyr",

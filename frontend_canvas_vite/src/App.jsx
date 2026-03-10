@@ -131,6 +131,7 @@ import { obstacleCheckDestination } from "./utils/functions/navigation/obstacleC
 import { jumpCollisionCheck } from "./utils/functions/navigation/jumpCollisionCheck";
 import { obstaclePlayerOverlap } from "./utils/functions/navigation/obstaclePlayerOverlap";
 import { projectileTracker } from "./utils/functions/navigation/projectileTracker";
+import { isSameAxisDirection } from "./utils/functions/navigation/isSameAxisDirection";
 
 // STAGE
 import { customCellToVoid } from "./utils/functions/stage/customCellToVoid";
@@ -296,6 +297,7 @@ class App extends Component {
     this.projectileTracker = (...args) => projectileTracker(this, ...args);
     this.jumpCollisionCheck = (...args) => jumpCollisionCheck(this, ...args);
     this.obstaclePlayerOverlap = (...args) => obstaclePlayerOverlap(this, ...args);
+    this.isSameAxisDirection = (...args) => isSameAxisDirection(this, ...args);
 
     // STAGE
     this.customCellToVoid = (...args) => customCellToVoid(this, ...args);

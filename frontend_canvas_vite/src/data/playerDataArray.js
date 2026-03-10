@@ -5,7 +5,7 @@ export const playerDataArray = [
       cell: {
         number: {
           x: 1,
-          y: 1,
+          y: 4,
         },
         center: {
           x: 0,

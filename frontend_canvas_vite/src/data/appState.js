@@ -181,11 +181,11 @@ export function applyConstructorDefaults(app) {
       timerEnabled: true,
       timerLimit: 30,
       triggerType: "any",
-      itemNameRef: "sword1",
+      itemNameRef: "spear1",
       type: "obstacle",
-      direction: "east",
+      direction: "south",
       location: {
-        x: 2,
+        x: 1,
         y: 1,
       },
     },
@@ -195,7 +195,7 @@ export function applyConstructorDefaults(app) {
       timerEnabled: true,
       timerLimit: 30,
       triggerType: "any",
-      itemNameRef: "sword1",
+      itemNameRef: "spear1",
       type: "obstacle",
       direction: "west",
       location: {

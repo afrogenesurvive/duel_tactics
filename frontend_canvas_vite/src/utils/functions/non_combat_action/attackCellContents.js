@@ -1,4 +1,17 @@
 export function attackCellContents(app, type, ownerType, owner, targetCell, targetCell2, myCell, bolt) {
+  const stackLine = new Error().stack?.split("\n")[2]?.trim();
+
+  console.log("attackCellContents", {
+    type,
+    ownerType,
+    owner,
+    targetCell,
+    targetCell2,
+    myCell,
+    bolt,
+    // stack: stackLine,
+  });
+
   let damage;
   let weaponCheck;
   let ownerWeaponName;
