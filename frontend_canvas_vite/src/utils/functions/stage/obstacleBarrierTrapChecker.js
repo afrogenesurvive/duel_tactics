@@ -47,7 +47,8 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
         if (trap.acting.count < trap.acting.limit) {
           // SET DIRECTION
           if (trap.acting.count === 0) {
-            let whatDirection = app.rnJesus(0, 4);
+            // let whatDirection = app.rnJesus(0, 4);
+            let whatDirection = 0;
             switch (whatDirection) {
               case 0:
                 trap.acting.direction = "none";
