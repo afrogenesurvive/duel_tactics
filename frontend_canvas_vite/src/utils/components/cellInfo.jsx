@@ -20,12 +20,7 @@ const CellInfo = (props) => {
         <span></span>
       </p>
 
-      <FontAwesomeIcon
-        icon={faTimesCircle}
-        size="sm"
-        className="cellInfoClose"
-        onClick={props.close}
-      />
+      <FontAwesomeIcon icon={faTimesCircle} size="sm" className="cellInfoClose" onClick={props.close} />
 
       <ul className="cellInfoList">
         {/* {props.cellInfoMouseOver === false && (
@@ -38,8 +33,7 @@ const CellInfo = (props) => {
 
         <li className="cellInfoListItem">
           <p className="cellInfoText">
-            X,Y: {props.clicked.cell.center.x.toFixed(2)},{" "}
-            {props.clicked.cell.center.y.toFixed(2)}
+            X,Y: {props.clicked.cell.center.x.toFixed(2)}, {props.clicked.cell.center.y.toFixed(2)}
           </p>
         </li>
         <li className="cellInfoListItem">
@@ -86,9 +80,7 @@ const CellInfo = (props) => {
               overlay={
                 <Popover id={`popover-positioned-${"left"}`}>
                   <Popover.Body className="popoverBody">
-                    <strong className="popoverHead">
-                      {props.clicked.cell.item.name} :
-                    </strong>
+                    <strong className="popoverHead">{props.clicked.cell.item.name} :</strong>
                     <ul className="popoverList">
                       <li>
                         <p>Type: {props.clicked.cell.item.type}</p>
@@ -121,9 +113,7 @@ const CellInfo = (props) => {
                 </Popover.Body>
               </Popover>
             }>
-            <p className="cellInfoText">
-              Elevation: {props.clicked.cell.elevation.number}
-            </p>
+            <p className="cellInfoText">Elevation: {props.clicked.cell.elevation.number}</p>
           </OverlayTrigger>
         </li>
         <li className="cellInfoListItem">
@@ -139,9 +129,7 @@ const CellInfo = (props) => {
                   onMouseEnter={props.setCellInfoMouseOver.bind(this, true, "popover")}
                   onMouseLeave={props.setCellInfoMouseOver.bind(this, false, "popover")}>
                   <Popover.Body className="popoverBody">
-                    <strong className="popoverHead">
-                      {props.clicked.cell.obstacle.name} :
-                    </strong>
+                    <strong className="popoverHead">{props.clicked.cell.obstacle.name} :</strong>
                     <ul className="popoverList">
                       <li>
                         <p>Id: {props.clicked.cell.obstacle.id}</p>
@@ -159,47 +147,35 @@ const CellInfo = (props) => {
                         <p>Weight: {props.clicked.cell.obstacle.weight}</p>
                       </li>
                       <li>
-                        <p>
-                          Destruct:{" "}
-                          {props.clicked.cell.obstacle.destructible.state.toString()}
-                        </p>
+                        <p>Destruct: {props.clicked.cell.obstacle.destructible.state.toString()}</p>
                       </li>
                       {props.clicked.cell.obstacle.trap.state === true && (
                         <ul className="popoverList">
                           <li>
-                            <p>Trap: </p>
+                            <strong className="popoverHead">Trap: </strong>
                           </li>
                           <li>
                             <p>
-                              Target: {props.clicked.cell.obstacle.trap.target.x},
-                              {props.clicked.cell.obstacle.trap.target.y}
+                              Target: {props.clicked.cell.obstacle.trap.target.x},{props.clicked.cell.obstacle.trap.target.y}
                             </p>
                           </li>
                           <li>
-                            <p>
-                              Trigger: {props.clicked.cell.obstacle.trap.trigger.type}
-                            </p>
+                            <p>Trigger: {props.clicked.cell.obstacle.trap.trigger.type}</p>
                           </li>
                           <li>
                             <p>Action: {props.clicked.cell.obstacle.trap.action}</p>
                           </li>
                           <li>
                             <p>
-                              Item: {props.clicked.cell.obstacle.trap.item.name} (
-                              {props.clicked.cell.obstacle.trap.ammo})
+                              Item: {props.clicked.cell.obstacle.trap.item.name} ({props.clicked.cell.obstacle.trap.ammo})
                             </p>
                           </li>
                           <li>
-                            <p>
-                              Persitent:{" "}
-                              {props.clicked.cell.obstacle.trap.persistent.toString()}
-                            </p>
+                            <p>Persitent: {props.clicked.cell.obstacle.trap.persistent.toString()}</p>
                           </li>
                           {!props.clicked.cell.obstacle.trap.persistent && (
                             <li>
-                              <p>
-                                Remaining: {props.clicked.cell.obstacle.trap.remaining}
-                              </p>
+                              <p>Remaining: {props.clicked.cell.obstacle.trap.remaining}</p>
                             </li>
                           )}
                         </ul>
@@ -220,9 +196,7 @@ const CellInfo = (props) => {
               overlay={
                 <Popover id={`popover-positioned-${"left"}`}>
                   <Popover.Body className="popoverBody">
-                    <strong className="popoverHead">
-                      {props.clicked.cell.barrier.name} :
-                    </strong>
+                    <strong className="popoverHead">{props.clicked.cell.barrier.name} :</strong>
                     <ul className="popoverList">
                       <li>
                         <p>Id: {props.clicked.cell.barrier.id}</p>
@@ -240,10 +214,7 @@ const CellInfo = (props) => {
                         <p>Height: {props.clicked.cell.barrier.height}</p>
                       </li>
                       <li>
-                        <p>
-                          Destruct:{" "}
-                          {props.clicked.cell.barrier.destructible.state.toString()}
-                        </p>
+                        <p>Destruct: {props.clicked.cell.barrier.destructible.state.toString()}</p>
                       </li>
                       {props.clicked.cell.barrier.trap.state === true && (
                         <ul className="popoverList">
@@ -252,8 +223,7 @@ const CellInfo = (props) => {
                           </li>
                           <li>
                             <p>
-                              Target: {props.clicked.cell.barrier.trap.target.x},
-                              {props.clicked.cell.barrier.trap.target.y}
+                              Target: {props.clicked.cell.barrier.trap.target.x},{props.clicked.cell.barrier.trap.target.y}
                             </p>
                           </li>
                           <li>
@@ -264,21 +234,15 @@ const CellInfo = (props) => {
                           </li>
                           <li>
                             <p>
-                              Item: {props.clicked.cell.barrier.trap.item.name} (
-                              {props.clicked.cell.barrier.trap.ammo})
+                              Item: {props.clicked.cell.barrier.trap.item.name} ({props.clicked.cell.barrier.trap.ammo})
                             </p>
                           </li>
                           <li>
-                            <p>
-                              Persistent:{" "}
-                              {props.clicked.cell.barrier.trap.persistent.toString()}
-                            </p>
+                            <p>Persistent: {props.clicked.cell.barrier.trap.persistent.toString()}</p>
                           </li>
                           {props.clicked.cell.barrier.trap.persistent !== true && (
                             <li>
-                              <p>
-                                Remaining: {props.clicked.cell.barrier.trap.remaining}
-                              </p>
+                              <p>Remaining: {props.clicked.cell.barrier.trap.remaining}</p>
                             </li>
                           )}
                         </ul>

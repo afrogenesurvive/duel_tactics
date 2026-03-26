@@ -111,6 +111,8 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
     setPushStrength();
     // setSpeed();
 
+    owner = app.trapActionCancel(obstacleCell.obstacle);
+
     if (destCellRef) {
       if (destCellRef.obstacle.state === true) {
         canPushTargetFree = false;

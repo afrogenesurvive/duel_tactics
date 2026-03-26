@@ -20,6 +20,7 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
   let ownerAttackCharge = 0;
 
   const handleObstacleDamage = (calcedDamage, range) => {
+    targetCell.obstacle = app.trapActionCancel(targetCell.obstacle);
     if (range === 1) {
       if (targetCell.obstacle.destructible.state === true) {
         // WEAPON CHECK
@@ -665,6 +666,8 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
     }
   };
   const handleBarrierDamage = (barrierType, calcedDamage, range) => {
+    targetCell.barrier = app.trapActionCancel(targetCell.barrier);
+
     if (barrierType === "myCellBarrier") {
       if (myCell.barrier.destructible.state === true) {
         // WEAPON CHECK

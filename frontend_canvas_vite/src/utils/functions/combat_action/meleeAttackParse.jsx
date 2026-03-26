@@ -698,6 +698,8 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
         if (set !== true && (attackerCharge - targetCharge === 10 || attackerCharge - targetCharge === -10 || attackerCharge === targetCharge)) {
           if (ownerType === "obstacle") {
+            console.log("1");
+
             app.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
             set = true;
           }
@@ -714,6 +716,8 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
           }
           if (attackerCharge < targetCharge) {
             if (ownerType === "obstacle") {
+              console.log("2");
+
               app.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
               set = true;
             }
