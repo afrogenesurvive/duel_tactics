@@ -1,5 +1,12 @@
 export function meleeAttackPeak(app, ownerType, owner) {
-  // console.log("meleeAttackPeak");
+  console.log("meleeAttackPeak", {
+    ownerType: ownerType,
+    owner_id: ownerType === "player" ? owner.number : owner.id,
+    location:
+      ownerType === "player"
+        ? owner.currentPosition.cell.number
+        : app.gridInfo.find((x) => x[ownerType].state === true && x[ownerType].id === owner.id)?.number,
+  });
 
   let myCellBlock;
   let ownerWeaponName;
@@ -52,7 +59,7 @@ export function meleeAttackPeak(app, ownerType, owner) {
     cell2Rubble = targetCell2.rubble === true;
   }
   let voidTarget = false;
-  if (!targetCell1) {
+  if (!targetCell1 || (ownerWeaponType === "spear" && !targetCell2)) {
     voidTarget = true;
     console.log("Target is edge void. Do nothing.");
   } else {

@@ -179,7 +179,7 @@ export function applyConstructorDefaults(app) {
       persistent: false,
       remaining: 5,
       timerEnabled: true,
-      timerLimit: 40,
+      timerLimit: 80,
       triggerType: "any",
       itemNameRef: "spear1",
       type: "obstacle",

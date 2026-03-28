@@ -665,7 +665,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         owner.id,
         " & defender player",
         targetPlayerRef.number,
-        "are evenly matched in combat advantage. clashing!! pushback one or both players w/o damage",
+        "are evenly matched in combat advantage.",
       );
 
       // PUSHBACK ATTACKER/PLAYER BASED ON charge difference
@@ -755,7 +755,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
             app.setDeflection(owner, "attacked", false);
           }
         } else {
-          app.attackCellContents("melee", "player", targetPlayerRef, targetCell, targetCell2, myCell, undefined);
+          app.attackCellContents("melee", "player", targetPlayerRef, targetCell1, targetCell2, myCell, undefined);
         }
       }
     }
@@ -806,7 +806,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
           app.setDeflection(owner, "attacked", false);
         }
       } else {
-        app.attackCellContents("melee", "player", targetPlayerRef, targetCell, targetCell2, myCell, undefined);
+        app.attackCellContents("melee", "player", targetPlayerRef, targetCell1, targetCell2, myCell, undefined);
       }
 
       targetPlayerRef.success.attackSuccess = {
