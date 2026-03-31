@@ -67,7 +67,15 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
   }
   if (type === "hitPush") {
     if (ownerType === "player") {
-      impactDirection = owner.direction;
+      if (owner.action === "attacking") {
+        impactDirection = owner.attacking.direction;
+      }
+      if (owner.action === "defending") {
+        impactDirection = owner.defending.direction;
+      }
+      if (owner.action !== "attacking" && owner.action !== "defending") {
+        impactDirection = owner.direction;
+      }
     } else {
       let myCell = app.gridInfo.find((x) => x[ownerType].state === true && x[ownerType].id === owner.id);
       if (!myCell && owner.trap.state === true) {

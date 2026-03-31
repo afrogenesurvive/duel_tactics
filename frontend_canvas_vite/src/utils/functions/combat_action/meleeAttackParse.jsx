@@ -1059,6 +1059,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         simultaneousAttack = true;
       }
       console.log("simulataneous attack timing check", {
+        action: targetPlayerRef.action,
         peak: targetPlayerRef.attacking.peak === true,
         above_peak: targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount,
         within_allowance: targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance,
