@@ -6,6 +6,7 @@ export function meleeAttackPeak(app, ownerType, owner) {
       ownerType === "player"
         ? owner.currentPosition.cell.number
         : app.gridInfo.find((x) => x[ownerType].state === true && x[ownerType].id === owner.id)?.number,
+    atk_direction: ownerType === "player" ? owner.attacking.direction : owner.trap.acting.direction,
   });
 
   let myCellBlock;

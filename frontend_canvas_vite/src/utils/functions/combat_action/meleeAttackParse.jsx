@@ -873,6 +873,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         });
 
         if (
+          (ownerType === "obstacle" || ownerType === "barrier") &&
           targetCell1[cellObstacleBarrier]?.trap.state === true &&
           targetCell1[cellObstacleBarrier]?.trap.acting.state === true &&
           targetCell1[cellObstacleBarrier]?.trap.action === "attack" &&
@@ -952,6 +953,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         //   ". attackCellContents"
         // );
         if (
+          (ownerType === "obstacle" || ownerType === "barrier") &&
           targetCell2[cellObstacleBarrier]?.trap.state === true &&
           targetCell2[cellObstacleBarrier]?.trap.acting.state === true &&
           targetCell2[cellObstacleBarrier]?.trap.action === "attack" &&
@@ -995,7 +997,9 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
     }
   }
   if (targetPlayerRef) {
-    console.log(`meleeAttackParse: target is a player: ${targetPlayerRef.number}, ${ownerDirection}`);
+    console.log("meleeAttackParse: target is a player:", {
+      number: targetPlayerRef.number,
+    });
 
     // IS TARGET DEFENDING?
     let targetDefending = setTargetDefending();
@@ -1054,10 +1058,18 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       ) {
         simultaneousAttack = true;
       }
+      console.log("simulataneous attack timing check", {
+        peak: targetPlayerRef.attacking.peak === true,
+        above_peak: targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount,
+        within_allowance: targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance,
+      });
 
       if (simultaneousAttack === true) {
         // SIDE ATTACK CAN ONLY TRADE OR CLASH IF SLASHING IN THE OPPOSITE DIRECTION OF THE ATTACKER
-        if (targetPlayerRef.attacking.directionType === "slash" && targetPlayerRef.attacking.direction === app.getOppositeDirection(ownerDirection)) {
+        if (
+          targetPlayerRef.attacking.directionType === "slash" &&
+          targetPlayerRef.attacking.direction === app.getOppositeDirection(ownerActionDirection)
+        ) {
           if (sameAxis !== true || ownerActionDirectionType === "thrust") {
             console.log(
               "Compatible lateral attack directions: opposite axis",

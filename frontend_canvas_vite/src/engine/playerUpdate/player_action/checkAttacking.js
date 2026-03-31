@@ -265,7 +265,7 @@ export function checkAttacking(app, player) {
 
           let melee = true;
 
-          console.log(`Attack peak!`, {
+          console.log(`Player Attack peak!`, {
             plyr_no: player.number,
             atk_count: player.attacking.count,
             // peak_count: player.attacking.peakCount,
@@ -462,7 +462,14 @@ export function checkAttacking(app, player) {
         }
         player.actionDirectionAnimationArray = [];
 
-        console.log("attack end");
+        console.log(`Player Attack end!`, {
+          plyr_no: player.number,
+          atk_count: player.attacking.count,
+          // peak_count: player.attacking.peakCount,
+          // limit: player.attacking.limit,
+          // blunt: player.attacking.blunt,
+          time: app.time,
+        });
       }
     } else {
       console.log("no longer attacking. probably feinted");
