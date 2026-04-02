@@ -1,4 +1,4 @@
-export function checkCamera(app) {
+export function checkCamera(app, player, canvas, context) {
   if (app.setInitZoom.state === true) {
     if (app.setInitZoom.gridWidth >= 12) {
       // if (app.setInitZoom.windowWidth < 1100) {

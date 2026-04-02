@@ -14,8 +14,8 @@ export function trapActionCancel(app, entity) {
   entity.trap.acting = {
     state: false,
     count: 0,
-    peak: 0,
-    limit: 0,
+    peak: entity.trap.acting.peak,
+    limit: entity.trap.acting.limit,
     direction: "",
     directionType: "",
   };

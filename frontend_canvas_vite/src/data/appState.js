@@ -176,7 +176,7 @@ export function applyConstructorDefaults(app) {
   Object.assign(app, obstacleBarrierDataRefs);
   app.customTrapSetNewCustomTestData = [
     {
-      persistent: false,
+      persistent: true,
       remaining: 5,
       timerEnabled: true,
       timerLimit: 65,
