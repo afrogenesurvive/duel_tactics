@@ -179,7 +179,7 @@ export function applyConstructorDefaults(app) {
       persistent: false,
       remaining: 5,
       timerEnabled: true,
-      timerLimit: 75,
+      timerLimit: 65,
       triggerType: "any",
       itemNameRef: "spear1",
       type: "obstacle",
@@ -798,6 +798,12 @@ export function applyConstructorDefaults(app) {
         thrust: 35,
         slash: 35,
       },
+    },
+    baseClashingLimit: 10,
+    baseMaxCharge: 15,
+    effectivenessAllowances: {
+      min: 3,
+      max: 10,
     },
   };
   app.obstacleBarrierTrapAttackAnimRef = {

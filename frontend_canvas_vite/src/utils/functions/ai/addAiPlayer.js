@@ -331,8 +331,12 @@ export function addAiPlayer(app) {
           clashing: {
             state: false,
             count: 0,
-            limit: 10,
+            limit: app.attackAnimRef.baseClashingLimit,
           },
+          maxCharge: app.attackAnimRef.baseMaxCharge,
+          chargeCount: 0,
+          execute: false,
+          effectivenessAllowance: app.attackAnimRef.effectivenessAllowances.min,
         },
         defending: {
           state: false,

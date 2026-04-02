@@ -1058,12 +1058,15 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       ) {
         simultaneousAttack = true;
       }
-      console.log("simulataneous attack timing check", {
-        action: targetPlayerRef.action,
-        peak: targetPlayerRef.attacking.peak === true,
-        above_peak: targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount,
-        within_allowance: targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance,
-      });
+
+      if (targetPlayerRef.action === "attacking") {
+        console.log("lateral simulataneous attack timing check", {
+          action: targetPlayerRef.action,
+          peak: targetPlayerRef.attacking.peak === true,
+          above_peak: targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount,
+          within_allowance: targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance,
+        });
+      }
 
       if (simultaneousAttack === true) {
         // SIDE ATTACK CAN ONLY TRADE OR CLASH IF SLASHING IN THE OPPOSITE DIRECTION OF THE ATTACKER
@@ -1116,6 +1119,12 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
       // TARGET PLAYER DEFENDING
       else if (targetDefending === true) {
+        console.log("lateral atk. target defending", {
+          owner_dir_type: ownerActionDirectionType,
+          target_defend_type: targetPlayerRef.defending.directionType,
+          owner_action_dir: ownerActionDirection,
+          target_defen_dir: targetPlayerRef.defending.direction,
+        });
         // SIDE ATTACK CAN ONLY BE DEFENDED AGAINST IF IT IS A SLASH IN THE OPPOSITE DIRECTION OF THE ATTACKER
         if (targetPlayerRef.defending.directionType === "slash" && targetPlayerRef.defending.direction === app.getOppositeDirection(ownerDirection)) {
           if (sameAxis === false || ownerActionDirectionType === "thrust") {
@@ -1211,6 +1220,15 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         simultaneousAttack = true;
       }
 
+      if (targetPlayerRef.action === "attacking") {
+        console.log("face-to-face simulataneous attack timing check", {
+          action: targetPlayerRef.action,
+          peak: targetPlayerRef.attacking.peak === true,
+          above_peak: targetPlayerRef.attacking.count >= targetPlayerRef.attacking.peakCount,
+          within_allowance: targetPlayerRef.attacking.count <= targetPlayerRef.attacking.peakCount + app.simultaneousAttackAllowance,
+        });
+      }
+
       // TARGET ALSO ATTACKING
 
       if (simultaneousAttack === true) {
@@ -1297,10 +1315,10 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
       // TARGET DEFENDING
       if (targetDefending === true) {
         console.log("face to face atk. target defending", {
-          ownerActionDirectionType,
-          targetPlayerRefDefendingDirectionType: targetPlayerRef.defending.directionType,
-          ownerActionDirection,
-          targetPlayerRefDefendingDirection: targetPlayerRef.defending.direction,
+          owner_dir_type: ownerActionDirectionType,
+          target_defend_type: targetPlayerRef.defending.directionType,
+          owner_action_dir: ownerActionDirection,
+          target_defen_dir: targetPlayerRef.defending.direction,
         });
 
         if (
