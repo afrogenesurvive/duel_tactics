@@ -1,4 +1,6 @@
 export function isSameAxisDirection(app, dirA, dirB) {
+  console.log("isSameAxisDirection", dirA, dirB);
+
   const vertical = ["north", "south"];
   const horizontal = ["east", "west"];
   if (!dirA || !dirB) {

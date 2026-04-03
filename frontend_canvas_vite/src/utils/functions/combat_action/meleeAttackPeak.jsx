@@ -1,5 +1,13 @@
 export function meleeAttackPeak(app, ownerType, owner) {
-  // console.log("meleeAttackPeak");
+  console.log("meleeAttackPeak", {
+    ownerType: ownerType,
+    owner_id: ownerType === "player" ? owner.number : owner.id,
+    location:
+      ownerType === "player"
+        ? owner.currentPosition.cell.number
+        : app.gridInfo.find((x) => x[ownerType].state === true && x[ownerType].id === owner.id)?.number,
+    atk_direction: ownerType === "player" ? owner.attacking.direction : owner.trap.acting.direction,
+  });
 
   let myCellBlock;
   let ownerWeaponName;
@@ -52,7 +60,7 @@ export function meleeAttackPeak(app, ownerType, owner) {
     cell2Rubble = targetCell2.rubble === true;
   }
   let voidTarget = false;
-  if (!targetCell1) {
+  if (ownerWeaponType === "sword" && !targetCell1) {
     voidTarget = true;
     console.log("Target is edge void. Do nothing.");
   } else {
@@ -81,30 +89,31 @@ export function meleeAttackPeak(app, ownerType, owner) {
       }
 
       if (ownerWeaponType === "spear") {
-        app.cellsUnderAttack.push(
-          {
-            number: {
-              x: targetCell1.number.x,
-              y: targetCell1.number.y,
-            },
-            count: 1,
-            limit: 8,
+        app.cellsUnderAttack.push({
+          number: {
+            x: targetCell1.number.x,
+            y: targetCell1.number.y,
           },
-          {
+          count: 1,
+          limit: 8,
+        });
+
+        if (targetCell2) {
+          app.cellsUnderAttack.push({
             number: {
               x: targetCell2.number.x,
               y: targetCell2.number.y,
             },
             count: 1,
             limit: 8,
-          },
-        );
+          });
+        }
         // TARGET CELL 1 IS NOT FREE, ITEM, BOLT, RUBBLE, ATTACK CELL1
 
         let barrier1FacingMe =
           targetCell1.barrier.state === true &&
           (targetCell1.barrier.position === ownerDirection || targetCell1.barrier.position === app.getOppositeDirection(ownerDirection));
-        let barrier2FacingMe = targetCell2.barrier.state === true && targetCell2.barrier.position === app.getOppositeDirection(ownerDirection);
+        let barrier2FacingMe = targetCell2?.barrier.state === true && targetCell2?.barrier.position === app.getOppositeDirection(ownerDirection);
         if (cell1Free !== true || cell1Item === true || cell1Rubble === true || boltTarget1 === true || barrier1FacingMe) {
           console.log(
             "melee attack peak:",
@@ -137,7 +146,7 @@ export function meleeAttackPeak(app, ownerType, owner) {
           }
 
           // TARGET CELL2 IS FREE AND NOT ITEM, BOLT, RUBBLE, MISS
-          if (cell2Free === true && cell2Item !== true && cell2Rubble !== true && boltTarget2 !== true && !barrier2FacingMe) {
+          if (targetCell2 && cell2Free === true && cell2Item !== true && cell2Rubble !== true && boltTarget2 !== true && !barrier2FacingMe) {
             if (ownerType === "player") {
               if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
                 owner.popups.push({

@@ -635,7 +635,7 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
   checkPopups(app, player);
 
   // CAMERA
-  checkCamera(app);
+  checkCamera(app, player, canvas, context);
 
   // MENU
 

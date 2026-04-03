@@ -176,17 +176,17 @@ export function applyConstructorDefaults(app) {
   Object.assign(app, obstacleBarrierDataRefs);
   app.customTrapSetNewCustomTestData = [
     {
-      persistent: false,
+      persistent: true,
       remaining: 5,
       timerEnabled: true,
-      timerLimit: 30,
+      timerLimit: 65,
       triggerType: "any",
-      itemNameRef: "spear1",
-      type: "obstacle",
-      direction: "south",
+      itemNameRef: "sword1",
+      type: "barrier",
+      direction: "west",
       location: {
-        x: 1,
-        y: 1,
+        x: 3,
+        y: 4,
       },
     },
     {
@@ -798,6 +798,12 @@ export function applyConstructorDefaults(app) {
         thrust: 35,
         slash: 35,
       },
+    },
+    baseClashingLimit: 10,
+    baseMaxCharge: 15,
+    effectivenessAllowances: {
+      min: 3,
+      max: 10,
     },
   };
   app.obstacleBarrierTrapAttackAnimRef = {

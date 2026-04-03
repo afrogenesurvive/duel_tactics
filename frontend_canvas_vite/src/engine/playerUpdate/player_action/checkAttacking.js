@@ -1,6 +1,8 @@
 // dirInputThresh/ - the count at which directional input will be set. Before this count, player can change direction of attack
 
 export function checkAttacking(app, player) {
+  // console.log("checkAttacking");
+
   if (player.attacking.state === true) {
     let directionalActionResult = app.checkSetAttackDefendDirectionalInput("windup", "attacking", player);
     player = directionalActionResult.player;
@@ -57,7 +59,21 @@ export function checkAttacking(app, player) {
             // console.log(`Charing attack`, {
             //   count: player.attacking.chargeCount,
             //   limit: player.attacking.maxCharge,
+            //   player_srh: player.strafeReleaseHook,
+            //   strafe_key: app.keyPressed[player.number - 1].strafe,
             // });
+            if (player.attacking.chargeCount > 0 && player.strafeReleaseHook === true) {
+              app.attackChargeCancel(player);
+            }
+          }
+          if (player.attacking.chargeCount === player.attacking.maxCharge) {
+            // console.log("holding charge", {
+            //   player_srh: player.strafeReleaseHook,
+            //   strafe_key: app.keyPressed[player.number - 1].strafe,
+            // });
+            if (player.strafeReleaseHook === true) {
+              app.attackChargeCancel(player);
+            }
           }
         }
 
@@ -265,12 +281,12 @@ export function checkAttacking(app, player) {
 
           let melee = true;
 
-          console.log(`Attack peak!`, {
+          console.log(`Player Attack peak!`, {
             plyr_no: player.number,
             atk_count: player.attacking.count,
             // peak_count: player.attacking.peakCount,
             // limit: player.attacking.limit,
-            // blunt: player.attacking.blunt,
+            blunt: player.attacking.blunt,
             time: app.time,
           });
 
@@ -298,6 +314,7 @@ export function checkAttacking(app, player) {
           player.attacking.peak = true;
           if (player.attacking.charge > 0) {
             player.attacking.chargePeak = true;
+            console.log("heeeere");
           }
 
           // CREATE NEW PROJECTILE
@@ -462,7 +479,14 @@ export function checkAttacking(app, player) {
         }
         player.actionDirectionAnimationArray = [];
 
-        console.log("attack end");
+        console.log(`Player Attack end!`, {
+          plyr_no: player.number,
+          atk_count: player.attacking.count,
+          // peak_count: player.attacking.peakCount,
+          // limit: player.attacking.limit,
+          // blunt: player.attacking.blunt,
+          time: app.time,
+        });
       }
     } else {
       console.log("no longer attacking. probably feinted");

@@ -1,0 +1,19 @@
+
+desc: "a player attacked (sword and unarmed) & deflected should be able to recover and thrust defend or dodge (but not move) before the peak of the next attack if the attacker executes the 2nd right after the 1st is finished && IF the defender/target is very quick)....write out and create 'comparative atk/deflect timing' card",
+
+task: "Ensure an absolute attack windup count for unarmed",
+task: "increase base hp to 3 (or 5?)",
+task: "attacked deflection recovery time + move/dodge/defend time must be a few frames shorter than the above",
+task: "add a per player stamina regen rate",
+task: "add a per player stamina regen rate modifer",
+task: "- the larger the modifier the lower the regen rate",
+task: "- modifier is decreased significantly when idling",
+task: "- with each stamina consuming action, the modifier is increased based on the action",
+task: "- - attack has the largest penalty and defending the smallest",
+task: "- should be an array of objects w/ details about the action. incl time",
+task: "- - can be used to modify attack effectiveness (and deflection length)",
+task: "- - successfully defending against consecutive attacks increases the chance of being pushed back",
+task: "--------------",
+task: "the above should probably consider blunt attacks as they don't do damage but ensure blunts are the fastest attacks",
+task: "should a peak defend/parry shorten or eliminate cooldown",
+

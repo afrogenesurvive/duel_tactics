@@ -221,10 +221,14 @@ export function checkFeintsCancels(mode, app, player) {
     // STRAFE RELEASE
     if (player.strafeReleaseHook === true) {
       player.strafing.state = false;
-      player.strafeReleaseHook = false;
+      // CHWCK FOR ATTACKING SINCE CHARGE CANCEL RELIES ON RELEASE STRAFE HOOK AND STRAFING CAN'T BE DONE WHILE ATTAING ANYWAY
+      if (player.attacking.state !== true && player.attacking.charge === 0) {
+        player.strafeReleaseHook = false;
+      }
+      // player.strafeReleaseHook = false;
       app.getTarget(player);
       player.strafing.direction = "";
-      // console.log('strafe release hook');
+      console.log("strafe release hook");
     }
   }
 

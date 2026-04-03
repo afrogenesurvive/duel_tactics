@@ -47,7 +47,8 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
         if (trap.acting.count < trap.acting.limit) {
           // SET DIRECTION
           if (trap.acting.count === 0) {
-            let whatDirection = app.rnJesus(0, 4);
+            // let whatDirection = app.rnJesus(0, 4);
+            let whatDirection = 0;
             switch (whatDirection) {
               case 0:
                 trap.acting.direction = "none";
@@ -127,6 +128,12 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
                 trap.acting.peak + dirAnimSetCalcMod - releaseTime,
                 app.directionalAnimShape,
               );
+              console.log("trap attack peak", {
+                owner_type: ownerType,
+                id: locationCell[ownerType].id,
+                action: trap.action,
+                time: app.time,
+              });
             }
           }
 
@@ -154,7 +161,12 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
           trap.acting.state = false;
           // trap.acting.direction = "";
           // trap.acting.directionType = "";
-          console.log("trap action complete");
+          console.log("trap action complete", {
+            owner_type: ownerType,
+            id: locationCell[ownerType].id,
+            action: trap.action,
+            time: app.time,
+          });
           app.cellPopups.splice(
             app.cellPopups.indexOf(
               app.cellPopups.find(
