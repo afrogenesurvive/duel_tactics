@@ -1323,8 +1323,8 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
 
         if (
           ownerActionDirectionType === "thrust" &&
-          targetPlayerRef.defending.directionType === "thrust" &&
-          ownerActionDirection === app.getOppositeDirection(targetPlayerRef.defending.direction)
+          targetPlayerRef.defending.directionType === "thrust"
+          // ownerActionDirection === app.getOppositeDirection(targetPlayerRef.defending.direction)
         ) {
           console.log("Compatible frontal defend directions: thrust & opposite direction. Perfect!", {
             ownerType,
@@ -1338,8 +1338,7 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
         } else if (
           ownerActionDirectionType === "slash" &&
           targetPlayerRef.defending.directionType === "slash" &&
-          (ownerActionDirection === targetPlayerRef.defending.direction ||
-            ownerActionDirection === app.getOppositeDirection(targetPlayerRef.defending.direction))
+          ownerActionDirection === targetPlayerRef.defending.direction
         ) {
           console.log("Compatible frontal defend directions: same direction. Perfect!", {
             ownerType,

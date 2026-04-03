@@ -38,8 +38,8 @@ export function respawn(app, player) {
       armorIndex: 0,
       weapons: [
         {
-          name: "spear1",
-          type: "spear",
+          name: "sword1",
+          type: "sword",
           effect: "",
         },
       ],
@@ -47,8 +47,8 @@ export function respawn(app, player) {
       ammo: 0,
     };
     player.currentWeapon = {
-      name: "spear1",
-      type: "spear",
+      name: "sword1",
+      type: "sword",
       effect: "",
     };
     player.currentArmor = {};

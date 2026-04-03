@@ -866,7 +866,7 @@ export const obstacleBarrierDataRefs = {
       id: 0,
       trap: {
         state: false,
-        persistent: false,
+        persistent: true,
         remaining: 0,
         direction: "",
         target: {},
@@ -888,7 +888,7 @@ export const obstacleBarrierDataRefs = {
           direction: "",
           directionType: "",
         },
-        itemNameRef: "crossbow1",
+        itemNameRef: "sword1",
         item: {},
         ammo: 0,
       },

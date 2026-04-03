@@ -157,6 +157,7 @@ import { handleMiscPlayerDamage } from "./utils/functions/combat_action/handleMi
 import { checkCombatAdvantage } from "./utils/functions/combat_action/checkCombatAdvantage";
 import { attackedCancel } from "./utils/functions/combat_action/attackedCancel";
 import { trapActionCancel } from "./utils/functions/combat_action/trapActionCancel";
+import { attackChargeCancel } from "./utils/functions/combat_action/attackChargeCancel";
 
 // NON_COMBAT_ACTION
 import { pushBack } from "./utils/functions/non_combat_action/pushBack";
@@ -324,6 +325,7 @@ class App extends Component {
     this.checkCombatAdvantage = (...args) => checkCombatAdvantage(this, ...args);
     this.attackedCancel = (...args) => attackedCancel(this, ...args);
     this.trapActionCancel = (...args) => trapActionCancel(this, ...args);
+    this.attackChargeCancel = (...args) => attackChargeCancel(this, ...args);
 
     // NON_COMBAT_ACTION
     this.pushBack = (...args) => pushBack(this, ...args);
