@@ -298,7 +298,11 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
           };
 
           app.getTarget(player);
-          // console.log('turned/ turn complete');
+          app.globalLogger("player.turning", "complete", {
+            plyr_no: player.number,
+            direction: player.direction,
+            time: app.time,
+          }, { fn: "playerUpdate", line: 292 });
         }
       }
 

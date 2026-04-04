@@ -1,0 +1,51 @@
+.debugMenuOverlay {
+  position: absolute;
+  bottom: 4rem;
+  right: 0.1rem;
+  z-index: 3;
+  width: 26rem;
+  max-width: 45%;
+}
+
+.debugMenuContainer {
+  width: 100%;
+  max-height: 26rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 5px;
+  border: 2px solid #582f0e;
+  background-color: rgba(235, 213, 179, 0.92);
+  overflow: auto;
+}
+
+.debugMenuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.debugMenuTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.debugMenuBody {
+  text-align: left;
+}
+
+.debugMenuGroup {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.45rem;
+  border: 1px solid rgba(88, 47, 14, 0.4);
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+.debugMenuGroupTitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.debugMenuCheckbox {
+  margin: 0.15rem 0;
+}

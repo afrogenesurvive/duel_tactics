@@ -8,6 +8,7 @@ import { assetRefs } from "./assetRefs";
 export const initialState = {
   showSettings: true,
   showAiStatus: false,
+  showDebugMenu: false,
   canvas: undefined,
   context: undefined,
   canvas2: undefined,
@@ -706,6 +707,68 @@ export function applyConstructorDefaults(app) {
   app.gamepadConfig = [];
   app.connectedGamepadsInit = false;
 
+  app.loggingSettings = {
+    showTime: true,
+    showOrigin: false,
+    player: {
+      movement: false,
+      turning: false,
+      jumping: false,
+      attacking: {
+        melee: false,
+        projectile: false,
+        charge: false,
+        feint: false,
+      },
+      defending: false,
+      dodging: false,
+      pushing: false,
+      pulling: false,
+      itemUse: false,
+      pushBack: false,
+      deflection: false,
+      stamina: false,
+    },
+    ai: {
+      spawn: true,
+      mission: false,
+      pathing: false,
+      target: false,
+      evaluate: false,
+      decide: false,
+      act: false,
+    },
+    camera: {
+      mode: false,
+      zoom: false,
+      pan: false,
+      auto: false,
+      reset: false,
+    },
+    obstacle: {
+      moving: false,
+      falling: false,
+      pushBack: false,
+      trapTriggers: false,
+      attacking: false,
+      destruction: false,
+    },
+    barrier: {
+      trapTriggers: false,
+      attacking: false,
+      destruction: false,
+    },
+    trap: {
+      trigger: false,
+      timer: false,
+      action: false,
+    },
+    grid: {
+      init: false,
+      process: false,
+    },
+  };
+
   // CELL INFO
   app.showCellInfoBox = false;
   app.mouseOverCell = {
@@ -1120,7 +1183,7 @@ export function applyConstructorDefaults(app) {
 
   // AI
   app.aiInitSettings = {
-    randomStart: false,
+    randomStart: true,
     startPosition: {
       number: { x: 1, y: 7 },
     },

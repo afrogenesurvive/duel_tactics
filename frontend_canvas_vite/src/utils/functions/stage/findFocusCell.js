@@ -1,3 +1,5 @@
+import Easystar from "easystarjs";
+
 import pointInPolygon from "point-in-polygon";
 
 export function findFocusCell(app, inputType, inputSubType, focus, canvas, context, speed) {

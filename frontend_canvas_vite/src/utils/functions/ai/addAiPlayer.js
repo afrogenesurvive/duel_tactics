@@ -152,7 +152,7 @@ export function addAiPlayer(app) {
 
       for (const weapon of app.aiInitSettings.weapons) {
         let indx = app.aiInitSettings.weapons.indexOf(weapon);
-        let itemRef = app.itemList.find((x) => x.subType === weapon);
+        let itemRef = app.itemList.find((x) => x.subType === weapon.type);
         if (indx === 0) {
           currentWeapon = {
             name: itemRef.name,
