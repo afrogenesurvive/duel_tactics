@@ -7,11 +7,7 @@ export function aiEvaluate(app, plyr) {
   const getCell = (x, y) => app.gridInfo.find((cell) => cell.number.x === x && cell.number.y === y);
   const checkJumpDestination = () => {
     const currentInstruction = plyr.ai.instructions?.[plyr.ai.currentInstruction];
-    if (!currentInstruction || !currentInstruction.keyword) {
-      return;
-    }
-
-    if (!currentInstruction.keyword.startsWith("jump_")) {
+    if (!currentInstruction || !currentInstruction.keyword || !currentInstruction.keyword.startsWith("jump_")) {
       return;
     }
 
@@ -34,6 +30,12 @@ export function aiEvaluate(app, plyr) {
     if (!originCell || !cell1 || !cell2) {
       plyr.ai.resetInstructions = true;
       logEval("jumpDestInvalid", { dir: dir });
+      return;
+    }
+
+    if (plyr.stamina.current < app.staminaCostRef.jump) {
+      plyr.ai.resetInstructions = true;
+      logEval("jumpNoStamina", { stamina: plyr.stamina.current });
       return;
     }
 

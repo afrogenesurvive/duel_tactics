@@ -9,11 +9,7 @@ export function aiParsePath(app, path, aiPlayer) {
   const getCell = (x, y) => app.gridInfo.find((cell) => cell.number.x === x && cell.number.y === y);
   const isGapCell = (cell) => cell && (cell.void.state === true || cell.terrain.type === "deep" || cell.terrain.type === "hazard");
   const isUnsafeCell = (cell) =>
-    !cell ||
-    cell.levelData.split("_")[1] !== "*" ||
-    cell.terrain.type === "deep" ||
-    cell.terrain.type === "hazard" ||
-    cell.void.state === true;
+    !cell || cell.levelData.split("_")[1] !== "*" || cell.terrain.type === "deep" || cell.terrain.type === "hazard" || cell.void.state === true;
   const getMoveDirection = (fromCell, toCell) => {
     if (toCell.x === fromCell.x && toCell.y === fromCell.y - 1) {
       return "north";
@@ -206,7 +202,7 @@ export function aiParsePath(app, path, aiPlayer) {
   //   console.log('retreat instructions',instructions,'player',aiPlayer,app.players[aiPlayer-1].ai.currentInstruction,'path',path);
   // }
   if (app.players[aiPlayer - 1].ai.mission === "retrieve") {
-    console.log("retrieve instructions", instructions, "player", aiPlayer, app.players[aiPlayer - 1].ai.currentInstruction, "path", path);
+    // console.log("retrieve instructions", instructions, "player", aiPlayer, app.players[aiPlayer - 1].ai.currentInstruction, "path", path);
   }
 
   if (blockedPath === true) {
