@@ -1,5 +1,8 @@
 export function aiAct(app, plyr) {
   let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
+  const logAct = (message, data = {}) => {
+    app.globalLogger("ai.act", message, { plyr_no: plyr.number, ...data }, { fn: "aiAct" });
+  };
 
   if (currentInstruction) {
     let targetCell = app.gridInfo.find((elem) => elem.number.x === plyr.target.cell1.number.x && elem.number.y === plyr.target.cell1.number.y);
@@ -41,6 +44,50 @@ export function aiAct(app, plyr) {
       rotateLeft: false,
     };
 
+    const targetPlayer = app.players?.[plyr.ai?.targetPlayer?.number - 1];
+    const setDirectionalInput = () => {
+      let dir = plyr.direction;
+      if (targetPlayer?.currentPosition?.cell?.number && plyr.currentPosition?.cell?.number) {
+        const dx = targetPlayer.currentPosition.cell.number.x - plyr.currentPosition.cell.number.x;
+        const dy = targetPlayer.currentPosition.cell.number.y - plyr.currentPosition.cell.number.y;
+        if (Math.abs(dx) >= Math.abs(dy)) {
+          if (dx > 0) {
+            dir = "east";
+          } else if (dx < 0) {
+            dir = "west";
+          }
+        } else {
+          if (dy > 0) {
+            dir = "south";
+          } else if (dy < 0) {
+            dir = "north";
+          }
+        }
+      }
+
+      if (dir && app.keyPressed[plyr.number - 1][dir] !== undefined) {
+        app.keyPressed[plyr.number - 1][dir] = true;
+      }
+    };
+    const handleJumpInput = (dir) => {
+      currentInstruction.limit = Math.max(6, currentInstruction.limit || 0);
+      app.keyPressed[plyr.number - 1].strafe = true;
+      app.keyPressed[plyr.number - 1][dir] = true;
+      app.players[plyr.number - 1].turnCheckerDirection = dir;
+
+      if (plyr.jumping.state === true) {
+        plyr.ai.currentInstruction++;
+        return;
+      }
+
+      if (currentInstruction.count < currentInstruction.limit) {
+        currentInstruction.count++;
+      } else {
+        plyr.ai.currentInstruction++;
+        plyr.ai.resetInstructions = true;
+      }
+    };
+
     switch (currentInstruction.keyword) {
       case "short_wait":
         // console.log('ai act -- short_wait');
@@ -59,6 +106,18 @@ export function aiAct(app, plyr) {
         } else if (currentInstruction.count >= currentInstruction.limit) {
           plyr.ai.currentInstruction++;
         }
+        break;
+      case "jump_north":
+        handleJumpInput("north");
+        break;
+      case "jump_south":
+        handleJumpInput("south");
+        break;
+      case "jump_east":
+        handleJumpInput("east");
+        break;
+      case "jump_west":
+        handleJumpInput("west");
         break;
       case "move_north":
         // console.log('ai act -- move_north');
@@ -475,6 +534,48 @@ export function aiAct(app, plyr) {
           }
         }
         break;
+      case "attack_charge": {
+        const maxCharge = Number.isFinite(plyr.attacking?.maxCharge) ? plyr.attacking.maxCharge : 0;
+        let chargeTarget = Number.isFinite(currentInstruction.chargeTarget) ? currentInstruction.chargeTarget : 0;
+        if (chargeTarget < 0) {
+          chargeTarget = 0;
+        }
+        if (maxCharge > 0) {
+          chargeTarget = Math.min(chargeTarget, maxCharge);
+        }
+
+        const maxHold = Number.isFinite(currentInstruction.limit) ? currentInstruction.limit : Math.max(10, chargeTarget + 8);
+        const peakReached = plyr.attacking.peakCount > 0 && plyr.attacking.count >= plyr.attacking.peakCount;
+        const chargeReached = chargeTarget > 0 && plyr.attacking.chargeCount >= chargeTarget;
+        const shouldRelease = plyr.attacking.state === true && ((chargeTarget <= 0 && peakReached) || chargeReached);
+
+        if (currentInstruction.count === 0) {
+          logAct("attackChargeStart", {
+            charge_target: chargeTarget,
+            max_charge: maxCharge,
+            max_hold: maxHold,
+          });
+        }
+
+        app.keyPressed[plyr.number - 1].attack = true;
+        setDirectionalInput();
+
+        if (plyr.moving.state !== true) {
+          if (shouldRelease === true || currentInstruction.count >= maxHold) {
+            if (shouldRelease === true) {
+              logAct("attackChargeRelease", {
+                charge_count: plyr.attacking.chargeCount,
+                charge_target: chargeTarget,
+                peak_count: plyr.attacking.peakCount,
+              });
+            }
+            plyr.ai.currentInstruction++;
+          } else {
+            currentInstruction.count++;
+          }
+        }
+        break;
+      }
       case "attack":
         // console.log('ai act -- attack');
         let atkPeak;
@@ -484,7 +585,14 @@ export function aiAct(app, plyr) {
           atkPeak = plyr.attacking.animRef.peak[plyr.currentWeapon.type];
         }
         currentInstruction.limit = atkPeak + 2;
+        if (currentInstruction.count === 0) {
+          logAct("attackStart", {
+            weapon_type: plyr.currentWeapon.type || "unarmed",
+            peak: atkPeak,
+          });
+        }
         app.keyPressed[plyr.number - 1].attack = true;
+        setDirectionalInput();
         if (plyr.moving.state !== true) {
           if (currentInstruction.count < currentInstruction.limit) {
             currentInstruction.count++;
@@ -496,7 +604,11 @@ export function aiAct(app, plyr) {
       case "long_defend":
         // console.log('ai act -- long defend');
         currentInstruction.limit = 25;
+        if (currentInstruction.count === 0) {
+          logAct("defendStart", { limit: currentInstruction.limit });
+        }
         app.keyPressed[plyr.number - 1].defend = true;
+        setDirectionalInput();
         if (currentInstruction.count < currentInstruction.limit) {
           currentInstruction.count++;
         } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -507,6 +619,7 @@ export function aiAct(app, plyr) {
         // console.log('ai act -- short defend');
         currentInstruction.limit = 15;
         app.keyPressed[plyr.number - 1].defend = true;
+        setDirectionalInput();
         if (currentInstruction.count < currentInstruction.limit) {
           currentInstruction.count++;
         } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -524,7 +637,7 @@ export function aiAct(app, plyr) {
         }
         break;
       case "pickup":
-        console.log("ai act -- pickup", currentInstruction.limit);
+        logAct("pickup", { limit: currentInstruction.limit });
         // currentInstruction.limit = 10;
         // app.keyPressed[plyr.number-1].defend = true;
         app.keyPressed[plyr.number - 1].cycleWeapon = true;
@@ -536,7 +649,7 @@ export function aiAct(app, plyr) {
         }
         break;
       case "drop_weapon":
-        console.log("ai act -- drop_weapon");
+        logAct("dropWeapon");
         // currentInstruction.limit = 10;
         app.keyPressed[plyr.number - 1].defend = true;
         if (currentInstruction.count > 3) {

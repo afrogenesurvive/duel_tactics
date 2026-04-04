@@ -6,7 +6,8 @@ export function addAiRandomPlayer(app, mission) {
   };
 
   if (mission === "random") {
-    let whatMission = app.rnJesus(1, 10);
+    // let whatMission = app.rnJesus(1, 10);
+    let whatMission = 2;
     if (whatMission % 2 === 0 || whatMission % 7 === 0) {
       newMisson = "pursue";
     }

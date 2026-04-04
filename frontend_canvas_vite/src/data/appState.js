@@ -734,6 +734,9 @@ export function applyConstructorDefaults(app) {
       mission: false,
       pathing: false,
       target: false,
+      evaluate: false,
+      decide: false,
+      act: false,
     },
     camera: {
       mode: false,

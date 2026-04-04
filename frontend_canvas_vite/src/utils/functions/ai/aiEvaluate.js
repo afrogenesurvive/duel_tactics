@@ -1,10 +1,68 @@
 export function aiEvaluate(app, plyr) {
   // console.log('aiEvaluate',plyr.ai.upgradeWeapon);
   // console.log('aiEvaluate',plyr.ai.organizing.dropped.state);
+  const logEval = (message, data = {}) => {
+    app.globalLogger("ai.evaluate", message, { plyr_no: plyr.number, ...data }, { fn: "aiEvaluate" });
+  };
+  const getCell = (x, y) => app.gridInfo.find((cell) => cell.number.x === x && cell.number.y === y);
+  const checkJumpDestination = () => {
+    const currentInstruction = plyr.ai.instructions?.[plyr.ai.currentInstruction];
+    if (!currentInstruction || !currentInstruction.keyword) {
+      return;
+    }
+
+    if (!currentInstruction.keyword.startsWith("jump_")) {
+      return;
+    }
+
+    const dir = currentInstruction.keyword.split("_")[1];
+    const offsets = {
+      north: { x: 0, y: -1 },
+      south: { x: 0, y: 1 },
+      east: { x: 1, y: 0 },
+      west: { x: -1, y: 0 },
+    };
+    const offset = offsets[dir];
+    if (!offset) {
+      return;
+    }
+
+    const originCell = getCell(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
+    const cell1 = getCell(plyr.currentPosition.cell.number.x + offset.x, plyr.currentPosition.cell.number.y + offset.y);
+    const cell2 = getCell(plyr.currentPosition.cell.number.x + offset.x * 2, plyr.currentPosition.cell.number.y + offset.y * 2);
+
+    if (!originCell || !cell1 || !cell2) {
+      plyr.ai.resetInstructions = true;
+      logEval("jumpDestInvalid", { dir: dir });
+      return;
+    }
+
+    const blockedByBarrier =
+      (originCell.barrier.state === true && originCell.barrier.position === dir) ||
+      (cell1.barrier.state === true && cell1.barrier.position === app.getOppositeDirection(dir)) ||
+      (cell2.barrier.state === true && cell2.barrier.position === app.getOppositeDirection(dir));
+
+    if (blockedByBarrier === true) {
+      plyr.ai.resetInstructions = true;
+      logEval("jumpDestBlockedBarrier", { dir: dir, cell2: cell2.number });
+      return;
+    }
+
+    if (cell2.obstacle.state === true) {
+      plyr.ai.resetInstructions = true;
+      logEval("jumpDestBlockedObstacle", { dir: dir, cell2: cell2.number });
+      return;
+    }
+
+    if (cell2.void.state === true || cell2.terrain.type === "deep") {
+      plyr.ai.resetInstructions = true;
+      logEval("jumpDestUnsafe", { dir: dir, cell2: cell2.number });
+    }
+  };
 
   // SOMEONE DIED, RESET AI TARGETS
   if (app.resetAiTarget.state === true) {
-    console.log("someone died. reset ai targets");
+    logEval("someoneDiedResetTargets", { reset_player: app.resetAiTarget.player });
     if (!plyr.popups.find((x) => x.msg === "thinking")) {
       plyr.popups.push({
         state: false,
@@ -96,7 +154,7 @@ export function aiEvaluate(app, plyr) {
     if (app.playerNumber > 1) {
       if (app.resetAiTarget.player === 1) {
         if (app.players[1].dead.state !== true && app.players[1].falling.state !== true && app.players[1].respawn !== true) {
-          console.log("1");
+          logEval("retargetPlayer", { target: 2 });
           app.aiTarget = 2;
           app.resetAiTarget.player = 0;
         } else {
@@ -106,7 +164,7 @@ export function aiEvaluate(app, plyr) {
 
       if (app.resetAiTarget.player === 2) {
         if (app.players[0].dead.state !== true && app.players[0].falling.state !== true && app.players[0].respawn !== true) {
-          console.log("2");
+          logEval("retargetPlayer", { target: 1 });
           app.aiTarget = 1;
           app.resetAiTarget.player = 0;
         } else {
@@ -120,6 +178,8 @@ export function aiEvaluate(app, plyr) {
     // app.resetAiTarget.state2 = true;
     app.resetAiTarget.state = false;
   }
+
+  checkJumpDestination();
 
   if (app.allPlayersDead === true) {
     for (const plyr2 of app.players) {
@@ -190,25 +250,28 @@ export function aiEvaluate(app, plyr) {
   let armorUpgradePriority = [];
 
   if (plyr.ai.upgradeWeapon === true && plyr.ai.mission !== "retreat" && plyr.ai.mission !== "retrieve") {
-    console.log("upgrade weapon");
+    logEval("upgradeWeaponCheck", { mission: plyr.ai.mission });
 
     let weaponPriorityIndex = plyr.ai.organizing.weaponPriorityIndex;
     let havePriorityWeapon = true;
     weaponUpgradePriority = ["crossbow", "spear", "sword"];
     let inMyInventory = plyr.items.weapons.find((elem) => elem.type === weaponUpgradePriority[weaponPriorityIndex]);
 
-    console.log("priority weapon", weaponUpgradePriority[weaponPriorityIndex], "index", weaponPriorityIndex);
+    logEval("priorityWeapon", {
+      weapon_type: weaponUpgradePriority[weaponPriorityIndex],
+      index: weaponPriorityIndex,
+    });
 
     if (plyr.currentWeapon.type === weaponUpgradePriority[weaponPriorityIndex]) {
-      console.log("priority weapon is my current");
+      logEval("priorityWeaponIsCurrent", { weapon_type: plyr.currentWeapon.type });
 
       if (plyr.currentWeapon.type === "crossbow" && plyr.items.ammo === 0 && plyr.items.weapons.length < 2) {
-        console.log("priority weapon is crossbow but out of ammo!");
+        logEval("priorityRangedWeaponNoAmmo", { weapon_type: plyr.currentWeapon.type, ammo: plyr.items.ammo });
         if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
           plyr.ai.upgradeWeapon = false;
-          console.log("priority index max w/ nothing to retrieve");
+          logEval("priorityIndexMax w/ nothing to retrieve");
         } else {
-          console.log("check next priority weapon");
+          logEval("priorityWeaponNextCheck");
           plyr.ai.organizing.weaponPriorityIndex++;
         }
       } else {
@@ -220,15 +283,19 @@ export function aiEvaluate(app, plyr) {
     }
 
     if (inMyInventory && plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]) {
-      console.log("priority weapon is in my inventory. Switching to it", plyr.currentWeapon, plyr.items.ammo, plyr.items.weapons);
+      logEval("priorityWeaponInInventory. Switching", {
+        current_weapon: plyr.currentWeapon,
+        ammo: plyr.items.ammo,
+        weapons: plyr.items.weapons,
+      });
 
       if (plyr.currentWeapon.type === "crossbow" && plyr.items.ammo === 0 && plyr.items.weapons.length === 1) {
-        console.log("priority weapon is crossbow but out of ammo!");
+        logEval("priorityRangedWeaponNoAmmo", { weapon_type: plyr.currentWeapon.type, ammo: plyr.items.ammo });
         if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
           plyr.ai.upgradeWeapon = false;
-          console.log("priority index max w/ nothing to retrieve");
+          logEval("priorityIndexMax.Nothing to retrieve");
         } else {
-          console.log("check next priority weapon");
+          logEval("priorityWeaponNextCheck");
           plyr.ai.organizing.weaponPriorityIndex++;
         }
       } else {
@@ -250,15 +317,15 @@ export function aiEvaluate(app, plyr) {
     }
 
     if (havePriorityWeapon === false) {
-      console.log("dont have priority weapon");
+      logEval("priorityWeaponMissing");
 
       let inTheField = fieldItemScan.find((elem) => elem.subType === weaponUpgradePriority[weaponPriorityIndex]);
       // console.log('inTheField',inTheField);
       if (inTheField) {
-        console.log("priority weapon is in the field");
+        logEval("priorityWeaponInField", { weapon_type: inTheField.subType, location: inTheField.location });
 
         if (inTheField.subType === "crossbow") {
-          console.log("priority is a crossbow", inTheField.effect.split("+")[1]);
+          logEval("priorityWeaponCrossbow", { ammo: inTheField.effect.split("+")[1] });
 
           if (inTheField.effect.split("+")[1] !== 0 && inTheField.effect.split("+")[1] !== "0") {
             let targetSafeData = app.scanTargetAreaThreat({
@@ -271,7 +338,7 @@ export function aiEvaluate(app, plyr) {
             });
 
             if (targetSafeData.isSafe === true) {
-              console.log("priority weapon target is safe. Retrieve");
+              logEval("priorityWeaponLocationSafe", { weapon_type: inTheField.subType, location: inTheField.location });
 
               plyr.ai.mission = "retrieve";
               plyr.ai.retrieving.point = {
@@ -299,28 +366,28 @@ export function aiEvaluate(app, plyr) {
                 });
               }
             } else {
-              console.log("priority weapon target is unsafe.");
+              logEval("priorityWeaponLocationUnsafe", { weapon_type: inTheField.subType, location: inTheField.location });
 
               if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
                 // plyr.ai.upgradeWeapon = false;
-                console.log("priority index max w/ nothing to retrieve");
+                logEval("priorityIndexMax. Nothing to retrieve");
               } else {
-                console.log("check next priority weapon");
+                logEval("priorityWeaponNextCheck");
                 plyr.ai.organizing.weaponPriorityIndex++;
               }
             }
           } else if (inTheField.effect.split("+")[1] === 0 || inTheField.effect.split("+")[1] === "0") {
-            console.log("bow in the field but has no ammo");
+            logEval("priorityRangedWeaponInFieldNoAmmo", { weapon_type: "crossbow", ammo: inTheField.effect.split("+")[1] });
             if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
               // plyr.ai.upgradeWeapon = false;
-              console.log("priority index max w/ nothing to retrieve");
+              logEval("priorityIndexMax.Nothing to retrieve");
             } else {
-              console.log("check next priority weapon");
+              logEval("priorityWeaponNextCheck");
               plyr.ai.organizing.weaponPriorityIndex++;
             }
           }
         } else {
-          console.log("priority is not a crossbow");
+          logEval("priorityWeaponNonCrossbow", { weapon_type: inTheField.subType });
 
           let targetSafeData2 = app.scanTargetAreaThreat({
             player: plyr.number,
@@ -358,31 +425,31 @@ export function aiEvaluate(app, plyr) {
               });
             }
           } else {
-            console.log("priority weapon is not in the field");
+            logEval("priorityWeaponUnavailable", { weapon_type: inTheField.subType });
 
             if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
               // plyr.ai.upgradeWeapon = false;
-              console.log("priority index max w/ nothing to retrieve");
+              logEval("priorityIndexMax.Nothing to retrieve");
             } else {
-              console.log("choose next priority weapon");
+              logEval("priorityWeaponNextCheck");
               plyr.ai.organizing.weaponPriorityIndex++;
             }
           }
         }
       } else {
-        console.log("priority weapon is not in the field, nor current nor inventory");
+        logEval("priorityWeaponUnavailable", { weapon_type: weaponUpgradePriority[weaponPriorityIndex] });
         if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
           // plyr.ai.upgradeWeapon = false;
-          console.log("priority index max w/ nothing to retrieve");
+          logEval("priorityIndexMax.Nothing to retrieve");
         } else {
-          console.log("check next priority weapon");
+          logEval("priorityWeaponNextCheck");
           plyr.ai.organizing.weaponPriorityIndex++;
         }
       }
     }
   }
   if (plyr.ai.upgradeArmor === true && plyr.ai.upgradeWeapon !== true && plyr.ai.mission !== "retreat" && plyr.ai.mission !== "retrieve") {
-    console.log("upgrade armor");
+    logEval("upgradeArmorCheck", { mission: plyr.ai.mission });
 
     let armorInTheField;
     if (plyr.hp === 1) {
@@ -425,12 +492,9 @@ export function aiEvaluate(app, plyr) {
           }
         }
 
-        console.log("found hpup gear in the field. retrieve! @", plyr.ai.retrieving.point);
+        logEval("armorUpgradeRetrieve", { point: plyr.ai.retrieving.point, effect: "hpUp" });
       } else {
-        console.log(
-          "no hp up gear found in the field",
-          fieldItemScan.find((gear) => gear.effect === "hpUp"),
-        );
+        logEval("armorUpgradeMissing", { effect: "hpUp" });
       }
     }
 
@@ -475,12 +539,9 @@ export function aiEvaluate(app, plyr) {
           }
         }
 
-        console.log("found speedUp gear in the field. retrieve! @", plyr.ai.retrieving.point);
+        logEval("armorUpgradeRetrieve", { point: plyr.ai.retrieving.point, effect: "speedUp" });
       } else {
-        console.log(
-          "no spped up gear found in the field",
-          fieldItemScan.find((gear) => gear.effect === "speedUp"),
-        );
+        logEval("armorUpgradeMissing", { effect: "speedUp" });
       }
     }
   }
@@ -488,7 +549,7 @@ export function aiEvaluate(app, plyr) {
   // RELOAD BOW AMMO
   if (plyr.currentWeapon.type === "crossbow" && plyr.ai.mission !== "retrieve" && plyr.ai.mission !== "retreat") {
     if (plyr.items.ammo === 0) {
-      console.log("my crossbow out of ammo");
+      logEval("crossbowNoAmmo", { ammo: plyr.items.ammo });
       let inTheField = fieldItemScan.find((elem) => elem.type === "crossbow" || elem.name.substr(0, 4) === "ammo");
       if (inTheField) {
         if (inTheField.effect.split("+")[1] !== 0 && inTheField.effect.split("+")[1] !== "0") {
@@ -528,10 +589,10 @@ export function aiEvaluate(app, plyr) {
               });
             }
           } else {
-            console.log("unsafe to retrieve. Choose from inventory");
+            logEval("retrieveUnsafeFallbackInventory");
 
             if (plyr.items.weapons.length > 1) {
-              console.log("fallback to other weapon1", plyr.items.weapons);
+              logEval("fallbackWeapon", { weapons: plyr.items.weapons });
               plyr.currentWeapon = {
                 name: plyr.items.weapons[1].name,
                 type: plyr.items.weapons[1].type,
@@ -540,15 +601,15 @@ export function aiEvaluate(app, plyr) {
 
               plyr.ai.targetAcquired = false;
             } else {
-              console.log("nothing else in inventory. find other in the field1");
+              logEval("inventoryEmptyFindInField");
               plyr.ai.upgradeWeapon = true;
             }
           }
         } else {
-          console.log("bow in the field but no ammo");
+          logEval("bowInFieldNoAmmo");
 
           if (plyr.items.weapons.length > 1) {
-            console.log("fallback to other weapon2", plyr.items.weapons);
+            logEval("fallbackWeapon", { weapons: plyr.items.weapons });
             plyr.currentWeapon = {
               name: plyr.items.weapons[1].name,
               type: plyr.items.weapons[1].type,
@@ -557,15 +618,15 @@ export function aiEvaluate(app, plyr) {
 
             plyr.ai.targetAcquired = false;
           } else {
-            console.log("nothing else in inventory. find other in the field2");
+            logEval("inventoryEmptyFindInField");
             plyr.ai.upgradeWeapon = true;
           }
         }
       } else {
-        console.log("no bow or ammo in the field");
+        logEval("noBowOrAmmoInField");
 
         if (plyr.items.weapons.length > 1) {
-          console.log("fallback to other weapon3", plyr.items.weapons);
+          logEval("fallbackWeapon", { weapons: plyr.items.weapons });
           plyr.currentWeapon = {
             name: plyr.items.weapons[0].name,
             type: plyr.items.weapons[0].type,
@@ -574,11 +635,11 @@ export function aiEvaluate(app, plyr) {
 
           plyr.ai.targetAcquired = false;
         } else {
-          console.log("nothing else in inventory. find other in the field3");
+          logEval("inventoryEmptyFindInField");
           plyr.ai.upgradeWeapon = true;
 
           if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
-            console.log("no ammo for bow or alternative weapons to upgrade to. Switch to unarmed");
+            logEval("noAmmoNoUpgradeSwitchUnarmed");
             plyr.currentWeapon = {
               name: "",
               type: "",
@@ -592,7 +653,7 @@ export function aiEvaluate(app, plyr) {
 
   // INJURED OR SLOW!
   if (plyr.hp === 1 && plyr.ai.mission !== "retrieve" && plyr.ai.mission !== "retrieve") {
-    console.log("injured. check for heal item");
+    logEval("injuredCheckHealItem");
 
     let itemToRetrieve = undefined;
     for (const item2 of fieldItemScan) {
@@ -637,15 +698,15 @@ export function aiEvaluate(app, plyr) {
           });
         }
 
-        console.log("found hpup item in the field. retrieve @ ", itemToRetrieve.location);
+        logEval("healItemRetrieve", { location: itemToRetrieve.location });
       } else {
-        console.log("no heal item/gear found.");
+        logEval("healItemMissing");
       }
     }
   }
 
   if (plyr.speed.move < 0.1 && plyr.ai.mission !== "retrieve" && plyr.ai.mission !== "retrieve") {
-    console.log("slow. check for speed up item");
+    logEval("slowCheckSpeedUpItem");
 
     let itemToRetrieve = undefined;
     for (const item3 of fieldItemScan) {
@@ -655,7 +716,7 @@ export function aiEvaluate(app, plyr) {
     }
 
     if (itemToRetrieve) {
-      console.log("found speed up item in the field. retrieve");
+      logEval("speedItemFound", { location: itemToRetrieve.location });
 
       let targetSafeData2 = app.scanTargetAreaThreat({
         player: plyr.number,
@@ -693,7 +754,7 @@ export function aiEvaluate(app, plyr) {
           });
         }
       } else {
-        console.log("no speedup item/gear found. Check for armor");
+        logEval("speedItemMissingUpgradeArmorCheck");
         plyr.ai.upgradeArmor = true;
       }
     }
@@ -701,7 +762,7 @@ export function aiEvaluate(app, plyr) {
 
   // RETRIEVE DROPPED GEAR!
   if (plyr.ai.organizing.dropped.state === true) {
-    console.log("ai retrieve dropped gear flow");
+    logEval("retrieveDroppedGear", { gear: plyr.ai.organizing.dropped.gear });
 
     for (const cell of app.gridInfo) {
       if (cell.item.name !== "") {
@@ -719,7 +780,7 @@ export function aiEvaluate(app, plyr) {
     // console.log('droppedGear',droppedGear);
 
     if (plyr.ai.mission !== "engage") {
-      console.log("gear dropped out of battle");
+      logEval("droppedGearOutOfBattle");
 
       if (droppedGear.location.x === plyr.currentPosition.cell.number.x && droppedGear.location.y === plyr.currentPosition.cell.number.y) {
         plyr.ai.instructions.push({
@@ -730,9 +791,9 @@ export function aiEvaluate(app, plyr) {
 
         app.players[plyr.number - 1].ai.organizing.dropped.state = false;
 
-        console.log("standing over dropped gear", plyr.ai.organizing.dropped.state);
+        logEval("droppedGearPickup", { state: plyr.ai.organizing.dropped.state });
       } else {
-        console.log("retrieve dropped gear");
+        logEval("droppedGearRetrieve");
 
         plyr.ai.mission = "retrieve";
         plyr.ai.retrieving.point = {
@@ -803,7 +864,7 @@ export function aiEvaluate(app, plyr) {
         }
       }
     } else {
-      console.log("dropped gear in battle");
+      logEval("droppedGearInBattle");
 
       if (droppedGear.location.x === plyr.currentPosition.cell.number.x && droppedGear.location.y === plyr.currentPosition.cell.number.y) {
         plyr.ai.instructions.push({
@@ -814,17 +875,17 @@ export function aiEvaluate(app, plyr) {
 
         app.players[plyr.number - 1].ai.organizing.dropped.state = false;
 
-        console.log("standing over dropped gear", plyr.ai.organizing.dropped.state);
+        logEval("droppedGearPickup", { state: plyr.ai.organizing.dropped.state });
       } else {
         if (plyr.items.weapons.length > 1) {
-          console.log("switch to something else from inventory");
+          logEval("droppedGearSwitchInventory");
           plyr.currentWeapon = {
             name: plyr.items.weapons[0].name,
             type: plyr.items.weapons[0].type,
             effect: plyr.items.weapons[0].effect,
           };
         } else {
-          console.log("retrieve dropped gear");
+          logEval("droppedGearRetrieve");
 
           plyr.ai.mission = "retrieve";
           plyr.ai.retrieving.point = {
@@ -903,7 +964,7 @@ export function aiEvaluate(app, plyr) {
 
   // PATHFIND ERROR/ PREVENT SUICIDE!
   if (plyr.ai.resetInstructions === true) {
-    console.log("pathfinding reset");
+    logEval("pathfindingReset");
     if (!plyr.popups.find((x) => x.msg === "thinking")) {
       plyr.popups.push({
         state: false,
@@ -933,17 +994,17 @@ export function aiEvaluate(app, plyr) {
     plyr.ai.resetInstructions = false;
 
     if (plyr.ai.mission === "retreat") {
-      console.log("retreat pathfinding reset");
+      logEval("retreatPathReset");
       plyr.ai.retreating.checkin = undefined;
       plyr.ai.retreating.state = false;
     }
     if (plyr.ai.mission === "retrieve") {
-      console.log("retrieve pathfinding reset");
+      logEval("retrievePathReset");
       plyr.ai.retrieving.checkin = undefined;
       plyr.ai.retrieving.state = false;
     }
     if (plyr.ai.mission === "patrol") {
-      console.log("patrol pathfinding reset");
+      logEval("patrolPathReset");
       plyr.ai.patrolling.checkin = undefined;
       plyr.ai.patrolling.state = false;
     }
@@ -963,7 +1024,7 @@ export function aiEvaluate(app, plyr) {
     }
 
     if (targetAlive === true) {
-      console.log("setting ai target... ", "app.aiTarget", app.aiTarget);
+      logEval("setTarget", { target: app.aiTarget });
 
       plyr.ai.targetPlayer = {
         number: targetPlayer.number,
@@ -1020,7 +1081,7 @@ export function aiEvaluate(app, plyr) {
                 plyr.ai.currentInstruction = 0;
               }
               if (clearToShoot !== true) {
-                console.log("in-range detection: crossbow target obstructed");
+                logEval("targetRangedWeaponObstructed", { weapon_type: "crossbow" });
               } else if (
                 plyr.ai.mission !== "pursue" &&
                 plyr.ai.mission !== "engage" &&
@@ -1083,7 +1144,7 @@ export function aiEvaluate(app, plyr) {
                 plyr.ai.currentInstruction = 0;
               }
               if (clearToShoot !== true) {
-                console.log("in-range detection: crossbow target obstructed");
+                logEval("targetRangedWeaponObstructed", { weapon_type: "crossbow" });
               } else if (
                 plyr.ai.mission !== "pursue" &&
                 plyr.ai.mission !== "engage" &&
@@ -1157,7 +1218,7 @@ export function aiEvaluate(app, plyr) {
                   // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                 }
                 if (clearToShoot !== true) {
-                  console.log("in-range detection: spear target obstructed");
+                  logEval("targetSpearObstructed", { weapon_type: "spear" });
                 } else if (
                   plyr.ai.mission !== "pursue" &&
                   plyr.ai.mission !== "engage" &&
@@ -1215,7 +1276,7 @@ export function aiEvaluate(app, plyr) {
                   // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                 }
                 if (clearToShoot !== true) {
-                  console.log("in-range detection: spear target obstructed");
+                  logEval("targetSpearObstructed", { weapon_type: "spear" });
                 } else if (
                   plyr.ai.mission !== "pursue" &&
                   plyr.ai.mission !== "engage" &&
@@ -1281,7 +1342,7 @@ export function aiEvaluate(app, plyr) {
                   // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                 }
                 if (clearToShoot !== true) {
-                  console.log("in-range detection: spear target obstructed");
+                  logEval("targetSpearObstructed", { weapon_type: "spear" });
                 } else if (
                   plyr.ai.mission !== "pursue" &&
                   plyr.ai.mission !== "engage" &&
@@ -1343,7 +1404,7 @@ export function aiEvaluate(app, plyr) {
                   // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                 }
                 if (clearToShoot !== true) {
-                  console.log("in-range detection: spear target obstructed");
+                  logEval("targetSpearObstructed", { weapon_type: "spear" });
                 } else if (
                   plyr.ai.mission !== "pursue" &&
                   plyr.ai.mission !== "engage" &&
@@ -1675,7 +1736,7 @@ export function aiEvaluate(app, plyr) {
 
     app.aiResetRanges(plyr);
     if (plyr.ai.primaryMission === "defend") {
-      console.log("defend", plyr.ai.defending.checkin);
+      logEval("defendCheckin", { checkin: plyr.ai.defending.checkin });
       plyr.ai.patrolling.checkin = undefined;
       plyr.ai.defending.state = true;
     }
@@ -1738,9 +1799,9 @@ export function aiEvaluate(app, plyr) {
         }
 
         for (const threat of targetSafeData.threats) {
-          console.log("threat", threat);
+          logEval("retrieveThreat", { threat: threat });
           if (threat.distVal === 0) {
-            console.log("threats", targetSafeData.threats);
+            logEval("retrieveThreats", { threats: targetSafeData.threats });
 
             plyr.ai.targetSet = true;
             plyr.ai.targetAquired = false;
@@ -1767,7 +1828,7 @@ export function aiEvaluate(app, plyr) {
         }
       }
       if (plyr.ai.mode === "careful" && plyr.ai.retrieving.checkin === "enroute") {
-        console.log("was enroute, now retreating");
+        logEval("retrieveEnrouteRetreat");
 
         if (!plyr.popups.find((x) => x.msg === "passiveMode")) {
           plyr.popups.push({
@@ -1934,7 +1995,7 @@ export function aiEvaluate(app, plyr) {
       if (checkCell === true && safeTarget === true && isSafeDistance !== true) {
         plyr.ai.retreating.point = cell;
         plyr.ai.retreating.safe = safeTarget;
-        console.log("found a free, safe retreat location", cell);
+        logEval("retreatLocationFound", { point: cell });
       }
     }
 
@@ -1951,7 +2012,7 @@ export function aiEvaluate(app, plyr) {
       plyr.ai.retrieving.safe = targetSafeData.isSafe;
 
       if (targetSafeData.isSafe !== true) {
-        console.log("retreat target area is under threat. Find another target");
+        logEval("retreatTargetUnsafe");
         plyr.ai.retreating.checkin = undefined;
         plyr.ai.retreating.safe = false;
       }
@@ -2008,6 +2069,19 @@ export function aiEvaluate(app, plyr) {
 
     // plyr.ai.retreating.level pick a spot further away depending on levelData
   }
+
+  let chargeIntent = "quick";
+  const targetPlayer = app.players?.[plyr.ai?.targetPlayer?.number - 1];
+  if (targetPlayer) {
+    if (targetPlayer.defending.state === true || targetPlayer.defending.decay.state === true) {
+      chargeIntent = "full";
+    } else if (targetPlayer.attacking.state === true) {
+      chargeIntent = "quick";
+    } else if (plyr.ai.safeRange === true) {
+      chargeIntent = "medium";
+    }
+  }
+  plyr.ai.chargeIntent = chargeIntent;
 
   // AI CAN'T ACT IF FLANKING OR MOVING!
 
