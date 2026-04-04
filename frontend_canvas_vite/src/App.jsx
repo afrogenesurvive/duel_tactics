@@ -25,6 +25,7 @@ import "./App.css";
 
 // COMPONENTS
 import DebugBox from "./utils/components/debugBox";
+import DebugMenu from "./utils/components/debugMenu";
 import Settings from "./utils/components/settings";
 import CellInfo from "./utils/components/cellInfo";
 import Loading from "./utils/components/loading";
@@ -62,6 +63,7 @@ import { expandDebugBox } from "./utils/functions/input/expandDebugBox";
 import { minimizeDebugBox } from "./utils/functions/input/minimizeDebugBox";
 import { openSettings } from "./utils/functions/settings/openSettings";
 import { cancelSettings } from "./utils/functions/settings/cancelSettings";
+import { toggleDebugMenu } from "./utils/functions/misc/toggleDebugMenu";
 
 // SETTINGS
 import { loadSettings } from "./utils/functions/settings/loadSettings";
@@ -80,6 +82,8 @@ import { closeCellInfoBox } from "./utils/functions/stage/closeCellInfoBox";
 import { plyrStartPosCheckCell } from "./utils/functions/stage/plyrStartPosCheckCell";
 import { findFocusCell } from "./utils/functions/stage/findFocusCell";
 import { getIntermediateCellByArea } from "./utils/functions/stage/getIntermediateCellByArea";
+
+import { globalLogger } from "./utils/functions/misc/globalLogger";
 
 // CAMERA
 import { closeCamera } from "./utils/functions/camera/closeCamera";
@@ -232,6 +236,7 @@ class App extends Component {
     this.minimizeDebugBox = (...args) => minimizeDebugBox(this, ...args);
     this.openSettings = (...args) => openSettings(this, ...args);
     this.cancelSettings = (...args) => cancelSettings(this, ...args);
+    this.toggleDebugMenu = (...args) => toggleDebugMenu(this, ...args);
 
     // SETTINGS
     this.loadSettings = (...args) => loadSettings(this, ...args);
@@ -249,6 +254,7 @@ class App extends Component {
     this.plyrStartPosCheckCell = (...args) => plyrStartPosCheckCell(this, ...args);
     this.findFocusCell = (...args) => findFocusCell(this, ...args);
     this.getIntermediateCellByArea = (...args) => getIntermediateCellByArea(this, ...args);
+    this.globalLogger = (...args) => globalLogger(this, ...args);
 
     // CAMERA
     this.closeCamera = (...args) => closeCamera(this, ...args);
@@ -512,6 +518,19 @@ class App extends Component {
                   <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon" />
                 </OverlayTrigger>
               </a>
+              <a className={`setSwitchLink ${this.state.showDebugMenu === true ? "cameraModeHighlighted" : ""}`} onClick={this.toggleDebugMenu}>
+                <OverlayTrigger
+                  placement={"top"}
+                  overlay={
+                    <Popover id={`popover-positioned-${"top"}`}>
+                      <Popover.Body>
+                        <strong>Debug Menu</strong>
+                      </Popover.Body>
+                    </Popover>
+                  }>
+                  <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="setSwitchIcon" />
+                </OverlayTrigger>
+              </a>
               {this.aiPlayers[0] && (
                 // {this.updateSettingsFormAiDataData.random &&(
                 <a className="setSwitchLink cameraModeHighlighted" onClick={this.toggleAiDisplay}>
@@ -619,6 +638,11 @@ class App extends Component {
             )}
             {/* // AI STATUS BOX */}
             {this.state.showAiStatus === true && <AiStatus players={this.players} aiPlayers={this.aiPlayers} onAiAdd={this.addAiRandomPlayer} />}
+
+            {/* // DEBUG/LOG BOX */}
+            {this.state.showDebugMenu === true && (
+              <DebugMenu loggingSettings={this.loggingSettings} updateLoggingSettings={this.toggleDebugMenu} onClose={this.toggleDebugMenu} />
+            )}
           </div>
           {this.state.showSettings === true && (
             <Settings
@@ -648,6 +672,7 @@ class App extends Component {
               updateSettingsFormPlayerData={this.updateSettingsFormPlayerData}
             />
           )}
+
           <svg
             className="popupProgressSvg hidden"
             ref={this.popupProgressSvgRef}

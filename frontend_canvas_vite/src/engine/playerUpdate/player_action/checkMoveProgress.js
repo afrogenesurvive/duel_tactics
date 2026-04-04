@@ -11,7 +11,16 @@ export function checkMoveProgress(app, player, nextPosition) {
     nextPosition = app.lineCrementer(player);
     player.nextPosition = nextPosition;
     if (player.moveCancel.state === true) {
-      console.log("move cancel/ returning...", player.moving.step, nextPosition, player.currentPosition.cell.numbers);
+      app.globalLogger(
+        "player.movement",
+        "moveCancelReturning",
+        {
+          step: player.moving.step,
+          nextPosition,
+          cellNumbers: player.currentPosition.cell.numbers,
+        },
+        { fn: "checkMoveProgress", line: 14 },
+      );
     }
 
     let atDestRanges1 = [false, false, false, false];
@@ -85,6 +94,18 @@ export function checkMoveProgress(app, player, nextPosition) {
             player.currentPosition.cell.number = player.target.cell1.number;
             player.currentPosition.cell.center = player.target.cell1.center;
           }
+
+          app.globalLogger(
+            "player.movement",
+            "reachedDestination",
+            {
+              step: player.moving.step,
+              nextPosition,
+              cellNumbers: player.currentPosition.cell.number,
+              move_speed: player.speed.move,
+            },
+            { fn: "checkMoveProgress", line: 150 },
+          );
 
           player.action = "idle";
           player.moving = {
@@ -175,7 +196,15 @@ export function checkMoveProgress(app, player, nextPosition) {
 
           // PUSHBACK MOVEMENT
           if (player.pushBack.state === true) {
-            console.log("player", player.number, "finished moving pushed back", player.flanking.state);
+            app.globalLogger(
+              "player.pushBack",
+              "finishedMoving",
+              {
+                plyr_no: player.number,
+                flanking: player.flanking.state,
+              },
+              { fn: "checkMoveProgress", line: 178 },
+            );
 
             // CANCEL AI ATTACK, DEFEND!!
             if (player.ai.state === true) {
@@ -279,6 +308,7 @@ export function checkMoveProgress(app, player, nextPosition) {
               app.obstaclePlayerOverlap("player", refCell2, player, refCell1.obstacle);
             }
           }
+
           break;
         }
       }

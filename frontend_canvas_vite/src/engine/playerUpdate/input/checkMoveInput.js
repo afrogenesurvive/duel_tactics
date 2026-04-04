@@ -55,7 +55,19 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
               ) {
                 app.clicked.player = undefined;
               }
-              // console.log(`Start movment for player ${player.number}. Stamina: current ${player.stamina.current} / cost ${app.staminaCostRef.move} `);
+
+              app.globalLogger(
+                "player.movement",
+                "start",
+                {
+                  plyr_no: player.number,
+                  plyr_stamina: player.stamina.current,
+                  move_cost: app.staminaCostRef.move,
+                  move_speed: player.speed.move,
+                  time: app.time,
+                },
+                { fn: "checkMoveInput", line: 59 },
+              );
             } else {
               player.stamina.current = 0;
               player.statusDisplay = {
@@ -64,7 +76,14 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
                 count: 0,
                 limit: player.statusDisplay.limit,
               };
-              console.log(`Player ${player.number} can't move. Out of stamina`);
+              app.globalLogger(
+                "player.movement",
+                "outOfStamina",
+                {
+                  plyr_no: player.number,
+                },
+                { fn: "checkMoveInput", line: 74 },
+              );
             }
           }
         }
@@ -129,7 +148,19 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
       if (player.stamina.current - app.staminaCostRef.turn >= 0) {
         player.stamina.current -= app.staminaCostRef.turn;
 
-        // console.log('start turning');
+        app.globalLogger(
+          "player.turning",
+          "start",
+          {
+            plyr_no: player.number,
+            from: player.direction,
+            to: keyPressedDirection,
+            stamina: player.stamina.current,
+            cost: app.staminaCostRef.turn,
+            time: app.time,
+          },
+          { fn: "checkMoveInput", line: 141 },
+        );
         player.turning.state = true;
         player.turning.toDirection = keyPressedDirection;
       } else {
@@ -213,8 +244,6 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
         );
         let cell1 = app.gridInfo.find((elem) => elem.number.x === target.cell1.number.x && elem.number.y === target.cell1.number.y);
         let cell2 = app.gridInfo.find((elem) => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y);
-        // console.log('cell1',cell1);
-        // console.log('cell2',cell2);
 
         let cellsWithinBounds = true;
         if (!cell1 || !cell2) {
@@ -231,8 +260,6 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
         if (cellsWithinBounds === true) {
           // CAN ONLY JUMP OVER HAZARDS, DEEP OR VOID
           if (cell1.void.state === true || cell1.terrain.type === "deep" || cell1.terrain.type === "hazard") {
-            // console.log('a');
-
             // CHECK ALL 3 JUMPING CELLS FOR BARRIERS BASED ON POSITION
             let myCellBlocked = false;
             let cell1BarrierNear = false;
@@ -318,16 +345,42 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
               alarmedPopup = true;
 
               if (cell1.obstacle.state === true) {
-                console.log("can't jump! obstacle in cell1");
+                app.globalLogger(
+                  "player.jumping",
+                  "blockedObstacleCell1",
+                  {
+                    plyr_no: player.number,
+                    cell1: cell1?.number,
+                  },
+                  { fn: "checkMoveInput", line: 330 },
+                );
               }
               // if (cell2.obstacle.state === true) {
               //   console.log("can't jump! obstacle in cell2");
               // }
               if (myCellBlocked === true) {
-                console.log("can't jump! barrier in player cell blocking");
+                app.globalLogger(
+                  "player.jumping",
+                  "blockedBarrierPlayerCell",
+                  {
+                    plyr_no: player.number,
+                    cell: myCell?.number,
+                    barrier: myCell?.barrier?.position,
+                  },
+                  { fn: "checkMoveInput", line: 338 },
+                );
               }
               if (cell1BarrierNear === true) {
-                console.log("can't jump! barrier cell 1 blocking");
+                app.globalLogger(
+                  "player.jumping",
+                  "blockedBarrierCell1",
+                  {
+                    plyr_no: player.number,
+                    cell1: cell1?.number,
+                    barrier: cell1?.barrier?.position,
+                  },
+                  { fn: "checkMoveInput", line: 343 },
+                );
               }
               // if (cell2Barrier === true) {
               //   console.log("can't jump! barrier cell 2 blocking");
@@ -342,6 +395,17 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
           // console.log('cell out of bounds');
           app.players[player.number - 1].jumping.checking = false;
           alarmedPopup = true;
+          app.globalLogger(
+            "player.jumping",
+            "jumpingCellDestOutOfBounds",
+            {
+              plyr_no: player.number,
+              cell1: cell1?.number,
+              cell2: cell2?.number,
+              gridWidth: app.gridWidth,
+            },
+            { fn: "checkMoveInput", line: 374 },
+          );
         }
 
         if (alarmedPopup === true) {
@@ -356,7 +420,6 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
               img: "",
             });
           }
-          console.log("cant jump fwd here. Check for can kick");
         }
       }
     }
