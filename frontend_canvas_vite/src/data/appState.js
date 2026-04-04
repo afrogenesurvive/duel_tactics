@@ -730,7 +730,7 @@ export function applyConstructorDefaults(app) {
       stamina: false,
     },
     ai: {
-      spawn: false,
+      spawn: true,
       mission: false,
       pathing: false,
       target: false,
@@ -1180,7 +1180,7 @@ export function applyConstructorDefaults(app) {
 
   // AI
   app.aiInitSettings = {
-    randomStart: false,
+    randomStart: true,
     startPosition: {
       number: { x: 1, y: 7 },
     },

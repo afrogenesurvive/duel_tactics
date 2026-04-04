@@ -1,3 +1,5 @@
+import Easystar from "easystarjs";
+
 export function aiDecide(app, aiPlayer) {
   // console.log('aiDecide',aiPlayer.number);
 

@@ -37,6 +37,14 @@ export function addAiRandomPlayer(app, mission) {
       type: "crossbow",
     };
   }
+  app.globalLogger(
+    "ai.spawn",
+    "add random set weapon",
+    {
+      weapon: weapon,
+    },
+    { fn: "addAiRandomPlayer", line: 40 },
+  );
 
   app.aiInitSettings = {
     randomStart: true,

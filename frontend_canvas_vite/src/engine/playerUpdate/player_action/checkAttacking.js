@@ -314,7 +314,6 @@ export function checkAttacking(app, player) {
           player.attacking.peak = true;
           if (player.attacking.charge > 0) {
             player.attacking.chargePeak = true;
-            console.log("heeeere");
           }
 
           // CREATE NEW PROJECTILE

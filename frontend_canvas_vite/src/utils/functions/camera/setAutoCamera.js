@@ -1,3 +1,5 @@
+import Easystar from "easystarjs";
+
 export function setAutoCamera(app, args, player) {
   app.camera.state = false;
   app.camera.fixed = false;

@@ -524,7 +524,7 @@ class App extends Component {
                   overlay={
                     <Popover id={`popover-positioned-${"top"}`}>
                       <Popover.Body>
-                        <strong>Debug Menu</strong>
+                        <strong>Debug Log Menu</strong>
                       </Popover.Body>
                     </Popover>
                   }>
