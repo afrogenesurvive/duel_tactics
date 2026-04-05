@@ -35,7 +35,11 @@
 
 export function projectileAttackParse(app, bolt, ownerType, targetType, target) {
   // console.log("projectileAttackParse", app.time, target.attacking.peakCount);
-  console.log("projectileAttackParse", {
+  const logProjectile = (message, data = {}) => {
+    app.globalLogger("player.attacking.projectile", message, data, { fn: "projectileAttackParse" });
+  };
+
+  logProjectile("projectileAttackParse", {
     time: app.time,
     bolt_direction: bolt.direction,
     target_atk_peak: target.attacking.peak,
@@ -99,7 +103,12 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
     //BOLT TARGET DODGING
     if (target.dodging.state === true) {
-      console.log("player ", target.number, " just dodged a bolt from ", bolt.ownerType, bolt.owner);
+      logProjectile("targetPlayerDodging", {
+        number: target.number,
+        boltOwnerType: bolt.ownerType,
+        boltOwner: bolt.owner,
+      });
+
       target.stamina.current += app.staminaCostRef.dodge.pre;
       // FINISH
       x = app.projectiles.find((x) => x.id === bolt.id);
@@ -112,7 +121,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
       // BOLT TARGET NOT DODGING
       // BACK ATTACK
       if (target.direction === bolt.direction && deflected !== true) {
-        console.log("bolt hit plyr", target.number, "from the back by", bolt.ownerType, bolt.owner, "Damage & Deflect");
+        logProjectile("boltHitPlayer", {
+          target_no: target.number,
+          owner_type: bolt.ownerType,
+          owner: bolt.owner,
+          bolt_dir: bolt.direction,
+          atk_position: "back",
+          result: "Damage & deflection",
+        });
         app.handleProjectileDamage(bolt, ownerType, "player", target);
         app.setDeflection(target, "attacked", false);
         deflected = true;
@@ -141,14 +157,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
             if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
               // if (app.rnJesus(1, 1) <= 1) {
-              console.log(
-                "bolt hit plyr",
-                target.number,
-                "from the side. by",
-                bolt.ownerType,
-                bolt.owner,
-                "but they attacked it successfully. Pushback?",
-              );
+              logProjectile("boltSideAttackBlockedBySlash", {
+                target_no: target.number,
+                owner_type: bolt.ownerType,
+                owner: bolt.owner,
+                bolt_dir: bolt.direction,
+                atk_position: "side",
+                result: "but they attacked it successfull beating charge roll w/ guardBreak crit. Pushback?",
+              });
               if (!target.popups.find((x) => x.msg === "boltKilled")) {
                 target.popups.push({
                   state: false,
@@ -176,14 +192,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
             // OR BE INJURED
             else {
-              console.log(
-                "bolt hit plyr",
-                target.number,
-                "from the side. by",
-                bolt.ownerType,
-                bolt.owner,
-                "but they attacked it unsuccessfully due to bolt charge roll. Damage & Deflect?",
-              );
+              logProjectile("boltSideAttackFailedChargeRoll", {
+                target_no: target.number,
+                owner_type: bolt.ownerType,
+                owner: bolt.owner,
+                bolt_dir: bolt.direction,
+                atk_position: "side",
+                result: "and they failed the charge roll w/ guardBreak crit to block it. Take damage & deflect(?)",
+              });
               app.handleProjectileDamage(bolt, ownerType, "player", target);
               app.setDeflection(target, "attacked", false);
               deflected = true;
@@ -197,14 +213,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
           // OR BE INJURED
           else {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the side. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they attacked it unsuccessfully due to attack direction. Damage & Deflect?",
-            );
+            logProjectile("boltSideAttackFailedDirection", {
+              target_no: target.number,
+              owner_type: bolt.ownerType,
+              owner: bolt.owner,
+              bolt_dir: bolt.direction,
+              atk_position: "side",
+              result: "but they attacked in the wrong direction, so take damage & deflect(?)",
+            });
             app.handleProjectileDamage(bolt, ownerType, "player", target);
             app.setDeflection(target, "attacked", false);
             deflected = true;
@@ -224,14 +240,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
           weapon === "unarmed"
         ) {
-          console.log(
-            "bolt hit plyr",
-            target.number,
-            "from the side. by",
-            bolt.ownerType,
-            bolt.owner,
-            "but they attacked successfully but unarmed. Damage, Deflect?",
-          );
+          logProjectile("boltSideAttackUnarmed", {
+            target_no: target.number,
+            owner_type: bolt.ownerType,
+            owner: bolt.owner,
+            bolt_dir: bolt.direction,
+            atk_position: "side",
+            result: "but they were unarmed, so take damage & deflect(?)",
+          });
           app.handleProjectileDamage(bolt, ownerType, "player", target);
           app.setDeflection(target, "attacked", false);
           deflected = true;
@@ -246,14 +262,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
         if (targetDefending === true) {
           // UNARMED DEFENSE = DAMAGE.
           if (weapon === "unarmed" || defendType === "unarmed") {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the side. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they defended unarmed. Damage & Deflect",
-            );
+            logProjectile("boltSideDefendUnarmed", {
+              target_no: target.number,
+              owner_type: bolt.ownerType,
+              owner: bolt.owner,
+              bolt_dir: bolt.direction,
+              atk_position: "side",
+              result: "but they were unarmed, so take damage & deflect(?)",
+            });
             app.handleProjectileDamage(bolt, ownerType, "player", target);
             app.setDeflection(target, "attacked", false);
             deflected = true;
@@ -273,7 +289,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                 target.defending.peak === true ||
                 (target.defending.decay.state === true && target.defending.decay.count < app.defendPeakAllowance)
               ) {
-                console.log("bolt hit plyr", target.number, "from the side. by", bolt.ownerType, bolt.owner, "but they parried. Pushback?");
+                logProjectile("boltSideParry", {
+                  target_no: target.number,
+                  owner_type: bolt.ownerType,
+                  owner: bolt.owner,
+                  bolt_dir: bolt.direction,
+                  atk_position: "side",
+                  result: "and they parried it on the peak, so no damage. Pushback?",
+                });
                 target.stamina.current += app.staminaCostRef.defend.peak;
                 target.success.defendSuccess = {
                   state: true,
@@ -299,7 +322,13 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                 }
                 // HIGHER PUSHBACK AND BOLT CHARGE INCREASE CHANCE OF PUSHBACK
                 if (app.rnJesus(1, target.crits.pushBack + bolt.charge) !== 1) {
-                  console.log("and was pushed back due to bolt charge");
+                  logProjectile("boltPushBack", {
+                    target_no: target.number,
+                    owner_type: bolt.ownerType,
+                    owner: bolt.owner,
+                    bolt_dir: bolt.direction,
+                    result: "pushBack roll: rnJesus(1, target.crits.pushBack + bolt.charge)",
+                  });
                   app.pushBack(target, bolt.direction);
                 }
 
@@ -315,14 +344,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               // LOWER BOLT CHARGE AND HIGHER GB CRIT INCREASES CHANCE OF DEFEND SUCCESS
               if (target.defending.peak !== true && target.defending.decay.state === true && target.defending.decay.count > app.defendPeakAllowance) {
                 if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
-                  console.log(
-                    "bolt hit plyr",
-                    target.number,
-                    "from the side. by",
-                    bolt.ownerType,
-                    bolt.owner,
-                    "but they off-peak defended successfully overcoming bolt charge",
-                  );
+                  logProjectile("boltSideDefendOffPeakSuccess", {
+                    target_no: target.number,
+                    owner_type: bolt.ownerType,
+                    owner: bolt.owner,
+                    bolt_dir: bolt.direction,
+                    atk_position: "side",
+                    result: "they defended off-peak beating the charge roll w/ guardBreak crit, so no damage but pushback?",
+                  });
                   target.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -357,14 +386,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
                 // DEFEND FAILURE DAMAGE, DEFLECT || DEFLECT + PUSHBACK
                 else {
-                  console.log(
-                    "bolt hit plyr",
-                    target.number,
-                    "from the side. by",
-                    bolt.ownerType,
-                    bolt.owner,
-                    "but they off-peak defended unsuccessfully due to bolt charge. Damage, Deflect, Pushback?",
-                  );
+                  logProjectile("boltSideDefendOffPeakFail", {
+                    target_no: target.number,
+                    owner_type: bolt.ownerType,
+                    owner: bolt.owner,
+                    bolt_dir: bolt.direction,
+                    atk_position: "side",
+                    result: "they defended off-peak but failed the charge roll w/ guardBreak crit to block it. Take damage",
+                  });
                   app.handleProjectileDamage(bolt, ownerType, "player", target);
 
                   deflected = true;
@@ -379,14 +408,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
             // OR BE INJURED
             else {
-              console.log(
-                "bolt hit plyr",
-                target.number,
-                "from the side. by",
-                bolt.ownerType,
-                bolt.owner,
-                "but they defended it unsuccessfully due to action direction. Damage & Deflect?",
-              );
+              logProjectile("boltSideDefendWrongDirection", {
+                target_no: target.number,
+                owner_type: bolt.ownerType,
+                owner: bolt.owner,
+                bolt_dir: bolt.direction,
+                atk_position: "side",
+                result: "but they defended in the wrong direction, so take damage & deflect",
+              });
               app.handleProjectileDamage(bolt, ownerType, "player", target);
               app.setDeflection(target, "attacked", false);
               deflected = true;
@@ -412,14 +441,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
             }
           }
           if (takeDamage) {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the side. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but theyre not defending or attacking or slashing or dodging. Damage, Deflect?",
-            );
+            logProjectile("boltSideHitUnprotected", {
+              target_no: target.number,
+              owner_type: bolt.ownerType,
+              owner: bolt.owner,
+              bolt_dir: bolt.direction,
+              atk_position: "side",
+              result: "not attacking or defending. failed charge roll w/ guardBreak crit, so take damage & deflect",
+            });
 
             app.handleProjectileDamage(bolt, ownerType, "player", target);
             app.setDeflection(target, "attacked", false);
@@ -444,14 +473,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
           weapon === "unarmed"
         ) {
-          console.log(
-            "bolt hit plyr",
-            target.number,
-            "from the front. by",
-            bolt.ownerType,
-            bolt.owner,
-            "but they attacked successfully but unarmed. Damage, Deflect?",
-          );
+          logProjectile("boltFrontAttackUnarmed", {
+            target_no: target.number,
+            owner_type: bolt.ownerType,
+            owner: bolt.owner,
+            bolt_dir: bolt.direction,
+            atk_position: "front",
+            result: "but they were unarmed, so take damage & deflect)",
+          });
           app.handleProjectileDamage(bolt, ownerType, "player", target);
           app.setDeflection(target, "attacked", false);
           deflected = true;
@@ -474,14 +503,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                 target.attacking.count < target.attacking.peakCount + target.attacking.effectivenessAllowance)) &&
             weapon !== "unarmed"
           ) {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the front. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they attacked successfully. pushback target?",
-            );
+            logProjectile("boltFrontAttackSuccess", {
+              target_no: target.number,
+              owner_type: bolt.ownerType,
+              owner: bolt.owner,
+              bolt_dir: bolt.direction,
+              atk_position: "front",
+              result: "and they attacked it successfully, pushback?",
+            });
             if (!target.popups.find((x) => x.msg === "boltKilled")) {
               target.popups.push({
                 state: false,
@@ -495,7 +524,13 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
             }
             // HIGHER BOLT CHARGE AND LOWER PUSBACK INCREASES CHANCE OF PUSHBACK
             if (app.rnJesus(1, target.crits.pushBack - bolt.charge) >= 1) {
-              console.log("and was pushed back due to bolt charge");
+              logProjectile("boltPushBack", {
+                target_no: target.number,
+                owner_type: bolt.ownerType,
+                owner: bolt.owner,
+                bolt_dir: bolt.direction,
+                result: "pushBack roll: rnJesus(1, target.crits.pushBack - bolt.charge)",
+              });
               app.pushBack(target, app.getOppositeDirection(target.direction));
             }
             target.success.attackSuccess = {
@@ -518,14 +553,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
             target.attacking.count > target.attacking.peakCount + target.attacking.effectivenessAllowance) &&
           weapon !== "unarmed"
         ) {
-          console.log(
-            "bolt hit plyr",
-            target.number,
-            "from the front. by",
-            bolt.ownerType,
-            bolt.owner,
-            "but they attacked unsuccessfully due to attack direction. Damage, Deflect?",
-          );
+          logProjectile("boltFrontAttackFailedDirection", {
+            target_no: target.number,
+            owner_type: bolt.ownerType,
+            owner: bolt.owner,
+            bolt_dir: bolt.direction,
+            atk_position: "front",
+            result: "but attacked in the wrong direction, so take damage & deflect",
+          });
           app.handleProjectileDamage(bolt, ownerType, "player", target);
           app.setDeflection(target, "attacked", false);
           deflected = true;
@@ -553,14 +588,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                 // PARRIED & OVERCOME BOLT CHARGE
 
                 if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
-                  console.log(
-                    "bolt hit plyr",
-                    target.number,
-                    "from the front. by",
-                    bolt.ownerType,
-                    bolt.owner,
-                    "but they parried successfully unarmed overcoming bolt charge.",
-                  );
+                  logProjectile("boltFrontParryUnarmedSuccess", {
+                    target_no: target.number,
+                    owner_type: bolt.ownerType,
+                    owner: bolt.owner,
+                    bolt_dir: bolt.direction,
+                    atk_position: "front",
+                    result: "guardBreak roll success: rnJesus(1, bolt.charge - target.crits.guardBreak)",
+                  });
                   // target.stamina.current += app.staminaCostRef.defend.peak;
                   target.success.defendSuccess = {
                     state: true,
@@ -592,14 +627,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                 }
                 // SUCCESSFUL PARRY BUT OVERCOME BY BOLT CHARGE. TAKE DAMAGE
                 else {
-                  console.log(
-                    "bolt hit plyr",
-                    target.number,
-                    "from the front. by",
-                    bolt.ownerType,
-                    bolt.owner,
-                    "but they peak defended successfully unarmed and overcome by bolt charge. Damage deflect?",
-                  );
+                  logProjectile("boltFrontParryUnarmedOverwhelmed", {
+                    target_no: target.number,
+                    owner_type: bolt.ownerType,
+                    owner: bolt.owner,
+                    bolt_dir: bolt.direction,
+                    atk_position: "front",
+                    result: "peak defended unarmed but they were overwhelmed by the bolt charge. Deflect & take damage",
+                  });
                   app.handleProjectileDamage(bolt, ownerType, "player", target);
                   app.setDeflection(target, "attacked", false);
                   deflected = true;
@@ -613,14 +648,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
               // UNARMED OFF PEAK DEFEND, TAKE DAMAGE
               if (target.defending.peak !== true && target.defending.decay.state === true && target.defending.decay.count > app.defendPeakAllowance) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they off-peak defended successfully but unarmed. Damage deflect?",
-                );
+                logProjectile("boltFrontDefendUnarmedOffPeak", {
+                  target_no: target.number,
+                  owner_type: bolt.ownerType,
+                  owner: bolt.owner,
+                  bolt_dir: bolt.direction,
+                  atk_position: "front",
+                  result: "defended unarmed off-peak, but off-peak is not effective for projectiles, so take damage & deflect",
+                });
                 app.handleProjectileDamage(bolt, ownerType, "player", target);
                 app.setDeflection(target, "attacked", false);
                 deflected = true;
@@ -639,14 +674,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                 target.defending.peak === true ||
                 (target.defending.decay.state === true && target.defending.decay.count < app.defendPeakAllowance)
               ) {
-                console.log(
-                  "bolt hit plyr",
-                  target.number,
-                  "from the front. by",
-                  bolt.ownerType,
-                  bolt.owner,
-                  "but they parried successfully armed. Pushback?",
-                );
+                logProjectile("boltFrontParryArmed", {
+                  target_no: target.number,
+                  owner_type: bolt.ownerType,
+                  owner: bolt.owner,
+                  bolt_dir: bolt.direction,
+                  atk_position: "front",
+                  result: "and they parried it armed on the peak, so no damage. Pushback?",
+                });
                 target.stamina.current += app.staminaCostRef.defend.peak;
                 target.success.defendSuccess = {
                   state: true,
@@ -671,7 +706,13 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
                   });
                 }
                 if (app.rnJesus(1, target.crits.pushBack + bolt.charge) === 1) {
-                  console.log("and was pushed back due to bolt charge");
+                  logProjectile("boltPushBack", {
+                    target_no: target.number,
+                    owner_type: bolt.ownerType,
+                    owner: bolt.owner,
+                    bolt_dir: bolt.direction,
+                    result: "pushBack roll: rnJesus(1, target.crits.pushBack + bolt.charge)",
+                  });
                   app.pushBack(target, app.getOppositeDirection(target.direction));
                 }
                 // FINISH
@@ -685,14 +726,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
               // IF BOLT CHARGE PERC IS OVER 90%, CHANCE TO DEFEND BREAK/TAKE DMG
               if (target.defending.peak !== true && target.defending.decay.state === true && target.defending.decay.count > app.defendPeakAllowance) {
                 if (app.rnJesus(1, bolt.charge - target.crits.guardBreak) <= 1) {
-                  console.log(
-                    "bolt hit plyr",
-                    target.number,
-                    "from the front. by",
-                    bolt.ownerType,
-                    bolt.owner,
-                    "but they off-peak defended successfully armed overcoming bolt charge. Pushback?",
-                  );
+                  logProjectile("boltFrontDefendArmedOffPeakSuccess", {
+                    target_no: target.number,
+                    owner_type: bolt.ownerType,
+                    owner: bolt.owner,
+                    bolt_dir: bolt.direction,
+                    atk_position: "front",
+                    result: "guardBreak roll success: rnJesus(1, bolt.charge - target.crits.guardBreak)",
+                  });
                   target.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -727,14 +768,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
                 // TAKE DAMAGE/BE INJURED
                 else {
-                  console.log(
-                    "bolt hit plyr",
-                    target.number,
-                    "from the front. by",
-                    bolt.ownerType,
-                    bolt.owner,
-                    "but they defended overcome by bolt charge. Damage, Deflect?",
-                  );
+                  logProjectile("boltFrontDefendArmedOffPeakFail", {
+                    target_no: target.number,
+                    owner_type: bolt.ownerType,
+                    owner: bolt.owner,
+                    bolt_dir: bolt.direction,
+                    atk_position: "front",
+                    result: "guardBreak roll failed: rnJesus(1, bolt.charge - target.crits.guardBreak)",
+                  });
                   app.handleProjectileDamage(bolt, ownerType, "player", target);
                   app.setDeflection(target, "attacked", false);
                   deflected = true;
@@ -750,14 +791,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
           // TAKE DAMAGE/BE INJURED
           else {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the front. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but they defended unsuccessfully due to action direction . Damage, Deflect?",
-            );
+            logProjectile("boltFrontDefendWrongDirection", {
+              target_no: target.number,
+              owner_type: bolt.ownerType,
+              owner: bolt.owner,
+              bolt_dir: bolt.direction,
+              atk_position: "front",
+              result: "but they defended in the wrong direction, so take damage & deflect",
+            });
             app.handleProjectileDamage(bolt, ownerType, "player", target);
             app.setDeflection(target, "attacked", false);
             deflected = true;
@@ -782,14 +823,14 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
             }
           }
           if (takeDamage) {
-            console.log(
-              "bolt hit plyr",
-              target.number,
-              "from the front. by",
-              bolt.ownerType,
-              bolt.owner,
-              "but arent defending or attacking or are thrusting. Damage Deflect?",
-            );
+            logProjectile("boltFrontHitUnprotected", {
+              target_no: target.number,
+              owner_type: bolt.ownerType,
+              owner: bolt.owner,
+              bolt_dir: bolt.direction,
+              atk_position: "front",
+              result: "not attacking or defending. fail charge roll w/ guardBreak crits, so take damage & deflect",
+            });
             app.handleProjectileDamage(bolt, ownerType, "player", target);
             app.setDeflection(target, "attacked", false);
             deflected = true;
@@ -804,10 +845,20 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
       }
     }
   } else {
-    console.log("non-player target", target);
+    logProjectile("projectileNonPlayerTarget", {
+      target_type: targetType,
+      target: target,
+      owner_type: bolt.ownerType,
+      owner: bolt.owner,
+    });
 
     let cell = app.gridInfo.find((x) => x[targetType].id === target.id);
-    console.log("bolt hit ", targetType, "at", target.number, " by", bolt.ownerType, bolt.owner, ".");
+    logProjectile("boltHitNonPlayer", {
+      target_type: targetType,
+      target_no: target.number,
+      owner_type: bolt.ownerType,
+      owner: bolt.owner,
+    });
 
     boltOwner = app.gridInfo.find(
       (x) => x[bolt.ownerType].state === true && x[bolt.ownerType].trap?.state === true && x[bolt.ownerType].id === bolt.owner,
@@ -817,30 +868,34 @@ export function projectileAttackParse(app, bolt, ownerType, targetType, target) 
 
       if (boltOwner.trap.direction !== bolt.direction && boltOwner.trap.direction !== app.getOppositeDirection(bolt.direction)) {
         if (boltOwner.acting.direction === app.getOppositeDirection(bolt.direction)) {
-          console.log(targetType, "hit by bolt from the side by", bolt.ownerType, bolt.owner, "but they attacked it successfully.");
+          logProjectile("boltSideAttackTrapSuccess", {
+            target_type: targetType,
+            owner_type: bolt.ownerType,
+            owner: bolt.owner,
+          });
         } else {
-          console.log(
-            targetType,
-            "hit by bolt from the side by",
-            bolt.ownerType,
-            bolt.owner,
-            "but they attacked it unsuccessfully. Attack cell contents.",
-          );
+          logProjectile("boltSideAttackTrapFail", {
+            target_type: targetType,
+            owner_type: bolt.ownerType,
+            owner: bolt.owner,
+          });
           app.attackCellContents("bolt", bolt.ownerType, cell[targetType], cell, undefined, undefined, bolt);
         }
       }
       // FRONTAL ATTACK
       if (bolt.direction === app.getOppositeDirection(target.direction)) {
         if (boltOwner.acting.direction === app.getOppositeDirection(bolt.direction) || boltOwner.acting.direction === bolt.direction) {
-          console.log(targetType, "hit by bolt from the front by", bolt.ownerType, bolt.owner, "but they attacked it successfully.");
+          logProjectile("boltFrontAttackTrapSuccess", {
+            target_type: targetType,
+            owner_type: bolt.ownerType,
+            owner: bolt.owner,
+          });
         } else {
-          console.log(
-            targetType,
-            "hit by bolt from the front by",
-            bolt.ownerType,
-            bolt.owner,
-            "but they attacked it unsuccessfully. Attack cell contents.",
-          );
+          logProjectile("boltFrontAttackTrapFail", {
+            target_type: targetType,
+            owner_type: bolt.ownerType,
+            owner: bolt.owner,
+          });
           app.attackCellContents("bolt", bolt.ownerType, cell[targetType], cell, undefined, undefined, bolt);
         }
       }

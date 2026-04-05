@@ -70,12 +70,16 @@ export function aiAct(app, plyr) {
       }
     };
     const handleJumpInput = (dir) => {
+      if (currentInstruction.count === 0) {
+        logAct("jumpAttempt", { dir: dir });
+      }
       currentInstruction.limit = Math.max(6, currentInstruction.limit || 0);
       app.keyPressed[plyr.number - 1].strafe = true;
       app.keyPressed[plyr.number - 1][dir] = true;
       app.players[plyr.number - 1].turnCheckerDirection = dir;
 
       if (plyr.jumping.state === true) {
+        logAct("jumpStarted", { dir: dir });
         plyr.ai.currentInstruction++;
         return;
       }
@@ -83,6 +87,7 @@ export function aiAct(app, plyr) {
       if (currentInstruction.count < currentInstruction.limit) {
         currentInstruction.count++;
       } else {
+        logAct("jumpNoStartReset", { dir: dir, limit: currentInstruction.limit });
         plyr.ai.currentInstruction++;
         plyr.ai.resetInstructions = true;
       }

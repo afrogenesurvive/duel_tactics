@@ -1,3 +1,12 @@
+// app.globalLogger(
+//   "player.movement",
+//   "outOfStamina",
+//   {
+//     plyr_no: player.number,
+//   },
+//   { fn: "checkMoveInput", line: 74 },
+// );
+
 export function globalLogger(app, type, message, data, origin) {
   // type is a loggingSettings path, e.g. "player.movement"
   if (!app || !app.loggingSettings || !type) {

@@ -719,9 +719,15 @@ export function applyConstructorDefaults(app) {
         projectile: false,
         charge: false,
         feint: false,
+        count: false,
       },
-      defending: false,
+      defending: {
+        peak: false,
+        off_peak: false,
+        count: false,
+      },
       dodging: false,
+      flanking: false,
       pushing: false,
       pulling: false,
       itemUse: false,
@@ -751,12 +757,12 @@ export function applyConstructorDefaults(app) {
       pushBack: false,
       trapTriggers: false,
       attacking: false,
-      destruction: false,
+      attacked: false,
     },
     barrier: {
       trapTriggers: false,
       attacking: false,
-      destruction: false,
+      attacked: false,
     },
     trap: {
       trigger: false,
@@ -766,6 +772,14 @@ export function applyConstructorDefaults(app) {
     grid: {
       init: false,
       process: false,
+    },
+    items: {
+      spawn: false,
+      pickup: false,
+      discard: false,
+      use: false,
+      switch: false,
+      attacked: false,
     },
   };
 

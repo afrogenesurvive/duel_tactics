@@ -4,6 +4,7 @@ export function aiEvaluate(app, plyr) {
   const logEval = (message, data = {}) => {
     app.globalLogger("ai.evaluate", message, { plyr_no: plyr.number, ...data }, { fn: "aiEvaluate" });
   };
+
   const getCell = (x, y) => app.gridInfo.find((cell) => cell.number.x === x && cell.number.y === y);
   const checkJumpDestination = () => {
     const currentInstruction = plyr.ai.instructions?.[plyr.ai.currentInstruction];

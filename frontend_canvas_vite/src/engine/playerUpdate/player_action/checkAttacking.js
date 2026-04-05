@@ -3,14 +3,29 @@
 export function checkAttacking(app, player) {
   // console.log("checkAttacking");
 
+  const getAttackLogType = () => {
+    const isProjectile = player.currentWeapon.type === "crossbow" && player.attacking.blunt !== true;
+    return isProjectile ? "player.attacking.projectile" : "player.attacking.melee";
+  };
+  const logAttack = (message, data = {}) => {
+    app.globalLogger(getAttackLogType(), message, data, { fn: "checkAttacking" });
+  };
+  const logCharge = (message, data = {}) => {
+    app.globalLogger("player.attacking.charge", message, data, { fn: "checkAttacking" });
+  };
+  const logFeint = (message, data = {}) => {
+    app.globalLogger("player.attacking.feint", message, data, { fn: "checkAttacking" });
+  };
+  const logStamina = (message, data = {}) => {
+    app.globalLogger("player.stamina", message, data, { fn: "checkAttacking" });
+  };
+  const logCount = (message, data = {}) => {
+    app.globalLogger("player.attacking.count", message, data, { fn: "checkAttacking" });
+  };
+
   if (player.attacking.state === true) {
     let directionalActionResult = app.checkSetAttackDefendDirectionalInput("windup", "attacking", player);
     player = directionalActionResult.player;
-    // console.log(`checkAttacking: directionalActionResult player attacking`, {
-    //   state: player.attacking.state,
-    //   count: player.attacking.count,
-    //   limit: player.attacking.limit,
-    // });
 
     if (player.attacking.state === true) {
       let attackPeak;
@@ -24,6 +39,11 @@ export function checkAttacking(app, player) {
       if (player.attacking.blunt === true) {
         blunt = "blunt";
         // console.log("blunt attack");
+        logAttack("bluntAttack", {
+          plyr_no: player.number,
+          blunt: player.attacking.blunt,
+          time: app.time,
+        });
       }
 
       if (player.attacking.directionType === "") {
@@ -47,30 +67,45 @@ export function checkAttacking(app, player) {
 
           player.attacking.peak = false;
           player.attacking.chargePeak = false;
-          // console.log(`Stepping attack count ${player.attacking.count}`);
+          logCount("attackCountStep", {
+            plyr_no: player.number,
+            count: player.attacking.count,
+            peak_count: player.attacking.peakCount,
+            limit: player.attacking.limit,
+          });
         }
 
         // COUNT HAS REACHED PEAK BUT STILL HELD AND LESS THAN MAX CHARGE
         if (player.attacking.count === player.attacking.peakCount) {
           // console.log(`Attack count peak ${player.attacking.peakCount}`);
-
+          logCount("attackPeakReached", {
+            plyr_no: player.number,
+            count: player.attacking.count,
+            peak_count: player.attacking.peakCount,
+            limit: player.attacking.limit,
+          });
           if (player.attacking.chargeCount < player.attacking.maxCharge) {
             player.attacking.chargeCount++;
-            // console.log(`Charing attack`, {
-            //   count: player.attacking.chargeCount,
-            //   limit: player.attacking.maxCharge,
-            //   player_srh: player.strafeReleaseHook,
-            //   strafe_key: app.keyPressed[player.number - 1].strafe,
-            // });
+            logCount("attackChargeStep", {
+              plyr_no: player.number,
+              count: player.attacking.chargeCount,
+              limit: player.attacking.maxCharge,
+              player_srh: player.strafeReleaseHook,
+              strafe_key: app.keyPressed[player.number - 1].strafe,
+            });
+
             if (player.attacking.chargeCount > 0 && player.strafeReleaseHook === true) {
               app.attackChargeCancel(player);
             }
           }
           if (player.attacking.chargeCount === player.attacking.maxCharge) {
-            // console.log("holding charge", {
-            //   player_srh: player.strafeReleaseHook,
-            //   strafe_key: app.keyPressed[player.number - 1].strafe,
-            // });
+            logCharge("attackMaxChargeReached", {
+              plyr_no: player.number,
+              count: player.attacking.chargeCount,
+              limit: player.attacking.maxCharge,
+              player_srh: player.strafeReleaseHook,
+              strafe_key: app.keyPressed[player.number - 1].strafe,
+            });
             if (player.strafeReleaseHook === true) {
               app.attackChargeCancel(player);
             }
@@ -281,7 +316,7 @@ export function checkAttacking(app, player) {
 
           let melee = true;
 
-          console.log(`Player Attack peak!`, {
+          logAttack("attackPeakExecute", {
             plyr_no: player.number,
             atk_count: player.attacking.count,
             // peak_count: player.attacking.peakCount,
@@ -318,7 +353,13 @@ export function checkAttacking(app, player) {
 
           // CREATE NEW PROJECTILE
           if (player.currentWeapon.type === "crossbow" && player.attacking.blunt !== true && player.items.ammo > 0) {
-            // console.log('firing crossbow');
+            
+            logAttack("crossbowFired", {
+              plyr_no: player.number,
+              atk_count: player.attacking.count,
+              charge: player.attacking.charge,
+              time: app.time,
+            });
             melee = false;
 
             let projectileResult = app.projectileCreator("player", player, "bolt");
@@ -370,6 +411,10 @@ export function checkAttacking(app, player) {
         else {
           player.attacking.count = attackPeak + 1;
           player.stamina.current = 0;
+          logStamina("outOfStamina", {
+            plyr_no: player.number,
+            action: "attacking",
+          });
           player.statusDisplay = {
             state: true,
             status: "Out of Stamina",
@@ -394,20 +439,12 @@ export function checkAttacking(app, player) {
         player.attacking.charge = 0;
         player.attacking.count++;
 
-        // console.log(`attack cooldown`, {
-        //   limit: player.attacking.limit,
-        //   count: player.attacking.count,
-        //   time: app.time,
-        // });
+        logCount("attackCooldownStep", {
+          plyr_no: player.number,
+          count: player.attacking.count,
+          limit: player.attacking.limit,
+        });
 
-        // let popup;
-        // let popupsToRemove = [
-        //   "noDirection3",
-        //   "northDirection",
-        //   "southDirection",
-        //   "eastDirection",
-        //   "westDirection",
-        // ];
         // for (const pop of popupsToRemove) {
         //   popup = player.popups.find((x) => x.msg === pop);
         //   if (popup) {
@@ -478,17 +515,17 @@ export function checkAttacking(app, player) {
         }
         player.actionDirectionAnimationArray = [];
 
-        console.log(`Player Attack end!`, {
+        logAttack("attackEnd", {
           plyr_no: player.number,
           atk_count: player.attacking.count,
-          // peak_count: player.attacking.peakCount,
-          // limit: player.attacking.limit,
-          // blunt: player.attacking.blunt,
-          time: app.time,
+          limit: player.attacking.limit,
         });
       }
     } else {
-      console.log("no longer attacking. probably feinted");
+      logFeint("attackingEndedEarly", {
+        plyr_no: player.number,
+        result: "no longer attacking; likely feinted",
+      });
     }
   }
 

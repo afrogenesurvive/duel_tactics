@@ -12,12 +12,7 @@ export function aiDecide(app, aiPlayer) {
     if (!cell) {
       return true;
     }
-    return (
-      cell.levelData.split("_")[1] !== "*" ||
-      cell.terrain.type === "deep" ||
-      cell.terrain.type === "hazard" ||
-      cell.void.state === true
-    );
+    return cell.levelData.split("_")[1] !== "*" || cell.terrain.type === "deep" || cell.terrain.type === "hazard" || cell.void.state === true;
   };
   const isJumpGapCell = (cell) => {
     if (!cell) {
@@ -60,6 +55,12 @@ export function aiDecide(app, aiPlayer) {
         continue;
       }
 
+      logDecide("jumpGapCandidate", {
+        gap: cell.number,
+        from: fromCell.number,
+        to: toCell.number,
+        dir: candidate.dir,
+      });
       return true;
     }
 
@@ -118,7 +119,11 @@ export function aiDecide(app, aiPlayer) {
       prevTargetPos.x !== currentTargetPos.x ||
       (prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true)
     ) {
-      // console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
+      logDecide("pursuitTargetMoved", {
+        plyr_no: aiPlayer.number,
+        prevTargetPos: prevTargetPos,
+        currentTargetPos: currentTargetPos,
+      });
 
       aiPlayer.ai.targetPlayer.currentPosition = {
         x: targetPlayer.currentPosition.cell.number.x,
