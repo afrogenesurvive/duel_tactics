@@ -1,4 +1,11 @@
 export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, breakPulledPushed, keyPressedDirection, nextPosition) {
+  const logMove = (message, data = {}, origin) => {
+    app.globalLogger("player.movement", message, data, origin || { fn: "checkMoveInput" });
+  };
+  const logMoveCount = (message, data = {}, origin) => {
+    app.globalLogger("player.movement_count", message, data, origin || { fn: "checkMoveInput" });
+  };
+
   // CONFIRM MOVE KEYPRESS!!
   if (
     app.keyPressed[player.number - 1].north === true ||

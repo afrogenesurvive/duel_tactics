@@ -1,4 +1,11 @@
 export function checkMoveCancel(app, player, nextPosition) {
+  const logMove = (message, data = {}) => {
+    app.globalLogger("player.movement", message, data, { fn: "checkMoveCancel" });
+  };
+  const logMoveCount = (message, data = {}) => {
+    app.globalLogger("player.movement_count", message, data, { fn: "checkMoveCancel" });
+  };
+
   if (player.moving.state === true) {
     // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
     let canCancelMove = false;
@@ -97,6 +104,16 @@ export function checkMoveCancel(app, player, nextPosition) {
               returningTo: {},
               returningFrom: {},
             };
+
+            logMoveCount("moveCancelStart", {
+              plyr_no: player.number,
+              old_direction: oldDirection,
+              new_direction: newDirection,
+              step: player.moving.step,
+              move_speed: player.speed.move,
+              jumping: player.jumping.state,
+              strafing: player.strafing.state,
+            });
 
             if (player.strafing.state !== true) {
               player.strafing.state = true;

@@ -712,6 +712,7 @@ export function applyConstructorDefaults(app) {
     showOrigin: false,
     player: {
       movement: false,
+      movement_count: false,
       turning: false,
       jumping: false,
       attacking: {
