@@ -727,14 +727,54 @@ export function applyConstructorDefaults(app) {
         off_peak: false,
         count: false,
       },
-      dodging: false,
-      flanking: false,
-      pushing: false,
-      pulling: false,
-      itemUse: false,
-      pushBack: false,
-      deflection: false,
-      stamina: false,
+      dodging: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      flanking: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      pushing: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      pulling: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      itemUse: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      pushBack: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      deflection: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      stamina: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
     },
     ai: {
       spawn: true,
@@ -781,6 +821,11 @@ export function applyConstructorDefaults(app) {
       use: false,
       switch: false,
       attacked: false,
+    },
+    directional_animations: {
+      inputs: false,
+      execution: false, // phases etc
+      count: false,
     },
   };
 

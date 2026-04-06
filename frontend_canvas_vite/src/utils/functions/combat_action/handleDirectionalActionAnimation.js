@@ -4,6 +4,13 @@ export function handleDirectionalActionAnimation(app, ownerType, action, phase, 
   // phase:
   // pullback, release
 
+  const logExecution = (message, data = {}) => {
+    app.globalLogger("directional_animations.execution", message, data, { fn: "handleDirectionalActionAnimation" });
+  };
+  const logCount = (message, data = {}) => {
+    app.globalLogger("directional_animations.count", message, data, { fn: "handleDirectionalActionAnimation" });
+  };
+
   let id;
   let arcAngle = 0;
   let startAngle = 0;
@@ -47,6 +54,13 @@ export function handleDirectionalActionAnimation(app, ownerType, action, phase, 
     if (countLimit < 8) {
       countLimit = 8;
     }
+    logCount("countLimit", {
+      ownerType: ownerType,
+      action: action,
+      phase: phase,
+      xCount: xCount,
+      countLimit: countLimit,
+    });
   }
 
   if (
@@ -93,6 +107,22 @@ export function handleDirectionalActionAnimation(app, ownerType, action, phase, 
         points: [],
         locationCell: ownerlocationCell,
       });
+      logExecution("createAnimation", {
+        id: id,
+        ownerType: ownerType,
+        ownerNumber: ownerType === "player" ? owner.number : owner.id,
+        action: action,
+        actionDirection: actionDirection,
+        directionType: directionType,
+        phase: phase,
+        face: face,
+        startAngle: startAngle,
+        arcAngle: arcAngle,
+        direction: direction,
+        countLimit: countLimit,
+        color: color,
+        locationCell: ownerlocationCell,
+      });
     } else {
       id = app.obstacleBarrierActionAnimationArray.length + 1;
 
@@ -122,6 +152,22 @@ export function handleDirectionalActionAnimation(app, ownerType, action, phase, 
           limit: delay,
         },
         points: [],
+        locationCell: ownerlocationCell,
+      });
+      logExecution("createAnimation", {
+        id: id,
+        ownerType: ownerType,
+        ownerNumber: ownerType === "player" ? owner.number : owner.id,
+        action: action,
+        actionDirection: actionDirection,
+        directionType: directionType,
+        phase: phase,
+        face: face,
+        startAngle: startAngle,
+        arcAngle: arcAngle,
+        direction: direction,
+        countLimit: countLimit,
+        color: color,
         locationCell: ownerlocationCell,
       });
     }
@@ -368,6 +414,22 @@ export function handleDirectionalActionAnimation(app, ownerType, action, phase, 
         points: [],
         locationCell: ownerlocationCell,
       });
+      logExecution("createAnimation", {
+        id: id,
+        ownerType: ownerType,
+        ownerNumber: ownerType === "player" ? owner.number : owner.id,
+        action: action,
+        actionDirection: actionDirection,
+        directionType: directionType,
+        phase: phase,
+        face: face,
+        startAngle: startAngle,
+        arcAngle: arcAngle,
+        direction: direction,
+        countLimit: countLimit,
+        color: color,
+        locationCell: ownerlocationCell,
+      });
     } else {
       id = app.obstacleBarrierActionAnimationArray.length + 1;
 
@@ -397,6 +459,22 @@ export function handleDirectionalActionAnimation(app, ownerType, action, phase, 
           limit: delay,
         },
         points: [],
+        locationCell: ownerlocationCell,
+      });
+      logExecution("createAnimation", {
+        id: id,
+        ownerType: ownerType,
+        ownerNumber: ownerType === "player" ? owner.number : owner.id,
+        action: action,
+        actionDirection: actionDirection,
+        directionType: directionType,
+        phase: phase,
+        face: face,
+        startAngle: startAngle,
+        arcAngle: arcAngle,
+        direction: direction,
+        countLimit: countLimit,
+        color: color,
         locationCell: ownerlocationCell,
       });
     }

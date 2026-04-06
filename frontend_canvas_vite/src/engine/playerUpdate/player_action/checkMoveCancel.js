@@ -105,7 +105,7 @@ export function checkMoveCancel(app, player, nextPosition) {
               returningFrom: {},
             };
 
-            logMoveCount("moveCancelStart", {
+            logMove("moveCancelStart", {
               plyr_no: player.number,
               old_direction: oldDirection,
               new_direction: newDirection,

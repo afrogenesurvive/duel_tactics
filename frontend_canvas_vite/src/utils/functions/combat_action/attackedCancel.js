@@ -1,5 +1,28 @@
 export function attackedCancel(app, player) {
-  // console.log('player', player.number,' attacked. Cancel action!',player.action);
+  const logAttack = (message, data = {}) => {
+    app.globalLogger("player.attacking.feint", message, data, { fn: "attackedCancel" });
+  };
+  const logDefend = (message, data = {}) => {
+    app.globalLogger("player.defending.off_peak", message, data, { fn: "attackedCancel" });
+  };
+  const logDodge = (message, data = {}) => {
+    app.globalLogger("player.dodging.feint", message, data, { fn: "attackedCancel" });
+  };
+  const logFlank = (message, data = {}) => {
+    app.globalLogger("player.flanking.feint", message, data, { fn: "attackedCancel" });
+  };
+  const logJump = (message, data = {}) => {
+    app.globalLogger("player.jumping.feint", message, data, { fn: "attackedCancel" });
+  };
+  const logMove = (message, data = {}) => {
+    app.globalLogger("player.movement", message, data, { fn: "attackedCancel" });
+  };
+  const logPush = (message, data = {}) => {
+    app.globalLogger("player.pushing.feint", message, data, { fn: "attackedCancel" });
+  };
+  const logPull = (message, data = {}) => {
+    app.globalLogger("player.pulling.feint", message, data, { fn: "attackedCancel" });
+  };
 
   if (player.elasticCounter.state === true && player.elasticCounter.type !== "deflected") {
     player.elasticCounter.state = false;
@@ -9,6 +32,13 @@ export function attackedCancel(app, player) {
 
   switch (player.action) {
     case "attacking":
+      logAttack("cancelOnAttacked", {
+        plyr_no: player.number,
+        action: player.action,
+        count: player.attacking.count,
+        peakCount: player.attacking.peakCount,
+        chargeCount: player.attacking.chargeCount,
+      });
       if (player.success.deflected.state !== true) {
         player.action = "idle";
       }
@@ -65,6 +95,12 @@ export function attackedCancel(app, player) {
 
       break;
     case "defending":
+      logDefend("cancelOnAttacked", {
+        plyr_no: player.number,
+        action: player.action,
+        count: player.defending.count,
+        peakCount: player.defending.peakCount,
+      });
       if (player.success.deflected.state !== true) {
         player.action = "idle";
       }
@@ -112,6 +148,10 @@ export function attackedCancel(app, player) {
 
       break;
     case "strafe moving":
+      logMove("cancelOnAttacked", {
+        plyr_no: player.number,
+        action: player.action,
+      });
       if (player.success.deflected.state !== true) {
         player.action = "idle";
       }
@@ -145,6 +185,11 @@ export function attackedCancel(app, player) {
 
       break;
     case "dodging":
+      logDodge("cancelOnAttacked", {
+        plyr_no: player.number,
+        action: player.action,
+        count: player.dodging.count,
+      });
       if (player.success.deflected.state !== true) {
         player.action = "idle";
       }
@@ -185,6 +230,10 @@ export function attackedCancel(app, player) {
 
       break;
     case "flanking":
+      logFlank("cancelOnAttacked", {
+        plyr_no: player.number,
+        action: player.action,
+      });
       if (player.success.deflected.state !== true) {
         player.action = "idle";
       }
@@ -223,6 +272,10 @@ export function attackedCancel(app, player) {
 
       break;
     case "jumping":
+      logJump("cancelOnAttacked", {
+        plyr_no: player.number,
+        action: player.action,
+      });
       if (player.success.deflected.state !== true) {
         player.action = "idle";
       }
@@ -259,6 +312,12 @@ export function attackedCancel(app, player) {
   }
 
   if (player.prePush.state === true) {
+    logPush("prePushResetOnAttacked", {
+      plyr_no: player.number,
+      action: player.action,
+      count: player.prePush.count,
+      limit: player.prePush.limit,
+    });
     player.prePush = {
       state: false,
       count: 0,
@@ -269,6 +328,12 @@ export function attackedCancel(app, player) {
     };
   }
   if (player.prePull.state === true) {
+    logPull("prePullResetOnAttacked", {
+      plyr_no: player.number,
+      action: player.action,
+      count: player.prePull.count,
+      limit: player.prePull.limit,
+    });
     player.prePull = {
       state: false,
       count: 0,

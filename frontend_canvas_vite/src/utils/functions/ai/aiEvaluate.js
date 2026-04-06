@@ -1093,6 +1093,7 @@ export function aiEvaluate(app, plyr) {
               ) {
                 plyr.ai.currentInstruction = 0;
                 // console.log('alternative target in range. Switching');
+                logEval("alternativeTargetInRange. Switch", { weapon_type: "crossbow", target: plyr2.number });
 
                 if (!plyr.popups.find((x) => x.msg === "alarmed")) {
                   plyr.popups.push({
@@ -1156,6 +1157,7 @@ export function aiEvaluate(app, plyr) {
               ) {
                 plyr.ai.currentInstruction = 0;
                 // console.log('alternative target in range. Switching');
+                logEval("alternativeTargetInRange. Switch", { weapon_type: "crossbow", target: plyr2.number });
 
                 if (!plyr.popups.find((x) => x.msg === "alarmed")) {
                   plyr.popups.push({
