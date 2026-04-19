@@ -17,6 +17,10 @@
                     - b) the 2nd player starts defending the moment it arrives in the adjacent tile
             
             - Can a flanking 1st player leave the cell the 2nd player is targeting after moving the cell next to their opponent if they start flanking the moment their 1st move ends and assuming the 2nd player starts their attack the moment the 1st player made the 1st (pre-flanking approach movement)
+            - If the first player starts moving into the cell between and returns to their original cell by move cancels at the latest possible moment and if
+                - a) 2nd player starts their attack as soon as the 1st starts their move
+                - b) 2nd player starts their attack a few counts/frames before the 1st player starts moving
+            - Will the 1st player be able evade the 2nd player's attack
 
 
     - Is there any likely engagement with 2 tiles between players

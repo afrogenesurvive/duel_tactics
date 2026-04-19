@@ -1,3 +1,5 @@
+import { MoveConstants } from "./moveConstants";
+
 export const playerDataArray = [
   {
     number: 1,
@@ -92,11 +94,7 @@ export const playerDataArray = [
         y: 0,
       },
     },
-    newMoveDelay: {
-      state: false,
-      count: 0,
-      limit: 15,
-    },
+    newMoveDelay: MoveConstants.base.newMoveDelay,
     strafing: {
       state: false,
       direction: "",
@@ -172,6 +170,28 @@ export const playerDataArray = [
       checking: false,
       state: false,
     },
+    dashing: {
+      state: false,
+      origin: {},
+      move_step_count_1: 0,
+      cell_1: {
+        x: null,
+        y: null,
+        occupied: false,
+        occupant_id: {},
+      },
+      cell_1_arrived: false,
+      move_step_count_2: 0,
+      cell_2: {
+        x: null,
+        y: null,
+        occupied: false,
+        occupant_id: {},
+      },
+      cell_2_arrived: false,
+      original_move_speed: null,
+      dash_move_speed: undefined,
+    },
     success: {
       attackSuccess: {
         state: false,
@@ -241,10 +261,7 @@ export const playerDataArray = [
     },
     respawn: false,
     points: 0,
-    speed: {
-      move: 0.1,
-      range: [0.05, 0.1, 0.125, 0.2],
-    },
+    speed: MoveConstants.base.speed,
     terrainMoveSpeed: {
       state: false,
       speed: 0,
@@ -585,7 +602,7 @@ export const playerDataArray = [
       limit: 5.1,
     },
     turnCheckerDirection: "",
-    action: "idle",
+    action: "idle", //
     moving: {
       state: false,
       step: 0,
@@ -605,11 +622,7 @@ export const playerDataArray = [
         y: 0,
       },
     },
-    newMoveDelay: {
-      state: false,
-      count: 0,
-      limit: 15,
-    },
+    newMoveDelay: MoveConstants.base.newMoveDelay,
     strafing: {
       state: false,
       direction: "",
@@ -685,6 +698,28 @@ export const playerDataArray = [
       checking: false,
       state: false,
     },
+    dashing: {
+      state: false,
+      origin: {},
+      move_step_count_1: 0,
+      cell_1: {
+        x: null,
+        y: null,
+        occupied: false,
+        occupant_id: {},
+      },
+      cell_1_arrived: false,
+      move_step_count_2: 0,
+      cell_2: {
+        x: null,
+        y: null,
+        occupied: false,
+        occupant_id: {},
+      },
+      cell_2_arrived: false,
+      original_move_speed: null,
+      dash_move_speed: undefined,
+    },
     success: {
       attackSuccess: {
         state: false,
@@ -754,10 +789,7 @@ export const playerDataArray = [
     },
     respawn: false,
     points: 0,
-    speed: {
-      move: 0.1,
-      range: [0.05, 0.1, 0.125, 0.2],
-    },
+    speed: MoveConstants.base.speed,
     terrainMoveSpeed: {
       state: false,
       speed: 0,

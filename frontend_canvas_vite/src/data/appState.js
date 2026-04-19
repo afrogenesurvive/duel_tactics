@@ -786,6 +786,7 @@ export function applyConstructorDefaults(app) {
       evaluate: false,
       decide: false,
       act: false,
+      instructions: false,
     },
     camera: {
       mode: false,

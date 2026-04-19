@@ -308,6 +308,61 @@ export function attackedCancel(app, player) {
       }
 
       break;
+    case "dashing":
+      logJump("cancelOnAttacked", {
+        plyr_no: player.number,
+        action: player.action,
+      });
+      if (player.success.deflected.state !== true) {
+        player.action = "idle";
+      }
+      player.idleAnim = {
+        state: false,
+        count: 0,
+        limit: 4,
+      };
+      player.dashing = {
+        state: false,
+        origin: {},
+        move_step_count_1: 0,
+        cell_1: {
+          x: null,
+          y: null,
+          occupied: false,
+          occupant_id: {},
+        },
+        cell_1_arrived: false,
+        move_step_count_2: 0,
+        cell_2: {
+          x: null,
+          y: null,
+          occupied: false,
+          occupant_id: {},
+        },
+        cell_2_arrived: false,
+        original_move_speed: null,
+        dash_move_speed: undefined,
+      };
+      app.players[player.number - 1].statusDisplay = {
+        state: true,
+        status: "dashing break!",
+        count: 1,
+        limit: app.players[player.number - 1].statusDisplay.limit,
+      };
+
+      if (!player.popups.find((x) => x.msg === "attackCancelled")) {
+        player.popups.push({
+          state: false,
+          count: 0,
+          limit: 30,
+          type: "",
+          position: "",
+          msg: "attackCancelled",
+          img: "",
+        });
+      }
+
+      break;
     default:
   }
 

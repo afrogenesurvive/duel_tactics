@@ -5,8 +5,22 @@ export function aiDecide(app, aiPlayer) {
 
   let getPath = false;
   const logDecide = (message, data = {}) => {
-    app.globalLogger("ai.decide", message, { plyr_no: aiPlayer.number, ...data }, { fn: "aiDecide" });
+    app.globalLogger(`ai.decide`, message, { ...data }, { fn: "aiDecide" });
   };
+
+  const logInstructions = (message, data = {}) => {
+    const instructionsString = data
+      .map((inst) => inst?.keyword)
+      .filter(Boolean)
+      .join("---");
+    app.globalLogger(
+      `ai.instructions`,
+      message,
+      { plyr_no: aiPlayer.number, mission: aiPlayer.ai.mission, instruction_list: instructionsString },
+      { fn: "aiDecide" },
+    );
+  };
+
   const getCell = (x, y) => app.gridInfo.find((cell) => cell.number.x === x && cell.number.y === y);
 
   const isUnsafeCell = (cell) => {
@@ -123,6 +137,8 @@ export function aiDecide(app, aiPlayer) {
     ) {
       logDecide("pursuitTargetMoved", {
         plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        target_no: targetPlayer?.number,
         prevTargetPos: prevTargetPos,
         currentTargetPos: currentTargetPos,
       });
@@ -140,19 +156,37 @@ export function aiDecide(app, aiPlayer) {
       aiPlayer.ai.targetAcquired = true;
     } else if (getPath !== true) {
       // console.log('target position unchanged! Skipping path update!');
+      logDecide("pursuitTargetUnchanged", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        target_no: targetPlayer?.number,
+        target_pos: currentTargetPos,
+        result: "Target position unchanged! Skipping path update.",
+      });
       getPath = false;
     }
   }
 
   let patrolDest;
   if (aiPlayer.ai.mission === "patrol") {
-    // console.log('patrolling',aiPlayer.ai.patrolling.checkin);
+    logDecide("patrolling...", {
+      plyr_no: aiPlayer.number,
+      plyr_mission: aiPlayer.ai.mission,
+    });
+
     if (targetPlayer) {
       if (
         prevTargetPos.x !== currentTargetPos.x ||
         (prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true)
       ) {
-        // console.log('patrolling but target location changed! Dont update path. Just track target',aiPlayer.number);
+        logDecide("patrolTargetMoved", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          prevTargetPos: prevTargetPos,
+          currentTargetPos: currentTargetPos,
+          result: "Dont update path. Just track target",
+        });
 
         aiPlayer.ai.targetPlayer.currentPosition = {
           x: targetPlayer.currentPosition.cell.number.x,
@@ -184,6 +218,12 @@ export function aiDecide(app, aiPlayer) {
 
       patrolDest = aiPlayer.ai.patrolling.area[0];
       getPath = true;
+
+      logDecide("patrolStart", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        patrolDest: patrolDest,
+      });
     }
     if (aiPlayer.ai.patrolling.checkin === "enroute") {
       if (aiPlayer.attacking.state === true) {
@@ -195,18 +235,32 @@ export function aiDecide(app, aiPlayer) {
         aiPlayer.ai.patrolling.area[0].y === aiPlayer.currentPosition.cell.number.y
       ) {
         aiPlayer.ai.patrolling.checkin = "arrived";
-        // console.log('arrived @ patrol point');
+        logDecide("patrolArrived", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          patrolDest: aiPlayer.ai.patrolling.area[0],
+        });
       } else {
-        // console.log('en route to patrol. do nothing',aiPlayer.ai.patrolling.area[0]);
+        logDecide("patrolEnRoute", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          patrolDest: aiPlayer.ai.patrolling.area[0],
+        });
       }
     }
     if (aiPlayer.ai.patrolling.checkin === "arrived") {
       aiPlayer.ai.patrolling.checkin = "checkedIn";
       aiPlayer.ai.currentInstruction = 0;
       aiPlayer.ai.instructions = [];
+      logInstructions("instructionsReset", aiPlayer.ai.instructions);
       patrolDest = aiPlayer.ai.patrolling.area[1];
       getPath = true;
-      // console.log('checked in to patrol point. moving to 2nd point @ ',patrolDest);
+      logDecide("patrolCheckedIn", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        patrolDest: patrolDest,
+        result: "Checked in at 1 patrol point. Heading to next point.",
+      });
     }
 
     if (aiPlayer.ai.patrolling.checkin === "checkedIn" && aiPlayer.ai.patrolling.loopControl === false) {
@@ -229,14 +283,24 @@ export function aiDecide(app, aiPlayer) {
   }
 
   if (aiPlayer.ai.mission === "engage" && aiPlayer.attacking.state !== true) {
-    // console.log('engaging');
+    logDecide("engagingTarget", {
+      plyr_no: aiPlayer.number,
+      plyr_mission: aiPlayer.ai.mission,
+      target_no: targetPlayer?.number,
+    });
 
     // CHECK FOR TARGET LOCATION CHNAGE!
     if (
       prevTargetPos.x !== currentTargetPos.x ||
       (prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true)
     ) {
-      // console.log('engage target location changed! Updating path for player',aiPlayer.number,targetPlayer.dead.state);
+      logDecide("engageTargetLocationChanged", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        target_no: targetPlayer?.number,
+        prev_target_pos: prevTargetPos,
+        current_target_pos: currentTargetPos,
+      });
 
       aiPlayer.ai.targetPlayer.currentPosition = {
         x: targetPlayer.currentPosition.cell.number.x,
@@ -257,6 +321,15 @@ export function aiDecide(app, aiPlayer) {
             img: "",
           });
         }
+
+        logDecide("engageTargetLocationChangedPursue", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          prev_target_pos: prevTargetPos,
+          current_target_pos: currentTargetPos,
+          result: "Target location changed. Switching back to primary pursue mission.",
+        });
       }
 
       aiPlayer.ai.targetAcquired = false;
@@ -320,6 +393,14 @@ export function aiDecide(app, aiPlayer) {
         targetPlayer.dodging.state !== true
       ) {
         // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
+        logDecide("targetOpenToAttack", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          plyr_weapon: aiPlayer.currentWeapon.type,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          result: "Target is neither attacking nor defending.",
+        });
 
         if (
           aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x - 3 ||
@@ -336,8 +417,11 @@ export function aiDecide(app, aiPlayer) {
           aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 1
         ) {
           logDecide("crossbowTooClose", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
             target_no: targetPlayer?.number,
             target_pos: targetPlayer?.currentPosition?.cell?.number,
+            result: "Target is too close for crossbow! Switch mission to retreat.",
           });
           aiPlayer.ai.retreating.state = false;
           aiPlayer.ai.retreating.checkin = undefined;
@@ -364,7 +448,13 @@ export function aiDecide(app, aiPlayer) {
           });
         }
         if (aiPlayer.items.ammo === 0) {
-          logDecide("crossbowNoAmmo");
+          logDecide("crossbowNoAmmo", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_no: targetPlayer?.number,
+            target_pos: targetPlayer?.currentPosition?.cell?.number,
+            result: "No ammo left for crossbow.",
+          });
         }
 
         engageTargetAction = "open";
@@ -378,15 +468,27 @@ export function aiDecide(app, aiPlayer) {
       }
       if (deflecting === true) {
         aiPlayer.ai.instructions = [];
+        logInstructions("instructionsReset", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.engaging.targetAction = "";
       }
 
       if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
-        // console.log('target status has changed. switch up the approach');
+        logDecide("engageTargetStatusChanged", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_defending: targetPlayer.defending.state,
+          target_defend_decay: targetPlayer.defending.decay.count,
+          target_attacking: targetPlayer.attacking.state,
+          target_dodging: targetPlayer.dodging.state,
+          new_target_status: engageTargetAction,
+          result: "switch up the approach",
+        });
 
         // aiPlayer.ai.instructions = instructions3;
         aiPlayer.ai.instructions = applyChargePlan(instructions3);
+        logInstructions("instructionsSet", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.engaging.state = true;
         aiPlayer.ai.engaging.targetAction = engageTargetAction;
@@ -395,13 +497,24 @@ export function aiDecide(app, aiPlayer) {
     if (aiPlayer.currentWeapon.type === "spear" && aiPlayer.action === "idle" && aiPlayer.success.deflected.state !== true) {
       let instructions2 = [];
 
-      // ENGAGED TARGET IS OPEN TO ATTAVK!
+      // ENGAGED TARGET IS OPEN TO ATTACK!
       if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defending.decay.state !== true) {
-        // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending')
+        logDecide("targetOpenToAttack", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          result: "Target is neither attacking nor defending.",
+        });
+
         if (aiPlayer.ai.safeRange === true) {
           if (oppositeDir) {
             if (aiPlayer.target.cell2.occupant.type === "player") {
-              // console.log('target is too close! back it up');
+              logDecide("targetTooClose", {
+                plyr_no: aiPlayer.number,
+                plyr_mission: aiPlayer.ai.mission,
+                target_no: targetPlayer?.number,
+                result: "Target is too close for spear",
+              });
               instructions2.push(
                 {
                   keyword: "strafe_" + oppositeDir,
@@ -465,13 +578,20 @@ export function aiDecide(app, aiPlayer) {
       // ENGAGED TARGET IS DEFENDING!
       if (targetPlayer.defending.decay.count > targetPlayer.defending.decay.limit - 10) {
         logDecide("targetDefending", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
           target_no: targetPlayer?.number,
           defend_decay: targetPlayer?.defending?.decay?.count,
         });
         if (aiPlayer.ai.safeRange === true) {
           if (oppositeDir) {
             if (aiPlayer.target.cell2.occupant.type === "player") {
-              // console.log('target is too close! back it up');
+              logDecide("targetTooCloseDefending", {
+                plyr_no: aiPlayer.number,
+                plyr_mission: aiPlayer.ai.mission,
+                target_no: targetPlayer?.number,
+                result: "Target is too close for spear while defending! back it up",
+              });
               instructions2.push(
                 {
                   keyword: "strafe_" + oppositeDir,
@@ -534,19 +654,36 @@ export function aiDecide(app, aiPlayer) {
 
       // ENGAGED TARGET IS ATTACKING!
       if (targetPlayer.attacking.count > 0) {
-        // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is attacking',targetPlayer.attacking.count);
+        logDecide("targetAttacking", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          attack_count: targetPlayer.attacking.count,
+        });
 
         // ATTACK IS PEAKING!
         if (
           targetPlayer.attacking.count < targetPlayer.attacking.animRef.peak.spear &&
           targetPlayer.attacking.count >= targetPlayer.attacking.animRef.peak.spear - 4
         ) {
-          logDecide("targetAttackPeak");
+          logDecide("targetAttackPeak", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_no: targetPlayer?.number,
+            target_pos: targetPlayer.currentPosition.cell.number,
+            attack_count: targetPlayer.attacking.count,
+          });
           let whatDo3 = app.rnJesus(1, 2);
 
           // DEFEND!
           if (whatDo3 === 1) {
-            logDecide("respondDefend");
+            logDecide("respondDefend", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+            });
             instructions2.push({
               keyword: "long_defend",
               count: 0,
@@ -556,7 +693,12 @@ export function aiDecide(app, aiPlayer) {
 
           // DODGE!
           else {
-            logDecide("respondDodge");
+            logDecide("respondDodge", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+            });
             instructions2.push({
               keyword: "dodge",
               count: 0,
@@ -567,13 +709,24 @@ export function aiDecide(app, aiPlayer) {
 
         // ATTACK IS EARLY!
         if (targetPlayer.attacking.count <= 8) {
-          logDecide("targetAttackEarly");
+          logDecide("targetAttackEarly", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_no: targetPlayer?.number,
+            target_pos: targetPlayer.currentPosition.cell.number,
+            attack_count: targetPlayer.attacking.count,
+          });
           let whatDo4 = app.rnJesus(1, 4);
           // whatDo2 = 4
 
           // DEFEND!
           if (whatDo4 === 1) {
-            logDecide("respondDefend");
+            logDecide("respondDefend", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+            });
             instructions2.push({
               keyword: "long_defend",
               count: 0,
@@ -630,7 +783,13 @@ export function aiDecide(app, aiPlayer) {
                 }
                 break;
             }
-            logDecide("respondFlank", { dir: flankDir3 });
+            logDecide("respondFlank", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+              flank_dir: flankDir3,
+            });
 
             instructions2.push({
               keyword: "flank_" + flankDir3,
@@ -641,7 +800,12 @@ export function aiDecide(app, aiPlayer) {
 
           // DODGE!
           if (whatDo4 === 3) {
-            logDecide("respondDodge");
+            logDecide("respondDodge", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+            });
             instructions2.push({
               keyword: "dodge",
               count: 0,
@@ -651,7 +815,6 @@ export function aiDecide(app, aiPlayer) {
 
           // STRAFE EVADE!
           if (whatDo4 === 4) {
-            logDecide("respondStrafeEvade");
             let evadeDirection2;
             let cellsToConsider2 = [
               {
@@ -709,6 +872,14 @@ export function aiDecide(app, aiPlayer) {
               }
             }
 
+            logDecide("respondStrafeEvade", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+              evade_dir: evadeDirection2,
+            });
+
             instructions2.push({
               keyword: "strafe_" + evadeDirection2,
               count: 0,
@@ -733,15 +904,28 @@ export function aiDecide(app, aiPlayer) {
       }
       if (deflecting === true) {
         aiPlayer.ai.instructions = [];
+        logInstructions("instructionsReset", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.engaging.targetAction = "";
       }
 
       if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
         // console.log('target status has changed. switch up the approach');
+        logDecide("engageTargetStatusChanged", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_defending: targetPlayer.defending.state,
+          target_defend_decay: targetPlayer.defending.decay.count,
+          target_attacking: targetPlayer.attacking.state,
+          target_dodging: targetPlayer.dodging.state,
+          new_target_status: engageTargetAction,
+          result: "switch up the approach",
+        });
 
         // aiPlayer.ai.instructions = instructions2;
         aiPlayer.ai.instructions = applyChargePlan(instructions2);
+        logInstructions("instructionsSet", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.engaging.state = true;
         aiPlayer.ai.engaging.targetAction = engageTargetAction;
@@ -751,6 +935,12 @@ export function aiDecide(app, aiPlayer) {
     }
     if (aiPlayer.currentWeapon.type === "sword" && aiPlayer.action === "idle" && aiPlayer.success.deflected.state !== true) {
       // console.log('ai decide sword engagement');
+      logDecide("swordEngagement", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        target_no: targetPlayer?.number,
+        target_pos: targetPlayer?.currentPosition?.cell?.number,
+      });
 
       let instructions1 = [];
 
@@ -761,13 +951,31 @@ export function aiDecide(app, aiPlayer) {
         targetPlayer.defending.decay.state !== true &&
         targetPlayer.dodging.state !== true
       ) {
-        // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
+        logDecide("openTargetEngagement", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          result: "Target is neither attacking nor defending.",
+        });
+
         if (aiPlayer.ai.safeRange === true) {
           if (oppositeDir) {
-            // console.log('safe sword range attack flow');
+            logDecide("safeSwordRangeAttackFlow", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+            });
 
             if (aiPlayer.target.cell1.occupant.type === "player") {
-              // console.log('target is too close! back it up');
+              logDecide("swordTooClose", {
+                plyr_no: aiPlayer.number,
+                plyr_mission: aiPlayer.ai.mission,
+                target_no: targetPlayer?.number,
+                target_pos: targetPlayer?.currentPosition?.cell?.number,
+                result: "Target is too close for sword! Back it up.",
+              });
               instructions1.push({
                 keyword: "strafe_" + oppositeDir,
                 count: 0,
@@ -816,14 +1024,31 @@ export function aiDecide(app, aiPlayer) {
 
       // ENGAGED TARGET DEFENDING!
       if (targetPlayer.defending.state === true || targetPlayer.defending.decay.count > targetPlayer.defending.decay.limit - 10) {
-        // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is defending',targetPlayer.defending.decay.count);
+        logDecide("targetDefending", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          defend_decay: targetPlayer?.defending?.decay?.count,
+        });
 
         if (aiPlayer.ai.safeRange === true) {
           if (oppositeDir) {
-            // console.log('safe range attack flow');
+            logDecide("safeSwordRangeAttackFlow", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+            });
 
             if (aiPlayer.target.cell1.occupant.type === "player") {
-              // console.log('target is too close! back it up');
+              logDecide("swordTooClose", {
+                plyr_no: aiPlayer.number,
+                plyr_mission: aiPlayer.ai.mission,
+                target_no: targetPlayer?.number,
+                target_pos: targetPlayer?.currentPosition?.cell?.number,
+                result: "Target is too close for sword! Back it up.",
+              });
               instructions1.push({
                 keyword: "strafe_" + oppositeDir,
                 count: 0,
@@ -872,20 +1097,37 @@ export function aiDecide(app, aiPlayer) {
 
       // ENGAGED TARGET ATTACKING!
       if (targetPlayer.attacking.count > 0) {
-        // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is attacking',targetPlayer.attacking.count);
+        logDecide("targetAttacking", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          attack_count: targetPlayer.attacking.count,
+        });
 
         // ATTACK IS PEAKING!
         if (
           targetPlayer.attacking.count < targetPlayer.attacking.animRef.peak.sword &&
           targetPlayer.attacking.count >= targetPlayer.attacking.animRef.peak.sword - 4
         ) {
-          logDecide("targetAttackPeak");
+          logDecide("targetAttackPeak", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_no: targetPlayer?.number,
+            target_pos: targetPlayer.currentPosition.cell.number,
+            attack_count: targetPlayer.attacking.count,
+          });
           let whatDo = app.rnJesus(1, 2);
-          whatDo = 1;
+          // whatDo = 1;
 
           // DEFEND!
           if (whatDo === 1) {
-            logDecide("respondDefend");
+            logDecide("respondDefend", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+            });
             instructions1.push({
               keyword: "long_defend",
               count: 0,
@@ -895,7 +1137,12 @@ export function aiDecide(app, aiPlayer) {
 
           // DODGE!
           else {
-            logDecide("respondDodge");
+            logDecide("respondDodge", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+            });
             instructions1.push({
               keyword: "dodge",
               count: 0,
@@ -906,13 +1153,24 @@ export function aiDecide(app, aiPlayer) {
 
         // ATTACK IS EARLY!
         if (targetPlayer.attacking.count <= 6) {
-          logDecide("targetAttackEarly");
+          logDecide("targetAttackEarly", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_no: targetPlayer?.number,
+            target_pos: targetPlayer.currentPosition.cell.number,
+            attack_count: targetPlayer.attacking.count,
+          });
           let whatDo2 = app.rnJesus(1, 4);
-          whatDo2 = 1;
+          // whatDo2 = 1;
 
           // DEFEND!
           if (whatDo2 === 1) {
-            logDecide("respondDefend");
+            logDecide("respondDefend", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+            });
             instructions1.push({
               keyword: "long_defend",
               count: 0,
@@ -969,7 +1227,13 @@ export function aiDecide(app, aiPlayer) {
                 }
                 break;
             }
-            logDecide("respondFlank", { dir: flankDir2 });
+            logDecide("respondFlank", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+              dir: flankDir2,
+            });
 
             instructions1.push({
               keyword: "flank_" + flankDir2,
@@ -980,7 +1244,12 @@ export function aiDecide(app, aiPlayer) {
 
           // DODGE!
           if (whatDo2 === 3) {
-            logDecide("respondDodge");
+            logDecide("respondDodge", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer.currentPosition.cell.number,
+            });
             instructions1.push({
               keyword: "dodge",
               count: 0,
@@ -990,7 +1259,6 @@ export function aiDecide(app, aiPlayer) {
 
           // STRAFE EVADE!
           if (whatDo2 === 4) {
-            logDecide("respondStrafeEvade");
             let evadeDirection;
             let cellsToConsider = [
               {
@@ -1048,6 +1316,13 @@ export function aiDecide(app, aiPlayer) {
               }
             }
 
+            logDecide("respondStrafeEvade", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+              evade_dir: evadeDirection,
+            });
             instructions1.push({
               keyword: "strafe_" + evadeDirection,
               count: 0,
@@ -1066,21 +1341,29 @@ export function aiDecide(app, aiPlayer) {
       }
       if (deflecting === true) {
         aiPlayer.ai.instructions = [];
+        logInstructions("instructionsReset", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.engaging.targetAction = "";
       }
 
-      // target status has changed. switch up the approach
       if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
         // if (aiPlayer.ai.engaging.targetAction !== engageTargetAction ) {
 
-        // console.log('target status has changed. switch up the approach');
-
         // aiPlayer.ai.instructions = instructions1;
         aiPlayer.ai.instructions = applyChargePlan(instructions1);
+        logInstructions("instructionsSet", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.engaging.state = true;
         aiPlayer.ai.engaging.targetAction = engageTargetAction;
+
+        logDecide("targetStatusChanged", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          engage_action: engageTargetAction,
+          result: "switch up the approach if not already deflected",
+        });
       }
 
       // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
@@ -1092,6 +1375,12 @@ export function aiDecide(app, aiPlayer) {
       aiPlayer.ai.organizing.dropped.state !== true
     ) {
       // console.log('unarmed engagement');
+      logDecide("unarmedEngagement", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        target_no: targetPlayer?.number,
+        target_pos: targetPlayer?.currentPosition?.cell?.number,
+      });
 
       let instructions4 = [];
 
@@ -1102,13 +1391,32 @@ export function aiDecide(app, aiPlayer) {
         targetPlayer.defending.decay.state !== true &&
         targetPlayer.dodging.state !== true
       ) {
-        // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
+        logDecide("targetOpen", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          result: "Target is neither attacking nor defending.",
+        });
+
         if (aiPlayer.ai.safeRange === true) {
           if (oppositeDir) {
-            // console.log('safe sword range attack flow');
+            logDecide("safeRangeAttackFlow", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+            });
 
             if (aiPlayer.target.cell1.occupant.type === "player") {
-              // console.log('target is too close! back it up');
+              logDecide("targetTooClose", {
+                plyr_no: aiPlayer.number,
+                plyr_mission: aiPlayer.ai.mission,
+                target_no: targetPlayer?.number,
+                target_pos: targetPlayer?.currentPosition?.cell?.number,
+                result: "Target is too close for unarmed attack! Back it up.",
+              });
+
               instructions4.push({
                 keyword: "strafe_" + oppositeDir,
                 count: 0,
@@ -1165,10 +1473,22 @@ export function aiDecide(app, aiPlayer) {
 
         if (aiPlayer.ai.safeRange === true) {
           if (oppositeDir) {
-            // console.log('safe range attack flow');
+            logDecide("safeRangeAttackFlow", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+            });
 
             if (aiPlayer.target.cell1.occupant.type === "player") {
-              // console.log('target is too close! back it up');
+              logDecide("targetTooClose", {
+                plyr_no: aiPlayer.number,
+                plyr_mission: aiPlayer.ai.mission,
+                target_no: targetPlayer?.number,
+                target_pos: targetPlayer?.currentPosition?.cell?.number,
+                result: "Target is too close for unarmed attack! Back it up.",
+              });
+
               instructions4.push({
                 keyword: "strafe_" + oppositeDir,
                 count: 0,
@@ -1219,18 +1539,36 @@ export function aiDecide(app, aiPlayer) {
       // ENGAGED TARGET ATTACKING!
       if (targetPlayer.attacking.count > 0) {
         // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is attacking',targetPlayer.attacking.count);
+        logDecide("targetAttacking", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          attack_count: targetPlayer.attacking.count,
+        });
 
         // ATTACK IS PEAKING!
         if (
           targetPlayer.attacking.count < targetPlayer.attacking.animRef.peak.sword &&
           targetPlayer.attacking.count >= targetPlayer.attacking.animRef.peak.sword - 4
         ) {
-          logDecide("targetAttackPeak");
+          logDecide("targetAttackPeak", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_no: targetPlayer?.number,
+            target_pos: targetPlayer?.currentPosition?.cell?.number,
+            attack_count: targetPlayer.attacking.count,
+          });
           let whatDo5 = app.rnJesus(1, 2);
 
           // DEFEND!
           if (whatDo5 === 1) {
-            logDecide("respondDefend");
+            logDecide("respondDefend", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+            });
             instructions4.push({
               keyword: "long_defend",
               count: 0,
@@ -1240,7 +1578,12 @@ export function aiDecide(app, aiPlayer) {
 
           // DODGE!
           else {
-            logDecide("respondDodge");
+            logDecide("respondDodge", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+            });
             instructions4.push({
               keyword: "dodge",
               count: 0,
@@ -1251,13 +1594,24 @@ export function aiDecide(app, aiPlayer) {
 
         // ATTACK IS EARLY!
         if (targetPlayer.attacking.count <= 6) {
-          logDecide("targetAttackEarly");
+          logDecide("targetAttackEarly", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_no: targetPlayer?.number,
+            target_pos: targetPlayer?.currentPosition?.cell?.number,
+            attack_count: targetPlayer.attacking.count,
+          });
           let whatDo6 = app.rnJesus(1, 4);
           // whatDo2 = 4
 
           // DEFEND!
           if (whatDo6 === 1) {
-            logDecide("respondDefend");
+            logDecide("respondDefend", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+            });
             instructions4.push({
               keyword: "long_defend",
               count: 0,
@@ -1314,7 +1668,13 @@ export function aiDecide(app, aiPlayer) {
                 }
                 break;
             }
-            logDecide("respondFlank", { dir: flankDir3 });
+            logDecide("respondFlank", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+              dir: flankDir3,
+            });
 
             instructions4.push({
               keyword: "flank_" + flankDir3,
@@ -1325,7 +1685,12 @@ export function aiDecide(app, aiPlayer) {
 
           // DODGE!
           if (whatDo6 === 3) {
-            logDecide("respondDodge");
+            logDecide("respondDodge", {
+              plyr_no: aiPlayer.number,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+              plyr_mission: aiPlayer.ai.mission,
+            });
             instructions4.push({
               keyword: "dodge",
               count: 0,
@@ -1335,7 +1700,6 @@ export function aiDecide(app, aiPlayer) {
 
           // STRAFE EVADE!
           if (whatDo6 === 4) {
-            logDecide("respondStrafeEvade");
             let evadeDirection3;
             let cellsToConsider3 = [
               {
@@ -1393,6 +1757,14 @@ export function aiDecide(app, aiPlayer) {
               }
             }
 
+            logDecide("respondStrafeEvade", {
+              plyr_no: aiPlayer.number,
+              target_no: targetPlayer?.number,
+              target_pos: targetPlayer?.currentPosition?.cell?.number,
+              evade_dir: evadeDirection3,
+              plyr_mission: aiPlayer.ai.mission,
+            });
+
             instructions4.push({
               keyword: "strafe_" + evadeDirection3,
               count: 0,
@@ -1411,15 +1783,28 @@ export function aiDecide(app, aiPlayer) {
       }
       if (deflecting === true) {
         aiPlayer.ai.instructions = [];
+        logInstructions("instructionsReset", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.engaging.targetAction = "";
       }
 
       if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
-        // console.log('target status has changed. switch up the approach');
+        logDecide("targetStatusChanged", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          target_defending: targetPlayer.defending.state,
+          target_defend_decay: targetPlayer.defending.decay.count,
+          target_attacking: targetPlayer.attacking.state,
+          target_dodging: targetPlayer.dodging.state,
+          new_target_status: engageTargetAction,
+          result: "switch up the approach if not already deflected",
+        });
 
         // aiPlayer.ai.instructions = instructions4;
         aiPlayer.ai.instructions = applyChargePlan(instructions4);
+        logInstructions("instructionsSet", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.engaging.state = true;
         aiPlayer.ai.engaging.targetAction = engageTargetAction;
@@ -1433,8 +1818,14 @@ export function aiDecide(app, aiPlayer) {
 
   let defendDest;
   if (aiPlayer.ai.mission === "defend") {
-    // console.log('defending',aiPlayer.ai.defending);
-    // console.log('aiDecide mission: defend - prevTargetPos',prevTargetPos,'currentTargetPos',currentTargetPos);
+    logDecide("defendMissionCheck", {
+      plyr_no: aiPlayer.number,
+      plyr_mission: aiPlayer.ai.mission,
+      target_no: targetPlayer?.number,
+      target_pos: targetPlayer?.currentPosition?.cell?.number,
+      prevTargetPos: prevTargetPos,
+      currentTargetPos: currentTargetPos,
+    });
 
     // TARGET LOCATION CHANGED!!
     if (prevTargetPos.x && currentTargetPos.x) {
@@ -1442,7 +1833,15 @@ export function aiDecide(app, aiPlayer) {
         prevTargetPos.x !== currentTargetPos.x ||
         (prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true)
       ) {
-        // console.log('defending but target location changed! Dont update path. Just track target',aiPlayer.number);
+        logDecide("targetLocationChanged", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          prevTargetPos: prevTargetPos,
+          currentTargetPos: currentTargetPos,
+          result: "defending but target location changed! Dont update path. Just track target",
+        });
 
         aiPlayer.ai.targetPlayer.currentPosition = {
           x: targetPlayer.currentPosition.cell.number.x,
@@ -1453,7 +1852,11 @@ export function aiDecide(app, aiPlayer) {
 
     // SET OUT TO DEFEND POINT
     if (!aiPlayer.ai.defending.checkin) {
-      logDecide("move to defend location", { dest: aiPlayer.ai.defending.area[0] });
+      logDecide("move to defend location", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        dest: aiPlayer.ai.defending.area[0],
+      });
       aiPlayer.ai.defending.checkin = "enroute";
 
       if (!aiPlayer.popups.find((x) => x.msg === "missionEnroute")) {
@@ -1519,7 +1922,11 @@ export function aiDecide(app, aiPlayer) {
       let whatCell = app.rnJesus(1, freeCells.length);
 
       defendDest = freeCells[whatCell - 1];
-      logDecide("defendDest", { dest: defendDest });
+      logDecide("defendDest", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        dest: defendDest,
+      });
       if (aiPlayer.ai.defending.area.length > 1) {
         aiPlayer.ai.defending.area[1] = defendDest;
       }
@@ -1532,7 +1939,13 @@ export function aiDecide(app, aiPlayer) {
 
     // EN ROUTE TO DEFEND POINT
     if (aiPlayer.ai.defending.checkin === "enroute") {
-      // console.log('en route to defend point');
+      logDecide("enRouteToDefendPoint", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        target_no: targetPlayer?.number,
+        target_pos: targetPlayer?.currentPosition?.cell?.number,
+        defend_dest: aiPlayer.ai.defending.area[1],
+      });
 
       if (aiPlayer.attacking.state === true) {
         aiPlayer.attacking.state = false;
@@ -1544,16 +1957,34 @@ export function aiDecide(app, aiPlayer) {
       ) {
         aiPlayer.ai.defending.checkin = "checkedIn";
         aiPlayer.ai.instructions = [];
+        logInstructions("instructionsReset", aiPlayer.ai.instructions);
         aiPlayer.ai.currentInstruction = 0;
-        // console.log('arrived @ defend point',aiPlayer.ai.instructions);
+
+        logDecide("arrivedAtDefendPoint", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          defend_dest: aiPlayer.ai.defending.area[1],
+        });
       } else {
-        // console.log('en route to defend post. do nothing',aiPlayer.ai.defending.area[0]);
+        logDecide("enRouteToDefendPoint", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer?.number,
+          target_pos: targetPlayer?.currentPosition?.cell?.number,
+          defend_dest: aiPlayer.ai.defending.area[1],
+        });
       }
     }
 
     // ARRIVED AT DEFEND POINT
     if (aiPlayer.ai.defending.checkin === "checkedIn" && aiPlayer.ai.instructions.length === 0) {
       // console.log('defend post checkedIn');
+      logDecide("defendPostCheckedIn", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        defend_dest: aiPlayer.ai.defending.area[1],
+      });
+
       let instructions = [];
       switch (aiPlayer.direction) {
         case "north":
@@ -1624,6 +2055,7 @@ export function aiDecide(app, aiPlayer) {
 
       // aiPlayer.ai.instructions = instructions;
       aiPlayer.ai.instructions = applyChargePlan(instructions);
+      logInstructions("instructionsSet", aiPlayer.ai.instructions);
       aiPlayer.ai.currentInstruction = 0;
       // console.log('aiPlayer.ai.instructions',aiPlayer.ai.instructions);
     }
@@ -1633,6 +2065,13 @@ export function aiDecide(app, aiPlayer) {
     // SET OUT
     if (aiPlayer.ai.retrieving.state !== true && aiPlayer.ai.retrieving.safe === true) {
       // console.log('retrive mission start: target item ',aiPlayer.ai.retrieving.targetItem.name,targetPlayer,aiPlayer.ai.retrieving);
+      logDecide("startRetrieveMission", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        target_item: aiPlayer.ai.retrieving.targetItem.name,
+        target_player: targetPlayer ? targetPlayer.number : null,
+      });
+
       aiPlayer.ai.retrieving.state = true;
       aiPlayer.ai.retrieving.checkin = "enroute";
       getPath = true;
@@ -1654,12 +2093,22 @@ export function aiDecide(app, aiPlayer) {
     if (aiPlayer.ai.retrieving.state === true) {
       if (aiPlayer.ai.retrieving.checkin === "enroute") {
         // console.log('en route to retrieve point',aiPlayer.ai.retrieving.point);
+        logDecide("enRouteToRetrievePoint", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          retrieve_point: aiPlayer.ai.retrieving.point,
+        });
 
         let targetCell = app.gridInfo.find(
           (elem) => elem.number.x === aiPlayer.ai.retrieving.point.x && elem.number.y === aiPlayer.ai.retrieving.point.y,
         );
         if (targetCell.item.name === "" || aiPlayer.ai.retrieving.targetItem.name !== targetCell.item.name) {
-          logDecide("retrieveItemMissing");
+          logDecide("retrieveItemMissing", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_item: aiPlayer.ai.retrieving.targetItem.name,
+            target_player: targetPlayer ? targetPlayer.number : null,
+          });
           aiPlayer.ai.retrieving.checkin = "abort";
         }
 
@@ -1667,7 +2116,11 @@ export function aiDecide(app, aiPlayer) {
           aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retrieving.point.x &&
           aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retrieving.point.y
         ) {
-          logDecide("retrieveLocationArrived");
+          logDecide("retrieveLocationArrived", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            retrieve_point: aiPlayer.ai.retrieving.point,
+          });
           aiPlayer.ai.retrieving.checkin = "complete";
           aiPlayer.ai.retrieving.state = false;
         }
@@ -1679,6 +2132,11 @@ export function aiDecide(app, aiPlayer) {
     // SET OUT
     if (aiPlayer.ai.retreating.state !== true && aiPlayer.ai.retreating.safe === true) {
       // console.log('start retreating to',aiPlayer.ai.retreating.point);
+      logDecide("startRetreatMission", {
+        plyr_no: aiPlayer.number,
+        plyr_mission: aiPlayer.ai.mission,
+        retreat_point: aiPlayer.ai.retreating.point,
+      });
       aiPlayer.ai.retreating.state = true;
       aiPlayer.ai.retreating.checkin = "enroute";
       getPath = true;
@@ -1699,24 +2157,38 @@ export function aiDecide(app, aiPlayer) {
     // EN ROUTE
     if (aiPlayer.ai.retreating.state === true) {
       if (aiPlayer.ai.retreating.checkin === "enroute") {
-        // console.log('enroute to retreat point @',aiPlayer.ai.retreating.point,'instructions',aiPlayer.ai.instructions,aiPlayer.ai.currentInstruction);
+        logDecide("enRouteToRetreatPoint", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          retreat_point: aiPlayer.ai.retreating.point,
+        });
         if (
           aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retreating.point.x &&
           aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retreating.point.y
         ) {
           // console.log('arrived at retreat location');
+          logDecide("retreatLocationArrived", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            retreat_point: aiPlayer.ai.retreating.point,
+          });
           aiPlayer.ai.instructions.push({
             keyword: "long_wait",
             count: 0,
             limit: 25,
           });
+          logInstructions("instructionsAdded", aiPlayer.ai.instructions);
           aiPlayer.ai.retreating.checkin = "resting";
         }
       }
 
       if (aiPlayer.ai.retreating.checkin === "resting") {
         if (aiPlayer.stamina.current >= aiPlayer.stamina.max) {
-          logDecide("retreatComplete");
+          logDecide("retreatComplete", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            retreat_point: aiPlayer.ai.retreating.point,
+          });
           aiPlayer.ai.retreating.checkin = "complete";
           aiPlayer.ai.retreating.state = false;
         }
@@ -1732,7 +2204,13 @@ export function aiDecide(app, aiPlayer) {
   let pathSet = [];
 
   if (getPath === true && !targetPlayer && aiPlayer.ai.mission === "retrieve" && aiPlayer.ai.retrieving.state === true) {
-    logDecide("pathfindingRetrieve");
+    logDecide("pathfindingRetrieve", {
+      plyr_no: aiPlayer.number,
+      plyr_mission: aiPlayer.ai.mission,
+      target_item: aiPlayer.ai.retrieving.targetItem.name,
+      target_player: targetPlayer ? targetPlayer.number : null,
+      retrieve_point: aiPlayer.ai.retrieving.point,
+    });
     app.updatePathArray();
     app.easyStar = new Easystar.js();
 
@@ -1767,7 +2245,11 @@ export function aiDecide(app, aiPlayer) {
     // AVOID PATHS THAT GO CLOSE TO ENEMY PLAYERS IF ALIVE
     for (const plyr of app.players) {
       if (plyr.ai.state !== true && plyr.dead.state !== true && plyr.falling.state !== true) {
-        logDecide("carefulPathing", { mission: aiPlayer.ai.mission, enemy_no: plyr.number });
+        logDecide("carefulPathing", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          enemy_no: plyr.number,
+        });
         let rng;
         let span;
 
@@ -1967,7 +2449,12 @@ export function aiDecide(app, aiPlayer) {
       if (aiPlayer.ai.mission === "pursue") {
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = app.players[aiPlayer.ai.targetPlayer.number - 1].currentPosition.cell.number;
-        logDecide("pursuitTarget", { target_pos: targetPos });
+        logDecide("pursuitTarget", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_no: targetPlayer.number,
+          target_pos: targetPos,
+        });
 
         if (aiPlayer.ai.safeRange === true) {
           let candidateTargets = [
@@ -2161,7 +2648,12 @@ export function aiDecide(app, aiPlayer) {
               targetPos = freeSpaces[0];
               // console.log('found path to safe bow range',targetPos);
             } else {
-              logDecide("noCrossbowFiringPosition");
+              logDecide("noCrossbowFiringPosition", {
+                plyr_no: aiPlayer.number,
+                plyr_mission: aiPlayer.ai.mission,
+                target_no: targetPlayer.number,
+                target_pos: targetPlayer?.currentPosition?.cell?.number,
+              });
               if (aiPlayer.ai.pathfindingRanges.crossbow > 1) {
                 aiPlayer.ai.pathfindingRanges.crossbow--;
               }
@@ -2189,7 +2681,10 @@ export function aiDecide(app, aiPlayer) {
                   type: "",
                   effect: "",
                 };
-                logDecide("crossbowNoOptionSwitchUnarmed");
+                logDecide("crossbowNoOptionSwitchUnarmed", {
+                  plyr_no: aiPlayer.number,
+                  plyr_mission: aiPlayer.ai.mission,
+                });
               }
             }
           }
@@ -2375,10 +2870,21 @@ export function aiDecide(app, aiPlayer) {
                     // console.log('rangeElemCells2',rangeElemCells2);
                     // console.log('found path to safe bow range',targetPos);
                   } else {
-                    logDecide("targetObstructed", { obstructions: obstructions });
+                    logDecide("targetObstructed", {
+                      plyr_no: aiPlayer.number,
+                      plyr_mission: aiPlayer.ai.mission,
+                      target_no: targetPlayer.number,
+                      target_pos: targetPlayer?.currentPosition?.cell?.number,
+                      obstructions: obstructions,
+                    });
                   }
                 } else {
-                  logDecide("safePathBlocked");
+                  logDecide("safePathBlocked", {
+                    plyr_no: aiPlayer.number,
+                    plyr_mission: aiPlayer.ai.mission,
+                    target_no: targetPlayer.number,
+                    target_pos: targetPlayer?.currentPosition?.cell?.number,
+                  });
                 }
               }
             }
@@ -2388,7 +2894,12 @@ export function aiDecide(app, aiPlayer) {
               targetPos = freeSpaces[0];
               // console.log('found path to safe spear range',targetPos);
             } else {
-              logDecide("noSpearFiringPosition");
+              logDecide("noSpearFiringPosition", {
+                plyr_no: aiPlayer.number,
+                plyr_mission: aiPlayer.ai.mission,
+                target_no: targetPlayer.number,
+                target_pos: targetPlayer?.currentPosition?.cell?.number,
+              });
               if (aiPlayer.ai.pathfindingRanges.spear > 1) {
                 aiPlayer.ai.pathfindingRanges.spear--;
               }
@@ -2452,7 +2963,12 @@ export function aiDecide(app, aiPlayer) {
                   targetPos = rangeElem;
                   // console.log('found path to safe sword range',targetPos);
                 } else {
-                  logDecide("safePathBlocked");
+                  logDecide("safePathBlocked", {
+                    plyr_no: aiPlayer.number,
+                    plyr_mission: aiPlayer.ai.mission,
+                    target_no: targetPlayer.number,
+                    target_pos: targetPlayer?.currentPosition?.cell?.number,
+                  });
                 }
               }
             }
@@ -2477,7 +2993,11 @@ export function aiDecide(app, aiPlayer) {
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = defendDest;
 
-        logDecide("pathfindingTarget", { target_pos: targetPos });
+        logDecide("pathfindingTarget", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_pos: targetPos,
+        });
         // app.pathArray[targetPos.x][targetPos.y] = 0;
       }
 
@@ -2491,7 +3011,11 @@ export function aiDecide(app, aiPlayer) {
       }
 
       if (aiPlayer.ai.mission === "retrieve") {
-        logDecide("retrievePath", { target_pos: aiPlayer.ai.retrieving.point });
+        logDecide("retrievePath", {
+          plyr_no: aiPlayer.number,
+          plyr_mission: aiPlayer.ai.mission,
+          target_pos: aiPlayer.ai.retrieving.point,
+        });
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = {
           x: aiPlayer.ai.retrieving.point.x,
@@ -2521,7 +3045,11 @@ export function aiDecide(app, aiPlayer) {
       if (aiPlayer.ai.mission === "retreat" || aiPlayer.ai.mission === "retrieve") {
         for (const plyr of app.players) {
           if (plyr.ai.state !== true) {
-            logDecide("carefulPathing", { mission: aiPlayer.ai.mission, enemy_no: plyr.number });
+            logDecide("carefulPathing", {
+              plyr_no: aiPlayer.number,
+              plyr_mission: aiPlayer.ai.mission,
+              enemy_no: plyr.number,
+            });
             let rng;
             let span;
 
@@ -2696,7 +3224,11 @@ export function aiDecide(app, aiPlayer) {
       app.players[aiPlayer.number - 1].ai.easyStarPath = app.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function (path) {
         if (path === null) {
           cancelPath = true;
-          logDecide("pathNotFound", { plyr_no: aiPlayer.number });
+          logDecide("pathNotFound", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_pos: targetPos,
+          });
         } else {
           pathSet = path;
         }
@@ -2708,7 +3240,11 @@ export function aiDecide(app, aiPlayer) {
         // console.log('plyr',aiPlayer.number,'pathSet',pathSet,app.players[aiPlayer.number-1].ai.easyStarPath);
 
         if (cancelPath === true) {
-          logDecide("pathCanceled");
+          logDecide("pathCanceled", {
+            plyr_no: aiPlayer.number,
+            plyr_mission: aiPlayer.ai.mission,
+            target_pos: targetPos,
+          });
           app.easyStar = new Easystar.js();
           app.players[aiPlayer.number - 1].ai.targetAcquired = false;
         }

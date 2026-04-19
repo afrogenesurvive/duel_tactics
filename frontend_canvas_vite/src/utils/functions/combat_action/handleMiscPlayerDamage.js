@@ -34,9 +34,9 @@ export function handleMiscPlayerDamage(app, player, type) {
 
       if (app.players[player.number - 1].hp === 1) {
         // ADJUST TARGET MOVE SPEED
-        let currentMoveSpeedIndx = app.players[player.number - 1].speed.range.indexOf(app.players[player.number - 1].speed.move);
+        let currentMoveSpeedIndx = app.players[player.number - 1].speed.range_1.indexOf(app.players[player.number - 1].speed.move);
         if (currentMoveSpeedIndx > 0) {
-          app.players[player.number - 1].speed.move = app.players[player.number - 1].speed.range[currentMoveSpeedIndx - 1];
+          app.players[player.number - 1].speed.move = app.players[player.number - 1].speed.range_1[currentMoveSpeedIndx - 1];
         }
       }
     }
@@ -85,9 +85,9 @@ export function handleMiscPlayerDamage(app, player, type) {
 
       if (app.players[player.number - 1].hp === 1) {
         // ADJUST TARGET MOVE SPEED
-        let currentMoveSpeedIndx = app.players[player.number - 1].speed.range.indexOf(app.players[player.number - 1].speed.move);
+        let currentMoveSpeedIndx = app.players[player.number - 1].speed.range_1.indexOf(app.players[player.number - 1].speed.move);
         if (currentMoveSpeedIndx > 0) {
-          app.players[player.number - 1].speed.move = app.players[player.number - 1].speed.range[currentMoveSpeedIndx - 1];
+          app.players[player.number - 1].speed.move = app.players[player.number - 1].speed.range_1[currentMoveSpeedIndx - 1];
         }
       }
     }
@@ -125,9 +125,9 @@ export function handleMiscPlayerDamage(app, player, type) {
 
       if (app.players[player.number - 1].hp === 1) {
         // ADJUST TARGET MOVE SPEED
-        let currentMoveSpeedIndx = app.players[player.number - 1].speed.range.indexOf(app.players[player.number - 1].speed.move);
+        let currentMoveSpeedIndx = app.players[player.number - 1].speed.range_1.indexOf(app.players[player.number - 1].speed.move);
         if (currentMoveSpeedIndx > 0) {
-          app.players[player.number - 1].speed.move = app.players[player.number - 1].speed.range[currentMoveSpeedIndx - 1];
+          app.players[player.number - 1].speed.move = app.players[player.number - 1].speed.range_1[currentMoveSpeedIndx - 1];
         }
       }
     }
@@ -197,9 +197,9 @@ export function handleMiscPlayerDamage(app, player, type) {
 
       if (app.players[player.number - 1].hp === 1) {
         // ADJUST TARGET MOVE SPEED
-        let currentMoveSpeedIndx = app.players[player.number - 1].speed.range.indexOf(app.players[player.number - 1].speed.move);
+        let currentMoveSpeedIndx = app.players[player.number - 1].speed.range_1.indexOf(app.players[player.number - 1].speed.move);
         if (currentMoveSpeedIndx > 0) {
-          app.players[player.number - 1].speed.move = app.players[player.number - 1].speed.range[currentMoveSpeedIndx - 1];
+          app.players[player.number - 1].speed.move = app.players[player.number - 1].speed.range_1[currentMoveSpeedIndx - 1];
         }
       }
     }

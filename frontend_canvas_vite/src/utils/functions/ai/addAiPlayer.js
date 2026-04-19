@@ -289,11 +289,7 @@ export function addAiPlayer(app) {
             y: 0,
           },
         },
-        newMoveDelay: {
-          state: false,
-          count: 0,
-          limit: 15,
-        },
+        newMoveDelay: MoveConstants.base.newMoveDelay,
         strafing: {
           state: false,
           direction: "",
@@ -438,10 +434,7 @@ export function addAiPlayer(app) {
         },
         respawn: false,
         points: 0,
-        speed: {
-          move: 0.1,
-          range: [0.05, 0.1, 0.125, 0.2],
-        },
+        speed: MoveConstants.base.speed,
         terrainMoveSpeed: {
           state: false,
           speed: 0,

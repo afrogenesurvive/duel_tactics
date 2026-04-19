@@ -4,6 +4,19 @@ export function aiAct(app, plyr) {
     app.globalLogger("ai.act", message, { plyr_no: plyr.number, ...data }, { fn: "aiAct" });
   };
 
+  const logInstructions = (message, data = {}) => {
+    const instructionsString = data
+      .map((inst) => inst?.keyword)
+      .filter(Boolean)
+      .join("---");
+    app.globalLogger(
+      `ai.instructions`,
+      message,
+      { plyr_no: plyr.number, mission: plyr.ai.mission, instruction_list: instructionsString },
+      { fn: "aiAct" },
+    );
+  };
+
   if (currentInstruction) {
     let targetCell = app.gridInfo.find((elem) => elem.number.x === plyr.target.cell1.number.x && elem.number.y === plyr.target.cell1.number.y);
     let playerCell = app.gridInfo.find(

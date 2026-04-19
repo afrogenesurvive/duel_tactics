@@ -43,11 +43,7 @@ export function killPlayer(app, player) {
       y: 0,
     },
   };
-  player.newMoveDelay = {
-    state: false,
-    count: 0,
-    limit: 15,
-  };
+  player.newMoveDelay = MoveConstants.base.newMoveDelay;
   player.strafing = {
     state: false,
     direction: "",
@@ -191,10 +187,7 @@ export function killPlayer(app, player) {
   //   },
   // };
   player.respawn = false;
-  player.speed = {
-    move: 0.1,
-    range: [0.05, 0.1, 0.125, 0.2],
-  };
+  player.speed = MoveConstants.base.speed;
   player.terrainMoveSpeed = {
     state: false,
     speed: 0,

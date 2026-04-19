@@ -64,7 +64,7 @@ export function checkMoveCancel(app, player, nextPosition) {
         if (player.jumping.state === true) {
           inTimeThresh = 0.4;
         } else {
-          let indx3 = player.speed.range.indexOf(player.speed.move);
+          let indx3 = player.speed.range_1.indexOf(player.speed.move);
           threshIndx = Math.ceil(app.moveStepRef[indx3].length / 2);
           // inTimeThresh = app.moveStepRef[indx3][threshIndx];
           inTimeThresh = app.moveStepRef[indx3][threshIndx + 1];
@@ -129,7 +129,7 @@ export function checkMoveCancel(app, player, nextPosition) {
 
             let newTarget = app.getTarget(player);
 
-            let indx3 = player.speed.range.indexOf(player.speed.move);
+            let indx3 = player.speed.range_1.indexOf(player.speed.move);
             let indx4 = app.moveStepRef[indx3].indexOf(player.moving.step);
             let newIndx = app.moveStepRef[indx3].length - (indx4 + 1);
             let newStep = app.moveStepRef[indx3][newIndx - 1];
