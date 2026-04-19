@@ -8,12 +8,14 @@ export function aiDecide(app, aiPlayer) {
     app.globalLogger("ai.decide", message, { plyr_no: aiPlayer.number, ...data }, { fn: "aiDecide" });
   };
   const getCell = (x, y) => app.gridInfo.find((cell) => cell.number.x === x && cell.number.y === y);
+
   const isUnsafeCell = (cell) => {
     if (!cell) {
       return true;
     }
     return cell.levelData.split("_")[1] !== "*" || cell.terrain.type === "deep" || cell.terrain.type === "hazard" || cell.void.state === true;
   };
+
   const isJumpGapCell = (cell) => {
     if (!cell) {
       return false;
@@ -1952,6 +1954,7 @@ export function aiDecide(app, aiPlayer) {
     }, 50);
   }
 
+  // TARGET ACQUIRED - MISSION BASED DECISION
   if (targetPlayer) {
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
       logDecide("pathfindingStart");
@@ -2459,14 +2462,17 @@ export function aiDecide(app, aiPlayer) {
         // app.pathArray[targetPos.x][targetPos.y] = 0;
         // app.pathArray[aiPos.x][aiPos.y] = 0;
       }
+
       if (aiPlayer.ai.mission === "patrol") {
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = patrolDest;
 
         // app.pathArray[targetPos.x][targetPos.y] = 0;
       }
+
       if (aiPlayer.ai.mission === "engage") {
       }
+
       if (aiPlayer.ai.mission === "defend") {
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = defendDest;
@@ -2474,6 +2480,7 @@ export function aiDecide(app, aiPlayer) {
         logDecide("pathfindingTarget", { target_pos: targetPos });
         // app.pathArray[targetPos.x][targetPos.y] = 0;
       }
+
       if (aiPlayer.ai.mission === "retreat") {
         // console.log('get retreat path',aiPlayer.ai.retreating.point);
         aiPos = aiPlayer.currentPosition.cell.number;
@@ -2482,6 +2489,7 @@ export function aiDecide(app, aiPlayer) {
           y: aiPlayer.ai.retreating.point.y,
         };
       }
+
       if (aiPlayer.ai.mission === "retrieve") {
         logDecide("retrievePath", { target_pos: aiPlayer.ai.retrieving.point });
         aiPos = aiPlayer.currentPosition.cell.number;
