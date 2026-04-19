@@ -1,0 +1,17 @@
+Dashing checklist:
+
+    - A dash (that moves 2 tiles) that increases move speed, decreases move delay and has a short cooldown after the destination is reached, 
+    how quick does the move speed have to be and how shortened does the newMoveDelay need to be to enable the dasher to successfully execute an attack begun right as they dash cooldown ends assuming 
+                    - a) the 2nd player starts their attack the moment the dasher leaves their 1st tile which is 3 tiles away from the 2nd player
+                    - b) the 2nd player starts their attach the moment the 1st player reches the 1st tile
+                    - c) the moment the dasher leaves the 1st tile
+                    - A dash would need to be stamina hungry
+                    - by default and for now dash can only be done infacing direction (add dir prop to dash obj for future expansion)
+                    - dashing to a cell w/ another player has a high change to deflect and knock back 1 or both players (similar to jump collision)
+                    - parse/process in check movement
+                    - store pre dash move speed and if lower reset the players move speed back to that after dash complete/interrupt/cancel
+                    - initiate dash if dir aligned move input input is held passed at certiain thresh
+    add dash to player actions and keyPressed checks
+    can be attackedcancelled
+    can be fainted up the mid move to the 2nd cell if the opposite direction is pressed and based on a 'relexes' stat roll (check a mid move step tresh) like normal move cancel
+    if current speed is max from speed array, calc knew higher animatable speed
