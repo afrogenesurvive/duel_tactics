@@ -1,4 +1,4 @@
-function aiEvaluateMission(app, plyr) {
+export function aiEvaluateMission(app, plyr) {
   const logEval = (message, data = {}) => {
     app.globalLogger("ai.evaluate", message, { plyr_no: plyr.number, ...data }, { fn: "aiEvaluateMission" });
   };

@@ -1,4 +1,4 @@
-function aiEvaluateTargeting(app, plyr) {
+export function aiEvaluateTargeting(app, plyr) {
   const logEval = (message, data = {}) => {
     app.globalLogger("ai.evaluate", message, { plyr_no: plyr.number, ...data }, { fn: "aiEvaluateTargeting" });
   };

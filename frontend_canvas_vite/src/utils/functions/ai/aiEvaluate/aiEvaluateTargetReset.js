@@ -1,4 +1,4 @@
-function aiEvaluateTargetReset(app, plyr, hitByPlayerDirection) {
+export function aiEvaluateTargetReset(app, plyr, hitByPlayerDirection) {
   const logEval = (message, data = {}) => {
     app.globalLogger("ai.evaluate", message, { plyr_no: plyr.number, ...data }, { fn: "aiEvaluateTargetReset" });
   };

@@ -1,4 +1,4 @@
-function aiEvaluateCheckJumpDestination(app, plyr, destinationCell) {
+export function aiEvaluateCheckJumpDestination(app, plyr, destinationCell) {
   const logEval = (message, data = {}) => {
     app.globalLogger("ai.evaluate", message, { plyr_no: plyr.number, ...data }, { fn: "aiEvaluateCheckJumpDestination" });
   };

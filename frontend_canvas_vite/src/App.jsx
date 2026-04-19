@@ -196,6 +196,12 @@ import { scanTargetAreaThreat } from "./utils/functions/ai/scanTargetAreaThreat"
 import { safeDistanceRetreat } from "./utils/functions/ai/safeDistanceRetreat";
 import { aiResetRanges } from "./utils/functions/ai/aiResetRanges";
 import { aiEvaluate } from "./utils/functions/ai/aiEvaluate";
+import { aiEvaluateItemLogic } from "./utils/functions/ai/aiEvaluate/aiEvaluateItemLogic";
+import { aiEvaluateTargetReset } from "./utils/functions/ai/aiEvaluate/aiEvaluateTargetReset";
+import { aiEvaluateTargeting } from "./utils/functions/ai/aiEvaluate/aiEvaluateTargeting";
+import { aiEvaluateMission } from "./utils/functions/ai/aiEvaluate/aiEvaluateMission";
+import { aiEvaluateCheckJumpDestination } from "./utils/functions/ai/aiEvaluate/aiEvaluateCheckJumpDestination";
+
 import { aiDecide } from "./utils/functions/ai/aiDecide";
 import { aiParsePath } from "./utils/functions/ai/aiParsePath";
 import { aiAct } from "./utils/functions/ai/aiAct";
@@ -370,6 +376,11 @@ class App extends Component {
     this.aiParsePath = (...args) => aiParsePath(this, ...args);
     this.aiAct = (...args) => aiAct(this, ...args);
     this.updatePathArray = (...args) => updatePathArray(this, ...args);
+    this.aiEvaluateItemLogic = (...args) => aiEvaluateItemLogic(this, ...args);
+    this.aiEvaluateTargetReset = (...args) => aiEvaluateTargetReset(this, ...args);
+    this.aiEvaluateTargeting = (...args) => aiEvaluateTargeting(this, ...args);
+    this.aiEvaluateMission = (...args) => aiEvaluateMission(this, ...args);
+    this.aiEvaluateCheckJumpDestination = (...args) => aiEvaluateCheckJumpDestination(this, ...args);
   }
 
   componentDidMount() {
