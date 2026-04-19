@@ -1,3 +1,5 @@
+import { moveConstants } from "./moveConsts";
+
 export function killPlayer(app, player) {
   // console.log("killing player", player);
 
@@ -43,7 +45,7 @@ export function killPlayer(app, player) {
       y: 0,
     },
   };
-  player.newMoveDelay = MoveConstants.base.newMoveDelay;
+  player.newMoveDelay = moveConstants.base.newMoveDelay;
   player.strafing = {
     state: false,
     direction: "",
@@ -187,7 +189,7 @@ export function killPlayer(app, player) {
   //   },
   // };
   player.respawn = false;
-  player.speed = MoveConstants.base.speed;
+  player.speed = moveConstants.base.speed;
   player.terrainMoveSpeed = {
     state: false,
     speed: 0,

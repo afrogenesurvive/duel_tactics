@@ -1,3 +1,5 @@
+import { moveConstants } from "./moveConsts";
+
 export function addAiPlayer(app) {
   let newPlayerNumber = app.players.length + 1;
 
@@ -289,7 +291,7 @@ export function addAiPlayer(app) {
             y: 0,
           },
         },
-        newMoveDelay: MoveConstants.base.newMoveDelay,
+        newMoveDelay: moveConstants.base.newMoveDelay,
         strafing: {
           state: false,
           direction: "",
@@ -434,7 +436,7 @@ export function addAiPlayer(app) {
         },
         respawn: false,
         points: 0,
-        speed: MoveConstants.base.speed,
+        speed: moveConstants.base.speed,
         terrainMoveSpeed: {
           state: false,
           speed: 0,

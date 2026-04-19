@@ -1,4 +1,4 @@
-import { MoveConstants } from "./moveConstants";
+import { moveConstants } from "./moveConsts";
 
 export const playerDataArray = [
   {
@@ -94,7 +94,7 @@ export const playerDataArray = [
         y: 0,
       },
     },
-    newMoveDelay: MoveConstants.base.newMoveDelay,
+    newMoveDelay: moveConstants.base.newMoveDelay,
     strafing: {
       state: false,
       direction: "",
@@ -261,7 +261,7 @@ export const playerDataArray = [
     },
     respawn: false,
     points: 0,
-    speed: MoveConstants.base.speed,
+    speed: moveConstants.base.speed,
     terrainMoveSpeed: {
       state: false,
       speed: 0,
@@ -622,7 +622,7 @@ export const playerDataArray = [
         y: 0,
       },
     },
-    newMoveDelay: MoveConstants.base.newMoveDelay,
+    newMoveDelay: moveConstants.base.newMoveDelay,
     strafing: {
       state: false,
       direction: "",
@@ -789,7 +789,7 @@ export const playerDataArray = [
     },
     respawn: false,
     points: 0,
-    speed: MoveConstants.base.speed,
+    speed: moveConstants.base.speed,
     terrainMoveSpeed: {
       state: false,
       speed: 0,

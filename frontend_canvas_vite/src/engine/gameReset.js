@@ -1,4 +1,4 @@
-import { MoveConstants } from "./moveConstants";
+import { moveConstants } from "./moveConsts";
 
 export function gameReset(app, type) {
   console.log("resetting");
@@ -258,7 +258,7 @@ export function gameReset(app, type) {
           y: 0,
         },
       };
-      (player.MoveContants.base.newMoveDelay,
+      ((player.newMoveDelay = moveConstants.base.newMoveDelay),
         (player.strafing = {
           state: false,
           direction: "",
@@ -403,7 +403,7 @@ export function gameReset(app, type) {
       };
       player.respawn = false;
       player.points = 0;
-      player.speed = MoveContants.base.speed;
+      player.speed = moveConstants.base.speed;
       player.terrainMoveSpeed = {
         state: false,
         speed: 0,
