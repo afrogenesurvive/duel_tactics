@@ -1,5 +1,14 @@
 export function prePlayerPullCheck(app, puller, target, pullDirection) {
-  // console.log('pre player pull check');
+  const logPullInput = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pulling.input", message, data, { fn: "prePlayerPullCheck" });
+    }
+  };
+  const logPullCount = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pulling.count", message, data, { fn: "prePlayerPullCheck" });
+    }
+  };
 
   let resetPull = false;
   let targetCell = app.gridInfo.find((x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y);
@@ -12,7 +21,10 @@ export function prePlayerPullCheck(app, puller, target, pullDirection) {
     myCellCheck = false;
   }
   if (myCellCheck !== true) {
-    console.log("a barrier in player cell is blocking a player push");
+    logPullInput("blockedByPlayerCellBarrier", {
+      playerId: puller.number,
+      direction: puller.direction,
+    });
     resetPull = true;
   }
 
@@ -21,7 +33,11 @@ export function prePlayerPullCheck(app, puller, target, pullDirection) {
   if (targetPlayer.success.deflected.state === true || targetPlayer.action === "idle") {
     targetOpen = true;
   } else {
-    console.log("target player is no longer deflected or idle");
+    logPullInput("targetNotOpen", {
+      pullerId: puller.number,
+      targetId: targetPlayer.number,
+      result: "target player is no longer deflected or idle",
+    });
     resetPull = true;
   }
 
@@ -36,6 +52,11 @@ export function prePlayerPullCheck(app, puller, target, pullDirection) {
         direction: pullDirection,
         puller: puller.number,
       };
+      logPullCount("startPlayerPrePull", {
+        pullerId: puller.number,
+        targetId: targetPlayer.number,
+        direction: pullDirection,
+      });
     }
 
     if (puller.prePull.state === true) {
@@ -52,6 +73,12 @@ export function prePlayerPullCheck(app, puller, target, pullDirection) {
             1,
           );
         }
+        logPullCount("playerPrePullLimitReached", {
+          pullerId: puller.number,
+          targetId: targetPlayer.number,
+          count: puller.prePull.count,
+          limit: puller.prePull.limit,
+        });
         app.canPullPlayer(puller, targetCell, targetPlayer);
       } else {
         if (
@@ -61,6 +88,12 @@ export function prePlayerPullCheck(app, puller, target, pullDirection) {
           puller.prePull.puller === puller.number
         ) {
           puller.prePull.count++;
+          logPullCount("playerPrePullProgress", {
+            pullerId: puller.number,
+            targetId: targetPlayer.number,
+            count: puller.prePull.count,
+            limit: puller.prePull.limit,
+          });
           if (!puller.popups.find((x) => x.msg === "prePull")) {
             puller.popups.push({
               state: false,
@@ -83,6 +116,10 @@ export function prePlayerPullCheck(app, puller, target, pullDirection) {
             direction: "",
             puller: undefined,
           };
+          logPullInput("resetMismatch", {
+            pullerId: puller.number,
+            result: "pre pull player, target or direction has changed. Reset prepull",
+          });
 
           resetPull = true;
         }
@@ -95,11 +132,19 @@ export function prePlayerPullCheck(app, puller, target, pullDirection) {
   }
 
   if (targetOpen !== true) {
-    // console.log('player is unpullable');
+    logPullInput("targetNotOpen", {
+      pullerId: puller.number,
+      targetId: targetPlayer.number,
+      result: "player is unpullable. reset pull",
+    });
     resetPull = true;
   }
 
   if (resetPull === true) {
+    logPullInput("prePlayerPullReset", {
+      pullerId: puller.number,
+      targetId: targetPlayer?.number,
+    });
     puller.action = "idle";
     puller.prePull = {
       state: false,

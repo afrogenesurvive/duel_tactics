@@ -1,4 +1,9 @@
 export function checkDestination(app, player, pickupOnly) {
+  const logItem = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "items.pickup", message, data, { fn: "checkDestination" });
+    }
+  };
   // console.log('checking for item or enviro effect');
 
   app.players[player.number - 1].terrainMoveSpeed.state = false;
@@ -136,7 +141,11 @@ export function checkDestination(app, player, pickupOnly) {
             if (cell.item.subType === "crossbow") {
               let ammo = parseInt(cell.item.effect.split("+")[1]);
               app.players[player.number - 1].items.ammo = app.players[player.number - 1].items.ammo + ammo;
-              console.log("you already have a crossbow but take the ammo", ammo);
+              logItem("ammoPickup", {
+                playerId: player.number,
+                ammo,
+                result: "picked up ammo from duplicate crossbow",
+              });
               cell.item.effect = "ammo+0";
 
               if (!app.players[player.number - 1].popups.find((x) => x.msg === "pickupAmmo")) {
@@ -151,7 +160,10 @@ export function checkDestination(app, player, pickupOnly) {
                 });
               }
             } else {
-              console.log("you already have app weapon");
+              logItem("alreadyHaveWeapon", {
+                playerId: player.number,
+                itemName: cell.item.name,
+              });
               app.players[player.number - 1].statusDisplay = {
                 state: true,
                 status: "Already have app weapon!",
@@ -177,7 +189,9 @@ export function checkDestination(app, player, pickupOnly) {
 
       // NO SPACE TO PICKUP
       else if (cell.item.name !== "") {
-        console.log("Not enough space!!");
+        logItem("inventoryFull", {
+          playerId: player.number,
+        });
 
         app.players[player.number - 1].statusDisplay = {
           state: true,
@@ -252,7 +266,10 @@ export function checkDestination(app, player, pickupOnly) {
               });
             }
           } else {
-            console.log("you already have app armor");
+            logItem("alreadyHaveArmor", {
+              playerId: player.number,
+              itemName: cell.item.name,
+            });
             app.players[player.number - 1].statusDisplay = {
               state: true,
               status: "Already have app armor!",
@@ -276,7 +293,9 @@ export function checkDestination(app, player, pickupOnly) {
       }
       // INVENTORY FULL
       else if (cell.item.name !== "") {
-        console.log("Not enough space!!");
+        logItem("inventoryFull", {
+          playerId: player.number,
+        });
 
         app.players[player.number - 1].statusDisplay = {
           state: true,
@@ -527,6 +546,9 @@ export function checkDestination(app, player, pickupOnly) {
       app.gridInfo.find((x) => x.number.x === cell.number.x && x.number.y === cell.number.y).rubble = false;
     }
   } else {
-    console.log("check Destination pickuponly");
+    logItem("pickupOnly", {
+      playerId: player.number,
+      cell: cell?.number,
+    });
   }
 }

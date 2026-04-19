@@ -1,5 +1,14 @@
 export function preObstaclePullCheck(app, player, target, pullDirection) {
-  // console.log('pre obstacle pull check');
+  const logPullInput = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pulling.input", message, data, { fn: "preObstaclePullCheck" });
+    }
+  };
+  const logPullCount = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pulling.count", message, data, { fn: "preObstaclePullCheck" });
+    }
+  };
 
   let resetPull = false;
   let refCell = app.gridInfo.find((x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y);
@@ -12,12 +21,18 @@ export function preObstaclePullCheck(app, player, target, pullDirection) {
     myCellCheck = false;
   }
   if (myCellCheck !== true) {
-    console.log("a barrier in player cell is blocking a pull");
+    logPullInput("blockedByPlayerCellBarrier", {
+      playerId: player.number,
+      direction: player.direction,
+    });
     resetPull = true;
   }
 
   if (refCell.obstacle.state !== true) {
-    console.log("barrier not obstacle. Cant be pulled");
+    logPullInput("targetNotObstacle", {
+      playerId: player.number,
+      target: refCell.number,
+    });
     resetPull = true;
   } else if (refCell.obstacle.moving.pushable === true && myCellCheck === true && player.newPushPullDelay.state !== true) {
     if (player.prePull.state !== true && player.prePull.count === 0) {
@@ -30,6 +45,11 @@ export function preObstaclePullCheck(app, player, target, pullDirection) {
         direction: pullDirection,
         puller: player.number,
       };
+      logPullCount("preObstaclePullStart", {
+        playerId: player.number,
+        target: refCell.number,
+        direction: pullDirection,
+      });
     }
 
     if (player.prePull.state === true) {
@@ -46,6 +66,12 @@ export function preObstaclePullCheck(app, player, target, pullDirection) {
             1,
           );
         }
+        logPullCount("playerPreObstaclePullLimitReached", {
+          playerId: player.number,
+          target: refCell.number,
+          count: player.prePull.count,
+          limit: player.prePull.limit,
+        });
         app.canPullObstacle(player, refCell);
       } else {
         if (
@@ -55,6 +81,12 @@ export function preObstaclePullCheck(app, player, target, pullDirection) {
           player.prePull.puller === player.number
         ) {
           player.prePull.count++;
+          logPullCount("playerPreObstaclePullProgress", {
+            playerId: player.number,
+            target: refCell.number,
+            count: player.prePull.count,
+            limit: player.prePull.limit,
+          });
           if (!player.popups.find((x) => x.msg === "prePull")) {
             player.popups.push({
               state: false,
@@ -68,7 +100,6 @@ export function preObstaclePullCheck(app, player, target, pullDirection) {
           }
           // console.log('pre pulling the same obstacle. Continue',player.prePull.count,limit);
         } else {
-          // console.log('pre pull player, target or direction has changed. Reset prepull');
           player.action = "idle";
           player.prePull = {
             state: false,
@@ -78,6 +109,10 @@ export function preObstaclePullCheck(app, player, target, pullDirection) {
             direction: "",
             puller: undefined,
           };
+          logPullInput("resetMismatch", {
+            playerId: player.number,
+            result: "pre pull player, target or direction has changed. Reset preObstaclePull",
+          });
 
           resetPull = true;
         }
@@ -90,11 +125,18 @@ export function preObstaclePullCheck(app, player, target, pullDirection) {
   }
 
   if (refCell.obstacle.moving.pushable !== true) {
-    console.log("obstacle is instrinsically unpullable");
+    logPullInput("targetUnpullable", {
+      playerId: player.number,
+      target: refCell.number,
+    });
     resetPull = true;
   }
 
   if (resetPull === true) {
+    logPullInput("preObstaclePullReset", {
+      playerId: player.number,
+      target: refCell.number,
+    });
     player.action = "idle";
     player.prePull = {
       state: false,

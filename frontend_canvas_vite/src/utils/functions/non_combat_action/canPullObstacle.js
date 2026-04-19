@@ -1,4 +1,20 @@
 export function canPullObstacle(app, player, obstacleCell) {
+  const logPull = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pulling.execution", message, data, { fn: "canPullObstacle" });
+    }
+  };
+  const logObstacle = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "obstacle.pulled", message, data, { fn: "canPullObstacle" });
+    }
+  };
+  const logStamina = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.stamina.input", message, data, { fn: "canPullObstacle" });
+    }
+  };
+
   let resetPull = false;
   let thresholdMultiplier = app.rnJesus(1, 3);
   let canPullStrength = false;
@@ -62,7 +78,11 @@ export function canPullObstacle(app, player, obstacleCell) {
 
       if (obstacleCell.barrier.state === true) {
         if (obstacleCell.barrier.position === impactDirection) {
-          console.log("barrier in obstacle cell behind obstacle");
+          logPull("blockedByBarrierBehindObstacle", {
+            playerId: player.number,
+            obstacleId: obstacleCell.obstacle.id,
+            direction: impactDirection,
+          });
           canPullTargetFree = false;
           destCellOccupant = "barrier";
           resetPull = true;
@@ -165,7 +185,11 @@ export function canPullObstacle(app, player, obstacleCell) {
       //   limit: player.postPull.limit
       // }
       app.getTarget(player);
-      console.log("here", voidCenter);
+      logObstacle("voidPull", {
+        playerId: player.number,
+        obstacleId: obstacleCell.obstacle.id,
+        destination: voidCenter,
+      });
 
       app.players[player.number - 1].prePull.direction = "";
 
@@ -207,18 +231,22 @@ export function canPullObstacle(app, player, obstacleCell) {
       //   player.crits.pushBack - 2
       // );
     } else {
-      console.log(
-        "you are NOT strong enough to pull app obstacle",
-        pullStrengthPlayer,
-        pullStrengthThreshold,
-        player.crits.guardBreak - 2,
-        player.crits.pushBack - 2,
-      );
+      logPull("insufficientStrength", {
+        playerId: player.number,
+        obstacleId: obstacleCell.obstacle.id,
+        strength: pullStrengthPlayer,
+        threshold: pullStrengthThreshold,
+      });
       resetPull = true;
     }
 
     if (canPullTargetFree !== true) {
-      console.log("something is in the way of the obstacle to be pulled");
+      logPull("blocked", {
+        playerId: player.number,
+        obstacleId: obstacleCell.obstacle.id,
+        occupant: destCellOccupant,
+        result: "cannot pull because target cell is occupied",
+      });
       resetPull = true;
     }
 
@@ -345,6 +373,10 @@ export function canPullObstacle(app, player, obstacleCell) {
   } else {
     player.stamina.current = 0;
     resetPull = true;
+    logStamina("outOfStamina", {
+      playerId: player.number,
+      action: "pull",
+    });
     player.statusDisplay = {
       state: true,
       status: "Out of Stamina",

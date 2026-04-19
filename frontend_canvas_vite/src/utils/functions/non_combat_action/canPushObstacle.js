@@ -1,8 +1,24 @@
 export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
-  console.log("canPushObstacle", {
+  const logPush = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushing.execution", message, data, { fn: "canPushObstacle" });
+    }
+  };
+  const logObstacle = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "obstacle.pushed", message, data, { fn: "canPushObstacle" });
+    }
+  };
+  const logStamina = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.stamina.input", message, data, { fn: "canPushObstacle" });
+    }
+  };
+
+  logPush("attempt", {
     ownerType,
-    owner,
-    obstacleCell,
+    ownerId: ownerType === "player" ? owner.number : owner.id,
+    obstacleId: obstacleCell?.obstacle?.id,
     type,
   });
   // let pusherCellRef = app.gridInfo.find(x=> x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
@@ -155,7 +171,11 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
         }
 
         if (barrier === true) {
-          console.log("barrier in obstacle cell in front of obstacle");
+          logPush("blockedByBarrierFront", {
+            ownerId: ownerType === "player" ? owner.number : owner.id,
+            obstacleId: obstacleCell.obstacle.id,
+            direction: impactDirection,
+          });
           canPushTargetFree = false;
           destCellOccupant = "barrier";
           resetPush = true;
@@ -163,7 +183,11 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
         // --------------
 
         if (obstacleCell.barrier.position === impactDirection) {
-          console.log("barrier in obstacle cell behind obstacle");
+          logPush("blockedByBarrierBehind", {
+            ownerId: ownerType === "player" ? owner.number : owner.id,
+            obstacleId: obstacleCell.obstacle.id,
+            direction: impactDirection,
+          });
           canPushTargetFree = false;
           destCellOccupant = "barrier";
           resetPush = true;
@@ -186,7 +210,11 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
         }
 
         if (barrier === true) {
-          console.log("barrier in obstacle cell in front of obstacle2");
+          logPush("blockedByBarrierFront", {
+            ownerId: ownerType === "player" ? owner.number : owner.id,
+            obstacleId: obstacleCell.obstacle.id,
+            direction: impactDirection,
+          });
           canPushTargetFree = false;
           destCellOccupant = "barrier";
           resetPush = true;
@@ -194,7 +222,11 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
         // --------------
 
         if (obstacleCell.barrier.position === impactDirection) {
-          console.log("barrier in obstacle cell behind obstacle2");
+          logPush("blockedByBarrierBehind", {
+            ownerId: ownerType === "player" ? owner.number : owner.id,
+            obstacleId: obstacleCell.obstacle.id,
+            direction: impactDirection,
+          });
           canPushTargetFree = false;
           destCellOccupant = "barrier";
           resetPush = true;
@@ -219,13 +251,12 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
       }
     } else {
       if (ownerType === "player") {
-        console.log(
-          "you are NOT strong enough to push app obstacle",
-          pushStrengthPlayer,
-          pushStrengthThreshold,
-          owner.crits.guardBreak - 2,
-          owner.crits.pushBack - 2,
-        );
+        logPush("insufficientStrength", {
+          ownerId: ownerType === "player" ? owner.number : owner.id,
+          obstacleId: obstacleCell.obstacle.id,
+          strength: pushStrengthPlayer,
+          threshold: pushStrengthThreshold,
+        });
       }
 
       resetPush = true;
@@ -378,7 +409,11 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
     }
 
     if (canPushTargetFree !== true) {
-      // console.log('something is in the way of the obstacle to be pushed');
+      logPush("blocked", {
+        ownerId: ownerType === "player" ? owner.number : owner.id,
+        obstacleId: obstacleCell.obstacle.id,
+        occupant: destCellOccupant,
+      });
       resetPush = true;
     }
 
@@ -493,6 +528,10 @@ export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
   } else {
     owner.stamina.current = 0;
     resetPush = true;
+    logStamina("outOfStamina", {
+      ownerId: ownerType === "player" ? owner.number : owner.id,
+      action: "push",
+    });
     owner.statusDisplay = {
       state: true,
       status: "Out of Stamina",

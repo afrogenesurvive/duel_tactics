@@ -721,6 +721,7 @@ export function applyConstructorDefaults(app) {
         charge: false,
         feint: false,
         count: false,
+        attackedCancel: false,
       },
       defending: {
         peak: false,
@@ -762,6 +763,7 @@ export function applyConstructorDefaults(app) {
         count: false,
         execution: false,
         feint: false,
+        halfPushBack: false,
       },
       deflection: {
         input: false,
@@ -796,9 +798,13 @@ export function applyConstructorDefaults(app) {
       moving: false,
       falling: false,
       pushBack: false,
+      halfPushBack: false,
       trapTriggers: false,
       attacking: false,
       attacked: false,
+      pulled: false,
+      pushed: false,
+      count: false,
     },
     barrier: {
       trapTriggers: false,
@@ -809,6 +815,7 @@ export function applyConstructorDefaults(app) {
       trigger: false,
       timer: false,
       action: false,
+      count: false,
     },
     grid: {
       init: false,
@@ -821,6 +828,7 @@ export function applyConstructorDefaults(app) {
       use: false,
       switch: false,
       attacked: false,
+      obstacle: false,
     },
     directional_animations: {
       inputs: false,

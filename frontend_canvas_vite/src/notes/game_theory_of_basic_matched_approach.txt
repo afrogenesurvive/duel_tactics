@@ -1,0 +1,50 @@
+- Two players both with swords and matched stats
+
+- How close should they get?
+
+    
+    - It's safe to assume many encounters with matched stats and weapon ranges will start at the moment players have a single tile between them.
+        - They approach each other with 1 tile between them.
+            - Can 1 player move to the next tile. Making both players next other and execute the quickest sword attack before the other player executes their attack which starts once the first player has begun to move
+                - If so how many frames apart would they be?
+            - Can the first player defend successfully after moving to the tile right next to their opponent if the 2nd player starts to attack as the first player begins tehir move
+            - Can they defend successfully and execute a successful follow up attack before the 2nd player if the 2nd player starts attacking again right after their deflection from being defended ends
+            - Can the 1st player have enough time tododge successfully after moving to the tile right next to their opponent if the 2nd player starts attacking as the 1st player begins to move
+            - Can the 1st player succesfully dodge, recover and execute a follow up attack if the 2nd player starts attacking right after their initial attack cooldown.
+            - If 2 players are face to face, 
+                - Can a 1st player start an attack then feint it at the last moment possible and strafe to the tile adjecent them and successfully execute and attack IF the 2nd player starfes in the same direction the same time the attacker's count reaches the maximum possible point it can still feint at IF
+                    - a) the 2nd player starts attacking the momemt it arrives at the adjancent tile
+                    - b) the 2nd player starts defending the moment it arrives in the adjacent tile
+            
+            - Can a flanking 1st player leave the cell the 2nd player is targeting after moving the cell next to their opponent if they start flanking the moment their 1st move ends and assuming the 2nd player starts their attack the moment the 1st player made the 1st (pre-flanking approach movement)
+
+
+    - Is there any likely engagement with 2 tiles between players
+    - Could a series or single step retreats bait an opponent into rushing you?
+        - If I have 2 tiles between me and my opponent and I step back one more, he has no incentive to try to move to the cell in front of me (he has to move twice) UNLESS he can make 2 movements and dodge or execute a defense before I can execute amd attack.
+        - The above assumes I start my attack when he leaves the tile he starts in.
+
+        - If a player cannot do that with the current movement system, a dash can be added
+            - A dash (that moves 2 tiles) that increases move speed, decreases move delay and has a short cooldown after the destination is reached, how quick does the move speed have to be and how shortened does the newMoveDelay need to be to enable the dasher to successfully execute an attack begun right as they dash cooldown ends assuming 
+                - a) the 2nd player starts their attack the moment the dasher leaves their 1st tile which is 3 tiles away from the 2nd player
+                - b) the 2nd player starts their attach the moment the 1st player reches the 1st tile
+                - c) the moment the dasher leaves the 1st tile
+                - A dash would need to be stamina hungry
+                - by default and for now dash can only be done infacing direction (add dir prop to dash obj for future expansion)
+                - dashing to a cell w/ another player has a high change to deflect and knock back 1 or both players (similar to jump collision)
+                - parse/process in check movement
+                - store pre dash move speed and if lower reset the players move speed back to that after dash complete/interrupt/cancel
+                - initiate dash if dir aligned move input input is held passed at certiain thresh
+
+
+
+    
+
+
+
+
+
+
+
+
+- Add a reflext speed type stat that increases the move cancel range

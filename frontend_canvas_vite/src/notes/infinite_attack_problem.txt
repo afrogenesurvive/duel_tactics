@@ -1,6 +1,6 @@
 
 desc: "a player attacked (sword and unarmed) & deflected,
-should be able to recover and thrust defend or dodge (but not move) before the peak of the next attack 
+should be able to recover and thrust, defend or dodge (but not move) before the peak of the next attack 
 if the attacker executes the 2nd right after the 1st is finished && IF the defender/target is very quick)
 ....write out and create 'comparative atk/deflect timing' card",
 
@@ -29,6 +29,7 @@ Unarmed: thrust peak 15 / limit 30; slash peak 20 / limit 35
 Sword: thrust peak 25 / limit 40; slash peak 30 / limit 45
 Spear: thrust peak 35 / limit 50; slash peak 40 / limit 55
 Crossbow: thrust peak 35 / limit 40; slash peak 35 / limit 50
+
 Defend windup to peak (frames)
 From appState.js:760-920:
 
@@ -36,6 +37,8 @@ Unarmed: thrust/slash peak 10
 Sword: thrust/slash peak 15
 Spear: thrust/slash peak 20
 Crossbow: thrust/slash peak 17
+
+
 Dodge timing (base)
 Base dodge window and limit: appState.js:760-920
 Behavior and crit mods: checkDodge.js:1-120
@@ -43,6 +46,7 @@ Behavior and crit mods: checkDodge.js:1-120
 Limit: 20
 Peak window: start 8, end 12
 crits.dodge can shift start/end (max 4–5), but base window is 8–12.
+
 Deflection recovery length (frames)
 From appState.js:760-920, applied in setDeflection.jsx:1-40:
 

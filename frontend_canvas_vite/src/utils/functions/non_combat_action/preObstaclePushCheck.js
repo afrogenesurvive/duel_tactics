@@ -1,5 +1,14 @@
 export function preObstaclePushCheck(app, player, target) {
-  // console.log('pre push check');
+  const logPushInput = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushing.input", message, data, { fn: "preObstaclePushCheck" });
+    }
+  };
+  const logPushCount = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushing.count", message, data, { fn: "preObstaclePushCheck" });
+    }
+  };
 
   let resetPush = false;
   let refCell = app.gridInfo.find((x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y);
@@ -12,12 +21,18 @@ export function preObstaclePushCheck(app, player, target) {
     myCellCheck = false;
   }
   if (myCellCheck !== true) {
-    console.log("a barrier in player cell is blocking a push");
+    logPushInput("blockedByPlayerCellBarrier", {
+      playerId: player.number,
+      direction: player.direction,
+    });
     resetPush = true;
   }
 
   if (refCell.obstacle.state !== true) {
-    console.log("barrier not obstacle. Cant be pushed");
+    logPushInput("targetNotObstacle", {
+      playerId: player.number,
+      target: refCell.number,
+    });
     resetPush = true;
   } else if (refCell.obstacle.moving.pushable === true && myCellCheck === true && player.newPushPullDelay.state !== true) {
     if (player.prePush.state !== true && player.prePush.count === 0) {
@@ -30,6 +45,11 @@ export function preObstaclePushCheck(app, player, target) {
         direction: player.direction,
         pusher: player.number,
       };
+      logPushCount("startPreObstaclePush", {
+        playerId: player.number,
+        target: refCell.number,
+        direction: player.direction,
+      });
     }
 
     if (player.prePush.state === true) {
@@ -44,6 +64,12 @@ export function preObstaclePushCheck(app, player, target) {
             1,
           );
         }
+        logPushCount("prePushLimitReached", {
+          playerId: player.number,
+          target: refCell.number,
+          count: player.prePush.count,
+          limit: player.prePush.limit,
+        });
         app.canPushObstacle("player", player, refCell, "");
       } else {
         if (
@@ -53,6 +79,12 @@ export function preObstaclePushCheck(app, player, target) {
           player.prePush.pusher === player.number
         ) {
           player.prePush.count++;
+          logPushCount("preObstaclePushProgress", {
+            playerId: player.number,
+            target: refCell.number,
+            count: player.prePush.count,
+            limit: player.prePush.limit,
+          });
           if (!player.popups.find((x) => x.msg === "prePush")) {
             player.popups.push({
               state: false,
@@ -75,6 +107,10 @@ export function preObstaclePushCheck(app, player, target) {
             direction: "",
             pusher: undefined,
           };
+          logPushInput("resetMismatch", {
+            playerId: player.number,
+            result: "pre push player, target or direction has changed. Reset prepush",
+          });
 
           resetPush = true;
         }
@@ -87,11 +123,18 @@ export function preObstaclePushCheck(app, player, target) {
   }
 
   if (refCell.obstacle.moving.pushable !== true) {
-    console.log("obstacle is instrinsically unpushable");
+    logPushInput("targetUnpushable", {
+      playerId: player.number,
+      target: refCell.number,
+    });
     resetPush = true;
   }
 
   if (resetPush === true) {
+    logPushInput("preObstaclePushReset", {
+      playerId: player.number,
+      target: refCell.number,
+    });
     player.prePush = {
       state: false,
       count: 0,

@@ -1,15 +1,34 @@
 export function attackCellContents(app, type, ownerType, owner, targetCell, targetCell2, myCell, bolt) {
-  const stackLine = new Error().stack?.split("\n")[2]?.trim();
+  const attackLogType = ownerType === "player" ? (type === "melee" ? "player.attacking.melee" : "player.attacking.projectile") : "trap.action";
+  const logAttack = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, attackLogType, message, data, { fn: "attackCellContents" });
+    }
+  };
+  const logObstacle = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "obstacle.attacked", message, data, { fn: "attackCellContents" });
+    }
+  };
+  const logBarrier = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "barrier.attacked", message, data, { fn: "attackCellContents" });
+    }
+  };
+  const logItems = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "items.attacked", message, data, { fn: "attackCellContents" });
+    }
+  };
 
-  console.log("attackCellContents", {
+  logAttack("start", {
     type,
     ownerType,
-    owner,
-    targetCell,
-    targetCell2,
-    myCell,
-    bolt,
-    // stack: stackLine,
+    ownerId: ownerType === "player" ? owner.number : owner.id,
+    target: targetCell?.number,
+    target2: targetCell2?.number,
+    myCell: myCell?.number,
+    boltId: bolt?.id,
   });
 
   let damage;
@@ -40,18 +59,15 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
         if (weaponCheck === true) {
           // DAMAGE, DON'T DESTROY FWD OBSTACLE
           if (targetCell.obstacle.hp - calcedDamage > 0) {
-            console.log(
+            logObstacle("damaged", {
               ownerType,
-              owner.number,
-              owner.id,
-              "hit an obstacle ",
-              targetCell.obstacle.id,
-              "w/ a",
-              ownerWeaponType,
-              "@ ",
-              targetCell.number,
-              "and damaged it.",
-            );
+              ownerId: ownerType === "player" ? owner.number : owner.id,
+              obstacleId: targetCell.obstacle.id,
+              weaponType: ownerWeaponType,
+              target: targetCell.number,
+              damage: calcedDamage,
+              result: "damaged obstacle",
+            });
             let hp = targetCell.obstacle.hp - calcedDamage;
 
             targetCell.obstacle = {
@@ -89,18 +105,15 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
 
           // DESTROY OBSTACLE W/ OR W/O RUBBLE
           else if (targetCell.obstacle.hp - calcedDamage <= 0) {
-            console.log(
+            logObstacle("destroyed", {
               ownerType,
-              owner.number,
-              owner.id,
-              "hit an obstacle ",
-              targetCell.obstacle.id,
-              "w/ a",
-              ownerWeaponType,
-              "@ ",
-              targetCell.number,
-              "and destroyed it. Drop items, leave rubble?",
-            );
+              ownerId: owner?.id ?? owner?.number,
+              obstacleId: targetCell.obstacle.id,
+              weaponType: ownerWeaponType,
+              target: targetCell.number,
+              dropItems: targetCell.obstacle.items?.length > 0,
+              leaveRubble: targetCell.obstacle.destructible.leaveRubble === true,
+            });
             let itemsToDrop = [];
             if (targetCell.obstacle.destructible.leaveRubble === true && targetCell.terrain.type !== "void" && targetCell.terrain.type !== "deep") {
               // console.log('leave rubble on ',targetCell.number,'removing obstacle');
@@ -230,20 +243,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
               cell: app.gridInfo.find((x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y),
             });
           }
-          console.log(
+          logObstacle("weaponNoEffect", {
             ownerType,
-            owner.number,
-            owner.id,
-            "hit an obstacle ",
-            targetCell.obstacle.id,
-            "w/ a",
-            ownerWeaponType,
-            "@ ",
-            targetCell.number,
-            " but their current weapon cannot destroy app, they need",
-            targetCell.obstacle.destructible.weapons,
-            ". pushback obstacle. Deflect, pushback attacker?",
-          );
+            ownerId: owner?.id ?? owner?.number,
+            obstacleId: targetCell.obstacle.id,
+            weaponType: ownerWeaponType,
+            target: targetCell.number,
+            requiredWeapons: targetCell.obstacle.destructible.weapons,
+          });
 
           if (app.rnJesus(0, 2) === 1) {
             if (type === "bolt" || type === "flyOverBolt") {
@@ -266,7 +273,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
               }
 
               if (owner.currentWeapon.name === "") {
-                console.log("app obstacle is stronger than your fist. Take damage?");
+                logObstacle("fistTooWeak", {
+                  ownerId: owner?.id ?? owner?.number,
+                  obstacleId: targetCell.obstacle.id,
+                });
                 let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
                 if (takeDamage === 1) {
                   app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -281,18 +291,13 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
       // INDESTRUCTIBLE OBSTACLE. PUSH OBSTACLE?
       else {
         // console.log('attacking invurnerable obstacle w/ bolt');
-        console.log(
+        logObstacle("indestructible", {
           ownerType,
-          owner.number,
-          owner.id,
-          "hit an obstacle ",
-          targetCell.obstacle.id,
-          "w/ a",
-          ownerWeaponType,
-          "@ ",
-          targetCell.number,
-          " but it is indestructible. pushback obstacle. Deflect, pushback attacker?",
-        );
+          ownerId: owner?.id ?? owner?.number,
+          obstacleId: targetCell.obstacle.id,
+          weaponType: ownerWeaponType,
+          target: targetCell.number,
+        });
         if (
           !app.cellPopups.find((x) => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)
         ) {
@@ -326,7 +331,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
             }
 
             if (owner.currentWeapon.name === "") {
-              console.log("app obstacle is stronger than your fist. Take damage?");
+              logObstacle("fistTooWeak", {
+                ownerId: owner?.id ?? owner?.number,
+                obstacleId: targetCell.obstacle.id,
+              });
               let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
               if (takeDamage === 1) {
                 app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -356,18 +364,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
         if (weaponCheck === true) {
           // DAMAGE, DON'T DESTROY FWD OBSTACLE
           if (targetCell2.obstacle.hp - calcedDamage > 0) {
-            console.log(
+            logObstacle("damaged", {
               ownerType,
-              owner.number,
-              owner.id,
-              "hit an obstacle ",
-              targetCell2.obstacle.id,
-              "w/ a",
-              ownerWeaponType,
-              "@ ",
-              targetCell2.number,
-              "and damaged it.",
-            );
+              ownerId: owner?.id ?? owner?.number,
+              obstacleId: targetCell2.obstacle.id,
+              weaponType: ownerWeaponType,
+              target: targetCell2.number,
+              damage: calcedDamage,
+            });
             let hp = targetCell2.obstacle.hp - calcedDamage;
 
             targetCell2.obstacle = {
@@ -405,18 +409,15 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
 
           // DESTROY OBSTACLE W/ OR W/O RUBBLE
           else if (targetCell2.obstacle.hp - calcedDamage <= 0) {
-            console.log(
+            logObstacle("destroyed", {
               ownerType,
-              owner.number,
-              owner.id,
-              "hit an obstacle ",
-              targetCell2.obstacle.id,
-              "w/ a",
-              ownerWeaponType,
-              "@ ",
-              targetCell2.number,
-              "and destroyed it. Drop items, leave rubble?",
-            );
+              ownerId: owner?.id ?? owner?.number,
+              obstacleId: targetCell2.obstacle.id,
+              weaponType: ownerWeaponType,
+              target: targetCell2.number,
+              dropItems: targetCell2.obstacle.items?.length > 0,
+              leaveRubble: targetCell2.obstacle.destructible.leaveRubble === true,
+            });
             let itemsToDrop = [];
             if (
               targetCell2.obstacle.destructible.leaveRubble === true &&
@@ -535,20 +536,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
           //   targetCell2.obstacle.destructible.weapons,
           //   ". Deflect player?"
           // );
-          console.log(
+          logObstacle("weaponNoEffect", {
             ownerType,
-            owner.number,
-            owner.id,
-            "hit an obstacle ",
-            targetCell2.obstacle.id,
-            "w/ a",
-            ownerWeaponType,
-            "@ ",
-            targetCell2.number,
-            " but their current weapon cannot destroy app, they need",
-            targetCell2.obstacle.destructible.weapons,
-            ". pushback obstacle. Deflect attacker?",
-          );
+            ownerId: owner?.id ?? owner?.number,
+            obstacleId: targetCell2.obstacle.id,
+            weaponType: ownerWeaponType,
+            target: targetCell2.number,
+            requiredWeapons: targetCell2.obstacle.destructible.weapons,
+          });
           if (
             !app.cellPopups.find(
               (x) => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y,
@@ -588,7 +583,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
               }
 
               if (owner.currentWeapon.name === "") {
-                console.log("app obstacle is stronger than your fist. Take damage?");
+                logObstacle("fistTooWeak", {
+                  ownerId: owner?.id ?? owner?.number,
+                  obstacleId: targetCell2.obstacle.id,
+                });
                 let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
                 if (takeDamage === 1) {
                   app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -603,18 +601,13 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
       // INDESTRUCTIBLE OBSTACLE. PUSH OBSTACLE?
       else {
         // console.log('attacking invurnerable obstacle w/ bolt');
-        console.log(
+        logObstacle("indestructible", {
           ownerType,
-          owner.number,
-          owner.id,
-          "hit an obstacle ",
-          targetCell2.obstacle.id,
-          "w/ a",
-          ownerWeaponType,
-          "@ ",
-          targetCell2.number,
-          " but it is indestructible. pushback obstacle. Deflect, pushback attacker?",
-        );
+          ownerId: owner?.id ?? owner?.number,
+          obstacleId: targetCell2.obstacle.id,
+          weaponType: ownerWeaponType,
+          target: targetCell2.number,
+        });
         if (
           !app.cellPopups.find((x) => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)
         ) {
@@ -648,7 +641,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
             }
 
             if (owner.currentWeapon.name === "") {
-              console.log("app obstacle is stronger than your fist. Take damage?");
+              logObstacle("fistTooWeak", {
+                ownerId: owner?.id ?? owner?.number,
+                obstacleId: targetCell2.obstacle.id,
+              });
               let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
               if (takeDamage === 1) {
                 app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -687,18 +683,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
         if (weaponCheck === true) {
           // DAMAGE, DON'T DESTROY FWD BARRIER
           if (myCell.barrier.hp - calcedDamage > 0) {
-            console.log(
+            logBarrier("damaged", {
               ownerType,
-              owner.number,
-              owner.id,
-              "hit a barrier ",
-              myCell.barrier.id,
-              "w/ a",
-              ownerWeaponType,
-              "@ ",
-              myCell.number,
-              " and damaged it.",
-            );
+              ownerId: owner?.id ?? owner?.number,
+              barrierId: myCell.barrier.id,
+              weaponType: ownerWeaponType,
+              target: myCell.number,
+              damage: calcedDamage,
+            });
             // app.gridInfo.find(elem => elem.number.x === myCell.number.x && elem.number.y === myCell.number.y ).barrier.hp -= calcedDamage;
 
             let hp = myCell.barrier.hp - calcedDamage;
@@ -728,18 +720,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
 
           // DESTROY FWD BARRIER W/ OR W/O RUBBLE
           else if (myCell.barrier.hp - calcedDamage <= 0) {
-            console.log(
+            logBarrier("destroyed", {
               ownerType,
-              owner.number,
-              owner.id,
-              "hit a barrier ",
-              myCell.barrier.id,
-              "w/ a",
-              ownerWeaponType,
-              "@ ",
-              myCell.number,
-              " and destroyed it. leave rubble?",
-            );
+              ownerId: owner?.id ?? owner?.number,
+              barrierId: myCell.barrier.id,
+              weaponType: ownerWeaponType,
+              target: myCell.number,
+              leaveRubble: myCell.barrier.destructible.leaveRubble === true,
+            });
             if (
               myCell.barrier.destructible.leaveRubble === true &&
               myCell.obstacle.state !== true &&
@@ -839,20 +827,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
           //   myCell.obstacle.weapons,
           //   ". Deflect player?"
           // );
-          console.log(
+          logBarrier("weaponNoEffect", {
             ownerType,
-            owner.number,
-            owner.id,
-            "hit an barrier ",
-            myCell.barrier.id,
-            "w/ a",
-            ownerWeaponType,
-            "@ ",
-            myCell.number,
-            " but their current weapon cannot destroy app, they need",
-            myCell.barrier.destructible.weapons,
-            ". Deflect, pushback attacker?",
-          );
+            ownerId: owner?.id ?? owner?.number,
+            barrierId: myCell.barrier.id,
+            weaponType: ownerWeaponType,
+            target: myCell.number,
+            requiredWeapons: myCell.barrier.destructible.weapons,
+          });
           if (!app.cellPopups.find((x) => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
             app.cellPopups.push({
               state: false,
@@ -878,7 +860,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
               }
 
               if (owner.currentWeapon.name === "") {
-                console.log("app barrier is stronger than your fist. Take damage?");
+                logBarrier("fistTooWeak", {
+                  ownerId: owner?.id ?? owner?.number,
+                  barrierId: myCell.barrier.id,
+                });
                 let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
                 if (takeDamage === 1) {
                   app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -894,18 +879,13 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
       // INDESTRUCTIBLE FWD BARRIER
       else {
         // console.log('attacking invurnerable barrier w/ bolt');
-        console.log(
+        logBarrier("indestructible", {
           ownerType,
-          owner.number,
-          owner.id,
-          "hit an barrier ",
-          myCell.barrier.id,
-          "w/ a",
-          ownerWeaponType,
-          "@ ",
-          myCell.number,
-          " but it is indestructible. Deflect,pushback attacker?",
-        );
+          ownerId: owner?.id ?? owner?.number,
+          barrierId: myCell.barrier.id,
+          weaponType: ownerWeaponType,
+          target: myCell.number,
+        });
         if (!app.cellPopups.find((x) => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
           app.cellPopups.push({
             state: false,
@@ -931,7 +911,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
             }
 
             if (owner.currentWeapon.name === "") {
-              console.log("app barrier is stronger than your fist. Take damage?");
+              logBarrier("fistTooWeak", {
+                ownerId: owner?.id ?? owner?.number,
+                barrierId: myCell.barrier.id,
+              });
               let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
               if (takeDamage === 1) {
                 app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -962,18 +945,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
           if (weaponCheck === true) {
             // DAMAGE, DON'T DESTROY FWD BARRIER
             if (targetCell.barrier.hp - calcedDamage > 0) {
-              console.log(
+              logBarrier("damaged", {
                 ownerType,
-                owner.number,
-                owner.id,
-                "hit an barrier ",
-                targetCell.barrier.id,
-                "w/ a",
-                ownerWeaponType,
-                "@ ",
-                targetCell.number,
-                " and damaged it",
-              );
+                ownerId: owner?.id ?? owner?.number,
+                barrierId: targetCell.barrier.id,
+                weaponType: ownerWeaponType,
+                target: targetCell.number,
+                damage: calcedDamage,
+              });
               // app.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= calcedDamage;
 
               let hp = targetCell.barrier.hp - calcedDamage;
@@ -1003,18 +982,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
 
             // DESTROY FWD BARRIER W/ OR W/O RUBBLE
             else if (targetCell.barrier.hp - calcedDamage <= 0) {
-              console.log(
+              logBarrier("destroyed", {
                 ownerType,
-                owner.number,
-                owner.id,
-                "hit an barrier ",
-                targetCell.barrier.id,
-                "w/ a",
-                ownerWeaponType,
-                "@ ",
-                targetCell.number,
-                " and destroyed it",
-              );
+                ownerId: owner?.id ?? owner?.number,
+                barrierId: targetCell.barrier.id,
+                weaponType: ownerWeaponType,
+                target: targetCell.number,
+                leaveRubble: targetCell.barrier.destructible.leaveRubble === true,
+              });
               if (
                 targetCell.barrier.destructible.leaveRubble === true &&
                 targetCell.obstacle.state !== true &&
@@ -1114,20 +1089,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
             //   targetCell.obstacle.weapons,
             //   ". Deflect player?"
             // );
-            console.log(
+            logBarrier("weaponNoEffect", {
               ownerType,
-              owner.number,
-              owner.id,
-              "hit an barrier ",
-              targetCell.barrier.id,
-              "w/ a",
-              ownerWeaponType,
-              "@ ",
-              targetCell.number,
-              " but their current weapon cannot destroy app, they need",
-              targetCell.barrier.destructible.weapons,
-              ". Deflect,pushback attacker?",
-            );
+              ownerId: owner?.id ?? owner?.number,
+              barrierId: targetCell.barrier.id,
+              weaponType: ownerWeaponType,
+              target: targetCell.number,
+              requiredWeapons: targetCell.barrier.destructible.weapons,
+            });
             if (
               !app.cellPopups.find(
                 (x) => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y,
@@ -1157,7 +1126,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
                 }
 
                 if (owner.currentWeapon.name === "") {
-                  console.log("app barrier is stronger than your fist. Take damage?");
+                  logBarrier("fistTooWeak", {
+                    ownerId: owner?.id ?? owner?.number,
+                    barrierId: targetCell.barrier.id,
+                  });
                   let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
                   if (takeDamage === 1) {
                     app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -1172,18 +1144,13 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
 
         // INDESTRUCTIBLE FWD BARRIER
         else {
-          console.log(
+          logBarrier("indestructible", {
             ownerType,
-            owner.number,
-            owner.id,
-            "hit an barrier ",
-            targetCell.barrier.id,
-            "w/ a",
-            ownerWeaponType,
-            "@ ",
-            targetCell.number,
-            " but it is indestructible. Deflect,pushback attacker?",
-          );
+            ownerId: owner?.id ?? owner?.number,
+            barrierId: targetCell.barrier.id,
+            weaponType: ownerWeaponType,
+            target: targetCell.number,
+          });
           // console.log('attacking invurnerable barrier w/ bolt');
           if (
             !app.cellPopups.find((x) => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)
@@ -1212,7 +1179,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
               }
 
               if (owner.currentWeapon.name === "") {
-                console.log("app barrier is stronger than your fist. Take damage?");
+                logBarrier("fistTooWeak", {
+                  ownerId: owner?.id ?? owner?.number,
+                  barrierId: targetCell.barrier.id,
+                });
                 let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
                 if (takeDamage === 1) {
                   app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -1242,18 +1212,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
           if (weaponCheck === true) {
             // DAMAGE, DON'T DESTROY FWD BARRIER
             if (targetCell2.barrier.hp - calcedDamage > 0) {
-              console.log(
+              logBarrier("damaged", {
                 ownerType,
-                owner.number,
-                owner.id,
-                "hit an barrier ",
-                targetCell2.barrier.id,
-                "w/ a",
-                ownerWeaponType,
-                "@ ",
-                targetCell2.number,
-                " and damaged it",
-              );
+                ownerId: owner?.id ?? owner?.number,
+                barrierId: targetCell2.barrier.id,
+                weaponType: ownerWeaponType,
+                target: targetCell2.number,
+                damage: calcedDamage,
+              });
               // app.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).barrier.hp -= calcedDamage;
 
               let hp = targetCell2.barrier.hp - calcedDamage;
@@ -1283,18 +1249,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
 
             // DESTROY FWD BARRIER W/ OR W/O RUBBLE
             else if (targetCell2.barrier.hp - calcedDamage <= 0) {
-              console.log(
+              logBarrier("destroyed", {
                 ownerType,
-                owner.number,
-                owner.id,
-                "hit an barrier ",
-                targetCell2.barrier.id,
-                "w/ a",
-                ownerWeaponType,
-                "@ ",
-                targetCell2.number,
-                " and destroyed it",
-              );
+                ownerId: owner?.id ?? owner?.number,
+                barrierId: targetCell2.barrier.id,
+                weaponType: ownerWeaponType,
+                target: targetCell2.number,
+                leaveRubble: targetCell2.barrier.destructible.leaveRubble === true,
+              });
               if (
                 targetCell2.barrier.destructible.leaveRubble === true &&
                 targetCell2.obstacle.state !== true &&
@@ -1394,20 +1356,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
             //   targetCell2.obstacle.weapons,
             //   ". Deflect player?"
             // );
-            onsole.log(
+            logBarrier("weaponNoEffect", {
               ownerType,
-              owner.number,
-              owner.id,
-              "hit an barrier ",
-              targetCell2.barrier.id,
-              "w/ a",
-              ownerWeaponType,
-              "@ ",
-              targetCell2.number,
-              " but their current weapon cannot destroy app, they need",
-              targetCell2.barrier.destructible.weapons,
-              ". Deflect,pushback attacker?",
-            );
+              ownerId: owner?.id ?? owner?.number,
+              barrierId: targetCell2.barrier.id,
+              weaponType: ownerWeaponType,
+              target: targetCell2.number,
+              requiredWeapons: targetCell2.barrier.destructible.weapons,
+            });
             if (
               !app.cellPopups.find(
                 (x) => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y,
@@ -1452,18 +1408,13 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
 
         // INDESTRUCTIBLE FWD BARRIER
         else {
-          console.log(
+          logBarrier("indestructible", {
             ownerType,
-            owner.number,
-            owner.id,
-            "hit an barrier ",
-            targetCell2.barrier.id,
-            "w/ a",
-            ownerWeaponType,
-            "@ ",
-            targetCell2.number,
-            " but it is indestructible. deflected, pushback attack?",
-          );
+            ownerId: owner?.id ?? owner?.number,
+            barrierId: targetCell2.barrier.id,
+            weaponType: ownerWeaponType,
+            target: targetCell2.number,
+          });
           // console.log('attacking invurnerable barrier w/ bolt');
           if (
             !app.cellPopups.find(
@@ -1494,7 +1445,10 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
               }
 
               if (owner.currentWeapon.name === "") {
-                console.log("app barrier is stronger than your fist. Take damage?");
+                logBarrier("fistTooWeak", {
+                  ownerId: owner?.id ?? owner?.number,
+                  barrierId: targetCell2.barrier.id,
+                });
                 let takeDamage = app.rnJesus(1, owner.crits.guardBreak);
                 if (takeDamage === 1) {
                   app.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -1522,18 +1476,14 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
     }
     if (range === 1) {
       if (targetCell && targetCell.item.name !== "" && calcedDamage > 0 && ownerWeaponName !== "") {
-        console.log(
+        logItems("destroyed", {
           ownerType,
-          owner.number,
-          owner.id,
-          "hit an item ",
-          targetCell.item.name,
-          "w/ a",
-          ownerWeaponType,
-          "@ ",
-          targetCell.number,
-          " and destroyed it.",
-        );
+          ownerId: owner?.id ?? owner?.number,
+          itemName: targetCell.item.name,
+          weaponType: ownerWeaponType,
+          target: targetCell.number,
+          damage: calcedDamage,
+        });
 
         if (ownerType === "player") {
           app.players[owner.number - 1].statusDisplay = {
@@ -1566,23 +1516,25 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
       }
 
       if ((targetCell.rubble === true) & (calcedDamage > 0)) {
-        console.log(ownerType, owner.number, owner.id, "hit rubble w/ a", ownerWeaponType, "@ ", targetCell.number, " and destroyed it.");
+        logItems("rubbleDestroyed", {
+          ownerType,
+          ownerId: owner?.id ?? owner?.number,
+          weaponType: ownerWeaponType,
+          target: targetCell.number,
+          damage: calcedDamage,
+        });
         app.gridInfo.find((elem) => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y).rubble = false;
       }
     } else {
       if (targetCell2 && targetCell2.item.name !== "" && calcedDamage > 0 && ownerWeaponName !== "") {
-        console.log(
+        logItems("destroyed", {
           ownerType,
-          owner.number,
-          owner.id,
-          "hit an item ",
-          targetCell2.item.name,
-          "w/ a",
-          ownerWeaponType,
-          "@ ",
-          targetCell2.number,
-          " and destroyed it.",
-        );
+          ownerId: owner?.id ?? owner?.number,
+          itemName: targetCell2.item.name,
+          weaponType: ownerWeaponType,
+          target: targetCell2.number,
+          damage: calcedDamage,
+        });
         if (ownerType === "player") {
           app.players[owner.number - 1].statusDisplay = {
             state: true,
@@ -1614,7 +1566,13 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
       }
 
       if ((targetCell2.rubble === true) & (calcedDamage > 0)) {
-        console.log(ownerType, owner.number, owner.id, "hit rubble w/ a", ownerWeaponType, "@ ", targetCell2.number, " and destroyed it.");
+        logItems("rubbleDestroyed", {
+          ownerType,
+          ownerId: owner?.id ?? owner?.number,
+          weaponType: ownerWeaponType,
+          target: targetCell2.number,
+          damage: calcedDamage,
+        });
         // console.log('damage/clear rubble @ ',targetCell2.number);
         app.gridInfo.find((elem) => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y).rubble = false;
       }
@@ -1821,6 +1779,11 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
       }
       if (targetCell.elevation.number > myCell.elevation.number) {
         console.log("target is above your elevation");
+        logAttack("targetAboveElevation", {
+          target: targetCell.number,
+          targetElevation: targetCell.elevation.number,
+          ownerElevation: myCell.elevation.number,
+        });
       }
     }
 
@@ -1885,6 +1848,13 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
     if (myCellBarrier !== true && fwdBarrier !== true) {
       if (targetCell.obstacle.state === true && targetCell.obstacle.height >= 1) {
         console.log("player ", owner.number, "hit obstacle ", targetCell.obstacle.name, " @ ", targetCell.number, type, " for ", damage, " damage");
+        logObstacle("hit", {
+          ownerId: owner?.id ?? owner?.number,
+          obstacleName: targetCell.obstacle.name,
+          target: targetCell.number,
+          attackType: type,
+          damage,
+        });
         handleObstacleDamage(damage, 1);
       }
       // NO OBSTACLE. REAR BARRIER CHECK

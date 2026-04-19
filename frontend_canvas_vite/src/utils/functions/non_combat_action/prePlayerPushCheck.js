@@ -1,5 +1,14 @@
 export function prePlayerPushCheck(app, pusher, target) {
-  // console.log('prePlayerPushCheck');
+  const logPushInput = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushing.input", message, data, { fn: "prePlayerPushCheck" });
+    }
+  };
+  const logPushCount = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushing.count", message, data, { fn: "prePlayerPushCheck" });
+    }
+  };
 
   let resetPush = false;
   let targetCell = app.gridInfo.find((x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y);
@@ -12,7 +21,10 @@ export function prePlayerPushCheck(app, pusher, target) {
     myCellCheck = false;
   }
   if (myCellCheck !== true) {
-    console.log("a barrier in player cell is blocking a player push");
+    logPushInput("blockedByPlayerCellBarrier", {
+      pusherId: pusher.number,
+      direction: pusher.direction,
+    });
     resetPush = true;
   }
 
@@ -21,13 +33,16 @@ export function prePlayerPushCheck(app, pusher, target) {
   if (targetPlayer.success.deflected.state === true || targetPlayer.action === "idle") {
     targetOpen = true;
   } else {
-    // console.log('target player is no longer deflected or idle');
+    logPushInput("targetNotOpen", {
+      pusherId: pusher.number,
+      targetId: targetPlayer.number,
+      result: "target player is no longer deflected or idle",
+    });
     resetPush = true;
   }
 
   if (targetOpen === true && myCellCheck === true && pusher.newPushPullDelay.state !== true) {
     if (pusher.prePush.state !== true && pusher.prePush.count === 0) {
-      // console.log('start player pre push');
       pusher.prePush = {
         state: true,
         count: pusher.prePush.count++,
@@ -36,6 +51,11 @@ export function prePlayerPushCheck(app, pusher, target) {
         direction: pusher.direction,
         pusher: pusher.number,
       };
+      logPushCount("prePlayerPushStart", {
+        pusherId: pusher.number,
+        targetId: targetPlayer.number,
+        direction: pusher.direction,
+      });
     }
 
     if (pusher.prePush.state === true) {
@@ -50,6 +70,12 @@ export function prePlayerPushCheck(app, pusher, target) {
             1,
           );
         }
+        logPushCount("playerPrePushLimitReached", {
+          pusherId: pusher.number,
+          targetId: targetPlayer.number,
+          count: pusher.prePush.count,
+          limit: pusher.prePush.limit,
+        });
         app.canPushPlayer(pusher, targetCell, targetPlayer);
       } else {
         if (
@@ -59,6 +85,12 @@ export function prePlayerPushCheck(app, pusher, target) {
           pusher.prePush.pusher === pusher.number
         ) {
           pusher.prePush.count++;
+          logPushCount("playerPrePushProgress", {
+            pusherId: pusher.number,
+            targetId: targetPlayer.number,
+            count: pusher.prePush.count,
+            limit: pusher.prePush.limit,
+          });
           if (!pusher.popups.find((x) => x.msg === "prePush")) {
             pusher.popups.push({
               state: false,
@@ -81,6 +113,10 @@ export function prePlayerPushCheck(app, pusher, target) {
             direction: "",
             pusher: undefined,
           };
+          logPushInput("resetMismatch", {
+            pusherId: pusher.number,
+            result: "pre push player, target or direction has changed. Reset prepush",
+          });
 
           resetPush = true;
         }
@@ -93,11 +129,19 @@ export function prePlayerPushCheck(app, pusher, target) {
   }
 
   if (targetOpen !== true) {
-    // console.log('player is unpushable');
+    logPushInput("targetNotOpen", {
+      pusherId: pusher.number,
+      targetId: targetPlayer.number,
+      result: "player is unpushable. reset push",
+    });
     resetPush = true;
   }
 
   if (resetPush === true) {
+    logPushInput("prePlayerPushReset", {
+      pusherId: pusher.number,
+      targetId: targetPlayer?.number,
+    });
     pusher.prePush = {
       state: false,
       count: 0,
