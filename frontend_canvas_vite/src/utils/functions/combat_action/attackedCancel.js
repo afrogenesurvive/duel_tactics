@@ -323,8 +323,10 @@ export function attackedCancel(app, player) {
       };
       player.dashing = {
         state: false,
+        originalDirection: "",
+        dashDirection: "",
         origin: {},
-        move_step_count_1: 0,
+        moveStepCount_1: 0,
         cell_1: {
           x: null,
           y: null,
@@ -332,7 +334,7 @@ export function attackedCancel(app, player) {
           occupant_id: {},
         },
         cell_1_arrived: false,
-        move_step_count_2: 0,
+        moveStepCount_2: 0,
         cell_2: {
           x: null,
           y: null,
@@ -340,8 +342,13 @@ export function attackedCancel(app, player) {
           occupant_id: {},
         },
         cell_2_arrived: false,
-        original_move_speed: null,
-        dash_move_speed: undefined,
+        originalMoveSpeed: null,
+        dashMoveSpeed: undefined,
+        postDash: {
+          state: false,
+          count: 0,
+          limit: 10,
+        },
       };
       app.players[player.number - 1].statusDisplay = {
         state: true,

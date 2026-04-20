@@ -1,7 +1,11 @@
 export function aiAct(app, plyr) {
   let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
   const logAct = (message, data = {}) => {
-    app.globalLogger("ai.act", message, { plyr_no: plyr.number, ...data }, { fn: "aiAct" });
+    if (data.instructions) {
+      app.globalLogger("ai.instructions", message, { plyr_no: plyr.number, ...data }, { fn: "aiAct" });
+    } else {
+      app.globalLogger("ai.act", message, { plyr_no: plyr.number, ...data }, { fn: "aiAct" });
+    }
   };
 
   const logInstructions = (message, data = {}) => {
@@ -13,6 +17,18 @@ export function aiAct(app, plyr) {
       `ai.instructions`,
       message,
       { plyr_no: plyr.number, mission: plyr.ai.mission, instruction_list: instructionsString },
+      { fn: "aiAct" },
+    );
+  };
+
+  const logKeyPress = (key, value = true) => {
+    if (value !== true) {
+      return;
+    }
+    app.globalLogger(
+      `ai.act.${key}`,
+      "keyPress",
+      { plyr_no: plyr.number, mission: plyr.ai.mission, instruction: currentInstruction?.keyword, key: key },
       { fn: "aiAct" },
     );
   };
@@ -35,6 +51,14 @@ export function aiAct(app, plyr) {
 
     // console.log('total instructions',plyr.ai.instructions.length,'currentInstruction',plyr.ai.currentInstruction,plyr.moving.state, !plyr.turning.state,'keyword',currentInstruction.keyword,'limit',currentInstruction.limit,'instructions',plyr.ai.instructions,'deflected',plyr.success.deflected.state);
     // console.log('ai act',plyr.ai.currentInstruction,currentInstruction,'mission',plyr.ai.mission,'instructions',plyr.ai.instructions,'newMoveDelay.state',plyr.newMoveDelay.state);
+    logAct("aiCurrentInstruction", {
+      keyword: currentInstruction.keyword,
+      plyr_no: plyr.number,
+      mission: plyr.ai.mission,
+      instruction_index: plyr.ai.instructions.indexOf(currentInstruction),
+      total_inscructions: plyr.ai.instructions.length,
+      instructions: true,
+    });
 
     app.keyPressed[plyr.number - 1] = {
       north: false,
@@ -80,6 +104,7 @@ export function aiAct(app, plyr) {
 
       if (dir && app.keyPressed[plyr.number - 1][dir] !== undefined) {
         app.keyPressed[plyr.number - 1][dir] = true;
+        logKeyPress("combat", dir);
       }
     };
     const handleJumpInput = (dir) => {
@@ -87,8 +112,10 @@ export function aiAct(app, plyr) {
         logAct("jumpAttempt", { dir: dir });
       }
       currentInstruction.limit = Math.max(6, currentInstruction.limit || 0);
-      app.keyPressed[plyr.number - 1].strafe = true;
+      app.keyPressed[plyr.number - 1]["strafe"] = true;
+      logKeyPress("movement", "strafe");
       app.keyPressed[plyr.number - 1][dir] = true;
+      logKeyPress("movement", dir);
       app.players[plyr.number - 1].turnCheckerDirection = dir;
 
       if (plyr.jumping.state === true) {
@@ -108,8 +135,8 @@ export function aiAct(app, plyr) {
 
     switch (currentInstruction.keyword) {
       case "short_wait":
-        // console.log('ai act -- short_wait');
         currentInstruction.limit = 15;
+        logAct("shortWait", { limit: currentInstruction.limit });
         if (currentInstruction.count < currentInstruction.limit) {
           currentInstruction.count++;
         } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -117,8 +144,8 @@ export function aiAct(app, plyr) {
         }
         break;
       case "long_wait":
-        // console.log('ai act -- long_wait');
         currentInstruction.limit = 25;
+        logAct("longWait", { limit: currentInstruction.limit });
         if (currentInstruction.count < currentInstruction.limit) {
           currentInstruction.count++;
         } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -127,18 +154,21 @@ export function aiAct(app, plyr) {
         break;
       case "jump_north":
         handleJumpInput("north");
+        logAct("jumpNorth", { limit: currentInstruction.limit });
         break;
       case "jump_south":
         handleJumpInput("south");
+        logAct("jumpSouth", { limit: currentInstruction.limit });
         break;
       case "jump_east":
         handleJumpInput("east");
+        logAct("jumpEast", { limit: currentInstruction.limit });
         break;
       case "jump_west":
         handleJumpInput("west");
+        logAct("jumpWest", { limit: currentInstruction.limit });
         break;
       case "move_north":
-        // console.log('ai act -- move_north');
         if (
           plyr.newMoveDelay.state !== true &&
           plyr.moving.state !== true &&
@@ -160,10 +190,10 @@ export function aiAct(app, plyr) {
           }
 
           if (inDanger === false) {
-            // console.log('safe: move_north');
             // currentInstruction.limit = 1;
             app.keyPressed[plyr.number - 1].north = true;
             app.players[plyr.number - 1].turnCheckerDirection = "north";
+            logKeyPress("movement", "north");
             // plyr.ai.currentInstruction++;
             if (currentInstruction.limit === 1) {
               plyr.ai.currentInstruction++;
@@ -183,8 +213,6 @@ export function aiAct(app, plyr) {
         }
         break;
       case "move_south":
-        // console.log('ai act -- move_south');
-
         if (
           plyr.newMoveDelay.state !== true &&
           plyr.moving.state !== true &&
@@ -206,9 +234,8 @@ export function aiAct(app, plyr) {
           }
 
           if (inDanger === false) {
-            // console.log('safe: move_south');
-
             // currentInstruction.limit = 1;
+            logKeyPress("movement", "south");
             app.keyPressed[plyr.number - 1].south = true;
             app.players[plyr.number - 1].turnCheckerDirection = "south";
             // plyr.ai.currentInstruction++;
@@ -229,7 +256,6 @@ export function aiAct(app, plyr) {
         }
         break;
       case "move_east":
-        // console.log('ai act -- move_east');
         if (
           plyr.newMoveDelay.state !== true &&
           plyr.moving.state !== true &&
@@ -251,9 +277,9 @@ export function aiAct(app, plyr) {
           }
 
           if (inDanger === false) {
-            // console.log('safe: move_east');
             // currentInstruction.limit = 1;
             app.keyPressed[plyr.number - 1].east = true;
+            logKeyPress("movement", "east");
             app.players[plyr.number - 1].turnCheckerDirection = "east";
             // plyr.ai.currentInstruction++;
             if (currentInstruction.limit === 1) {
@@ -273,7 +299,6 @@ export function aiAct(app, plyr) {
         }
         break;
       case "move_west":
-        // console.log('ai act -- move_west');
         if (
           plyr.newMoveDelay.state !== true &&
           plyr.moving.state !== true &&
@@ -295,9 +320,9 @@ export function aiAct(app, plyr) {
           }
 
           if (inDanger === false) {
-            // console.log('safe: move_west');
             // currentInstruction.limit = 1;
             app.keyPressed[plyr.number - 1].west = true;
+            logKeyPress("movement", "west");
             app.players[plyr.number - 1].turnCheckerDirection = "west";
             // plyr.ai.currentInstruction++;
             if (currentInstruction.limit === 1) {
@@ -317,7 +342,6 @@ export function aiAct(app, plyr) {
         }
         break;
       case "strafe_south":
-        // console.log('ai act -- strafe_south');
         if (
           plyr.newMoveDelay.state !== true &&
           plyr.moving.state !== true &&
@@ -341,7 +365,9 @@ export function aiAct(app, plyr) {
           if (inDanger === false) {
             // currentInstruction.limit = 1;
             app.keyPressed[plyr.number - 1].strafe = true;
+            logKeyPress("movement", "strafe");
             app.keyPressed[plyr.number - 1].south = true;
+            logKeyPress("movement", "south");
 
             // app.players[plyr.number-1].turnCheckerDirection = 'south';
             // plyr.ai.currentInstruction++;
@@ -362,7 +388,6 @@ export function aiAct(app, plyr) {
         }
         break;
       case "strafe_north":
-        // console.log('ai act -- strafe_north');
         if (
           plyr.newMoveDelay.state !== true &&
           plyr.moving.state !== true &&
@@ -386,7 +411,9 @@ export function aiAct(app, plyr) {
           if (inDanger === false) {
             // currentInstruction.limit = 1;
             app.keyPressed[plyr.number - 1].strafe = true;
+            logKeyPress("movement", "strafe");
             app.keyPressed[plyr.number - 1].north = true;
+            logKeyPress("movement", "north");
 
             // app.players[plyr.number-1].turnCheckerDirection = 'north';
             // plyr.ai.currentInstruction++;
@@ -407,7 +434,6 @@ export function aiAct(app, plyr) {
         }
         break;
       case "strafe_east":
-        // console.log('ai act -- strafe_east');
         if (
           plyr.newMoveDelay.state !== true &&
           plyr.moving.state !== true &&
@@ -431,7 +457,9 @@ export function aiAct(app, plyr) {
           if (inDanger === false) {
             // currentInstruction.limit = 1;
             app.keyPressed[plyr.number - 1].strafe = true;
+            logKeyPress("movement", "strafe");
             app.keyPressed[plyr.number - 1].east = true;
+            logKeyPress("movement", "east");
 
             // app.players[plyr.number-1].turnCheckerDirection = 'east';
             // plyr.ai.currentInstruction++;
@@ -452,7 +480,6 @@ export function aiAct(app, plyr) {
         }
         break;
       case "strafe_west":
-        // console.log('ai act -- strafe_west');
         if (
           plyr.newMoveDelay.state !== true &&
           plyr.moving.state !== true &&
@@ -476,7 +503,9 @@ export function aiAct(app, plyr) {
           if (inDanger === false) {
             // currentInstruction.limit = 1;
             app.keyPressed[plyr.number - 1].strafe = true;
+            logKeyPress("movement", "strafe");
             app.keyPressed[plyr.number - 1].west = true;
+            logKeyPress("movement", "west");
 
             // app.players[plyr.number-1].turnCheckerDirection = 'west';
             // plyr.ai.currentInstruction++;
@@ -497,12 +526,13 @@ export function aiAct(app, plyr) {
         }
         break;
       case "flank_north":
-        // console.log('ai act -- flank_north');
         if (plyr.flanking.state !== true && plyr.action !== "flanking") {
           // console.log('flanking north @ ai act');
           // currentInstruction.limit = 1;
           app.keyPressed[plyr.number - 1].dodge = true;
+          logKeyPress("movement", "flank");
           app.keyPressed[plyr.number - 1].north = true;
+          logKeyPress("movement", "north");
           if (currentInstruction.count < currentInstruction.limit) {
             currentInstruction.count++;
           } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -511,12 +541,13 @@ export function aiAct(app, plyr) {
         }
         break;
       case "flank_south":
-        // console.log('ai act -- flank_south');
         if (plyr.flanking.state !== true && plyr.action !== "flanking") {
           // console.log('flanking south @ ai act');
           // currentInstruction.limit = 1;
           app.keyPressed[plyr.number - 1].dodge = true;
+          logKeyPress("movement", "flank");
           app.keyPressed[plyr.number - 1].south = true;
+          logKeyPress("movement", "south");
           if (currentInstruction.count < currentInstruction.limit) {
             currentInstruction.count++;
           } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -525,12 +556,13 @@ export function aiAct(app, plyr) {
         }
         break;
       case "flank_east":
-        // console.log('ai act -- flank_east');
         if (plyr.flanking.state !== true && plyr.action !== "flanking") {
           // console.log('flanking east @ ai act');
           // currentInstruction.limit = 1;
           app.keyPressed[plyr.number - 1].dodge = true;
+          logKeyPress("movement", "flank");
           app.keyPressed[plyr.number - 1].east = true;
+          logKeyPress("movement", "east");
           if (currentInstruction.count < currentInstruction.limit) {
             currentInstruction.count++;
           } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -539,12 +571,13 @@ export function aiAct(app, plyr) {
         }
         break;
       case "flank_west":
-        // console.log('ai act -- flank_west');
         if (plyr.flanking.state !== true && plyr.action !== "flanking") {
           // console.log('flanking west @ ai act');
           // currentInstruction.limit = 1;
           app.keyPressed[plyr.number - 1].dodge = true;
+          logKeyPress("movement", "flank");
           app.keyPressed[plyr.number - 1].west = true;
+          logKeyPress("movement", "west");
           if (currentInstruction.count < currentInstruction.limit) {
             currentInstruction.count++;
           } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -575,6 +608,7 @@ export function aiAct(app, plyr) {
           });
         }
 
+        logKeyPress("combat", "attack_charge");
         app.keyPressed[plyr.number - 1].attack = true;
         setDirectionalInput();
 
@@ -595,7 +629,6 @@ export function aiAct(app, plyr) {
         break;
       }
       case "attack":
-        // console.log('ai act -- attack');
         let atkPeak;
         if (plyr.currentWeapon.name === "") {
           atkPeak = plyr.attacking.animRef.peak.unarmed;
@@ -610,6 +643,7 @@ export function aiAct(app, plyr) {
           });
         }
         app.keyPressed[plyr.number - 1].attack = true;
+        logKeyPress("combat", "attack");
         setDirectionalInput();
         if (plyr.moving.state !== true) {
           if (currentInstruction.count < currentInstruction.limit) {
@@ -620,12 +654,12 @@ export function aiAct(app, plyr) {
         }
         break;
       case "long_defend":
-        // console.log('ai act -- long defend');
         currentInstruction.limit = 25;
         if (currentInstruction.count === 0) {
           logAct("defendStart", { limit: currentInstruction.limit });
         }
         app.keyPressed[plyr.number - 1].defend = true;
+        logKeyPress("combat", "long_defend");
         setDirectionalInput();
         if (currentInstruction.count < currentInstruction.limit) {
           currentInstruction.count++;
@@ -634,9 +668,9 @@ export function aiAct(app, plyr) {
         }
         break;
       case "short_defend":
-        // console.log('ai act -- short defend');
         currentInstruction.limit = 15;
         app.keyPressed[plyr.number - 1].defend = true;
+        logKeyPress("combat", "short_defend");
         setDirectionalInput();
         if (currentInstruction.count < currentInstruction.limit) {
           currentInstruction.count++;
@@ -645,8 +679,8 @@ export function aiAct(app, plyr) {
         }
         break;
       case "dodge":
-        // console.log('ai act -- dodge');
         currentInstruction.limit = 1;
+        logKeyPress("movement", "dodge");
         app.keyPressed[plyr.number - 1].dodge = true;
         if (currentInstruction.count < currentInstruction.limit) {
           currentInstruction.count++;
@@ -659,6 +693,7 @@ export function aiAct(app, plyr) {
         // currentInstruction.limit = 10;
         // app.keyPressed[plyr.number-1].defend = true;
         app.keyPressed[plyr.number - 1].cycleWeapon = true;
+        logKeyPress("other", "cycleWeapon");
 
         if (currentInstruction.count < currentInstruction.limit) {
           currentInstruction.count++;
@@ -670,8 +705,10 @@ export function aiAct(app, plyr) {
         logAct("dropWeapon");
         // currentInstruction.limit = 10;
         app.keyPressed[plyr.number - 1].defend = true;
+        logKeyPress("combat", "defend");
         if (currentInstruction.count > 3) {
           app.keyPressed[plyr.number - 1].cycleWeapon = true;
+          logKeyPress("other", "cycleWeapon");
         }
 
         if (currentInstruction.count < currentInstruction.limit) {
@@ -683,7 +720,7 @@ export function aiAct(app, plyr) {
     }
 
     if (plyr.ai.currentInstruction === plyr.ai.instructions.length) {
-      // console.log('NO MORE INSTRUCTIONS!!');
+      logAct("instructionsComplete", { instructions: true });
       if (plyr.ai.engaging.state === true) {
         plyr.ai.engaging.state = false;
         plyr.ai.engaging.targetAction = "";
@@ -701,11 +738,14 @@ export function aiAct(app, plyr) {
     let index = plyr.ai.instructions.indexOf(currentInstruction);
     if (index >= plyr.ai.instructions.length - 1 && plyr.ai.mission === "patrol" && plyr.ai.patrolling.checkin === "checkedIn") {
       // console.log('patrol instructions complete');
+      logAct("instructionsComplete", { instructions: true });
+
       plyr.ai.instructions = [];
       app.players[plyr.number - 1].ai.patrolling.loopControl = false;
     }
     if (index >= plyr.ai.instructions.length - 1 && plyr.ai.mission === "defend" && plyr.ai.defending.checkin === "checkedIn") {
       // console.log('defend instructions complete');
+      logAct("instructionsComplete", { instructions: true });
       plyr.ai.instructions = [];
     }
   } else {

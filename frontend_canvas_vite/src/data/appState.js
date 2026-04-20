@@ -785,7 +785,12 @@ export function applyConstructorDefaults(app) {
       target: false,
       evaluate: false,
       decide: false,
-      act: false,
+      act: {
+        movement: false,
+        combat: false,
+        other: false,
+        instructions: false,
+      },
       instructions: false,
     },
     camera: {

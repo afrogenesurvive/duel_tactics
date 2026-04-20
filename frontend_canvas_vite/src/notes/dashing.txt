@@ -15,3 +15,15 @@ Dashing checklist:
     can be attackedcancelled
     can be fainted up the mid move to the 2nd cell if the opposite direction is pressed and based on a 'relexes' stat roll (check a mid move step tresh) like normal move cancel
     if current speed is max from speed array, calc knew higher animatable speed
+    must have a post dash delay b4 other actions (keep it short)
+    set dashing.post dash.state true in arrive at 2nd cell
+    check for post dash delay b4 recieving new move or non move inputs (depends on new move being attempted)
+    check for dash delay at read move and non move input
+    only clear dash player obj on dash completeion at dask cehck function if the delay count has reached the limit, count if post dash state is true
+    a player moving, flanking, strafing or jumping to a cell that a player is dashing to when their destination check fires,
+        if a dashing player is also moving to their target and more than halfway there, the non dashing player get deflect for sure, moved back to their original postion or move to original position AND pusheback depending on previous move action type
+            there is also a small or smaller chance for the dashing player to be delfectd and reach to their destination at the time
+            if two players are dashing to the same postion, the one who has their arrival check positive first go on as usual and the loser moves back to original position and is short deflected with a very small chance for pushback
+        if an object is also trying to move to same cell, depending on the objects weight and desctructability, it can also either, move to its origin, move and break, move and be pushed back
+        
+
