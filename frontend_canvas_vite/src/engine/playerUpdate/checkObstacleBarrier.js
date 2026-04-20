@@ -1,4 +1,24 @@
 export function checkObstacleBarrier(app, player, nextPosition) {
+  const logObstacleMoving = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "obstacle.moving", message, data, { fn: "checkObstacleBarrier" });
+    }
+  };
+  const logObstacleFalling = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "obstacle.falling", message, data, { fn: "checkObstacleBarrier" });
+    }
+  };
+  const logObstacleHalfPushBack = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "obstacle.halfPushBack", message, data, { fn: "checkObstacleBarrier" });
+    }
+  };
+  const logObstacleCount = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "obstacle.count", message, data, { fn: "checkObstacleBarrier" });
+    }
+  };
   // MOVING & FALLING
   // CHECK OBSTACLE/BARRIER TRAPS AND UPDATE CELL BARRIER/OBSTACLE
   for (let cell of app.gridInfo) {
@@ -21,6 +41,12 @@ export function checkObstacleBarrier(app, player, nextPosition) {
       cell.obstacle.moving.nextPosition = obstacleCrementObj.pos;
       cell.obstacle.moving.step = obstacleCrementObj.step;
       nextPosition = obstacleCrementObj.pos;
+      logObstacleCount("step", {
+        obstacleId: cell.obstacle.id,
+        origin: cell.obstacle.moving.origin.number,
+        destination: cell.obstacle.moving.destination.number,
+        step: cell.obstacle.moving.step,
+      });
 
       let atDestRanges = [false, false, false, false];
 
@@ -67,6 +93,10 @@ export function checkObstacleBarrier(app, player, nextPosition) {
             );
 
             if (destCellRef.void.state === true || destCellRef.terrain.type === "deep") {
+              logObstacleFalling("arriveAtDestinationInBounds", {
+                obstacleId: cell2.obstacle.id,
+                destination: destCellRef.number,
+              });
               destCellRef.obstacle = {
                 state: true,
                 id: cell2.obstacle.id,
@@ -127,6 +157,10 @@ export function checkObstacleBarrier(app, player, nextPosition) {
               destCellRef.obstacle.moving.nextPosition.y -= app.floorImageHeight / 2;
             }
             if (destCellRef.void.state !== true && destCellRef.terrain.type !== "deep") {
+              logObstacleMoving("arrivedInBounds", {
+                obstacleId: cell2.obstacle.id,
+                destination: destCellRef.number,
+              });
               destCellRef.obstacle = {
                 id: cell2.obstacle.id,
                 trap: cell2.obstacle.trap,
@@ -270,6 +304,10 @@ export function checkObstacleBarrier(app, player, nextPosition) {
               count: 0,
               limit: cell2.obstacle.moving.falling.limit,
             };
+            logObstacleFalling("startOutOfBounds", {
+              obstacleId: cell2.obstacle.id,
+              origin: cell2.obstacle.moving.origin.number,
+            });
 
             cell2.obstacle.moving.nextPosition.x -= app.floorImageWidth / 2;
             cell2.obstacle.moving.nextPosition.y -= app.floorImageHeight / 2;
@@ -359,6 +397,11 @@ export function checkObstacleBarrier(app, player, nextPosition) {
       // console.log('falling obstacle');
       if (cell.obstacle.moving.falling.count < cell.obstacle.moving.falling.limit) {
         cell.obstacle.moving.falling.count++;
+        logObstacleCount("fallingInBounds", {
+          obstacleId: cell.obstacle.id,
+          count: cell.obstacle.moving.falling.count,
+          limit: cell.obstacle.moving.falling.limit,
+        });
         // console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
       }
       if (cell.obstacle.moving.falling.count >= cell.obstacle.moving.falling.limit) {
@@ -428,6 +471,10 @@ export function checkObstacleBarrier(app, player, nextPosition) {
             },
           },
         };
+        logObstacleFalling("endInBounds", {
+          obstacleId: cell2.obstacle.id,
+          cell: cell2.number,
+        });
         // console.log('obstacle falling in bounds over');
       }
     }
@@ -447,11 +494,19 @@ export function checkObstacleBarrier(app, player, nextPosition) {
   for (const elem of app.obstaclesOutOfBoundsFall) {
     if (elem.moving.falling.count < elem.moving.falling.limit) {
       elem.moving.falling.count++;
+      logObstacleCount("fallingOutOfBounds", {
+        obstacleId: elem.id,
+        count: elem.moving.falling.count,
+        limit: elem.moving.falling.limit,
+      });
       // obstacle.moving.nextPosition.y += (obstacle.moving.falling.count*5)
       // console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
     }
     if (elem.moving.falling.count >= elem.moving.falling.limit) {
       // console.log('obstacle falling out of bounds over');
+      logObstacleFalling("endOutOfBounds", {
+        obstacleId: elem.id,
+      });
       let index = app.obstaclesOutOfBoundsFall.indexOf(elem);
       app.obstaclesOutOfBoundsFall.splice(index, 1);
     }
@@ -461,7 +516,20 @@ export function checkObstacleBarrier(app, player, nextPosition) {
     if (cell.limit > 0) {
       if (cell.count < cell.limit) {
         cell.count++;
+        logObstacleCount("obstacleBarrierToDestroy", {
+          type: cell.type,
+          action: cell.action,
+          count: cell.count,
+          limit: cell.limit,
+          cell: cell.cell?.number,
+        });
       } else if (cell.count >= cell.limit) {
+        logObstacleCount("obstacleBarrierToDestroyComplete", {
+          type: cell.type,
+          action: cell.action,
+          limit: cell.limit,
+          cell: cell.cell?.number,
+        });
         let index = app.obstacleBarrierToDestroy.indexOf(cell);
         app.obstacleBarrierToDestroy.splice(index, 1);
       }
@@ -474,9 +542,18 @@ export function checkObstacleBarrier(app, player, nextPosition) {
         if (halfPushBackObstacle.countUp.count < halfPushBackObstacle.countUp.limit) {
           if (halfPushBackObstacle.countUp.count === 1) {
             // console.log("obstacle 1/2 pushback start", halfPushBackObstacle.myCellNo);
+            logObstacleHalfPushBack("start", {
+              id: halfPushBackObstacle.id,
+              cell: halfPushBackObstacle.myCellNo,
+            });
           }
 
           halfPushBackObstacle.countUp.count++;
+          logObstacleCount("halfPushBackUp", {
+            id: halfPushBackObstacle.id,
+            count: halfPushBackObstacle.countUp.count,
+            limit: halfPushBackObstacle.countUp.limit,
+          });
           // console.log("obstacle 1/2 pushback count up", halfPushBackObstacle.countUp.count);
         }
 
@@ -489,6 +566,9 @@ export function checkObstacleBarrier(app, player, nextPosition) {
 
           // console.log('obstacle 1/2 pushback peak');
           // app.handleHalfPushBackResult('obstacle',halfPushBackObstacle);
+          logObstacleHalfPushBack("obstacleHalfPushBackPeak", {
+            id: halfPushBackObstacle.id,
+          });
           halfPushBackObstacle.countDown.state = true;
         }
       }
@@ -496,6 +576,11 @@ export function checkObstacleBarrier(app, player, nextPosition) {
       if (halfPushBackObstacle.countDown.state === true) {
         if (halfPushBackObstacle.countDown.count < halfPushBackObstacle.countDown.limit) {
           halfPushBackObstacle.countDown.count++;
+          logObstacleCount("obstacleHalfPushBackCountDown", {
+            id: halfPushBackObstacle.id,
+            count: halfPushBackObstacle.countDown.count,
+            limit: halfPushBackObstacle.countDown.limit,
+          });
           // console.log('obstacle 1/2 pushback count down',halfPushBackObstacle.countDown.count);
         }
 
@@ -507,6 +592,9 @@ export function checkObstacleBarrier(app, player, nextPosition) {
           };
 
           // console.log("obstacle 1/2 pushback end");
+          logObstacleHalfPushBack("obstacleHalfPushBackEnd", {
+            id: halfPushBackObstacle.id,
+          });
           app.handleHalfPushBackResult("obstacle", halfPushBackObstacle);
           halfPushBackObstacle.state = false;
         }

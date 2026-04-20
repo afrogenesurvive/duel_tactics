@@ -1,4 +1,15 @@
 export function checkDefending(app, player) {
+  const getDefendVariant = () => (player.defending.peak ? "peak" : "off_peak");
+  const logDefend = (message, data = {}, variant = getDefendVariant()) => {
+    app.globalLogger(`player.defending.${variant}`, message, data, { fn: "checkDefending" });
+  };
+  const logStamina = (message, data = {}) => {
+    app.globalLogger("player.stamina", message, data, { fn: "checkDefending" });
+  };
+  const logCount = (message, data = {}) => {
+    app.globalLogger("player.defending.count", message, data, { fn: "checkDefending" });
+  };
+
   if (player.defending.state === true) {
     let directionalActionResult = app.checkSetAttackDefendDirectionalInput("windup", "defending", player);
     player = directionalActionResult.player;
@@ -37,6 +48,16 @@ export function checkDefending(app, player) {
       player.defending.count++;
       player.action = "defending";
       player.defending.peak = false;
+      logCount(
+        "defendWindupStep",
+        {
+          plyr_no: player.number,
+          count: player.defending.count,
+          peak_count: defendPeak,
+          limit: player.defending.limit,
+        },
+        "peak",
+      );
       // console.log(
       //   "defend windup:",
       //   player.defending.direction,
@@ -120,7 +141,14 @@ export function checkDefending(app, player) {
 
     // PEAK, START DECAY
     if (executeDefend === true) {
-      console.log(`Execute defend`, player.defending.direction);
+      logDefend(
+        "executeDefend",
+        {
+          plyr_no: player.number,
+          direction: player.defending.direction,
+        },
+        "peak",
+      );
 
       if (player.stamina.current - app.staminaCostRef.defend.peak >= 0) {
         player.action = "defending";
@@ -159,7 +187,11 @@ export function checkDefending(app, player) {
       }
       // OUT OF STAMINA
       else {
-        console.log("not enough stamina for peak defend. reset stamina");
+        logStamina("outOfStamina", {
+          plyr_no: player.number,
+          action: "defending",
+          phase: "peak",
+        });
         player.action = "idle";
         player.defending = {
           state: false,
@@ -206,11 +238,25 @@ export function checkDefending(app, player) {
         if (player.defending.decay.count >= app.defendPeakAllowance) {
           player.defending.peak = false;
           // console.log("peak defend over: count", player.defending.count, defendPeak, player.defending.decay.state);
+          logDefend(
+            "peakDefendOver",
+            {
+              plyr_no: player.number,
+              count: player.defending.count,
+              limit: player.defending.limit,
+            },
+            "peak",
+          );
         }
-        console.log("Defend decay", {
-          count: player.defending.decay.count,
-          limit: player.defending.decay.limit,
-        });
+        logCount(
+          "defendDecayStep",
+          {
+            plyr_no: player.number,
+            count: player.defending.decay.count,
+            limit: player.defending.decay.limit,
+          },
+          getDefendVariant(),
+        );
 
         if (!player.popups.find((x) => x.msg === "defending")) {
           player.popups.push({
@@ -274,6 +320,15 @@ export function checkDefending(app, player) {
         //   }
         // }
         player.defending.count++;
+        logCount(
+          "defendCooldownStep",
+          {
+            plyr_no: player.number,
+            count: player.defending.count,
+            limit: player.defending.limit,
+          },
+          "off_peak",
+        );
         // console.log(
         //   "defend cooldown:",
         //   player.defending.direction,
@@ -332,7 +387,13 @@ export function checkDefending(app, player) {
           player.elasticCounter.subType = "";
         }
         player.actionDirectionAnimationArray = [];
-        console.log("defend end");
+        logDefend(
+          "defendEnd",
+          {
+            plyr_no: player.number,
+          },
+          "off_peak",
+        );
       }
     }
   }

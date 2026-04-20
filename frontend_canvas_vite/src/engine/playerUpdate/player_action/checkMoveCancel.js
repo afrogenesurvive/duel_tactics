@@ -1,4 +1,11 @@
 export function checkMoveCancel(app, player, nextPosition) {
+  const logMove = (message, data = {}) => {
+    app.globalLogger("player.movement", message, data, { fn: "checkMoveCancel" });
+  };
+  const logMoveCount = (message, data = {}) => {
+    app.globalLogger("player.movement_count", message, data, { fn: "checkMoveCancel" });
+  };
+
   if (player.moving.state === true) {
     // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
     let canCancelMove = false;
@@ -57,7 +64,7 @@ export function checkMoveCancel(app, player, nextPosition) {
         if (player.jumping.state === true) {
           inTimeThresh = 0.4;
         } else {
-          let indx3 = player.speed.range.indexOf(player.speed.move);
+          let indx3 = player.speed.range_1.indexOf(player.speed.move);
           threshIndx = Math.ceil(app.moveStepRef[indx3].length / 2);
           // inTimeThresh = app.moveStepRef[indx3][threshIndx];
           inTimeThresh = app.moveStepRef[indx3][threshIndx + 1];
@@ -98,6 +105,16 @@ export function checkMoveCancel(app, player, nextPosition) {
               returningFrom: {},
             };
 
+            logMove("moveCancelStart", {
+              plyr_no: player.number,
+              old_direction: oldDirection,
+              new_direction: newDirection,
+              step: player.moving.step,
+              move_speed: player.speed.move,
+              jumping: player.jumping.state,
+              strafing: player.strafing.state,
+            });
+
             if (player.strafing.state !== true) {
               player.strafing.state = true;
               player.strafing.direction = newDirection;
@@ -112,7 +129,7 @@ export function checkMoveCancel(app, player, nextPosition) {
 
             let newTarget = app.getTarget(player);
 
-            let indx3 = player.speed.range.indexOf(player.speed.move);
+            let indx3 = player.speed.range_1.indexOf(player.speed.move);
             let indx4 = app.moveStepRef[indx3].indexOf(player.moving.step);
             let newIndx = app.moveStepRef[indx3].length - (indx4 + 1);
             let newStep = app.moveStepRef[indx3][newIndx - 1];

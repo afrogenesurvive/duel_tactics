@@ -1,11 +1,5 @@
 export function lineCrementer(app, player) {
-  // console.log(
-  //   "line crementer",
-  //   player.number,
-  //   player.moving.step,
-  //   player.moveCancel.state,
-  //   player.nextPosition
-  // );
+  console.log("line crementer", player.moving.step);
 
   let currentPosition = player.currentPosition.cell.center;
   let target = player.target;
@@ -59,6 +53,9 @@ export function lineCrementer(app, player) {
   // console.log(`lineCrementer: move step ${player.moving.step} movespeed ${moveSpeed}, stamina ${player.stamina.current}`);
 
   player.moving.step = +(Math.round(player.moving.step + moveSpeed + "e+" + 3) + "e-" + 3);
+  if (player.moving.step > 1) {
+    player.moving.step = 1;
+  }
   // player.moving.step = player.moving.step + moveSpeed;
   // console.log("mover stepper", player.moving.step);
   let newPosition;

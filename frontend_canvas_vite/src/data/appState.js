@@ -4,6 +4,7 @@ import { playerDataArray } from "./playerDataArray";
 import { itemDataArray } from "./itemDataArray";
 import { obstacleBarrierDataRefs } from "./obstacleBarrierDataRefs";
 import { assetRefs } from "./assetRefs";
+import moveConstants from "./moveConsts";
 
 export const initialState = {
   showSettings: true,
@@ -712,6 +713,7 @@ export function applyConstructorDefaults(app) {
     showOrigin: false,
     player: {
       movement: false,
+      movement_count: false,
       turning: false,
       jumping: false,
       attacking: {
@@ -719,15 +721,63 @@ export function applyConstructorDefaults(app) {
         projectile: false,
         charge: false,
         feint: false,
+        count: false,
+        attackedCancel: false,
       },
-      defending: false,
-      dodging: false,
-      pushing: false,
-      pulling: false,
-      itemUse: false,
-      pushBack: false,
-      deflection: false,
-      stamina: false,
+      defending: {
+        peak: false,
+        off_peak: false,
+        count: false,
+      },
+      dodging: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      flanking: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      pushing: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      pulling: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      itemUse: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      pushBack: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+        halfPushBack: false,
+      },
+      deflection: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
+      stamina: {
+        input: false,
+        count: false,
+        execution: false,
+        feint: false,
+      },
     },
     ai: {
       spawn: true,
@@ -736,7 +786,13 @@ export function applyConstructorDefaults(app) {
       target: false,
       evaluate: false,
       decide: false,
-      act: false,
+      act: {
+        movement: false,
+        combat: false,
+        other: false,
+        instructions: false,
+      },
+      instructions: false,
     },
     camera: {
       mode: false,
@@ -749,23 +805,42 @@ export function applyConstructorDefaults(app) {
       moving: false,
       falling: false,
       pushBack: false,
+      halfPushBack: false,
       trapTriggers: false,
       attacking: false,
-      destruction: false,
+      attacked: false,
+      pulled: false,
+      pushed: false,
+      count: false,
     },
     barrier: {
       trapTriggers: false,
       attacking: false,
-      destruction: false,
+      attacked: false,
     },
     trap: {
       trigger: false,
       timer: false,
       action: false,
+      count: false,
     },
     grid: {
       init: false,
       process: false,
+    },
+    items: {
+      spawn: false,
+      pickup: false,
+      discard: false,
+      use: false,
+      switch: false,
+      attacked: false,
+      obstacle: false,
+    },
+    directional_animations: {
+      inputs: false,
+      execution: false, // phases etc
+      count: false,
     },
   };
 
@@ -809,12 +884,7 @@ export function applyConstructorDefaults(app) {
     currentTime: new Date().getTime(),
     deltaTime: 0,
   };
-  app.moveStepRef = [
-    [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1],
-    [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-    [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
-    [0.2, 0.4, 0.6, 0.8, 1],
-  ];
+  app.moveStepRef = moveConstants.base.moveStepRef;
   app.actionAnimFrameTypeCountRef = {
     attacking: {
       typeCount: 7,

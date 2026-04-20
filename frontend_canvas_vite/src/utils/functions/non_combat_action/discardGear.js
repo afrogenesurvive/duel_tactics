@@ -1,4 +1,9 @@
 export function discardGear(app, player, type) {
+  const logItem = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "items.discard", message, data, { fn: "discardGear" });
+    }
+  };
   // console.log('dropping gear');
 
   let cellToDrop = app.gridInfo.find(
@@ -76,7 +81,9 @@ export function discardGear(app, player, type) {
           app.players[player.number - 1].action = "idle";
         }
       } else {
-        console.log("no weapon equipped to discard");
+        logItem("noWeaponEquipped", {
+          playerId: player.number,
+        });
       }
     }
     if (type === "armor") {
@@ -148,11 +155,17 @@ export function discardGear(app, player, type) {
           app.players[player.number - 1].action = "idle";
         }
       } else {
-        console.log("no armor equipped to discard");
+        logItem("noArmorEquipped", {
+          playerId: player.number,
+        });
       }
     }
   } else {
-    console.log("cell occupied. Cant drop gear");
+    logItem("cellOccupied", {
+      playerId: player.number,
+      cell: cellToDrop.number,
+      result: "can't drop gear",
+    });
 
     app.players[player.number - 1].statusDisplay = {
       state: true,

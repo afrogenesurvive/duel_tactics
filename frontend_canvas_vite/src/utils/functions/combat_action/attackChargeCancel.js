@@ -1,7 +1,16 @@
 export function attackChargeCancel(app, player) {
-  //   console.log("attackChargeCancel");
+  const logCharge = (message, data = {}) => {
+    app.globalLogger("player.attacking.charge", message, data, { fn: "attackChargeCancel" });
+  };
+
   if (player.attacking.chargeCount > 0) {
-    console.log("player is currently charging an attack. Cancel/Feint");
+    logCharge("chargeCancel", {
+      plyr_no: player.number,
+      action: player.action,
+      count: player.attacking.count,
+      chargeCount: player.attacking.chargeCount,
+      maxCharge: player.attacking.maxCharge,
+    });
     player.attacking = {
       state: false,
       count: 0,

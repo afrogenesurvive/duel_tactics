@@ -6,6 +6,9 @@ export function aiParsePath(app, path, aiPlayer) {
   let initDirection = app.players[aiPlayer - 1].direction;
   let direction;
   let blockedPath = false;
+  const logPath = (message, data = {}) => {
+    app.globalLogger("ai.decide", message, { plyr_no: aiPlayer, ...data }, { fn: "aiParsePath" });
+  };
   const getCell = (x, y) => app.gridInfo.find((cell) => cell.number.x === x && cell.number.y === y);
   const isGapCell = (cell) => cell && (cell.void.state === true || cell.terrain.type === "deep" || cell.terrain.type === "hazard");
   const isUnsafeCell = (cell) =>
@@ -63,6 +66,13 @@ export function aiParsePath(app, path, aiPlayer) {
     return true;
   };
 
+  if (!Array.isArray(path) || path.length === 0) {
+    logPath("pathEmpty", { path_len: Array.isArray(path) ? path.length : 0 });
+    return;
+  }
+
+  logPath("pathStart", { path_len: path.length, mission: app.players[aiPlayer - 1].ai.mission });
+
   if (app.players[aiPlayer - 1].ai.mission !== "patrol" && app.players[aiPlayer - 1].ai.mission !== "defend") {
     if (app.players[aiPlayer - 1].ai.safeRange !== true) {
       path.pop();
@@ -95,6 +105,7 @@ export function aiParsePath(app, path, aiPlayer) {
           count: 0,
           limit: 6,
         });
+        logPath("jumpInstruction", { dir: jumpDir, from: currentCell, over: nextCell, to: nextNextCell });
         direction = jumpDir;
         index += 1;
         continue;
@@ -102,6 +113,7 @@ export function aiParsePath(app, path, aiPlayer) {
 
       if (nextCell && isGapCell(getCell(nextCell.x, nextCell.y))) {
         blockedPath = true;
+        logPath("jumpGapBlocked", { current: currentCell, gap: nextCell, next: nextNextCell });
         break;
       }
 
@@ -209,8 +221,16 @@ export function aiParsePath(app, path, aiPlayer) {
     app.players[aiPlayer - 1].ai.instructions = [];
     app.players[aiPlayer - 1].ai.currentInstruction = 0;
     app.players[aiPlayer - 1].ai.resetInstructions = true;
+    logPath("jumpGapReset", { instructions_len: instructions.length });
     return;
   }
+
+  logPath("pathParsed", {
+    path_len: path.length,
+    instructions_len: instructions.length,
+    first: instructions[0]?.keyword,
+    last: instructions[instructions.length - 1]?.keyword,
+  });
 
   app.players[aiPlayer - 1].ai.pathArray = path;
   app.players[aiPlayer - 1].ai.instructions = instructions;

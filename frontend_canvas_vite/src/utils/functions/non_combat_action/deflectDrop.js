@@ -1,4 +1,14 @@
 export function deflectDrop(app, player) {
+  const logDeflect = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.deflection.execution", message, data, { fn: "deflectDrop" });
+    }
+  };
+  const logItem = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "items.discard", message, data, { fn: "deflectDrop" });
+    }
+  };
   // console.log('deflected! drop gear?',player.number);
   // console.log('preDropItems', player.items);
 
@@ -162,12 +172,19 @@ export function deflectDrop(app, player) {
     }
 
     if (player.currentWeapon.name === "" || player.currentArmor.name === "") {
-      console.log("currently unarmed and/or unarmored. Nothing to drop");
+      logDeflect("nothingToDrop", {
+        playerId: player.number,
+      });
     }
 
     // console.log('postDropItems', player.items, player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
 
     if (dropped === true) {
+      logItem("dropped", {
+        playerId: player.number,
+        itemName: item.name,
+        itemType: item.type,
+      });
       let dropCellIndex = app.gridInfo.findIndex(
         (cell) => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y,
       );

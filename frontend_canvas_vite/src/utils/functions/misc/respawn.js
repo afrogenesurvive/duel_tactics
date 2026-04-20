@@ -1,3 +1,5 @@
+import moveConstants from "../../../data/moveConsts";
+
 export function respawn(app, player) {
   console.log("respawning", player.number, player);
 
@@ -174,11 +176,7 @@ export function respawn(app, player) {
         y: 0,
       },
     };
-    player.newMoveDelay = {
-      state: false,
-      count: 0,
-      limit: 15,
-    };
+    player.newMoveDelay = moveConstants.base.newMoveDelay;
     player.strafeReleaseHook = false;
     player.moveCancel = {
       state: false,
@@ -273,10 +271,7 @@ export function respawn(app, player) {
       count: 0,
       limit: 10,
     };
-    player.speed = {
-      move: 0.1,
-      range: [0.05, 0.1, 0.125, 0.2],
-    };
+    player.speed = moveConstants.base.speed;
     player.terrainMoveSpeed = {
       state: false,
       speed: 0,

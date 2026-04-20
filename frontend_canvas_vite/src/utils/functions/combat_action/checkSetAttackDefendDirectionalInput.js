@@ -2,7 +2,21 @@
 // dirInputThresh/ - the count at which directional input will be set. Before this count, player can change direction of attack;
 
 export function checkSetAttackDefendDirectionalInput(app, mode, action, player) {
-  // console.log(`checkSetAttackDefendDirectionalInput: ${mode} ${JSON.stringify(player.currentWeapon)}`);
+  const logInputs = (message, data = {}) => {
+    app.globalLogger("directional_animations.inputs", message, data, { fn: "checkSetAttackDefendDirectionalInput" });
+  };
+  const logExecution = (message, data = {}) => {
+    app.globalLogger("directional_animations.execution", message, data, { fn: "checkSetAttackDefendDirectionalInput" });
+  };
+  const logCount = (message, data = {}) => {
+    app.globalLogger("directional_animations.count", message, data, { fn: "checkSetAttackDefendDirectionalInput" });
+  };
+  const logCharge = (message, data = {}) => {
+    app.globalLogger("player.attacking.charge", message, data, { fn: "checkSetAttackDefendDirectionalInput" });
+  };
+  const logFeint = (message, data = {}) => {
+    app.globalLogger("player.attacking.feint", message, data, { fn: "checkSetAttackDefendDirectionalInput" });
+  };
 
   // stage is either 'init' or 'windup'
   let charging = false;
@@ -15,25 +29,21 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
 
   // COLLECT DIRECTIONS OF ALL BUTTONS CURRENTLY BEING PRESSED
   if (app.keyPressed[player.number - 1].north === true) {
-    // console.log(`north`);
     input = true;
     inputDirections.push("north");
     inputCount++;
   }
   if (app.keyPressed[player.number - 1].south === true) {
-    // console.log(`south`);
     input = true;
     inputDirections.push("south");
     inputCount++;
   }
   if (app.keyPressed[player.number - 1].east === true) {
-    // console.log(`east`);
     input = true;
     inputDirections.push("east");
     inputCount++;
   }
   if (app.keyPressed[player.number - 1].west === true) {
-    // console.log(`west`);
     input = true;
     inputDirections.push("west");
     inputCount++;
@@ -53,7 +63,13 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
         img: "",
       });
     }
-    // console.log("charging attack", player[action].charge);
+    logCharge("charging", {
+      plyr_no: player.number,
+      action: action,
+      charge: player[action].charge,
+      chargeCount: player[action].chargeCount,
+      maxCharge: player[action].maxCharge,
+    });
   };
 
   const feintAttack = () => {
@@ -74,7 +90,17 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
     atkPeak = player.attacking.animRef.peak[atkType][player.attacking.directionType][chargeType];
 
     if (player.attacking.count < player.attacking.peakCount) {
-      // console.log('attack windup key release before peak. feinting. refund stamina part');
+      logFeint("windupReleaseBeforePeak", {
+        plyr_no: player.number,
+        action: action,
+        count: player.attacking.count,
+        peakCount: player.attacking.peakCount,
+        direction: player.attacking.direction,
+        directionType: player.attacking.directionType,
+        chargeType: chargeType,
+        atkPeak: atkPeak,
+        result: "feinting. Refund pre attack stamina cost.",
+      });
 
       let dir = player.attacking.direction;
       player.action = "idle";
@@ -167,11 +193,24 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
 
   if (action === "attacking") {
     directionalInputThresh = Math.ceil(player[action].animRef.peak[player.currentWeapon?.type || "unarmed"].thrust / 2);
+    logCount("attackDirectionalThresh", {
+      plyr_no: player.number,
+      action: action,
+      mode: mode,
+      inputThresh: directionalInputThresh,
+      count: player[action].count,
+      weaponType: player.currentWeapon?.type || "unarmed",
+    });
     if (player.currentWeapon?.type === "crossbow") {
       if (mode === "init") {
         player[action].direction = "none";
         player[action].directionType = "thrust";
-        // popup("none");
+        logExecution("crossbowInit", {
+          plyr_no: player.number,
+          action: action,
+          direction: player[action].direction,
+          directionType: player[action].directionType,
+        });
       }
       if (mode === "windup") {
         // dirInputThresh/ - the count at which directional input will be set. Before this count, player can change direction of attack
@@ -190,7 +229,15 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
               player[action].direction = inputDirection;
               player[action].directionType = "slash";
             } else {
-              console.log("crossbow directional atk & charge can only be in player direction");
+              logExecution("crossbowDirectionMismatch", {
+                plyr_no: player.number,
+                action: action,
+                inputDirection: inputDirection,
+                playerDirection: player.direction,
+                count: player[action].count,
+                inputThresh: directionalInputThresh,
+                result: "feint",
+              });
               feintAttack();
             }
           }
@@ -207,7 +254,15 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             }
 
             if (inputDirection !== player[action].direction) {
-              console.log("input after thresh w/ different direction. feint attack");
+              logExecution("crossbowInputAfterThreshMismatch", {
+                plyr_no: player.number,
+                action: action,
+                inputDirection: inputDirection,
+                currentDirection: player[action].direction,
+                count: player[action].count,
+                inputThresh: directionalInputThresh,
+                result: "feint",
+              });
               feintAttack();
             }
             if (inputDirection === player[action].direction) {
@@ -217,7 +272,14 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             }
           }
           if (player[action].direction === "none") {
-            console.log("crossbow attack requires direction === player direction. feint attack");
+            logExecution("crossbowNoDirection", {
+              plyr_no: player.number,
+              action: action,
+              playerDirection: player.direction,
+              count: player[action].count,
+              inputThresh: directionalInputThresh,
+              result: "feint",
+            });
             feintAttack();
           }
         }
@@ -231,7 +293,12 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             player[action].direction = inputDirection;
             player[action].directionType = "slash";
           } else {
-            // console.log("do nothing");
+            logInputs("attackInitKeepDirection", {
+              plyr_no: player.number,
+              action: action,
+              direction: player[action].direction,
+              directionType: player[action].directionType,
+            });
           }
         } else {
           if (player[action].direction === "" || player[action].directionType === "") {
@@ -240,20 +307,26 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             player[action].directionType = "thrust";
           }
         }
-        // console.log(`attack init directional input:`, {
-        //   input,
-        //   inputDirection,
-        //   actionDirection: player[action].direction,
-        //   actionDirectionType: player[action].directionType,
-        // });
+        logInputs("attackInit", {
+          plyr_no: player.number,
+          action: action,
+          input: input,
+          inputDirection: inputDirection,
+          actionDirection: player[action].direction,
+          actionDirectionType: player[action].directionType,
+        });
       }
       if (mode === "windup") {
-        // console.log(`attack windup directional input:`, {
-        //   input,
-        //   inputDirection,
-        //   actionDirection: player[action].direction,
-        //   actionDirectionType: player[action].directionType,
-        // });
+        logInputs("attackWindup", {
+          plyr_no: player.number,
+          action: action,
+          input: input,
+          inputDirection: inputDirection,
+          actionDirection: player[action].direction,
+          actionDirectionType: player[action].directionType,
+          count: player[action].count,
+          inputThresh: directionalInputThresh,
+        });
         if (player[action].count < directionalInputThresh) {
           if (input === true) {
             if (inputCount > 1) {
@@ -275,18 +348,29 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             }
           } else {
             if (player[action].direction === "" || player[action].directionType === "") {
-              console.log("winding up within input thresh but no input. set to thrust");
+              logExecution("attackWindupNoInputSetThrust", {
+                plyr_no: player.number,
+                action: action,
+                count: player[action].count,
+                inputThresh: directionalInputThresh,
+              });
               popup("none", player[action].direction);
               player[action].direction = "none";
               player[action].directionType = "thrust";
             }
-            // console.log(" direction and type should already be set, do nothing");
           }
         }
         // DIRECTIONAL ACTION INPUT THRESHOLD PASSED.
         else {
           if (input === true) {
-            // console.log("input thresh passed.");
+            logInputs("attackInputAfterThresh", {
+              plyr_no: player.number,
+              action: action,
+              inputDirection: inputDirection,
+              currentDirection: player[action].direction,
+              count: player[action].count,
+              inputThresh: directionalInputThresh,
+            });
 
             if (inputCount > 1) {
               inputDirections = inputDirections.filter((x) => x !== player[action].direction);
@@ -296,7 +380,15 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
             }
 
             if (inputDirection !== player[action].direction) {
-              console.log("input after thresh w/ different direction. feint attack");
+              logExecution("attackInputAfterThreshMismatch", {
+                plyr_no: player.number,
+                action: action,
+                inputDirection: inputDirection,
+                currentDirection: player[action].direction,
+                count: player[action].count,
+                inputThresh: directionalInputThresh,
+                result: "feint",
+              });
               feintAttack();
             }
             if (inputDirection === player[action].direction) {
@@ -314,7 +406,6 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
         }
       }
     }
-    // console.log("directional attack input thresh", directionalInputThresh);
   }
 
   if (action === "defending") {
@@ -326,13 +417,23 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
           player[action].directionType = "slash";
           popup(inputDirection);
         } else {
-          // console.log("do nothing");
+          logInputs("defendInitKeepDirection", {
+            plyr_no: player.number,
+            action: action,
+            direction: player[action].direction,
+            directionType: player[action].directionType,
+          });
         }
       } else {
         if (player[action].direction === "" || player[action].directionType === "") {
           player[action].direction = "none";
           player[action].directionType = "thrust";
-          // popup("none");
+          logInputs("defendInitNoInput", {
+            plyr_no: player.number,
+            action: action,
+            direction: player[action].direction,
+            directionType: player[action].directionType,
+          });
         }
       }
     }
@@ -344,6 +445,14 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
       let defendPeak = player.defending.animRef.peak[defendType][player.defending.directionType];
       let defendDecayLimit = player.defending.decay.limit;
       directionalInputThresh = defendDecayLimit + defendPeak - app.defendPeakAllowance;
+      logCount("defendDirectionalThresh", {
+        plyr_no: player.number,
+        action: action,
+        mode: mode,
+        inputThresh: directionalInputThresh,
+        count: player[action].count,
+        weaponType: defendType,
+      });
       if (player[action].count <= directionalInputThresh) {
         if (input === true) {
           if (inputCount > 1) {
@@ -360,9 +469,22 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
           }
 
           if (player[action].direction === inputDirection) {
-            // console.log("same as init, do nothing");
+            logInputs("defendWindupSameDirection", {
+              plyr_no: player.number,
+              action: action,
+              direction: player[action].direction,
+              count: player[action].count,
+              inputThresh: directionalInputThresh,
+            });
           } else {
-            console.log("changing defend direction before thresh. from", player[action].direction, "to", inputDirection);
+            logExecution("defendDirectionChange", {
+              plyr_no: player.number,
+              action: action,
+              from: player[action].direction,
+              to: inputDirection,
+              count: player[action].count,
+              inputThresh: directionalInputThresh,
+            });
             directionChanged = true;
             popup(inputDirection, player[action].direction);
             player[action].direction = inputDirection;
@@ -370,7 +492,14 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
           }
         } else {
           if (player[action].direction !== "none") {
-            console.log("changing defend direction before thresh. from", player[action].direction, "to none");
+            logExecution("defendDirectionChange", {
+              plyr_no: player.number,
+              action: action,
+              from: player[action].direction,
+              to: "none",
+              count: player[action].count,
+              inputThresh: directionalInputThresh,
+            });
             directionChanged = true;
           }
           popup("none", player[action].direction);
@@ -381,7 +510,14 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
       // DIRECTIONAL ACTION INPUT THRESHOLD PASSED.
       else {
         if (input === true) {
-          // console.log("too late to change defend direction: count");
+          logExecution("defendInputAfterThresh", {
+            plyr_no: player.number,
+            action: action,
+            inputDirections: inputDirections,
+            currentDirection: player[action].direction,
+            count: player[action].count,
+            inputThresh: directionalInputThresh,
+          });
         } else {
           if (player[action].direction === "" || player[action].directionType === "") {
             popup("none", player[action].direction);
@@ -390,7 +526,6 @@ export function checkSetAttackDefendDirectionalInput(app, mode, action, player) 
           }
         }
       }
-      // console.log("directional defend input thresh", directionalInputThresh);
     }
   }
 

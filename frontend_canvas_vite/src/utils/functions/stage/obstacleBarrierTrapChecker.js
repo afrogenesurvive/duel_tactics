@@ -1,4 +1,30 @@
 export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
+  const logTrapTrigger = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "trap.trigger", message, data, { fn: "obstacleBarrierTrapChecker" });
+    }
+  };
+  const logTrapTimer = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "trap.timer", message, data, { fn: "obstacleBarrierTrapChecker" });
+    }
+  };
+  const logTrapAction = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "trap.action", message, data, { fn: "obstacleBarrierTrapChecker" });
+    }
+  };
+  const logTrapCount = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "trap.count", message, data, { fn: "obstacleBarrierTrapChecker" });
+    }
+  };
+  const logOwnerTrapTrigger = (message, data) => {
+    if (app?.globalLogger) {
+      const type = ownerType === "barrier" ? "barrier.trapTriggers" : "obstacle.trapTriggers";
+      app.globalLogger(app, type, message, data, { fn: "obstacleBarrierTrapChecker" });
+    }
+  };
   let trap = locationCell[ownerType].trap;
   // console.log("obstacleBarrierTrapChecker", trap);
   const executeTrapAction = () => {
@@ -20,9 +46,16 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
               app.getBoltTarget(result.projectile);
               trap = result.owner.trap;
             } else {
-              console.log("This trap is meant to fire a projectile but has no ammo.");
+              logTrapAction("noAmmo", {
+                ownerType,
+                id: locationCell[ownerType].id,
+                item: trap.item?.name,
+              });
               if (trap.persistent === true) {
-                console.log("This trap is persistent but out of ammo. Reload from default");
+                logTrapAction("reloadPersistent", {
+                  ownerType,
+                  id: locationCell[ownerType].id,
+                });
                 let item = app.itemList.find((x) => {
                   return x.name === trap.itemNameRef;
                 });
@@ -80,6 +113,13 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
           }
 
           trap.acting.count++;
+          logTrapCount("acting", {
+            ownerType,
+            id: locationCell[ownerType].id,
+            count: trap.acting.count,
+            limit: trap.acting.limit,
+            peak: trap.acting.peak,
+          });
 
           if (trap.acting.count < trap.acting.peak) {
             // console.log("trap is acting: windup", trap.acting.count);
@@ -128,11 +168,10 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
                 trap.acting.peak + dirAnimSetCalcMod - releaseTime,
                 app.directionalAnimShape,
               );
-              console.log("trap attack peak", {
-                owner_type: ownerType,
+              logTrapAction("attackPeak", {
+                ownerType,
                 id: locationCell[ownerType].id,
                 action: trap.action,
-                time: app.time,
               });
             }
           }
@@ -161,11 +200,10 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
           trap.acting.state = false;
           // trap.acting.direction = "";
           // trap.acting.directionType = "";
-          console.log("trap action complete", {
-            owner_type: ownerType,
+          logTrapAction("complete", {
+            ownerType,
             id: locationCell[ownerType].id,
             action: trap.action,
-            time: app.time,
           });
           app.cellPopups.splice(
             app.cellPopups.indexOf(
@@ -212,9 +250,26 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
         if (trap.timer.state === true) {
           if (trap.timer.count < trap.timer.limit) {
             trap.timer.count++;
+            logTrapCount("timer", {
+              ownerType,
+              id: locationCell[ownerType].id,
+              count: trap.timer.count,
+              limit: trap.timer.limit,
+            });
             higlightCell();
             if (trap.timer.count === 1) {
-              console.log("trap has been triggered at ", trap.target, "by", triggerType);
+              logTrapTrigger("triggered", {
+                ownerType,
+                id: locationCell[ownerType].id,
+                target: trap.target,
+                triggerType,
+              });
+              logOwnerTrapTrigger("triggered", {
+                ownerType,
+                id: locationCell[ownerType].id,
+                target: trap.target,
+                triggerType,
+              });
             }
             if (
               !app.cellPopups.find((x) => x.msg === "timer" && x.cell.number.x === locationCell.number.x && x.cell.number.y === locationCell.number.y)
@@ -236,6 +291,11 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
             trap.timer.count = 0;
             trap.timer.state = false;
             // console.log("persistent trap timer count finish", trap.timer.count);
+            logTrapTimer("complete", {
+              ownerType,
+              id: locationCell[ownerType].id,
+              target: trap.target,
+            });
             executeTrapAction();
             if (
               app.cellPopups.find((x) => x.msg === "timer" && x.cell.number.x === locationCell.number.x && x.cell.number.y === locationCell.number.y)
@@ -256,12 +316,27 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
         executeTrapAction();
         higlightCell();
         // console.log("trap has been triggered at ", trap.target, "by", triggerType);
+        logTrapTrigger("triggered", {
+          ownerType,
+          id: locationCell[ownerType].id,
+          target: trap.target,
+          triggerType,
+        });
+        logOwnerTrapTrigger("triggered", {
+          ownerType,
+          id: locationCell[ownerType].id,
+          target: trap.target,
+          triggerType,
+        });
       }
     }
     if (trap.persistent === false) {
       if (trap.remaining <= 0) {
         trap.state = false;
-        console.log(`This ${ownerType} trap is not persistent and has no fires remaining. Disabling`);
+        logTrapAction("disabledNoRemainingFires", {
+          ownerType,
+          id: locationCell[ownerType].id,
+        });
       }
       if (trap.remaining > 0) {
         if (trap.timer.enabled) {
@@ -274,7 +349,18 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
               higlightCell();
               // console.log("limited trap timer count up", trap.timer.count);
               if (trap.timer.count === 1) {
-                console.log("trap has been triggered at ", trap.target, "by", triggerType);
+                logTrapTrigger("triggered", {
+                  ownerType,
+                  id: locationCell[ownerType].id,
+                  target: trap.target,
+                  triggerType,
+                });
+                logOwnerTrapTrigger("triggered", {
+                  ownerType,
+                  id: locationCell[ownerType].id,
+                  target: trap.target,
+                  triggerType,
+                });
               }
               if (
                 !app.cellPopups.find(
@@ -299,6 +385,11 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
               trap.timer.state = false;
               executeTrapAction();
               trap.remaining--;
+              logTrapCount("remaining", {
+                ownerType,
+                id: locationCell[ownerType].id,
+                remaining: trap.remaining,
+              });
               if (
                 app.cellPopups.find(
                   (x) => x.msg === "timer" && x.cell.number.x === locationCell.number.x && x.cell.number.y === locationCell.number.y,
@@ -320,6 +411,11 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
           executeTrapAction();
           higlightCell();
           trap.remaining--;
+          logTrapCount("remaining", {
+            ownerType,
+            id: locationCell[ownerType].id,
+            remaining: trap.remaining,
+          });
         }
       }
     }
@@ -348,7 +444,11 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
       }
 
       if (triggered === false && trap.timer.enabled && trap.timer.state === true) {
-        console.log("trap trigger disengaged at", trap.target, " reset timer");
+        logTrapTrigger("disengaged", {
+          ownerType,
+          id: locationCell[ownerType].id,
+          target: trap.target,
+        });
         trap.timer.count = 0;
         trap.timer.state = false;
         if (app.cellPopups.find((x) => x.msg === "timer" && x.cell.number.x === locationCell.number.x && x.cell.number.y === locationCell.number.y)) {

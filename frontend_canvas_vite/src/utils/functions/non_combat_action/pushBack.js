@@ -1,5 +1,29 @@
 export function pushBack(app, player, hitByPlayerDirection) {
-  // console.log('pushing back?');
+  const logPushBackInput = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushBack.input", message, data, { fn: "pushBack" });
+    }
+  };
+  const logPushBackExec = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushBack.execution", message, data, { fn: "pushBack" });
+    }
+  };
+  const logPushBackCount = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushBack.count", message, data, { fn: "pushBack" });
+    }
+  };
+  const logPushBackHalf = (message, data) => {
+    if (app?.globalLogger) {
+      app.globalLogger(app, "player.pushBack.halfPushBack", message, data, { fn: "pushBack" });
+    }
+  };
+
+  logPushBackInput("start", {
+    playerId: player.number,
+    direction: hitByPlayerDirection,
+  });
 
   app.attackedCancel(player);
 
@@ -30,6 +54,10 @@ export function pushBack(app, player, hitByPlayerDirection) {
     canPushBack = false;
     halfPushBack = true;
     myCellBlock = true;
+    logPushBackInput("blockedByBarrier", {
+      playerId: player.number,
+      direction: pushBackDirection,
+    });
   }
 
   if (target.cell1.free === false || myCellBlock === true) {
@@ -64,6 +92,10 @@ export function pushBack(app, player, hitByPlayerDirection) {
       state: false,
       direction: "",
     };
+    logPushBackExec("blocked", {
+      playerId: player.number,
+      occupant: target.cell1.occupant.type,
+    });
   } else {
     canPushBack = true;
   }
@@ -89,6 +121,15 @@ export function pushBack(app, player, hitByPlayerDirection) {
     };
     let nextPosition = app.lineCrementer(player);
     player.nextPosition = nextPosition;
+    logPushBackExec("success", {
+      playerId: player.number,
+      destination: target.cell1.number,
+    });
+
+    logPushBackCount("move", {
+      playerId: player.number,
+      count: player?.pushBack?.count ?? 0,
+    });
 
     if (!player.popups.find((x) => x.msg === "pushedBack")) {
       player.popups.push({
@@ -109,6 +150,11 @@ export function pushBack(app, player, hitByPlayerDirection) {
     app.unsetDeflection(player);
 
     player.success.deflected.predeflect = false;
+    logPushBackHalf("start", {
+      playerId: player.number,
+      halfPushBackType,
+      direction: dir,
+    });
     app.startHalfPushBack("player", halfPushBackType, dir, player);
   }
 

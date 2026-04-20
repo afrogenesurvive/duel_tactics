@@ -1,4 +1,11 @@
 export function checkMoveProgress(app, player, nextPosition) {
+  const logMove = (message, data = {}, origin) => {
+    app.globalLogger("player.movement", message, data, origin || { fn: "checkMoveProgress" });
+  };
+  const logMoveCount = (message, data = {}, origin) => {
+    app.globalLogger("player.movement_count", message, data, origin || { fn: "checkMoveProgress" });
+  };
+
   if (player.moving.state === true) {
     // console.log("checkMoveProgress", {
     //   plyr_number: player.number,
@@ -11,8 +18,7 @@ export function checkMoveProgress(app, player, nextPosition) {
     nextPosition = app.lineCrementer(player);
     player.nextPosition = nextPosition;
     if (player.moveCancel.state === true) {
-      app.globalLogger(
-        "player.movement",
+      logMoveCount(
         "moveCancelReturning",
         {
           step: player.moving.step,
@@ -95,8 +101,7 @@ export function checkMoveProgress(app, player, nextPosition) {
             player.currentPosition.cell.center = player.target.cell1.center;
           }
 
-          app.globalLogger(
-            "player.movement",
+          logMove(
             "reachedDestination",
             {
               step: player.moving.step,
