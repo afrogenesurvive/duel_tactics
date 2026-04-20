@@ -4,9 +4,6 @@ export function lineCrementer(app, player) {
   let currentPosition = player.currentPosition.cell.center;
   let target = player.target;
   let moveSpeed = player.speed.move;
-  if (player.dashing?.state === true && Number.isFinite(player.dashing.dashMoveSpeed)) {
-    moveSpeed = player.dashing.dashMoveSpeed;
-  }
   if (player.moveCancel.state === true) {
     currentPosition = player.moving.origin.center;
   }
@@ -15,7 +12,7 @@ export function lineCrementer(app, player) {
     moveSpeed = player.terrainMoveSpeed.speed;
   }
   if (player.jumping.state === true) {
-    moveSpeed = 0.2;
+    moveSpeed = 0.1;
   }
   if (player.stamina.current < 1) {
     moveSpeed = 0.05;

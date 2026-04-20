@@ -94,67 +94,6 @@ export function checkMoveProgress(app, player, nextPosition) {
         if (el === true) {
           let indx = atDestRanges1.indexOf(el);
 
-          if (player.dashing?.state === true) {
-            if (player.dashing.cell_1_arrived !== true) {
-              player.dashing.cell_1_arrived = true;
-              if (refCell1) {
-                player.currentPosition.cell.number = player.target.cell1.number;
-                player.currentPosition.cell.center = player.target.cell1.center;
-              }
-
-              const dashTarget = app.getTarget(player);
-              const dashBlocked =
-                !dashTarget.cell1 ||
-                dashTarget.myCellBlock === true ||
-                dashTarget.cell1.void === true ||
-                dashTarget.cell1.free !== true;
-
-              if (!dashBlocked) {
-                player.action = "dashing";
-                player.moving = {
-                  state: true,
-                  step: 0,
-                  course: "",
-                  origin: {
-                    number: {
-                      x: player.currentPosition.cell.number.x,
-                      y: player.currentPosition.cell.number.y,
-                    },
-                    center: {
-                      x: player.currentPosition.cell.center.x,
-                      y: player.currentPosition.cell.center.y,
-                    },
-                  },
-                  destination: dashTarget.cell1.center,
-                };
-                nextPosition = app.lineCrementer(player);
-                player.nextPosition = nextPosition;
-                return;
-              }
-              player.dashing.state = false;
-              player.dashing.cell_2_arrived = true;
-              player.dashing.postDash.state = true;
-              player.dashing.postDash.count = 0;
-              if (player.dashing.originalMoveSpeed !== null) {
-                player.speed.move = player.dashing.originalMoveSpeed;
-              }
-              if (player.dashing.originalMoveDelayLimit !== null) {
-                player.newMoveDelay.limit = player.dashing.originalMoveDelayLimit;
-              }
-            } else {
-              player.dashing.state = false;
-              player.dashing.cell_2_arrived = true;
-              player.dashing.postDash.state = true;
-              player.dashing.postDash.count = 0;
-              if (player.dashing.originalMoveSpeed !== null) {
-                player.speed.move = player.dashing.originalMoveSpeed;
-              }
-              if (player.dashing.originalMoveDelayLimit !== null) {
-                player.newMoveDelay.limit = player.dashing.originalMoveDelayLimit;
-              }
-            }
-          }
-
           player.newMoveDelay.state = true;
 
           if (refCell1) {

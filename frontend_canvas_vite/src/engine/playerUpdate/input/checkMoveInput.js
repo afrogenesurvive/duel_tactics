@@ -5,34 +5,9 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
   const logMoveCount = (message, data = {}, origin) => {
     app.globalLogger("player.movement_count", message, data, origin || { fn: "checkMoveInput" });
   };
-  const tickDashCooldown = () => {
-    if (player.dashing?.postDash?.state !== true) {
-      return false;
-    }
 
-    player.dashing.postDash.count += 1;
-    if (player.dashing.postDash.count >= player.dashing.postDash.limit) {
-      player.dashing.postDash.state = false;
-      player.dashing.postDash.count = 0;
-      player.dashing.cell_1_arrived = false;
-      player.dashing.cell_2_arrived = false;
-      player.dashing.inputHoldCount = 0;
-      player.dashing.originalMoveSpeed = null;
-      player.dashing.dashMoveSpeed = null;
-      player.dashing.originalMoveDelayLimit = null;
-    }
-
-    return true;
-  };
-
-  if (tickDashCooldown()) {
-    return;
-  }
-  if (player.dashing?.state === true) {
-    return;
-  }
-
-  const moveInputActive =
+  // CONFIRM MOVE KEYPRESS!!
+  if (
     app.keyPressed[player.number - 1].north === true ||
     app.keyPressed[player.number - 1].south === true ||
     app.keyPressed[player.number - 1].east === true ||
@@ -40,131 +15,14 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
     app.keyPressed[player.number - 1].northEast === true ||
     app.keyPressed[player.number - 1].northWest === true ||
     app.keyPressed[player.number - 1].southEast === true ||
-    app.keyPressed[player.number - 1].southWest === true;
-
-  if (!moveInputActive) {
-    if (player.dashing?.inputHoldCount) {
-      player.dashing.inputHoldCount = 0;
-    }
-    return;
-  }
-
-  // CONFIRM MOVE KEYPRESS!!
-  if (moveInputActive) {
+    app.keyPressed[player.number - 1].southWest === true
+  ) {
     if (plyrPullPushed === true) {
       breakPulledPushed = true;
     }
     if (player.newMoveDelay.state !== true) {
       // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
       if (keyPressedDirection === player.direction && player.strafing.state === false) {
-        const dashEligible =
-          player.moving.state !== true &&
-          player.turning.state !== true &&
-          player.jumping.state !== true &&
-          player.pushing.state !== true &&
-          player.pulling.state !== true &&
-          player.pushed.state !== true &&
-          player.pulled.state !== true;
-
-        if (dashEligible) {
-          player.dashing.inputHoldCount += 1;
-          if (player.dashing.inputHoldCount >= player.dashing.inputHoldLimit) {
-            const target = app.getTarget(player);
-            const cell1 = target.cell1;
-            const cell2 = target.cell2;
-            const dashBlocked =
-              !cell1 ||
-              !cell2 ||
-              target.myCellBlock === true ||
-              cell1.void === true ||
-              cell2.void === true ||
-              cell1.free !== true ||
-              cell2.free !== true;
-
-            if (dashBlocked) {
-              player.dashing.inputHoldCount = 0;
-            } else if (player.stamina.current - app.staminaCostRef.dash >= 0) {
-              player.stamina.current -= app.staminaCostRef.dash;
-              player.dashing.state = true;
-              player.dashing.dashDirection = player.direction;
-              player.dashing.origin = {
-                number: { ...player.currentPosition.cell.number },
-                center: { ...player.currentPosition.cell.center },
-              };
-              player.dashing.cell_1_arrived = false;
-              player.dashing.cell_2_arrived = false;
-              player.dashing.postDash.state = false;
-              player.dashing.postDash.count = 0;
-
-              if (player.dashing.originalMoveSpeed === null) {
-                player.dashing.originalMoveSpeed = player.speed.move;
-              }
-              if (player.dashing.originalMoveDelayLimit === null) {
-                player.dashing.originalMoveDelayLimit = player.newMoveDelay.limit;
-              }
-
-              const maxSpeed = player.speed.range_1[player.speed.range_1.length - 1];
-              let dashMoveSpeed = maxSpeed;
-              if (maxSpeed === player.speed.move) {
-                dashMoveSpeed = Math.min(0.9, player.speed.move + 0.25);
-              }
-              player.dashing.dashMoveSpeed = dashMoveSpeed;
-              player.speed.move = dashMoveSpeed;
-              player.newMoveDelay.limit = player.dashing.dashMoveDelayLimit;
-
-              player.action = "dashing";
-              player.moving = {
-                state: true,
-                step: 0,
-                course: "",
-                origin: {
-                  number: {
-                    x: player.currentPosition.cell.number.x,
-                    y: player.currentPosition.cell.number.y,
-                  },
-                  center: {
-                    x: player.currentPosition.cell.center.x,
-                    y: player.currentPosition.cell.center.y,
-                  },
-                },
-                destination: target.cell1.center,
-              };
-              nextPosition = app.lineCrementer(player);
-              player.nextPosition = nextPosition;
-              player.dashing.inputHoldCount = 0;
-
-              logMove(
-                "dashStart",
-                {
-                  plyr_no: player.number,
-                  dash_speed: dashMoveSpeed,
-                  stamina: player.stamina.current,
-                  dash_cost: app.staminaCostRef.dash,
-                },
-                { fn: "checkMoveInput" },
-              );
-              return;
-            } else {
-              player.stamina.current = 0;
-              player.statusDisplay = {
-                state: true,
-                status: "Out of Stamina",
-                count: 0,
-                limit: player.statusDisplay.limit,
-              };
-              player.dashing.inputHoldCount = 0;
-              app.globalLogger(
-                "player.movement",
-                "dashOutOfStamina",
-                { plyr_no: player.number },
-                { fn: "checkMoveInput" },
-              );
-            }
-          }
-        } else if (player.dashing.inputHoldCount !== 0) {
-          player.dashing.inputHoldCount = 0;
-        }
-
         let target = app.getTarget(player);
 
         if (target.cell1.free === true && player.target.cell1.void === false && target.myCellBlock !== true) {
@@ -286,8 +144,6 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
             };
           }
         }
-      } else if (player.dashing.inputHoldCount !== 0) {
-        player.dashing.inputHoldCount = 0;
       }
     }
 

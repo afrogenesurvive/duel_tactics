@@ -367,24 +367,6 @@ export function addAiPlayer(app) {
           checking: false,
           state: false,
         },
-        dashing: {
-          state: false,
-          inputHoldCount: 0,
-          inputHoldLimit: 12,
-          dashDirection: "",
-          origin: {},
-          cell_1_arrived: false,
-          cell_2_arrived: false,
-          originalMoveSpeed: null,
-          dashMoveSpeed: null,
-          originalMoveDelayLimit: null,
-          dashMoveDelayLimit: 6,
-          postDash: {
-            state: false,
-            count: 0,
-            limit: 6,
-          },
-        },
         success: {
           attackSuccess: {
             state: false,
