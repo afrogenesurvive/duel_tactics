@@ -1053,6 +1053,7 @@ export function applyConstructorDefaults(app) {
     },
     flank: 5,
     jump: 6,
+    dash: 6,
     pushBack: 7,
     push: 3,
     pull: 4,

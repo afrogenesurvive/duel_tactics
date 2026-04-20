@@ -14,6 +14,7 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
   if (plyr.currentPosition.cell.number.x === x && plyr.currentPosition.cell.number.y === y && plyr.number === 1) {
     switch (plyr.action) {
       case "moving":
+      case "dashing":
         let moveSpeed = plyr.speed.move;
         if (plyr.stamina.current < 1) {
           moveSpeed = 0.05;
@@ -547,6 +548,7 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
         updatedPlayerImg = app.playerImgs[plyr.number - 1].idle[weapon];
         break;
       case "moving":
+      case "dashing":
         if (plyr.pushing.state === true) {
           updatedPlayerImg = app.playerImgs[plyr.number - 1].pushing[weapon];
         }
@@ -559,6 +561,9 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
           updatedPlayerImg = app.playerImgs[plyr.number - 1].walking[weapon];
         }
 
+        break;
+      case "dashing":
+        updatedPlayerImg = app.playerImgs[plyr.number - 1].walking[weapon];
         break;
       case "jumping":
         updatedPlayerImg = app.playerImgs[plyr.number - 1].jumping[weapon];
@@ -626,6 +631,9 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
         } else {
           updatedPlayerImg = app.playerImgs[plyrImgIndex].walking[weapon];
         }
+        break;
+      case "dashing":
+        updatedPlayerImg = app.playerImgs[plyrImgIndex].walking[weapon];
         break;
       case "jumping":
         updatedPlayerImg = app.playerImgs[plyrImgIndex].jumping[weapon];

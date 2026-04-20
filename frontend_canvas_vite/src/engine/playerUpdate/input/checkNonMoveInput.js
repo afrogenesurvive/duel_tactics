@@ -1,4 +1,8 @@
 export function checkNonMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, breakPulledPushed, keyPressedDirection, nextPosition) {
+  if (player.dashing?.postDash?.state === true || player.dashing?.state === true) {
+    return;
+  }
+
   // ATTACKING/DEFENDING
   if (app.keyPressed[player.number - 1].attack === true || app.keyPressed[player.number - 1].defend === true) {
     // ALREADY ATTACKING/DEFENDING!!
