@@ -1,4 +1,4 @@
-import { moveConstants } from "./moveConsts";
+import moveConstants from "../../../data/moveConsts";
 
 export function addAiPlayer(app) {
   let newPlayerNumber = app.players.length + 1;

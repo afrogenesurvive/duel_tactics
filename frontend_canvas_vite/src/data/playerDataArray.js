@@ -1,4 +1,4 @@
-import { moveConstants } from "./moveConsts";
+import moveConstants from "./moveConsts";
 
 export const playerDataArray = [
   {

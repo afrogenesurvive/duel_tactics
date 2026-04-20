@@ -1,4 +1,4 @@
-import { moveConstants } from "./moveConsts";
+import moveConstants from "../../../data/moveConsts";
 
 export function respawn(app, player) {
   console.log("respawning", player.number, player);

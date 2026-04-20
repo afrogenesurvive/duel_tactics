@@ -4,6 +4,10 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
   let frameTypeIndex;
   let remainder;
   let newIndex;
+  const getMoveAnimIndex = (step, frameCount = 18) => {
+    const progress = Math.min(1, Math.max(0, Number.isFinite(step) ? step : 0));
+    return Math.min(frameCount, Math.floor(progress * frameCount) + 1);
+  };
 
   // SET ANIMATION INDEX USED FOR SPRITE SHEET STEPPING BASED ON ACTION
   // FOR TESTING BY CALLING ONLY @ 1 CELL
@@ -30,9 +34,12 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
           moveSpeed = plyr.pulled.moveSpeed;
         }
 
-        let rangeIndex = plyr.speed.range_1.indexOf(moveSpeed);
-        let moveAnimIndex = app.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
-        finalAnimIndex = moveAnimIndex + 1;
+        // let rangeIndex = plyr.speed.range_1.indexOf(moveSpeed);
+        // let moveAnimIndex = app.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
+        // finalAnimIndex = moveAnimIndex + 1;
+
+        finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
+
         // console.log("draw player step", {
         //   plyr_number: plyr.number,
         //   move_speed: plyr.speed.move,
@@ -47,16 +54,12 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
         }
         break;
       case "jumping":
-        let rangeIndex4 = plyr.speed.range_1.indexOf(0.1);
-        let moveAnimIndex4 = app.moveStepRef[rangeIndex4].indexOf(plyr.moving.step);
-        finalAnimIndex = moveAnimIndex4;
+        finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
         // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
         break;
       case "strafe moving":
         if (plyr.pushBack.state === true) {
-          let rangeIndex3 = plyr.speed.range_1.indexOf(plyr.speed.move);
-          let moveAnimIndex3 = app.moveStepRef[rangeIndex3].indexOf(plyr.moving.step);
-          finalAnimIndex = moveAnimIndex3;
+          finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
           //   console.log("anim testing pushback spd", plyr.speed.move, "step", plyr.moving.step, "indx", finalAnimIndex);
         } else {
           let moveSpeed = plyr.speed.move;
@@ -72,16 +75,12 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
           if (plyr.pulled.state === true) {
             moveSpeed = plyr.pulled.moveSpeed;
           }
-          let rangeIndex2 = plyr.speed.range_1.indexOf(moveSpeed);
-          let moveAnimIndex2 = app.moveStepRef[rangeIndex2].indexOf(plyr.moving.step);
-          finalAnimIndex = moveAnimIndex2;
+          finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
           //   console.log("anim testing strafe mv spd", plyr.speed.move, "step", plyr.moving.step, "indx", finalAnimIndex);
         }
         break;
       case "flanking":
-        let rangeIndex6 = plyr.speed.range_1.indexOf(0.2);
-        let moveAnimIndex6 = app.moveStepRef[rangeIndex6].indexOf(plyr.moving.step);
-        finalAnimIndex = moveAnimIndex6;
+        finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
         console.log("flanking step", plyr.flanking.step, "step", plyr.moving.step, "anim indx", finalAnimIndex);
         // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
         break;
@@ -310,25 +309,19 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
       if (plyr.pulled.state === true) {
         moveSpeed = plyr.pulled.moveSpeed;
       }
-      let rangeIndex = plyr.speed.range_1.indexOf(moveSpeed);
-      let moveAnimIndex = app.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
-      finalAnimIndex = moveAnimIndex + 1;
+      finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
       if (plyr.target.cell1.void == true) {
         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
       }
       break;
     case "jumping":
-      let rangeIndex4 = plyr.speed.range_1.indexOf(0.1);
-      let moveAnimIndex4 = app.moveStepRef[rangeIndex4].indexOf(plyr.moving.step);
-      finalAnimIndex = moveAnimIndex4;
+      finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
       break;
     case "strafe moving":
       if (plyr.pushBack.state === true) {
-        let rangeIndex3 = plyr.speed.range_1.indexOf(plyr.speed.move);
-        let moveAnimIndex3 = app.moveStepRef[rangeIndex3].indexOf(plyr.moving.step);
-        finalAnimIndex = moveAnimIndex3;
+        finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
       } else {
         let moveSpeed = plyr.speed.move;
@@ -344,16 +337,12 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
         if (plyr.pulled.state === true) {
           moveSpeed = plyr.pulled.moveSpeed;
         }
-        let rangeIndex2 = plyr.speed.range_1.indexOf(moveSpeed);
-        let moveAnimIndex2 = app.moveStepRef[rangeIndex2].indexOf(plyr.moving.step);
-        finalAnimIndex = moveAnimIndex2;
+        finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
       }
       break;
     case "flanking":
-      let rangeIndex6 = plyr.speed.range_1.indexOf(0.2);
-      let moveAnimIndex6 = app.moveStepRef[rangeIndex6].indexOf(plyr.moving.step);
-      finalAnimIndex = moveAnimIndex6;
+      finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
       // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
       break;

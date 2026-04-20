@@ -1,4 +1,4 @@
-import { moveConstants } from "./moveConsts";
+import moveConstants from "../data/moveConsts";
 
 export function gameReset(app, type) {
   console.log("resetting");
