@@ -313,6 +313,8 @@ export function attackedCancel(app, player) {
         plyr_no: player.number,
         action: player.action,
       });
+      const originalMoveSpeed = player.dashing.originalMoveSpeed;
+      const originalMoveDelayLimit = player.dashing.originalMoveDelayLimit;
       if (player.success.deflected.state !== true) {
         player.action = "idle";
       }
@@ -343,13 +345,26 @@ export function attackedCancel(app, player) {
         },
         cell_2_arrived: false,
         originalMoveSpeed: null,
+        originalMoveDelayLimit: null,
         dashMoveSpeed: undefined,
+        lastMoveStartTime: -1,
+        tap: {
+          active: false,
+          direction: "",
+          time: -1,
+        },
         postDash: {
           state: false,
           count: 0,
           limit: 10,
         },
       };
+      if (originalMoveSpeed !== null && player.speed.move > originalMoveSpeed) {
+        player.speed.move = originalMoveSpeed;
+      }
+      if (originalMoveDelayLimit !== null) {
+        player.newMoveDelay.limit = originalMoveDelayLimit;
+      }
       app.players[player.number - 1].statusDisplay = {
         state: true,
         status: "dashing break!",

@@ -52,6 +52,7 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
                 },
                 destination: target.cell1.center,
               };
+              player.dashing.lastMoveStartTime = app.time;
               nextPosition = app.lineCrementer(player);
               player.nextPosition = nextPosition;
 
@@ -123,6 +124,7 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
               },
               destination: target.cell1.center,
             };
+            player.dashing.lastMoveStartTime = app.time;
 
             nextPosition = app.lineCrementer(player);
             player.nextPosition = nextPosition;

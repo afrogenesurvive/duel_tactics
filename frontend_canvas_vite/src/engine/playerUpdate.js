@@ -10,6 +10,7 @@ import { checkPopups } from "./playerUpdate/checkPopups";
 import { checkObstacleBarrier } from "./playerUpdate/checkObstacleBarrier";
 import { checkDeflectionElasticCounter } from "./playerUpdate/checkDeflectionElasticCounter";
 import { checkMoveProgress } from "./playerUpdate/player_action/checkMoveProgress";
+import { checkDashing } from "./playerUpdate/player_action/checkDashing";
 import { checkFeintsCancels } from "./playerUpdate/player_action/checkFeintsCancels";
 import { checkDodge } from "./playerUpdate/player_action/checkDodge";
 import { checkElasticCounter } from "./playerUpdate/checkElasticCounter";
@@ -116,11 +117,17 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
     }
 
     // MOVE CANCEL/RETURN
-    checkMoveCancel(app, player, nextPosition);
+    if (player.dashing.state !== true && player.dashing.postDash.state !== true) {
+      checkMoveCancel(app, player, nextPosition);
+    }
 
     // DON'T READ INPUTS. JUST MOVE!!
     // if player.moving.state === true
-    checkMoveProgress(app, player, nextPosition);
+    if (player.dashing.state === true || player.dashing.postDash.state === true) {
+      nextPosition = checkDashing(app, player, keyPressedDirection, nextPosition);
+    } else {
+      checkMoveProgress(app, player, nextPosition);
+    }
 
     // CAN READ INPUTS
     if (player.moving.state === false) {
@@ -415,6 +422,8 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
         player.defending.count < 1 &&
         player.dodging.state === false &&
         player.dodging.countState === false &&
+        player.dashing.state !== true &&
+        player.dashing.postDash.state !== true &&
         player.turning.state !== true &&
         player.postPull.state !== true &&
         player.defending.decay.state !== true &&
@@ -435,6 +444,7 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
       if (
         player.moving.state !== true &&
         player.dashing.state !== true &&
+        player.dashing.postDash.state !== true &&
         player.strafing.state === false &&
         player.turning.state !== true &&
         player.postPull.state !== true &&

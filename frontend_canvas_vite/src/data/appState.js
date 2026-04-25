@@ -1056,9 +1056,22 @@ export function applyConstructorDefaults(app) {
     pushBack: 7,
     push: 3,
     pull: 4,
+    dash: 8,
     move: 0.1,
     strafe: 0.5,
     turn: 0.5,
+  };
+  app.dashRef = {
+    speedRange: "range_2",
+    speedIndex: 4,
+    moveDelayLimit: 6,
+    postDashLimit: 8,
+    feintStepThreshold: 0.55,
+    collisionHalfwayStep: 0.5,
+    deflectOdds: {
+      otherPlayer: 2,
+      dasher: 4,
+    },
   };
   app.deflectedLengthRef = {
     outOfStamina: 50,

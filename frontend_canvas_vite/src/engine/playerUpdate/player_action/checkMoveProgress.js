@@ -5,6 +5,21 @@ export function checkMoveProgress(app, player, nextPosition) {
   const logMoveCount = (message, data = {}, origin) => {
     app.globalLogger("player.movement_count", message, data, origin || { fn: "checkMoveProgress" });
   };
+  const endDash = (startCooldown = true) => {
+    player.dashing.state = false;
+    player.dashing.cell_1_arrived = false;
+    player.dashing.cell_2_arrived = false;
+    if (Number.isFinite(player.dashing.originalMoveSpeed)) {
+      player.speed.move = player.dashing.originalMoveSpeed;
+    }
+    if (Number.isFinite(player.dashing.originalMoveDelayLimit)) {
+      player.newMoveDelay.limit = player.dashing.originalMoveDelayLimit;
+    }
+    if (startCooldown === true) {
+      player.dashing.postDash.state = true;
+      player.dashing.postDash.count = 0;
+    }
+  };
 
   if (player.moving.state === true) {
     // console.log("checkMoveProgress", {
@@ -17,6 +32,12 @@ export function checkMoveProgress(app, player, nextPosition) {
 
     nextPosition = app.lineCrementer(player);
     player.nextPosition = nextPosition;
+    if (player.dashing?.state === true && player.success?.deflected?.state === true) {
+      player.moving.state = false;
+      player.action = "deflected";
+      endDash(true);
+      return;
+    }
     if (player.moveCancel.state === true) {
       logMoveCount(
         "moveCancelReturning",
@@ -93,6 +114,119 @@ export function checkMoveProgress(app, player, nextPosition) {
       for (const el of atDestRanges1) {
         if (el === true) {
           let indx = atDestRanges1.indexOf(el);
+
+          if (player.dashing?.state === true) {
+            const dashCell1 = player.dashing.cell_1;
+            const dashCell2 = player.dashing.cell_2;
+            const dashCell1Ref = dashCell1
+              ? app.gridInfo.find((x) => x.number.x === dashCell1.number.x && x.number.y === dashCell1.number.y)
+              : null;
+            const dashCell2Ref = dashCell2
+              ? app.gridInfo.find((x) => x.number.x === dashCell2.number.x && x.number.y === dashCell2.number.y)
+              : null;
+
+            if (player.dashing.cell_1_arrived !== true) {
+              player.dashing.cell_1_arrived = true;
+
+              if (dashCell1) {
+                player.currentPosition.cell.number = dashCell1.number;
+                player.currentPosition.cell.center = dashCell1.center;
+              }
+
+              if (dashCell1Ref) {
+                const dashCell1Player = app.players.find(
+                  (x) =>
+                    x.number !== player.number &&
+                    x.currentPosition.cell.number.x === dashCell1Ref.number.x &&
+                    x.currentPosition.cell.number.y === dashCell1Ref.number.y,
+                );
+                if (dashCell1Player) {
+                  app.setDeflection(player, "attacked", false);
+                  app.setDeflection(dashCell1Player, "attacked", false);
+                  app.pushBack(dashCell1Player, player.direction);
+                  player.action = "idle";
+                  player.moving.state = false;
+                  player.newMoveDelay.state = true;
+                  endDash(true);
+                  return;
+                }
+              }
+
+              const dashBlocked =
+                !dashCell2Ref ||
+                dashCell2Ref.void === true ||
+                (dashCell1Ref?.barrier?.state === true && dashCell1Ref.barrier.position === player.direction) ||
+                (dashCell2Ref?.barrier?.state === true &&
+                  dashCell2Ref.barrier.position === app.getOppositeDirection(player.direction));
+
+              if (dashBlocked) {
+                player.action = "idle";
+                player.moving.state = false;
+                player.newMoveDelay.state = true;
+                endDash(true);
+                return;
+              }
+
+              if (dashCell2) {
+                player.target.cell1.number = dashCell2.number;
+                player.target.cell1.center = dashCell2.center;
+              }
+
+              player.moving = {
+                state: true,
+                step: 0,
+                course: player.moving.course,
+                origin: {
+                  number: dashCell1 ? dashCell1.number : player.moving.origin.number,
+                  center: dashCell1 ? dashCell1.center : player.moving.origin.center,
+                },
+                destination: dashCell2 ? dashCell2.center : player.moving.destination,
+              };
+              player.action = "dashing";
+              player.nextPosition = app.lineCrementer(player);
+              return;
+            }
+
+            if (player.dashing.cell_2_arrived !== true) {
+              player.dashing.cell_2_arrived = true;
+
+              if (dashCell2) {
+                player.currentPosition.cell.number = dashCell2.number;
+                player.currentPosition.cell.center = dashCell2.center;
+              }
+
+              if (dashCell2Ref) {
+                const dashTargetPlayer = app.players.find(
+                  (x) =>
+                    x.number !== player.number &&
+                    x.currentPosition.cell.number.x === dashCell2Ref.number.x &&
+                    x.currentPosition.cell.number.y === dashCell2Ref.number.y,
+                );
+
+                if (dashTargetPlayer) {
+                  const deflectBoth = app.rnJesus(1, 5) !== 1;
+                  if (deflectBoth) {
+                    app.setDeflection(player, "attacked", false);
+                    app.setDeflection(dashTargetPlayer, "attacked", false);
+                  } else {
+                    app.setDeflection(dashTargetPlayer, "attacked", false);
+                  }
+                  app.pushBack(dashTargetPlayer, player.direction);
+                }
+
+                if (dashCell2Ref.obstacle?.state === true) {
+                  app.setDeflection(player, "bluntAttacked", false);
+                  app.pushBack(player, app.getOppositeDirection(player.direction));
+                }
+              }
+
+              player.action = "idle";
+              player.moving.state = false;
+              player.newMoveDelay.state = true;
+              endDash(true);
+              return;
+            }
+          }
 
           player.newMoveDelay.state = true;
 

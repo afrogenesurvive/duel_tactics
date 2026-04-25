@@ -53,6 +53,9 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
           // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
         }
         break;
+      case "dashing":
+        finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
+        break;
       case "jumping":
         finalAnimIndex = getMoveAnimIndex(plyr.moving.step);
         // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);

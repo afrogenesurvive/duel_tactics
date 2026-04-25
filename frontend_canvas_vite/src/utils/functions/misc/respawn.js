@@ -34,6 +34,7 @@ export function respawn(app, player) {
       pushBack: 3,
       guardBreak: 3,
       dodge: 0,
+      reflexes: 3,
     };
     player.items = {
       weaponIndex: 0,
@@ -92,6 +93,42 @@ export function respawn(app, player) {
     player.jumping = {
       checking: false,
       state: false,
+    };
+    player.dashing = {
+      state: false,
+      originalDirection: "",
+      dashDirection: "",
+      origin: {},
+      moveStepCount_1: 0,
+      cell_1: {
+        x: null,
+        y: null,
+        occupied: false,
+        occupant_id: {},
+      },
+      cell_1_arrived: false,
+      moveStepCount_2: 0,
+      cell_2: {
+        x: null,
+        y: null,
+        occupied: false,
+        occupant_id: {},
+      },
+      cell_2_arrived: false,
+      originalMoveSpeed: null,
+      originalMoveDelayLimit: null,
+      dashMoveSpeed: undefined,
+      lastMoveStartTime: -1,
+      tap: {
+        active: false,
+        direction: "",
+        time: -1,
+      },
+      postDash: {
+        state: false,
+        count: 0,
+        limit: 10,
+      },
     };
     player.stamina = {
       current: 20,

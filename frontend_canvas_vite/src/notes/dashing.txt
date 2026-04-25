@@ -12,8 +12,8 @@ Dashing checklist:
                     - dashing to a cell w/ another player has a high change to deflect and knock back 1 or both players (similar to jump collision)
                     - parse/process in check movement
                     - store pre dash move speed and if lower reset the players move speed back to that after dash complete/interrupt/cancel
-                    - initiate dash if dir aligned move input input is held passed at certiain thresh
-    add dash to player actions and keyPressed checks
+                    - dash input = direction same as exiting move direction pressed again within ,move cancel threshhold
+    add dash to player actions checks
     can be attacked cancelled/stopped by an attack
     can be fainted up the mid move to the 2nd cell if the opposite direction is pressed and based on a 'relexes' stat roll (check a mid move step tresh) like normal move cancel
     if current speed is max from speed array, calc knew higher animatable speed

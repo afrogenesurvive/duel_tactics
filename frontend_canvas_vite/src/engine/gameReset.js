@@ -334,6 +334,26 @@ export function gameReset(app, type) {
         checking: false,
         state: false,
       };
+      player.dashing = {
+        state: false,
+        inputHoldCount: 0,
+        inputHoldLimit: 12,
+        dashDirection: "",
+        origin: {},
+        cell_1: null,
+        cell_2: null,
+        cell_1_arrived: false,
+        cell_2_arrived: false,
+        originalMoveSpeed: null,
+        dashMoveSpeed: null,
+        originalMoveDelayLimit: null,
+        dashMoveDelayLimit: 6,
+        postDash: {
+          state: false,
+          count: 0,
+          limit: 6,
+        },
+      };
       player.success = {
         attackSuccess: {
           state: false,
@@ -426,6 +446,9 @@ export function gameReset(app, type) {
         pushBack: 4,
         guardBreak: 3,
         dodge: 0,
+      };
+      player.stats = {
+        reflexes: 3,
       };
       player.statusDisplay = {
         state: false,

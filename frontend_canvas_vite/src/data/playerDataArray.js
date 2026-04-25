@@ -192,7 +192,14 @@ export const playerDataArray = [
       },
       cell_2_arrived: false,
       originalMoveSpeed: null,
+      originalMoveDelayLimit: null,
       dashMoveSpeed: undefined,
+      lastMoveStartTime: -1,
+      tap: {
+        active: false,
+        direction: "",
+        time: -1,
+      },
       postDash: {
         state: false,
         count: 0,
@@ -314,6 +321,7 @@ export const playerDataArray = [
       pushBack: 4,
       guardBreak: 3,
       dodge: 0,
+      reflexes: 3,
     },
     statusDisplay: {
       state: false,
@@ -727,7 +735,14 @@ export const playerDataArray = [
       },
       cell_2_arrived: false,
       originalMoveSpeed: null,
+      originalMoveDelayLimit: null,
       dashMoveSpeed: undefined,
+      lastMoveStartTime: -1,
+      tap: {
+        active: false,
+        direction: "",
+        time: -1,
+      },
       postDash: {
         state: false,
         count: 0,
@@ -849,6 +864,7 @@ export const playerDataArray = [
       pushBack: 4,
       guardBreak: 3,
       dodge: 0,
+      reflexes: 3,
     },
     statusDisplay: {
       state: false,

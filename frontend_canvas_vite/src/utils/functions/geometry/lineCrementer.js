@@ -11,10 +11,13 @@ export function lineCrementer(app, player) {
     // console.log('terrain speed mod',player.terrainMoveSpeed.speed);
     moveSpeed = player.terrainMoveSpeed.speed;
   }
-  if (player.jumping.state === true) {
-    moveSpeed = 0.1;
+  if (player.dashing.state === true && player.dashing.dashMoveSpeed) {
+    moveSpeed = player.dashing.dashMoveSpeed;
   }
-  if (player.stamina.current < 1) {
+  if (player.jumping.state === true) {
+    moveSpeed = 0.2;
+  }
+  if (player.stamina.current < 1 && player.dashing.state !== true) {
     moveSpeed = 0.05;
   }
 

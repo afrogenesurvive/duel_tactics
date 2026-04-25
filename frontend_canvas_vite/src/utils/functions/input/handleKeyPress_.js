@@ -7,25 +7,25 @@ export function handleKeyPress(app, event, state) {
   switch (keyInput) {
     case "w":
       app.keyPressed[0].north = state;
-      // direction = 'north';
+      direction = "north";
       app.players[0].turnCheckerDirection = "north";
       app.currentPlayer = 1;
       break;
     case "a":
       app.keyPressed[0].west = state;
-      // direction = 'west';
+      direction = "west";
       app.players[0].turnCheckerDirection = "west";
       app.currentPlayer = 1;
       break;
     case "d":
       app.keyPressed[0].east = state;
-      // direction = 'east';
+      direction = "east";
       app.players[0].turnCheckerDirection = "east";
       app.currentPlayer = 1;
       break;
     case "s":
       app.keyPressed[0].south = state;
-      // direction = 'south';
+      direction = "south";
       app.players[0].turnCheckerDirection = "south";
       app.currentPlayer = 1;
       break;
@@ -58,18 +58,10 @@ export function handleKeyPress(app, event, state) {
 
       break;
     case " ":
-      if (
-        state === false &&
-        app.players[0].moving.state === true &&
-        app.players[0].strafing.state === true
-      ) {
+      if (state === false && app.players[0].moving.state === true && app.players[0].strafing.state === true) {
         app.players[0].strafeReleaseHook = true;
       }
-      if (
-        state === false &&
-        app.players[0].moving.state !== true &&
-        app.keyPressed[0].strafe === true
-      ) {
+      if (state === false && app.players[0].moving.state !== true && app.keyPressed[0].strafe === true) {
         app.players[0].strafeReleaseHook = true;
       } else {
         app.keyPressed[0].strafe = state;
@@ -131,26 +123,26 @@ export function handleKeyPress(app, event, state) {
 
     case "i":
       app.keyPressed[1].north = state;
-      // direction = 'north';
+      direction = "north";
       app.players[1].turnCheckerDirection = "north";
       app.currentPlayer = 2;
       break;
 
     case "j":
       app.keyPressed[1].west = state;
-      // direction = 'west';
+      direction = "west";
       app.players[1].turnCheckerDirection = "west";
       app.currentPlayer = 2;
       break;
     case "k":
       app.keyPressed[1].south = state;
-      // direction = 'south';
+      direction = "south";
       app.players[1].turnCheckerDirection = "south";
       app.currentPlayer = 2;
       break;
     case "l":
       app.keyPressed[1].east = state;
-      // direction = 'east';
+      direction = "east";
       app.players[1].turnCheckerDirection = "east";
       app.currentPlayer = 2;
       break;
@@ -175,18 +167,10 @@ export function handleKeyPress(app, event, state) {
       app.currentPlayer = 2;
       break;
     case "/":
-      if (
-        state === false &&
-        app.players[1].moving.state === true &&
-        app.players[1].strafing.state === true
-      ) {
+      if (state === false && app.players[1].moving.state === true && app.players[1].strafing.state === true) {
         app.players[1].strafeReleaseHook = true;
       }
-      if (
-        state === false &&
-        app.players[1].moving.state !== true &&
-        app.keyPressed[1].strafe === true
-      ) {
+      if (state === false && app.players[1].moving.state !== true && app.keyPressed[1].strafe === true) {
         app.players[1].strafeReleaseHook = true;
       } else {
         app.keyPressed[1].strafe = state;
@@ -238,6 +222,13 @@ export function handleKeyPress(app, event, state) {
   }
 
   let player = app.players[app.currentPlayer - 1];
+  if (player && state === true && direction) {
+    player.dashing.tap = {
+      active: true,
+      direction,
+      time: app.time,
+    };
+  }
 
   // STEP GAME ON KEYPRESS FOR DEBUGGING
   // for (const player of app.players) {
