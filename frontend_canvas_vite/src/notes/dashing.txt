@@ -28,24 +28,41 @@ Dashing checklist:
             if two players are dashing to the same postion, the one who has their arrival check positive first go on as usual and the loser moves back to original position and is short deflected with a very small chance for pushback
         if an object is also trying to move to same cell, depending on the objects weight and desctructability, it can also either, move to its origin, move and break, move and be pushed back
     
-        
+        16ebe5f7d235481fb6155a60ef17909d14689f26
 
 --------------------
 
 Commit changes summary:
 
 c1ff03f1607e4dc526e6ad34ba099d1b67ff01e6
-    - Added baseline `dashing` state to player data (dash direction, target cells, move speed override, post-dash cooldown). [frontend_canvas_vite/src/data/playerDataArray.js](frontend_canvas_vite/src/data/playerDataArray.js#L173-L207)
-    - Blocked non-move inputs while dashing and added attacked-cancel handling to reset dash state and notify the player. [frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js#L1-L4) [frontend_canvas_vite/src/utils/functions/combat_action/attackedCancel.js](frontend_canvas_vite/src/utils/functions/combat_action/attackedCancel.js#L311-L359)
-    - Added this dashing checklist as the initial design notes for the mechanic. [frontend_canvas_vite/src/notes/dashing.txt](frontend_canvas_vite/src/notes/dashing.txt#L1-L29)
+    - Added baseline `dashing` state to player data (dash direction, target cells, move speed override, post-dash cooldown). 
+    [frontend_canvas_vite/src/data/playerDataArray.js](frontend_canvas_vite/src/data/playerDataArray.js#L173-L207)
+    - Blocked non-move inputs while dashing and added attacked-cancel handling to reset dash state and notify the player. 
+    [frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js#L1-L4) 
+    [frontend_canvas_vite/src/utils/functions/combat_action/attackedCancel.js](frontend_canvas_vite/src/utils/functions/combat_action/attackedCancel.js#L311-L359)
+    - Added this dashing checklist as the initial design notes for the mechanic. 
+    [frontend_canvas_vite/src/notes/dashing.txt](frontend_canvas_vite/src/notes/dashing.txt#L1-L29)
 
 2586e803181a24b07d916e601e8d7a90112fe027
-    - Reverted the earlier basic dash setup in move input handling and non-move input gating. [frontend_canvas_vite/src/engine/playerUpdate/input/checkMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkMoveInput.js#L1-L130) [frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js#L1-L4)
-    - Removed hold-to-dash detection and cooldown handling from the move input flow. [frontend_canvas_vite/src/engine/playerUpdate/input/checkMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkMoveInput.js#L1-L130)
-    - Removed dash progress handling from the movement progression path. [frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveProgress.js](frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveProgress.js#L1-L188)
+    - Reverted the earlier basic dash setup in move input handling and non-move input gating. 
+    [frontend_canvas_vite/src/engine/playerUpdate/input/checkMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkMoveInput.js#L1-L130) 
+    [frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js#L1-L4)
+    - Removed hold-to-dash detection and cooldown handling from the move input flow. 
+    [frontend_canvas_vite/src/engine/playerUpdate/input/checkMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkMoveInput.js#L1-L130)
+    - Removed dash progress handling from the movement progression path. 
+    [frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveProgress.js](frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveProgress.js#L1-L188)
 
 3cbb7703c2dee12ac06ef3a433e7b32e2ba98a85
-    - Added `app.dashRef` tuning (speed range/index, move delay limit, post-dash cooldown, feint threshold, collision deflect odds) plus dash stamina cost. [frontend_canvas_vite/src/data/appState.js](frontend_canvas_vite/src/data/appState.js#L1054-L1074)
-    - Added tap-based dash initiation (`handleKeyPress_` + `checkMoveCancel`) with tracking for `lastMoveStartTime`, `originalMoveDelayLimit`, and `reflexes` for feints. [frontend_canvas_vite/src/utils/functions/input/handleKeyPress_.js](frontend_canvas_vite/src/utils/functions/input/handleKeyPress_.js#L224-L230) [frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveCancel.js](frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveCancel.js#L72-L168) [frontend_canvas_vite/src/data/playerDataArray.js](frontend_canvas_vite/src/data/playerDataArray.js#L194-L202) [frontend_canvas_vite/src/data/playerDataArray.js](frontend_canvas_vite/src/data/playerDataArray.js#L318-L325)
-    - Added full dash runtime: `checkDashing` controls two-cell movement, mid-dash feints, collisions/deflections, and post-dash cooldown, with playerUpdate routing and input gating. [frontend_canvas_vite/src/engine/playerUpdate/player_action/checkDashing.js](frontend_canvas_vite/src/engine/playerUpdate/player_action/checkDashing.js#L1-L216) [frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveProgress.js](frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveProgress.js#L1-L188) [frontend_canvas_vite/src/engine/playerUpdate.js](frontend_canvas_vite/src/engine/playerUpdate.js#L119-L129) [frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js#L1-L4)
+    - Added `app.dashRef` tuning (speed range/index, move delay limit, post-dash cooldown, feint threshold, collision deflect odds) plus dash stamina cost. 
+    [frontend_canvas_vite/src/data/appState.js](frontend_canvas_vite/src/data/appState.js#L1054-L1074)
+    - Added tap-based dash initiation (`handleKeyPress_` + `checkMoveCancel`) with tracking for `lastMoveStartTime`, `originalMoveDelayLimit`, and `reflexes` for feints. 
+    [frontend_canvas_vite/src/utils/functions/input/handleKeyPress_.js](frontend_canvas_vite/src/utils/functions/input/handleKeyPress_.js#L224-L230) 
+    [frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveCancel.js](frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveCancel.js#L72-L168) 
+    [frontend_canvas_vite/src/data/playerDataArray.js](frontend_canvas_vite/src/data/playerDataArray.js#L194-L202) 
+    [frontend_canvas_vite/src/data/playerDataArray.js](frontend_canvas_vite/src/data/playerDataArray.js#L318-L325)
+    - Added full dash runtime: `checkDashing` controls two-cell movement, mid-dash feints, collisions/deflections, and post-dash cooldown, with playerUpdate routing and input gating. 
+    [frontend_canvas_vite/src/engine/playerUpdate/player_action/checkDashing.js](frontend_canvas_vite/src/engine/playerUpdate/player_action/checkDashing.js#L1-L216) 
+    [frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveProgress.js](frontend_canvas_vite/src/engine/playerUpdate/player_action/checkMoveProgress.js#L1-L188) 
+    [frontend_canvas_vite/src/engine/playerUpdate.js](frontend_canvas_vite/src/engine/playerUpdate.js#L119-L129) 
+    [frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js](frontend_canvas_vite/src/engine/playerUpdate/input/checkNonMoveInput.js#L1-L4)
 
