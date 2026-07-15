@@ -1,0 +1,16 @@
+[
+  {
+    "type": "command",
+    "event": "PreToolUse",
+    "command": "echo \"[$(date '+%Y-%m-%d %H:%M:%S')] TOOL_START: $TOOL_NAME | agent: $AGENT_NAME\" >> .github/logs/tool-trace.log",
+    "osx": "echo \"[$(date '+%Y-%m-%d %H:%M:%S')] TOOL_START: $TOOL_NAME | agent: $AGENT_NAME\" >> .github/logs/tool-trace.log",
+    "timeout": 5
+  },
+  {
+    "type": "command",
+    "event": "PostToolUse",
+    "command": "echo \"[$(date '+%Y-%m-%d %H:%M:%S')] TOOL_END: $TOOL_NAME | agent: $AGENT_NAME | success: $TOOL_SUCCESS\" >> .github/logs/tool-trace.log",
+    "osx": "echo \"[$(date '+%Y-%m-%d %H:%M:%S')] TOOL_END: $TOOL_NAME | agent: $AGENT_NAME | success: $TOOL_SUCCESS\" >> .github/logs/tool-trace.log",
+    "timeout": 5
+  }
+]
