@@ -1,8 +1,18 @@
+/**
+ * checkDashing — Runtime for the 2-tile dash mechanic.
+ *
+ * Called every frame while the player is dashing (dashing.state === true)
+ * or in the post-dash cooldown (postDash.state === true).
+ * Handles: two-cell movement, mid-dash feints, collision/deflection,
+ * speed/delay restoration, and cooldown expiry.
+ */
 export function checkDashing(app, player, keyPressedDirection, nextPosition) {
+  // ── Logger ───────────────────────────────────────────────
   const logDash = (message, data = {}) => {
     app.globalLogger("player.dashing", message, data, { fn: "checkDashing" });
   };
 
+  // ── Reset factory: returns a clean default dashing state ──
   const resetDashState = () => ({
     state: false,
     originalDirection: "",
@@ -40,6 +50,9 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     },
   });
 
+  // ── Restore the player's pre-dash movement stats ─────────
+  // Called on dash completion, feint, or attack-cancel to revert
+  // the boosted speed and shortened move delay.
   const restoreMoveDefaults = () => {
     if (player.dashing.originalMoveSpeed !== null && player.speed.move > player.dashing.originalMoveSpeed) {
       player.speed.move = player.dashing.originalMoveSpeed;
@@ -49,6 +62,9 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     }
   };
 
+  // ── Enter post-dash cooldown ─────────────────────────────
+  // After reaching cell 2 (or feinting) the player cannot act
+  // for postDashLimit frames while their stats restore.
   const startPostDash = () => {
     player.dashing.state = false;
     player.dashing.postDash.state = true;
@@ -56,6 +72,9 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     player.dashing.postDash.limit = app.dashRef.postDashLimit;
   };
 
+  // ── Loose position match ─────────────────────────────────
+  // Checks whether the player's interpolated pixel position
+  // has arrived at the destination cell center (within tolerance).
   const isAtDestination = (pos, dest) => {
     return (
       (pos.x >= dest.x - 1 && pos.x <= dest.x + 1 && pos.y >= dest.y - 1 && pos.y <= dest.y + 1) ||
@@ -65,6 +84,12 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     );
   };
 
+  // ── Resolve collisions when the dasher arrives at a cell ──
+  // Checks all other players who either occupy or are heading
+  // to the same target cell. If the dasher is past the halfway
+  // step and the other player is also moving there, deflection
+  // is guaranteed. Otherwise a random roll decides.
+  // Two dashers targeting the same cell: the later arrival loses.
   const resolveDashCollision = (targetCellNumber, dashStep) => {
     for (const other of app.players) {
       if (other.number === player.number || other.dead.state === true) {
@@ -97,6 +122,11 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     }
   };
 
+  // ──────────────────────────────────────────────────────────
+  // 1) POST-DASH COOLDOWN
+  // ──────────────────────────────────────────────────────────
+  // Count frames until limit is reached, then fully reset state.
+  // During cooldown the player cannot move or act.
   if (player.dashing.postDash.state === true) {
     if (player.dashing.postDash.count < player.dashing.postDash.limit) {
       player.dashing.postDash.count++;
@@ -107,14 +137,26 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     return nextPosition;
   }
 
+  // ──────────────────────────────────────────────────────────
+  // 2) STATE GUARD — exit early if not actively dashing
+  // ──────────────────────────────────────────────────────────
   if (player.dashing.state !== true) {
     return nextPosition;
   }
 
+  // ──────────────────────────────────────────────────────────
+  // 3) ENSURE ACTION TAG
+  // ──────────────────────────────────────────────────────────
   if (player.action !== "dashing") {
     player.action = "dashing";
   }
 
+  // ──────────────────────────────────────────────────────────
+  // 4) MID-DASH FEINT
+  // ──────────────────────────────────────────────────────────
+  // After reaching cell 1 but before cell 2, pressing the
+  // opposite direction within the feint step threshold can
+  // cancel the dash — if the player's reflexes roll succeeds.
   if (player.dashing.cell_1_arrived === true && player.dashing.cell_2_arrived !== true) {
     if (keyPressedDirection === app.getOppositeDirection(player.dashing.dashDirection) && player.moving.step < app.dashRef.feintStepThreshold) {
       if (app.rnJesus(1, player.crits.reflexes) === 1) {
@@ -131,17 +173,27 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     }
   }
 
+  // ──────────────────────────────────────────────────────────
+  // 5) INTERPOLATE POSITION ALONG THE DASH PATH
+  // ──────────────────────────────────────────────────────────
   nextPosition = app.lineCrementer(player);
   player.nextPosition = nextPosition;
 
+  // ──────────────────────────────────────────────────────────
+  // 6) APPROACHING CELL 1
+  // ──────────────────────────────────────────────────────────
   if (player.dashing.cell_1_arrived !== true) {
     if (isAtDestination(nextPosition, player.target.cell1.center)) {
+      // Snap to cell 1 grid position
       player.currentPosition.cell.number = player.target.cell1.number;
       player.currentPosition.cell.center = player.target.cell1.center;
       player.dashing.cell_1_arrived = true;
 
+      // Check for collisions at cell 1
       resolveDashCollision(player.target.cell1.number, player.moving.step);
 
+      // Re-target for cell 2 by resetting the moving state
+      // with cell 1 as the new origin and cell 2 center as destination
       player.moving = {
         state: true,
         step: 0,
@@ -173,14 +225,20 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     return nextPosition;
   }
 
+  // ──────────────────────────────────────────────────────────
+  // 7) APPROACHING CELL 2
+  // ──────────────────────────────────────────────────────────
   if (player.dashing.cell_2_arrived !== true) {
     if (isAtDestination(nextPosition, player.target.cell1.center)) {
+      // Snap to cell 2 grid position
       player.currentPosition.cell.number = player.target.cell1.number;
       player.currentPosition.cell.center = player.target.cell1.center;
       player.dashing.cell_2_arrived = true;
 
+      // Check for collisions at cell 2
       resolveDashCollision(player.target.cell1.number, player.moving.step);
 
+      // Dash complete — stop moving
       player.moving = {
         state: false,
         step: 0,
@@ -201,6 +259,7 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
         },
       };
 
+      // Restore pre-dash speed/delay and enter cooldown
       restoreMoveDefaults();
       startPostDash();
       player.action = "idle";

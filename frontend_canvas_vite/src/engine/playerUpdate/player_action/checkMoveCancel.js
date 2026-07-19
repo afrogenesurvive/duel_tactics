@@ -69,6 +69,13 @@ export function checkMoveCancel(app, player, nextPosition) {
         inTime = true;
       }
 
+      // ── DASH INITIATION CONDITIONS ────────────────────────
+      // A dash can only start when the player is still in the
+      // cancel window (inTime), is NOT already dashing or in
+      // post-dash cooldown, is NOT strafing or jumping, AND
+      // the key pressed matches the player's facing direction
+      // AND matches the tap recorded by handleKeyPress_ (the
+      // double-tap detection: press same direction twice fast).
       const canStartDash =
         inTime === true &&
         player.dashing.state !== true &&
@@ -80,6 +87,11 @@ export function checkMoveCancel(app, player, nextPosition) {
         player.dashing.tap.direction === newDirection &&
         player.dashing.tap.time > player.dashing.lastMoveStartTime;
 
+      // ── Compute the boosted dash move speed ───────────────
+      // Pulls speed from the configured range/index in dashRef.
+      // If the resulting speed is not faster than the player's
+      // current move speed, it increments by one step so the
+      // dash is always an improvement.
       const getDashMoveSpeed = () => {
         const dashRange = player.speed[app.dashRef.speedRange] || player.speed.range_2;
         let dashSpeed = dashRange[app.dashRef.speedIndex];
@@ -100,11 +112,16 @@ export function checkMoveCancel(app, player, nextPosition) {
         return dashSpeed;
       };
 
+      // ── FIRE THE DASH ─────────────────────────────────────
       if (canStartDash === true) {
-        player.dashing.tap.active = false;
+        player.dashing.tap.active = false; // Consume the tap
+
+        // Check stamina (dash costs 8 stamina)
         if (player.stamina.current - app.staminaCostRef.dash >= 0) {
           player.stamina.current -= app.staminaCostRef.dash;
 
+          // Check that BOTH target cells (cell 1 and cell 2)
+          // are free of barriers, obstacles, higher elevation, or void
           let target = app.getTarget(player);
           const cell1Blocked =
             target.cell1.occupant.type === "barrier" ||
@@ -118,10 +135,13 @@ export function checkMoveCancel(app, player, nextPosition) {
             target.cell2.void === true;
 
           if (target.myCellBlock !== true && cell1Blocked !== true && cell2Blocked !== true) {
+            // Set action and state flags
             player.action = "dashing";
             player.dashing.state = true;
             player.dashing.originalDirection = player.direction;
             player.dashing.dashDirection = player.direction;
+
+            // Record origin grid position
             player.dashing.origin = {
               number: {
                 x: player.currentPosition.cell.number.x,
@@ -132,6 +152,8 @@ export function checkMoveCancel(app, player, nextPosition) {
                 y: player.currentPosition.cell.center.y,
               },
             };
+
+            // Record cell 1 and cell 2 target info for collision logic
             player.dashing.cell_1 = {
               x: target.cell1.number.x,
               y: target.cell1.number.y,
@@ -147,12 +169,16 @@ export function checkMoveCancel(app, player, nextPosition) {
             player.dashing.cell_1_arrived = false;
             player.dashing.cell_2_arrived = false;
 
+            // Save pre-dash move stats so they can be restored later
             player.dashing.originalMoveSpeed = player.speed.move;
             player.dashing.originalMoveDelayLimit = player.newMoveDelay.limit;
+
+            // Apply dash-boosted speed and shortened move delay
             player.dashing.dashMoveSpeed = getDashMoveSpeed();
             player.speed.move = player.dashing.dashMoveSpeed;
             player.newMoveDelay.limit = app.dashRef.moveDelayLimit;
 
+            // Initialize post-dash cooldown (starts false, set by checkDashing on arrival)
             player.dashing.postDash = {
               state: false,
               count: 0,
@@ -167,6 +193,7 @@ export function checkMoveCancel(app, player, nextPosition) {
               stamina: player.stamina.current,
             });
           } else {
+            // One or both dash cells blocked — show status message
             player.statusDisplay = {
               state: true,
               status: "dash blocked",
@@ -175,6 +202,7 @@ export function checkMoveCancel(app, player, nextPosition) {
             };
           }
         } else {
+          // Not enough stamina for dash
           player.stamina.current = 0;
           player.statusDisplay = {
             state: true,
@@ -184,7 +212,7 @@ export function checkMoveCancel(app, player, nextPosition) {
           };
         }
 
-        return;
+        return; // Exit after attempting dash (don't fall through to move-cancel)
       }
 
       if (player.moveCancel.state !== true && canCancelMove === true) {

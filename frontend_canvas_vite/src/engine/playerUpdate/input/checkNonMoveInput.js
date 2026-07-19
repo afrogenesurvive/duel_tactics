@@ -1,4 +1,8 @@
 export function checkNonMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, breakPulledPushed, keyPressedDirection, nextPosition) {
+  // ── BLOCK NON-MOVE INPUTS WHILE DASHING ─────────────────
+  // The player cannot attack, defend, dodge, use items, or
+  // perform any non-move action while actively dashing or in
+  // post-dash cooldown. The dash trajectory is uninterrupted.
   if (player.dashing?.state === true || player.dashing?.postDash?.state === true) {
     return;
   }

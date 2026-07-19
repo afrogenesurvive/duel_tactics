@@ -1056,11 +1056,20 @@ export function applyConstructorDefaults(app) {
     pushBack: 7,
     push: 3,
     pull: 4,
-    dash: 8,
+    dash: 8,        // Stamina cost to initiate a dash (8 stamina)
     move: 0.1,
     strafe: 0.5,
     turn: 0.5,
   };
+  // ── DASH TUNING CONSTANTS ────────────────────────────────
+  // Controls all numeric aspects of the 2-tile dash mechanic:
+  //   speedRange       — which speed array to pull dash speed from (range_2)
+  //   speedIndex       — index into that speed array for dash speed
+  //   moveDelayLimit   — shortened move delay (frames) while dashing
+  //   postDashLimit    — cooldown frames after dash completes
+  //   feintStepThreshold — max step fraction at which opposite-direction feint works
+  //   collisionHalfwayStep — step threshold for guaranteed deflect vs. other movers
+  //   deflectOdds      — 1-in-N chance of deflection (otherPlayer vs dasher)
   app.dashRef = {
     speedRange: "range_2",
     speedIndex: 4,

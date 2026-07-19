@@ -221,6 +221,13 @@ export function handleKeyPress(app, event, state) {
       break;
   }
 
+  // ── DASH TAP TRACKING ────────────────────────────────────
+  // Every time a direction key is pressed, record the tap on
+  // the current player's dashing state. This enables the
+  // double-tap detection in checkMoveCancel: if the same
+  // direction is pressed again while already moving, and the
+  // tap time is after the player's lastMoveStartTime, a dash
+  // may be initiated.
   let player = app.players[app.currentPlayer - 1];
   if (player && state === true && direction) {
     player.dashing.tap = {

@@ -10,7 +10,7 @@ import { checkPopups } from "./playerUpdate/checkPopups";
 import { checkObstacleBarrier } from "./playerUpdate/checkObstacleBarrier";
 import { checkDeflectionElasticCounter } from "./playerUpdate/checkDeflectionElasticCounter";
 import { checkMoveProgress } from "./playerUpdate/player_action/checkMoveProgress";
-import { checkDashing } from "./playerUpdate/player_action/checkDashing";
+import { checkDashing } from "./playerUpdate/player_action/checkDashing"; // Dash movement (2-tile sprint)
 import { checkFeintsCancels } from "./playerUpdate/player_action/checkFeintsCancels";
 import { checkDodge } from "./playerUpdate/player_action/checkDodge";
 import { checkElasticCounter } from "./playerUpdate/checkElasticCounter";
@@ -116,13 +116,16 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
       }
     }
 
-    // MOVE CANCEL/RETURN
+    // ── MOVE CANCEL ─────────────────────────────────────────
+    // Skip move-cancel logic while dashing — the dash has its
+    // own feint/cancel handling inside checkDashing.
     if (player.dashing.state !== true && player.dashing.postDash.state !== true) {
       checkMoveCancel(app, player, nextPosition);
     }
 
-    // DON'T READ INPUTS. JUST MOVE!!
-    // if player.moving.state === true
+    // ── MOVEMENT ROUTING ───────────────────────────────────
+    // While dashing (or in post-dash cooldown), checkDashing
+    // drives all movement. Otherwise normal move progress runs.
     if (player.dashing.state === true || player.dashing.postDash.state === true) {
       nextPosition = checkDashing(app, player, keyPressedDirection, nextPosition);
     } else {
@@ -413,7 +416,10 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
         }
       }
 
-      // CAN READ MOVE INPUTS!!
+      // ── CAN READ MOVE INPUTS? ─────────────────────────────
+      // Move inputs are blocked while dashing — the dash
+      // trajectory is fixed once started. Only post-dash
+      // cooldown or full completion allows new move commands.
       if (
         player.attacking.state === false &&
         player.defending.state === false &&
@@ -440,7 +446,9 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
         checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, breakPulledPushed, keyPressedDirection, nextPosition);
       }
 
-      // CAN READ NON-MOVE INPUTS!!
+      // ── CAN READ NON-MOVE INPUTS? ─────────────────────────
+      // Non-move inputs (attack, defend, dodge, etc.) are also
+      // blocked during dash and post-dash cooldown.
       if (
         player.moving.state !== true &&
         player.dashing.state !== true &&
