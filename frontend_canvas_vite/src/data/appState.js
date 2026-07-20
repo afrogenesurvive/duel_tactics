@@ -708,7 +708,9 @@ export function applyConstructorDefaults(app) {
   app.gamepadConfig = [];
   app.connectedGamepadsInit = false;
 
-  app.loggingSettings = {
+  // Deep-merge so new default properties (e.g. newly added log
+  // toggles) appear even when localStorage has an older cached copy.
+  const getDefaultLoggingSettings = () => ({
     showTime: true,
     showOrigin: false,
     player: {
@@ -771,6 +773,15 @@ export function applyConstructorDefaults(app) {
         count: false,
         execution: false,
         feint: false,
+      },
+      dashing: {
+        initiation: false,
+        movement: false,
+        collision: false,
+        feint: false,
+        cooldown: false,
+        count: false,
+        blocked: false,
       },
       stamina: {
         input: false,
@@ -842,7 +853,38 @@ export function applyConstructorDefaults(app) {
       execution: false, // phases etc
       count: false,
     },
-  };
+  });
+
+  // Merge saved localStorage settings with defaults so newly
+  // added keys always appear in the debug menu.
+  const savedRaw = (() => {
+    try {
+      return localStorage.getItem("duelTactics_loggingSettings");
+    } catch (e) {
+      return null;
+    }
+  })();
+  if (savedRaw) {
+    try {
+      const parsed = JSON.parse(savedRaw);
+      const defaults = getDefaultLoggingSettings();
+      const mergeMissing = (target, source) => {
+        for (const key of Object.keys(source)) {
+          if (!(key in target)) {
+            target[key] = source[key];
+          } else if (typeof source[key] === "object" && source[key] !== null && typeof target[key] === "object" && target[key] !== null) {
+            mergeMissing(target[key], source[key]);
+          }
+        }
+      };
+      mergeMissing(parsed, defaults);
+      app.loggingSettings = parsed;
+    } catch (e) {
+      app.loggingSettings = getDefaultLoggingSettings();
+    }
+  } else {
+    app.loggingSettings = getDefaultLoggingSettings();
+  }
 
   // CELL INFO
   app.showCellInfoBox = false;
@@ -1056,7 +1098,7 @@ export function applyConstructorDefaults(app) {
     pushBack: 7,
     push: 3,
     pull: 4,
-    dash: 8,        // Stamina cost to initiate a dash (8 stamina)
+    dash: 8, // Stamina cost to initiate a dash (8 stamina)
     move: 0.1,
     strafe: 0.5,
     turn: 0.5,

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.1-2] — 2026-07-19
+
+### Added
+- Global logging for dash path blocked events (`player.dashing.blocked`):
+  - `checkMoveCancel.js` — Logs `"blocked"` when origin cell or cell 1 is blocked at dash initiation
+  - `checkDashing.js` — Logs `"cell2Blocked"` when dash arrives at cell 1 but cell 2 is blocked, and `"bounceComplete"` when the bounce thrust animation finishes
+- `appState.js` — Added `blocked: false` to `dashing` logging settings; fixed `loggingSettings` to deep-merge localStorage cache with defaults so new toggles appear without requiring a cache clear
+
 ## [0.0.1-1] — 2026-07-19
 
 ### Added

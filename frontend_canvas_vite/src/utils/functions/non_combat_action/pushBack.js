@@ -1,22 +1,22 @@
 export function pushBack(app, player, hitByPlayerDirection) {
   const logPushBackInput = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushBack.input", message, data, { fn: "pushBack" });
+      app.globalLogger("player.pushBack.input", message, data, { fn: "pushBack" });
     }
   };
   const logPushBackExec = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushBack.execution", message, data, { fn: "pushBack" });
+      app.globalLogger("player.pushBack.execution", message, data, { fn: "pushBack" });
     }
   };
   const logPushBackCount = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushBack.count", message, data, { fn: "pushBack" });
+      app.globalLogger("player.pushBack.count", message, data, { fn: "pushBack" });
     }
   };
   const logPushBackHalf = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushBack.halfPushBack", message, data, { fn: "pushBack" });
+      app.globalLogger("player.pushBack.halfPushBack", message, data, { fn: "pushBack" });
     }
   };
 

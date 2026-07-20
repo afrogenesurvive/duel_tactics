@@ -2,22 +2,22 @@ export function attackCellContents(app, type, ownerType, owner, targetCell, targ
   const attackLogType = ownerType === "player" ? (type === "melee" ? "player.attacking.melee" : "player.attacking.projectile") : "trap.action";
   const logAttack = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, attackLogType, message, data, { fn: "attackCellContents" });
+      app.globalLogger(attackLogType, message, data, { fn: "attackCellContents" });
     }
   };
   const logObstacle = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "obstacle.attacked", message, data, { fn: "attackCellContents" });
+      app.globalLogger("obstacle.attacked", message, data, { fn: "attackCellContents" });
     }
   };
   const logBarrier = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "barrier.attacked", message, data, { fn: "attackCellContents" });
+      app.globalLogger("barrier.attacked", message, data, { fn: "attackCellContents" });
     }
   };
   const logItems = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "items.attacked", message, data, { fn: "attackCellContents" });
+      app.globalLogger("items.attacked", message, data, { fn: "attackCellContents" });
     }
   };
 

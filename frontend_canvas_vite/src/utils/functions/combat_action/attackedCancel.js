@@ -308,11 +308,6 @@ export function attackedCancel(app, player) {
       }
 
       break;
-    // ── ATTACKED WHILE DASHING ─────────────────────────────
-    // If a player is hit mid-dash, cancel the dash entirely:
-    //   - Reset the dashing state object to defaults
-    //   - Restore pre-dash movement speed and delay
-    //   - Show "dashing break!" status and "attackCancelled" popup
     case "dashing":
       logJump("cancelOnAttacked", {
         plyr_no: player.number,
@@ -328,7 +323,6 @@ export function attackedCancel(app, player) {
         count: 0,
         limit: 4,
       };
-      // Reset entire dashing substate to defaults
       player.dashing = {
         state: false,
         originalDirection: "",
@@ -365,7 +359,6 @@ export function attackedCancel(app, player) {
           limit: 10,
         },
       };
-      // Restore pre-dash move speed and delay
       if (originalMoveSpeed !== null && player.speed.move > originalMoveSpeed) {
         player.speed.move = originalMoveSpeed;
       }

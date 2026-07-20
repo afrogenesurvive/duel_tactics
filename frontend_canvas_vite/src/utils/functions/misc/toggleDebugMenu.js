@@ -6,6 +6,11 @@ export function toggleDebugMenu(app, nextSettings) {
 
   if (isSettingsPayload) {
     app.loggingSettings = nextSettings;
+    try {
+      localStorage.setItem("duelTactics_loggingSettings", JSON.stringify(nextSettings));
+    } catch (e) {
+      // localStorage unavailable
+    }
     return;
   }
 

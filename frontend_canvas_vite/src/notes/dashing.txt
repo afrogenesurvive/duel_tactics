@@ -5,7 +5,7 @@ Dashing checklist:
                     - a) the 2nd player starts their attack the moment the dasher leaves their origin tile which is 3 tiles away from the 2nd player
                     - b) the 2nd player starts their attakh the moment the 1st player reaches the 1st tile
                     - c) the moment the dasher leaves the 1st tile
-                    - select the smallest appropriate move speed from either range_1 or range_2 from the moveConsts.base object
+                    - select the smallest appropriate move speed from either range_2 or range_2 from the moveConsts.base object
                     -----------------------------------
                     - A dash would need to be stamina hungry
                     - by default and for now dash can only be done infacing direction (add dir prop to dash obj for future expansion)

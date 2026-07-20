@@ -124,10 +124,10 @@ export function checkPlayerGear(app, player) {
             }
             break;
           case "speedUp":
-            let currentSpd1 = player.speed.range_1.indexOf(player.speed.move);
+            let currentSpd1 = player.speed.range_2.indexOf(player.speed.move);
             if (player.speed.move > 0.05) {
               // console.log('armor cycle debuff speed',player.speed.move);
-              player.speed.move = player.speed.range_1[currentSpd1 - 1];
+              player.speed.move = player.speed.range_2[currentSpd1 - 1];
               // console.log('armor cycle debuff speed',player.speed.move);
             }
             break;
@@ -149,10 +149,10 @@ export function checkPlayerGear(app, player) {
             }
             break;
           case "speedUp":
-            let currentSpd2 = player.speed.range_1.indexOf(player.speed.move);
+            let currentSpd2 = player.speed.range_2.indexOf(player.speed.move);
             if (player.speed.move < 0.2) {
               // console.log('armor cycle buff speed',player.speed.move);
-              player.speed.move = player.speed.range_1[currentSpd2 + 1];
+              player.speed.move = player.speed.range_2[currentSpd2 + 1];
               // console.log('armor cycle buff speed',player.speed.move);
 
               player.statusDisplay = {

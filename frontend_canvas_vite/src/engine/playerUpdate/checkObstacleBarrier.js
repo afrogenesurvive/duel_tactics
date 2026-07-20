@@ -1,22 +1,22 @@
 export function checkObstacleBarrier(app, player, nextPosition) {
   const logObstacleMoving = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "obstacle.moving", message, data, { fn: "checkObstacleBarrier" });
+      app.globalLogger("obstacle.moving", message, data, { fn: "checkObstacleBarrier" });
     }
   };
   const logObstacleFalling = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "obstacle.falling", message, data, { fn: "checkObstacleBarrier" });
+      app.globalLogger("obstacle.falling", message, data, { fn: "checkObstacleBarrier" });
     }
   };
   const logObstacleHalfPushBack = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "obstacle.halfPushBack", message, data, { fn: "checkObstacleBarrier" });
+      app.globalLogger("obstacle.halfPushBack", message, data, { fn: "checkObstacleBarrier" });
     }
   };
   const logObstacleCount = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "obstacle.count", message, data, { fn: "checkObstacleBarrier" });
+      app.globalLogger("obstacle.count", message, data, { fn: "checkObstacleBarrier" });
     }
   };
   // MOVING & FALLING

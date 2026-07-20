@@ -1,7 +1,7 @@
 export function discardGear(app, player, type) {
   const logItem = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "items.discard", message, data, { fn: "discardGear" });
+      app.globalLogger("items.discard", message, data, { fn: "discardGear" });
     }
   };
   // console.log('dropping gear');

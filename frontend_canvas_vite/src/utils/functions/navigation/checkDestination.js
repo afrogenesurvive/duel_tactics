@@ -1,7 +1,7 @@
 export function checkDestination(app, player, pickupOnly) {
   const logItem = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "items.pickup", message, data, { fn: "checkDestination" });
+      app.globalLogger("items.pickup", message, data, { fn: "checkDestination" });
     }
   };
   // console.log('checking for item or enviro effect');

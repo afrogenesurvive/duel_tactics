@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import "./debugMenu.css";
 
@@ -35,8 +34,24 @@ const setPathValue = (obj, path, value) => {
 
 const labelForPath = (path) => path.join(".");
 
+const collectGroupPaths = (obj, path = []) => {
+  const paths = [];
+  for (const [key, value] of Object.entries(obj)) {
+    if (value && typeof value === "object") {
+      const nextPath = [...path, key];
+      paths.push(labelForPath(nextPath));
+      paths.push(...collectGroupPaths(value, nextPath));
+    }
+  }
+  return paths;
+};
+
 const DebugMenu = ({ loggingSettings, onClose, updateLoggingSettings }) => {
   const [settings, setSettings] = useState(loggingSettings || {});
+  const [collapsed, setCollapsed] = useState(() => {
+    const initial = loggingSettings || {};
+    return new Set(collectGroupPaths(initial));
+  });
 
   useEffect(() => {
     setSettings(loggingSettings || {});
@@ -55,6 +70,35 @@ const DebugMenu = ({ loggingSettings, onClose, updateLoggingSettings }) => {
     }
   };
 
+  const toggleCollapse = (path) => {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      const key = labelForPath(path);
+
+      if (next.has(key)) {
+        // Expanding this group — collapse sibling groups at the same level
+        next.delete(key);
+        const parentPath = path.slice(0, -1);
+        const parentObj = getPathValue(settings, parentPath);
+        if (parentObj && typeof parentObj === "object") {
+          for (const [k, v] of Object.entries(parentObj)) {
+            if (v && typeof v === "object") {
+              const siblingKey = labelForPath([...parentPath, k]);
+              if (siblingKey !== key) {
+                next.add(siblingKey);
+              }
+            }
+          }
+        }
+      } else {
+        // Collapsing this group
+        next.add(key);
+      }
+
+      return next;
+    });
+  };
+
   const renderGroup = (obj, path = []) => {
     return Object.entries(obj).map(([key, value]) => {
       const nextPath = [...path, key];
@@ -71,10 +115,15 @@ const DebugMenu = ({ loggingSettings, onClose, updateLoggingSettings }) => {
         );
       }
       if (value && typeof value === "object") {
+        const groupKey = labelForPath(nextPath);
+        const isCollapsed = collapsed.has(groupKey);
         return (
-          <div className="debugMenuGroup" key={labelForPath(nextPath)}>
-            <div className="debugMenuGroupTitle">{labelForPath(nextPath)}</div>
-            {renderGroup(value, nextPath)}
+          <div className="debugMenuGroup" key={groupKey}>
+            <div className="debugMenuGroupTitle debugMenuGroupToggle" onClick={() => toggleCollapse(nextPath)}>
+              <span className="debugMenuGroupArrow">{isCollapsed ? "\u25B6" : "\u25BC"}</span>
+              {groupKey}
+            </div>
+            {!isCollapsed && renderGroup(value, nextPath)}
           </div>
         );
       }
@@ -87,9 +136,9 @@ const DebugMenu = ({ loggingSettings, onClose, updateLoggingSettings }) => {
       <div className="debugMenuContainer">
         <div className="debugMenuHeader">
           <div className="debugMenuTitle">Debug Logs</div>
-          <Button variant="secondary" size="sm" onClick={onClose}>
-            Close
-          </Button>
+          <button className="debugMenuCloseBtn" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="debugMenuBody">{renderGroup(settings)}</div>
       </div>

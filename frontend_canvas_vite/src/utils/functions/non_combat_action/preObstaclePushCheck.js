@@ -1,12 +1,12 @@
 export function preObstaclePushCheck(app, player, target) {
   const logPushInput = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushing.input", message, data, { fn: "preObstaclePushCheck" });
+      app.globalLogger("player.pushing.input", message, data, { fn: "preObstaclePushCheck" });
     }
   };
   const logPushCount = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushing.count", message, data, { fn: "preObstaclePushCheck" });
+      app.globalLogger("player.pushing.count", message, data, { fn: "preObstaclePushCheck" });
     }
   };
 

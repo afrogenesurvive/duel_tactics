@@ -1,12 +1,12 @@
 export function deflectDrop(app, player) {
   const logDeflect = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.deflection.execution", message, data, { fn: "deflectDrop" });
+      app.globalLogger("player.deflection.execution", message, data, { fn: "deflectDrop" });
     }
   };
   const logItem = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "items.discard", message, data, { fn: "deflectDrop" });
+      app.globalLogger("items.discard", message, data, { fn: "deflectDrop" });
     }
   };
   // console.log('deflected! drop gear?',player.number);

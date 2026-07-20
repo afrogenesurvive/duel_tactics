@@ -1,17 +1,17 @@
 export function canPushObstacle(app, ownerType, owner, obstacleCell, type) {
   const logPush = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushing.execution", message, data, { fn: "canPushObstacle" });
+      app.globalLogger("player.pushing.execution", message, data, { fn: "canPushObstacle" });
     }
   };
   const logObstacle = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "obstacle.pushed", message, data, { fn: "canPushObstacle" });
+      app.globalLogger("obstacle.pushed", message, data, { fn: "canPushObstacle" });
     }
   };
   const logStamina = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.stamina.input", message, data, { fn: "canPushObstacle" });
+      app.globalLogger("player.stamina.input", message, data, { fn: "canPushObstacle" });
     }
   };
 

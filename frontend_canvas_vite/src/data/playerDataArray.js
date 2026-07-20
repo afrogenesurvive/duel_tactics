@@ -155,17 +155,6 @@ export const playerDataArray = [
       direction: "",
       directionType: "", //thrust or slash
     },
-    // ── DASH STATE ──────────────────────────────────────────
-    // Controls the 2-tile sprint mechanic.
-    //   state          — true while dashing (between cell 1 and cell 2)
-    //   dashDirection  — direction of the dash (must match player facing)
-    //   cell_1 / cell_2 — target grid positions for collision detection
-    //   cell_N_arrived — arrival flags for two-cell movement sequence
-    //   originalMoveSpeed / originalMoveDelayLimit — saved pre-dash stats,
-    //     restored on completion, feint, or attack-cancel
-    //   tap            — tracks the last direction key press for double-tap detection
-    //   postDash       — cooldown state: player waits postDashLimit frames
-    //     before they can act again after dash completion
     dodging: {
       countState: false,
       state: false,
@@ -216,6 +205,9 @@ export const playerDataArray = [
         count: 0,
         limit: 10,
       },
+      cell2Blocked: false,
+      blockedBouncePending: false,
+      blockedBounceAnimId: null,
     },
     success: {
       attackSuccess: {
@@ -708,7 +700,6 @@ export const playerDataArray = [
       direction: "",
       directionType: "", //thrust or slash
     },
-    // ── DASH STATE (Player 2 — identical structure to Player 1) ──
     drowning: false,
     dodging: {
       countState: false,

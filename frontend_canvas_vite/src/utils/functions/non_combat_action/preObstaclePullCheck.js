@@ -1,12 +1,12 @@
 export function preObstaclePullCheck(app, player, target, pullDirection) {
   const logPullInput = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pulling.input", message, data, { fn: "preObstaclePullCheck" });
+      app.globalLogger("player.pulling.input", message, data, { fn: "preObstaclePullCheck" });
     }
   };
   const logPullCount = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pulling.count", message, data, { fn: "preObstaclePullCheck" });
+      app.globalLogger("player.pulling.count", message, data, { fn: "preObstaclePullCheck" });
     }
   };
 

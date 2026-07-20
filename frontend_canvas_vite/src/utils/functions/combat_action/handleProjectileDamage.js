@@ -88,9 +88,9 @@ export function handleProjectileDamage(app, bolt, ownerType, targetType, target)
         target.attacking.strength = 1;
 
         // ADJUST TARGET MOVE SPEED
-        let currentMoveSpeedIndx = target.speed.range_1.indexOf(target.speed.move);
+        let currentMoveSpeedIndx = target.speed.range_2.indexOf(target.speed.move);
         if (currentMoveSpeedIndx > 0) {
-          target.speed.move = target.speed.range_1[currentMoveSpeedIndx - 1];
+          target.speed.move = target.speed.range_2[currentMoveSpeedIndx - 1];
         }
         // target.speed.move = .05;
       }
@@ -221,9 +221,9 @@ export function handleProjectileDamage(app, bolt, ownerType, targetType, target)
         target.attacking.strength = 1;
 
         // ADJUST TARGET MOVE SPEED
-        let currentMoveSpeedIndx = target.speed.range_1.indexOf(target.speed.move);
+        let currentMoveSpeedIndx = target.speed.range_2.indexOf(target.speed.move);
         if (currentMoveSpeedIndx > 0) {
-          target.speed.move = target.speed.range_1[currentMoveSpeedIndx - 1];
+          target.speed.move = target.speed.range_2[currentMoveSpeedIndx - 1];
         }
         // target.speed.move = .05;
       }

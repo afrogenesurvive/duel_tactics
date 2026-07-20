@@ -1,12 +1,12 @@
 export function prePlayerPushCheck(app, pusher, target) {
   const logPushInput = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushing.input", message, data, { fn: "prePlayerPushCheck" });
+      app.globalLogger("player.pushing.input", message, data, { fn: "prePlayerPushCheck" });
     }
   };
   const logPushCount = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pushing.count", message, data, { fn: "prePlayerPushCheck" });
+      app.globalLogger("player.pushing.count", message, data, { fn: "prePlayerPushCheck" });
     }
   };
 

@@ -34,7 +34,7 @@ export function processPlayerSpriteSheet(app, plyr, x, y, finalAnimIndex, weapon
           moveSpeed = plyr.pulled.moveSpeed;
         }
 
-        // let rangeIndex = plyr.speed.range_1.indexOf(moveSpeed);
+        // let rangeIndex = plyr.speed.range_2.indexOf(moveSpeed);
         // let moveAnimIndex = app.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
         // finalAnimIndex = moveAnimIndex + 1;
 

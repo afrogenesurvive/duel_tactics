@@ -1,12 +1,12 @@
 export function prePlayerPullCheck(app, puller, target, pullDirection) {
   const logPullInput = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pulling.input", message, data, { fn: "prePlayerPullCheck" });
+      app.globalLogger("player.pulling.input", message, data, { fn: "prePlayerPullCheck" });
     }
   };
   const logPullCount = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "player.pulling.count", message, data, { fn: "prePlayerPullCheck" });
+      app.globalLogger("player.pulling.count", message, data, { fn: "prePlayerPullCheck" });
     }
   };
 

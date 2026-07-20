@@ -1,28 +1,28 @@
 export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
   const logTrapTrigger = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "trap.trigger", message, data, { fn: "obstacleBarrierTrapChecker" });
+      app.globalLogger("trap.trigger", message, data, { fn: "obstacleBarrierTrapChecker" });
     }
   };
   const logTrapTimer = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "trap.timer", message, data, { fn: "obstacleBarrierTrapChecker" });
+      app.globalLogger("trap.timer", message, data, { fn: "obstacleBarrierTrapChecker" });
     }
   };
   const logTrapAction = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "trap.action", message, data, { fn: "obstacleBarrierTrapChecker" });
+      app.globalLogger("trap.action", message, data, { fn: "obstacleBarrierTrapChecker" });
     }
   };
   const logTrapCount = (message, data) => {
     if (app?.globalLogger) {
-      app.globalLogger(app, "trap.count", message, data, { fn: "obstacleBarrierTrapChecker" });
+      app.globalLogger("trap.count", message, data, { fn: "obstacleBarrierTrapChecker" });
     }
   };
   const logOwnerTrapTrigger = (message, data) => {
     if (app?.globalLogger) {
       const type = ownerType === "barrier" ? "barrier.trapTriggers" : "obstacle.trapTriggers";
-      app.globalLogger(app, type, message, data, { fn: "obstacleBarrierTrapChecker" });
+      app.globalLogger(type, message, data, { fn: "obstacleBarrierTrapChecker" });
     }
   };
   let trap = locationCell[ownerType].trap;

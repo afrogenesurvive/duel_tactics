@@ -5,6 +5,9 @@ export function checkMoveCancel(app, player, nextPosition) {
   const logMoveCount = (message, data = {}) => {
     app.globalLogger("player.movement_count", message, data, { fn: "checkMoveCancel" });
   };
+  const logDashInit = (message, data = {}) => {
+    app.globalLogger("player.dashing.initiation", message, data, { fn: "checkMoveCancel" });
+  };
 
   if (player.moving.state === true) {
     // console.log("player ", player.number, " ", player.action, " : ", player.moving.step);
@@ -61,7 +64,7 @@ export function checkMoveCancel(app, player, nextPosition) {
       if (player.jumping.state === true) {
         inTimeThresh = 0.4;
       } else {
-        let indx3 = player.speed.range_1.indexOf(player.speed.move);
+        let indx3 = player.speed.range_2.indexOf(player.speed.move);
         threshIndx = Math.ceil(app.moveStepRef[indx3].length / 2);
         inTimeThresh = app.moveStepRef[indx3][threshIndx + 1];
       }
@@ -114,6 +117,16 @@ export function checkMoveCancel(app, player, nextPosition) {
 
       // ── FIRE THE DASH ─────────────────────────────────────
       if (canStartDash === true) {
+        logDashInit("doubleTap", {
+          plyr_no: player.number,
+          direction: newDirection,
+          movingStep: player.moving.step,
+          inTimeThresh,
+          stepsRemaining: +(inTimeThresh - player.moving.step).toFixed(3),
+          tapTime: player.dashing.tap.time,
+          lastMoveStartTime: player.dashing.lastMoveStartTime,
+          timeSinceLastMove: app.time - player.dashing.lastMoveStartTime,
+        });
         player.dashing.tap.active = false; // Consume the tap
 
         // Check stamina (dash costs 8 stamina)
@@ -134,7 +147,11 @@ export function checkMoveCancel(app, player, nextPosition) {
             target.cell2.occupant.type === "higherElevation" ||
             target.cell2.void === true;
 
-          if (target.myCellBlock !== true && cell1Blocked !== true && cell2Blocked !== true) {
+          if (target.myCellBlock !== true && cell1Blocked !== true) {
+            // Cell 1 is free — start the dash (even if cell 2 is blocked)
+            if (cell2Blocked === true) {
+              player.dashing.cell2Blocked = true;
+            }
             // Set action and state flags
             player.action = "dashing";
             player.dashing.state = true;
@@ -185,31 +202,57 @@ export function checkMoveCancel(app, player, nextPosition) {
               limit: app.dashRef.postDashLimit,
             };
 
-            logMove("dashStart", {
-              plyr_no: player.number,
-              dash_dir: player.dashing.dashDirection,
-              dash_speed: player.dashing.dashMoveSpeed,
-              move_speed: player.dashing.originalMoveSpeed,
-              stamina: player.stamina.current,
-            });
+            app.globalLogger(
+              "player.dashing.initiation",
+              "start",
+              {
+                plyr_no: player.number,
+                dash_dir: player.dashing.dashDirection,
+                dash_speed: player.dashing.dashMoveSpeed,
+                move_speed: player.dashing.originalMoveSpeed,
+                stamina: player.stamina.current,
+              },
+              { fn: "checkMoveCancel" },
+            );
           } else {
-            // One or both dash cells blocked — show status message
+            // Origin cell or cell 1 is blocked — show status message
             player.statusDisplay = {
               state: true,
               status: "dash blocked",
               count: 1,
               limit: player.statusDisplay.limit,
             };
+            app.globalLogger(
+              "player.dashing.blocked",
+              "blocked",
+              {
+                plyr_no: player.number,
+                cell1Blocked,
+                cell2Blocked,
+                dir: player.direction,
+              },
+              { fn: "checkMoveCancel" },
+            );
           }
         } else {
           // Not enough stamina for dash
-          player.stamina.current = 0;
+          // player.stamina.current = 0;
           player.statusDisplay = {
             state: true,
             status: "Out of Stamina",
             count: 0,
             limit: player.statusDisplay.limit,
           };
+          app.globalLogger(
+            "player.dashing.initiation",
+            "outOfStamina",
+            {
+              plyr_no: player.number,
+              stamina: player.stamina.current,
+              cost: app.staminaCostRef.dash,
+            },
+            { fn: "checkMoveCancel" },
+          );
         }
 
         return; // Exit after attempting dash (don't fall through to move-cancel)
@@ -274,7 +317,7 @@ export function checkMoveCancel(app, player, nextPosition) {
 
             let newTarget = app.getTarget(player);
 
-            let indx3 = player.speed.range_1.indexOf(player.speed.move);
+            let indx3 = player.speed.range_2.indexOf(player.speed.move);
             let indx4 = app.moveStepRef[indx3].indexOf(player.moving.step);
             let newIndx = app.moveStepRef[indx3].length - (indx4 + 1);
             let newStep = app.moveStepRef[indx3][newIndx - 1];

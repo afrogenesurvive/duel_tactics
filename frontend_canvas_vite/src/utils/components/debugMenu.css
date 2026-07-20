@@ -22,11 +22,30 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: rgba(235, 213, 179, 0.92);
+  padding-bottom: 0.5rem;
 }
 
 .debugMenuTitle {
   font-size: 1.1rem;
   font-weight: 700;
+}
+
+.debugMenuCloseBtn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #582f0e;
+  padding: 0 0.25rem;
+  line-height: 1;
+}
+
+.debugMenuCloseBtn:hover {
+  opacity: 0.6;
 }
 
 .debugMenuBody {
@@ -44,6 +63,25 @@
 .debugMenuGroupTitle {
   font-weight: 600;
   margin-bottom: 0.25rem;
+}
+
+.debugMenuGroupToggle {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.debugMenuGroupToggle:hover {
+  opacity: 0.7;
+}
+
+.debugMenuGroupArrow {
+  font-size: 0.7rem;
+  display: inline-block;
+  width: 0.9rem;
+  text-align: center;
 }
 
 .debugMenuCheckbox {

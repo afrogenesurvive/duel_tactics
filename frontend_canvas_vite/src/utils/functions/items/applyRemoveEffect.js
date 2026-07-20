@@ -20,9 +20,9 @@ export function applyRemoveEffect(app, player, action, subAction, type, item) {
           }
           break;
         case "speedUp":
-          let currentSpd1 = player.speed.range_1.indexOf(player.speed.move);
+          let currentSpd1 = player.speed.range_2.indexOf(player.speed.move);
           if (player.speed.move > 0.05) {
-            player.speed.move = player.speed.range_1[currentSpd1 - 1];
+            player.speed.move = player.speed.range_2[currentSpd1 - 1];
             // console.log(`armor ${subAction} debuff speed`,player.speed.move);
           }
           break;
@@ -72,9 +72,9 @@ export function applyRemoveEffect(app, player, action, subAction, type, item) {
           break;
         case "speedUp":
           // console.log('armor pickup buff');
-          let currentSpd1 = player.speed.range_1.indexOf(player.speed.move);
+          let currentSpd1 = player.speed.range_2.indexOf(player.speed.move);
           if (player.speed.move < 0.2) {
-            player.speed.move = player.speed.range_1[currentSpd1 + 1];
+            player.speed.move = player.speed.range_2[currentSpd1 + 1];
 
             player.statusDisplay = {
               state: true,
@@ -104,11 +104,11 @@ export function applyRemoveEffect(app, player, action, subAction, type, item) {
       switch (item.name) {
         case "moveSpeedUp":
           // console.log('moveSpeedUp');
-          let currentSpd1 = player.speed.range_1.indexOf(player.speed.move);
+          let currentSpd1 = player.speed.range_2.indexOf(player.speed.move);
 
           if (player.speed.move < 0.2) {
             // console.log('added buff');
-            player.speed.move = player.speed.range_1[currentSpd1 + 1];
+            player.speed.move = player.speed.range_2[currentSpd1 + 1];
 
             player.statusDisplay = {
               state: true,
@@ -155,12 +155,12 @@ export function applyRemoveEffect(app, player, action, subAction, type, item) {
           break;
         case "moveSpeedDown":
           // console.log('moveSpeedDown');
-          let currentSpd2 = player.speed.range_1.indexOf(player.speed.move);
-          // console.log('ff',currentSpd2,app.players[player.number-1].speed.range_1[currentSpd2]);
-          // console.log('ff2',currentSpd2,app.players[player.number-1].speed.range_1[currentSpd2-1]);
+          let currentSpd2 = player.speed.range_2.indexOf(player.speed.move);
+          // console.log('ff',currentSpd2,app.players[player.number-1].speed.range_2[currentSpd2]);
+          // console.log('ff2',currentSpd2,app.players[player.number-1].speed.range_2[currentSpd2-1]);
           if (player.speed.move > 0.05) {
             // console.log('added debuff');
-            player.speed.move = player.speed.range_1[currentSpd2 - 1];
+            player.speed.move = player.speed.range_2[currentSpd2 - 1];
 
             player.statusDisplay = {
               state: true,

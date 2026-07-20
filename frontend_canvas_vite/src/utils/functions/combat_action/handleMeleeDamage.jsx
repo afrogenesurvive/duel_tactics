@@ -111,9 +111,9 @@ export function handleMeleeDamage(app, ownerType, owner, targetPlayer) {
     targetPlayer.attacking.strength = 1;
 
     // ADJUST TARGET MOVE SPEED
-    let currentMoveSpeedIndx = targetPlayer.speed.range_1.indexOf(targetPlayer.speed.move);
+    let currentMoveSpeedIndx = targetPlayer.speed.range_2.indexOf(targetPlayer.speed.move);
     if (currentMoveSpeedIndx > 0) {
-      targetPlayer.speed.move = targetPlayer.speed.range_1[currentMoveSpeedIndx - 1];
+      targetPlayer.speed.move = targetPlayer.speed.range_2[currentMoveSpeedIndx - 1];
     }
     // player.speed.move = .05;
   }

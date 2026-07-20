@@ -7,9 +7,27 @@
  * speed/delay restoration, and cooldown expiry.
  */
 export function checkDashing(app, player, keyPressedDirection, nextPosition) {
-  // ── Logger ───────────────────────────────────────────────
-  const logDash = (message, data = {}) => {
-    app.globalLogger("player.dashing", message, data, { fn: "checkDashing" });
+  // ── Loggers ──────────────────────────────────────────────
+  const logDashInit = (message, data = {}) => {
+    app.globalLogger("player.dashing.initiation", message, data, { fn: "checkDashing" });
+  };
+  const logDashMove = (message, data = {}) => {
+    app.globalLogger("player.dashing.movement", message, data, { fn: "checkDashing" });
+  };
+  const logDashColl = (message, data = {}) => {
+    app.globalLogger("player.dashing.collision", message, data, { fn: "checkDashing" });
+  };
+  const logDashFeint = (message, data = {}) => {
+    app.globalLogger("player.dashing.feint", message, data, { fn: "checkDashing" });
+  };
+  const logDashCool = (message, data = {}) => {
+    app.globalLogger("player.dashing.cooldown", message, data, { fn: "checkDashing" });
+  };
+  const logDashCount = (message, data = {}) => {
+    app.globalLogger("player.dashing.count", message, data, { fn: "checkDashing" });
+  };
+  const logDashBlocked = (message, data = {}) => {
+    app.globalLogger("player.dashing.blocked", message, data, { fn: "checkDashing" });
   };
 
   // ── Reset factory: returns a clean default dashing state ──
@@ -48,6 +66,9 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
       count: 0,
       limit: app.dashRef.postDashLimit,
     },
+    cell2Blocked: false,
+    blockedBouncePending: false,
+    blockedBounceAnimId: null,
   });
 
   // ── Restore the player's pre-dash movement stats ─────────
@@ -70,6 +91,10 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
     player.dashing.postDash.state = true;
     player.dashing.postDash.count = 0;
     player.dashing.postDash.limit = app.dashRef.postDashLimit;
+    logDashCool("start", {
+      plyr_no: player.number,
+      limit: app.dashRef.postDashLimit,
+    });
   };
 
   // ── Loose position match ─────────────────────────────────
@@ -103,13 +128,46 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
 
       if (otherAtCell || otherHeadingToCell) {
         const guaranteeDeflect = dashStep >= app.dashRef.collisionHalfwayStep && otherHeadingToCell === true;
-        if (guaranteeDeflect || app.rnJesus(1, app.dashRef.deflectOdds.otherPlayer) === 1) {
+        const otherRoll = app.rnJesus(1, app.dashRef.deflectOdds.otherPlayer);
+        if (guaranteeDeflect || otherRoll === 1) {
           app.setDeflection(other, "bluntAttacked", false);
           app.pushBack(other, app.getOppositeDirection(player.dashing.dashDirection));
+          logDashColl("otherDeflected", {
+            dasher: player.number,
+            other: other.number,
+            cell: targetCellNumber,
+            guaranteeDeflect,
+            roll: guaranteeDeflect ? "guaranteed" : otherRoll,
+          });
+        } else {
+          logDashColl("otherNotDeflected", {
+            dasher: player.number,
+            other: other.number,
+            cell: targetCellNumber,
+            dashStep,
+            collisionHalfwayStep: app.dashRef.collisionHalfwayStep,
+            roll: otherRoll,
+            odds: app.dashRef.deflectOdds.otherPlayer,
+          });
         }
 
-        if (app.rnJesus(1, app.dashRef.deflectOdds.dasher) === 1) {
+        const dasherRoll = app.rnJesus(1, app.dashRef.deflectOdds.dasher);
+        if (dasherRoll === 1) {
           app.setDeflection(player, "bluntAttacked", false);
+          logDashColl("dasherDeflected", {
+            plyr_no: player.number,
+            other: other.number,
+            cell: targetCellNumber,
+            roll: dasherRoll,
+          });
+        } else {
+          logDashColl("dasherNotDeflected", {
+            plyr_no: player.number,
+            other: other.number,
+            cell: targetCellNumber,
+            roll: dasherRoll,
+            odds: app.dashRef.deflectOdds.dasher,
+          });
         }
       }
 
@@ -118,6 +176,11 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
       if (sameDashTarget === true) {
         app.setDeflection(other, "bluntAttacked", false);
         app.pushBack(other, app.getOppositeDirection(player.dashing.dashDirection));
+        logDashColl("sameDashTarget", {
+          dasher: player.number,
+          other: other.number,
+          cell: targetCellNumber,
+        });
       }
     }
   };
@@ -130,57 +193,100 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
   if (player.dashing.postDash.state === true) {
     if (player.dashing.postDash.count < player.dashing.postDash.limit) {
       player.dashing.postDash.count++;
+      logDashCount("postDashCount", {
+        plyr_no: player.number,
+        count: player.dashing.postDash.count,
+        limit: player.dashing.postDash.limit,
+      });
     } else {
       restoreMoveDefaults();
       player.dashing = resetDashState();
+      logDashCool("end", {
+        plyr_no: player.number,
+      });
     }
     return nextPosition;
   }
 
   // ──────────────────────────────────────────────────────────
-  // 2) STATE GUARD — exit early if not actively dashing
+  // 2) BLOCKED BOUNCE COMPLETION CHECK
+  // ──────────────────────────────────────────────────────────
+  // After dashing to cell 1 (cell 2 was blocked), a thrust
+  // windup animation plays. Once the animation element is
+  // removed from the array, apply deflection.
+  if (player.dashing.blockedBouncePending === true) {
+    const animStillPlaying = player.actionDirectionAnimationArray.some(
+      (a) => a.id === player.dashing.blockedBounceAnimId
+    );
+    if (!animStillPlaying) {
+      // Thrust animation completed — apply deflection
+      player.dashing.blockedBouncePending = false;
+      player.dashing.blockedBounceAnimId = null;
+      restoreMoveDefaults();
+      app.setDeflection(player, "bluntAttacked", false);
+      startPostDash();
+      player.action = "idle";
+      logDashBlocked("bounceComplete", {
+        plyr_no: player.number,
+        cell: player.currentPosition.cell.number,
+      });
+    }
+    return nextPosition;
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // 3) STATE GUARD — exit early if not actively dashing
   // ──────────────────────────────────────────────────────────
   if (player.dashing.state !== true) {
     return nextPosition;
   }
 
   // ──────────────────────────────────────────────────────────
-  // 3) ENSURE ACTION TAG
+  // 4) ENSURE ACTION TAG
   // ──────────────────────────────────────────────────────────
   if (player.action !== "dashing") {
     player.action = "dashing";
   }
 
   // ──────────────────────────────────────────────────────────
-  // 4) MID-DASH FEINT
+  // 5) MID-DASH FEINT
   // ──────────────────────────────────────────────────────────
   // After reaching cell 1 but before cell 2, pressing the
   // opposite direction within the feint step threshold can
   // cancel the dash — if the player's reflexes roll succeeds.
   if (player.dashing.cell_1_arrived === true && player.dashing.cell_2_arrived !== true) {
     if (keyPressedDirection === app.getOppositeDirection(player.dashing.dashDirection) && player.moving.step < app.dashRef.feintStepThreshold) {
-      if (app.rnJesus(1, player.crits.reflexes) === 1) {
+      const roll = app.rnJesus(1, player.crits.reflexes);
+      if (roll === 1) {
         restoreMoveDefaults();
         player.moving.state = false;
         player.action = "idle";
         startPostDash();
-        logDash("dashFeint", {
+        logDashFeint("success", {
           plyr_no: player.number,
           step: player.moving.step,
+          reflexes: player.crits.reflexes,
         });
         return nextPosition;
+      } else {
+        logDashFeint("fail", {
+          plyr_no: player.number,
+          step: player.moving.step,
+          reflexes: player.crits.reflexes,
+          roll,
+        });
       }
     }
   }
 
   // ──────────────────────────────────────────────────────────
-  // 5) INTERPOLATE POSITION ALONG THE DASH PATH
+  // 6) INTERPOLATE POSITION ALONG THE DASH PATH
   // ──────────────────────────────────────────────────────────
   nextPosition = app.lineCrementer(player);
   player.nextPosition = nextPosition;
 
   // ──────────────────────────────────────────────────────────
-  // 6) APPROACHING CELL 1
+  // 7) APPROACHING CELL 1
   // ──────────────────────────────────────────────────────────
   if (player.dashing.cell_1_arrived !== true) {
     if (isAtDestination(nextPosition, player.target.cell1.center)) {
@@ -192,41 +298,101 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
       // Check for collisions at cell 1
       resolveDashCollision(player.target.cell1.number, player.moving.step);
 
-      // Re-target for cell 2 by resetting the moving state
-      // with cell 1 as the new origin and cell 2 center as destination
-      player.moving = {
-        state: true,
-        step: 0,
-        course: "",
-        origin: {
-          number: {
+      if (player.dashing.cell2Blocked === true) {
+        // ── CELL 2 BLOCKED: stop and start forward bounce ──
+        player.moving = {
+          state: false,
+          step: 0,
+          course: "",
+          origin: {
+            number: {
+              x: player.currentPosition.cell.number.x,
+              y: player.currentPosition.cell.number.y,
+            },
+            center: {
+              x: player.currentPosition.cell.center.x,
+              y: player.currentPosition.cell.center.y,
+            },
+          },
+          destination: { x: 0, y: 0 },
+        };
+
+        // Push a thrust windup animation (release phase = forward)
+        // to show the player bumping into the blocked cell
+        const bumpAnimId = player.actionDirectionAnimationArray.length + 1;
+        player.actionDirectionAnimationArray.push({
+          id: bumpAnimId,
+          ownerType: "player",
+          ownerNumber: player.number,
+          ownerDirection: player.dashing.dashDirection,
+          action: "bump",
+          actionDirection: player.dashing.dashDirection,
+          actionDirectionType: "thrust",
+          phase: "release",
+          radius: 50,
+          angle: 0,
+          startAngle: 0,
+          direction: "counterClockwise",
+          face: "top",
+          shape: "",
+          color: "red",
+          counter: { count: 0, limit: 10 },
+          delay: { state: false, count: 0, limit: 15 },
+          points: [],
+          locationCell: {
             x: player.currentPosition.cell.number.x,
             y: player.currentPosition.cell.number.y,
           },
-          center: {
-            x: player.currentPosition.cell.center.x,
-            y: player.currentPosition.cell.center.y,
+        });
+
+        player.dashing.cell2Blocked = false;
+        player.dashing.blockedBouncePending = true;
+        player.dashing.blockedBounceAnimId = bumpAnimId;
+        player.action = "bump";
+
+        logDashBlocked("cell2Blocked", {
+          plyr_no: player.number,
+          cell: player.currentPosition.cell.number,
+          dash_direction: player.dashing.dashDirection,
+        });
+      } else {
+        // ── CELL 2 FREE: re-target normally ────────────
+        player.moving = {
+          state: true,
+          step: 0,
+          course: "",
+          origin: {
+            number: {
+              x: player.currentPosition.cell.number.x,
+              y: player.currentPosition.cell.number.y,
+            },
+            center: {
+              x: player.currentPosition.cell.center.x,
+              y: player.currentPosition.cell.center.y,
+            },
           },
-        },
-        destination: player.target.cell1.center,
-      };
+          destination: player.target.cell1.center,
+        };
 
-      app.getTarget(player);
+        app.getTarget(player);
 
-      player.moving.destination = player.target.cell1.center;
-      player.nextPosition = app.lineCrementer(player);
+        player.moving.destination = player.target.cell1.center;
+        player.nextPosition = app.lineCrementer(player);
 
-      logDash("dashMidpoint", {
-        plyr_no: player.number,
-        cell: player.currentPosition.cell.number,
-      });
+        logDashMove("cell1Arrived", {
+          plyr_no: player.number,
+          cell: player.currentPosition.cell.number,
+          step: player.moving.step,
+          next_cell: player.target.cell1.number,
+        });
+      }
     }
 
     return nextPosition;
   }
 
   // ──────────────────────────────────────────────────────────
-  // 7) APPROACHING CELL 2
+  // 8) APPROACHING CELL 2
   // ──────────────────────────────────────────────────────────
   if (player.dashing.cell_2_arrived !== true) {
     if (isAtDestination(nextPosition, player.target.cell1.center)) {
@@ -265,9 +431,10 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
       player.action = "idle";
       app.checkDestination(player, false);
 
-      logDash("dashComplete", {
+      logDashMove("cell2Arrived", {
         plyr_no: player.number,
         cell: player.currentPosition.cell.number,
+        step: player.moving.step,
       });
     }
   }
