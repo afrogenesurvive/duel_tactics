@@ -3,6 +3,7 @@
 ## [0.0.1-2] — 2026-07-19
 
 ### Added
+
 - Global logging for dash path blocked events (`player.dashing.blocked`):
   - `checkMoveCancel.js` — Logs `"blocked"` when origin cell or cell 1 is blocked at dash initiation
   - `checkDashing.js` — Logs `"cell2Blocked"` when dash arrives at cell 1 but cell 2 is blocked, and `"bounceComplete"` when the bounce thrust animation finishes
@@ -11,6 +12,7 @@
 ## [0.0.1-1] — 2026-07-19
 
 ### Added
+
 - Comprehensive comment documentation for the dashing mechanic across all related files:
   - `checkDashing.js` — Full runtime logic annotated (reset state, collision resolution, feint handling, two-cell movement, post-dash cooldown)
   - `checkMoveCancel.js` — Dash initiation conditions, speed calculation, path blocking checks, and state setup documented

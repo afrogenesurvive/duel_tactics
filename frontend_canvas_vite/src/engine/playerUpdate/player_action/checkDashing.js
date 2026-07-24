@@ -215,9 +215,7 @@ export function checkDashing(app, player, keyPressedDirection, nextPosition) {
   // windup animation plays. Once the animation element is
   // removed from the array, apply deflection.
   if (player.dashing.blockedBouncePending === true) {
-    const animStillPlaying = player.actionDirectionAnimationArray.some(
-      (a) => a.id === player.dashing.blockedBounceAnimId
-    );
+    const animStillPlaying = player.actionDirectionAnimationArray.some((a) => a.id === player.dashing.blockedBounceAnimId);
     if (!animStillPlaying) {
       // Thrust animation completed — apply deflection
       player.dashing.blockedBouncePending = false;
