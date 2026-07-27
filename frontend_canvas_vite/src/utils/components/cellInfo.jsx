@@ -154,30 +154,34 @@ const CellInfo = (props) => {
                           <li>
                             <strong className="popoverHead">Trap: </strong>
                           </li>
-                          <li>
-                            <p>
-                              Target: {props.clicked.cell.obstacle.trap.target.x},{props.clicked.cell.obstacle.trap.target.y}
-                            </p>
-                          </li>
-                          <li>
-                            <p>Trigger: {props.clicked.cell.obstacle.trap.trigger.type}</p>
-                          </li>
-                          <li>
-                            <p>Action: {props.clicked.cell.obstacle.trap.action}</p>
-                          </li>
-                          <li>
-                            <p>
-                              Item: {props.clicked.cell.obstacle.trap.item.name} ({props.clicked.cell.obstacle.trap.ammo})
-                            </p>
-                          </li>
-                          <li>
-                            <p>Persitent: {props.clicked.cell.obstacle.trap.persistent.toString()}</p>
-                          </li>
-                          {!props.clicked.cell.obstacle.trap.persistent && (
-                            <li>
-                              <p>Remaining: {props.clicked.cell.obstacle.trap.remaining}</p>
-                            </li>
-                          )}
+                          {props.settingsFormGameplayData?.showTrapData === true ? (
+                            <>
+                              <li>
+                                <p>
+                                  Target: {props.clicked.cell.obstacle.trap.target.x},{props.clicked.cell.obstacle.trap.target.y}
+                                </p>
+                              </li>
+                              <li>
+                                <p>Trigger: {props.clicked.cell.obstacle.trap.trigger.type}</p>
+                              </li>
+                              <li>
+                                <p>Action: {props.clicked.cell.obstacle.trap.action}</p>
+                              </li>
+                              <li>
+                                <p>
+                                  Item: {props.clicked.cell.obstacle.trap.item.name} ({props.clicked.cell.obstacle.trap.ammo})
+                                </p>
+                              </li>
+                              <li>
+                                <p>Persitent: {props.clicked.cell.obstacle.trap.persistent.toString()}</p>
+                              </li>
+                              {!props.clicked.cell.obstacle.trap.persistent && (
+                                <li>
+                                  <p>Remaining: {props.clicked.cell.obstacle.trap.remaining}</p>
+                                </li>
+                              )}
+                            </>
+                          ) : null}
                         </ul>
                       )}
                     </ul>

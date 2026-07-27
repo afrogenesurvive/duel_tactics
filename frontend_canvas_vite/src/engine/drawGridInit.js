@@ -642,7 +642,7 @@ export function drawGridInit(app, canvas, context, canvas2, context2) {
   let sceneY = app.sceneY;
   let tileWidth = app.tileWidth;
 
-  app.setBackgroundImage("sea_clouds_night_1");
+  app.setBackgroundImage(app.settingsFormUiData?.backgroundTheme || "sea_clouds_night_1");
 
   //   app.startProcessLevelData(canvas);
   startProcessLevelData(app, canvas);

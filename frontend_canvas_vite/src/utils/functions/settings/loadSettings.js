@@ -3,10 +3,11 @@ export function loadSettings(app, event) {
 
   event.preventDefault();
 
-  let gridSize = event.target.gridSize.value;
-
-  let playerNumber = event.target.humanPlayers.value;
-  let aiPlayerNumber = event.target.aiCount.value;
+  // Read values from app state (set by React form controls before submit)
+  // This avoids depending on DOM elements that may be conditionally rendered.
+  let gridSize = app.gridWidth;
+  let playerNumber = app.settingsFormPlyrStartPosList.length;
+  let aiPlayerNumber = app.updateSettingsFormAiDataData.count?.count || 0;
 
   switch (gridSize) {
     case "3":
@@ -79,6 +80,15 @@ export function loadSettings(app, event) {
     app.disableInitItems = false;
   } else {
     app.disableInitItems = true;
+  }
+
+  // ── Apply gameplay settings ──
+  app.showDirectionalActionAnimation = app.settingsFormUiData?.showActionDirectionAnim !== false;
+  app.showPlayerOutlines = app.settingsFormUiData?.showPlayerOutlines !== false;
+
+  // ── Apply background theme ──
+  if (app.settingsFormUiData?.backgroundTheme) {
+    app.setBackgroundImage(app.settingsFormUiData.backgroundTheme);
   }
 
   app.gameReset("hard");

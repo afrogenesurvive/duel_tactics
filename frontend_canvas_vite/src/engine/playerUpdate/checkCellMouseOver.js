@@ -21,7 +21,9 @@ export function checkCellMouseOver(app) {
       if (plyrPresent !== true) {
         app.clicked.player = undefined;
       }
-      app.showCellInfoBox = true;
+      if (app.settingsFormUiData?.enableCellInfo !== false) {
+        app.showCellInfoBox = true;
+      }
     }
   }
   // SWITCH OFF ATER TIME IF MOUSE MOVED OUT OF GRID

@@ -217,6 +217,7 @@ export function checkAttacking(app, player) {
 
           // CAMERA ATTACK FOCUS
           if (
+            app.settingsFormGameplayData?.actionAutoCamera !== false &&
             app.camera.customView.state !== true &&
             app.settingAutoCamera === false &&
             player.ai.state !== true &&

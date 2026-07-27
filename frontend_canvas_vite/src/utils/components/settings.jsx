@@ -1045,93 +1045,154 @@ const Settings = (props) => {
 
   const [multiAiFormAiMissionColWidth, setMultiAiFormAiMissionColWidth] = useState(8);
 
+  const [activeTab, setActiveTab] = useState("basic");
+
+  const tabs = [
+    { id: "basic", label: "Basic" },
+    { id: "gear", label: "Gear" },
+    { id: "ai", label: "AI" },
+    { id: "controls", label: "Controls" },
+    { id: "gameplay", label: "Gameplay" },
+    { id: "ui", label: "UI" },
+  ];
+
+  // ── Background theme options ──
+  const backgroundThemeOptions = [
+    "sea_clouds_1",
+    "sea_clouds_2",
+    "sea_clouds_3",
+    "sea_clouds_4",
+    "sea_clouds_night_1",
+    "sea_coast_1",
+    "nothern_lights_1",
+    "field_1",
+    "field_2",
+    "field_3",
+  ];
+
   return (
     <div className="settingsOverlay">
       <div className="settingsContainer">
         <h2 className="settingsHeading">Settings :</h2>
 
+        {/* ── Pre-game notice banner ── */}
+        <div className="settingsNotice">
+          All settings apply at game start. Please review all tabs before pressing Submit.
+        </div>
+
+        {/* ── Tab navigation ── */}
+        <div className="settingsTabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`settingsTab ${activeTab === tab.id ? "settingsTabActive" : ""}`}
+              onClick={() => setActiveTab(tab.id)}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         <Form onSubmit={props.onConfirm} className="form">
-          <Row className="formBtnRow">
-            <div className="btnSubCont">
-              <Button variant="success" type="submit" className="formBtn">
-                Submit
-              </Button>
-              <Button variant="danger" className="formBtn" onClick={props.onCancel}>
-                Cancel
-              </Button>
-            </div>
-          </Row>
+          {/* ═══════════════ BASIC ═══════════════ */}
+          {activeTab === "basic" && (
+            <>
+              <Row>
+                <Form.Group as={Col} controlId="gridSize" className="formGroup">
+                  <Form.Label className="formLabel">Grid Size:</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={gridWidth}
+                    onChange={(e) => handleGridWidthChange(e.target.value)}>
+                    <option value={9}>10 x 10</option>
+                    <option value={6}>7 x 7</option>
+                    <option value={3}>4 x 4</option>
+                    <option value={12}>13 x 13</option>
+                  </Form.Control>
+                </Form.Group>
 
-          <Row>
-            <Form.Group as={Col} controlId="gridSize" className="formGroup">
-              <Form.Label className="formLabel">Grid Size:</Form.Label>
-              <Form.Control
-                as="select"
-                value={gridWidth}
-                onChange={(e) => handleGridWidthChange(e.target.value)}>
-                <option value={9}>10 x 10</option>
-                <option value={6}>7 x 7</option>
-                <option value={3}>4 x 4</option>
-                <option value={12}>13 x 13</option>
-              </Form.Control>
-            </Form.Group>
+                <Form.Group as={Col} className="formGroup" controlId="startItems">
+                  <Form.Label className="formLabel">Start Items</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={startItems}
+                    onChange={(e) => handleStartItemsChange(e.target.value)}>
+                    <option value={true}>Yes</option>
+                    <option value={false}>No</option>
+                  </Form.Control>
+                </Form.Group>
+              </Row>
 
-            <Form.Group as={Col} className="formGroup" controlId="startItems">
-              <Form.Label className="formLabel">Start Items</Form.Label>
+              <Row>
+                <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
+                  <Form.Label className="formLabel">Players</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={props.plyrStartPosList.length.toString()}
+                    onChange={(e) => handlePlyrCountStateChange(e.target.value)}>
+                    <option>2</option>
+                    <option>1</option>
+                  </Form.Control>
+                </Form.Group>
+              </Row>
+            </>
+          )}
 
-              <Form.Control
-                as="select"
-                value={startItems}
-                onChange={(e) => handleStartItemsChange(e.target.value)}>
-                <option value={true}>Yes</option>
-                <option value={false}>No</option>
-              </Form.Control>
-            </Form.Group>
-          </Row>
+          {/* ═══════════════ GEAR ═══════════════ */}
+          {activeTab === "gear" && (
+            <>{/* player weapons and armor rendered below */}</>
+          )}
 
-          <Row>
-            <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
-              <Form.Label className="formLabel">Players</Form.Label>
-              <Form.Control
-                as="select"
-                value={props.plyrStartPosList.length.toString()}
-                onChange={(e) => handlePlyrCountStateChange(e.target.value)}>
-                <option>2</option>
-                <option>1</option>
-              </Form.Control>
-            </Form.Group>
-          </Row>
+          {/* ═══════════════ CONTROLS ═══════════════ */}
+          {activeTab === "controls" && (
+            <>
+              {props.settingsFormPlayerData.input && (
+                <Row className="multiAiFormBox">
+                  {props.settingsFormPlayerData.input.map((plyr) => (
+                    <Col key={plyr.plyrNo} className="multiAiFormAi" sm={plyrStartPosWidth}>
+                      <Row>
+                        <Form.Group as={Col} controlId="playerInput" className="formGroup">
+                          <Form.Label className="formLabel">
+                            Player {plyr.plyrNo} Input
+                          </Form.Label>
+                          <Form.Control
+                            as="select"
+                            value={plyr.input}
+                            onChange={(e) =>
+                              handlePlayerInputStateChange(plyr.plyrNo, e.target.value)
+                            }>
+                            <option>Keyboard</option>
+                            <option>Gamepad</option>
+                          </Form.Control>
+                        </Form.Group>
+                      </Row>
+                    </Col>
+                  ))}
+                </Row>
+              )}
+              <div className="settingsGamepadNotes">
+                <p><strong>Gamepad Notes:</strong></p>
+                <ul>
+                  <li>Standard layout assumes Pro Controller / Xbox / PlayStation controller.</li>
+                  <li>Single Joy-Con is <strong>not</strong> supported.</li>
+                  <li>Connect all gamepads before starting the game.</li>
+                  <li>If a gamepad disconnects during play, re-open Settings to reconfigure.</li>
+                </ul>
+              </div>
+            </>
+          )}
 
-          {props.settingsFormPlayerData.input && (
-            <Row className="multiAiFormBox">
-              {props.settingsFormPlayerData.input.map((plyr) => (
-                <Col key={plyr.plyrNo} className="multiAiFormAi" sm={plyrStartPosWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="playerInput" className="formGroup">
-                      <Form.Label className="formLabel">
-                        Player {plyr.plyrNo} Input
-                      </Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={plyr.input}
-                        onChange={(e) =>
-                          handlePlayerInputStateChange(plyr.plyrNo, e.target.value)
-                        }>
-                        <option>Keyboard</option>
-                        <option>Gamepad</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-
-              {props.settingsFormPlayerData.team.map((plyr) => (
-                <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="playerTeam" className="formGroup">
-                      <Form.Label className="formLabel">
-                        Player {plyr.plyrNo} Team
-                      </Form.Label>
+          {/* ═══════════════ BASIC (continued) ═══════════════ */}
+          {activeTab === "basic" && (
+            <>
+              {props.settingsFormPlayerData.team && (
+                <Row className="multiAiFormBox">
+                  {props.settingsFormPlayerData.team.map((plyr) => (
+                    <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+                      <Row>
+                        <Form.Group as={Col} controlId="playerTeam" className="formGroup">
+                          <Form.Label className="formLabel">
+                            Player {plyr.plyrNo} Team
+                          </Form.Label>
                       <Form.Control
                         as="select"
                         value={plyr.team}
@@ -1146,170 +1207,164 @@ const Settings = (props) => {
                 </Col>
               ))}
             </Row>
-          )}
+            )}
 
-          {playerWeapons.length > 0 && (
-            <Row className="multiAiFormBox">
-              {playerWeapons.map((plyr) => (
-                <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="playerWeapons" className="formGroup">
-                      <Form.Label className="formLabel">
-                        Player {plyr.plyrNo} Weapons (Inventory size: 4!)
-                      </Form.Label>
-                      {weaponSet.map((weapon) => (
-                        <Form.Check
-                          type="checkbox"
-                          checked={plyr.weapons.includes(weapon)}
-                          onChange={(e) =>
-                            handlePlayerWeaponsStateChange(
-                              plyr.plyrNo,
-                              e.target.checked,
-                              weapon,
-                            )
-                          }
-                          label={weapon}
-                        />
-                      ))}
-                      <FontAwesomeIcon
-                        onClick={(e) =>
-                          handlePlayerWeaponsStateChange(plyr.plyrNo, null, "random")
-                        }
-                        icon={faDice}
-                        size="sm"
-                        className="icon"
-                      />
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          {playerArmor.length > 0 && (
-            <Row className="multiAiFormBox">
-              {playerArmor.map((plyr) => (
-                <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="playerArmor" className="formGroup">
-                      <Form.Label className="formLabel">
-                        Player {plyr.plyrNo} Armor (Inventory size: 4!)
-                      </Form.Label>
-                      {armorSet.map((armor) => (
-                        <Form.Check
-                          type="checkbox"
-                          checked={plyr.armor.includes(armor)}
-                          onChange={(e) =>
-                            handlePlayerArmorStateChange(
-                              plyr.plyrNo,
-                              e.target.checked,
-                              armor,
-                            )
-                          }
-                          label={armor}
-                        />
-                      ))}
-                      <FontAwesomeIcon
-                        onClick={(e) =>
-                          handlePlayerArmorStateChange(plyr.plyrNo, null, "random")
-                        }
-                        icon={faDice}
-                        size="sm"
-                        className="icon"
-                      />
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          {props.showCanvasData.state === true && (
-            <div className="settingsCanvasContainer">
-              <h3 className="settingsHeading">
-                Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type}{" "}
-                Position:
-              </h3>
-
-              <canvas
-                width={props.canvasWidth}
-                height={props.canvasHeight}
-                ref={props.canvasRef}
-                className="settingsCanvas"
-              />
-            </div>
-          )}
-
-          {props.plyrStartPosList.length > 0 && (
-            <Row className="multiAiFormBox">
-              {props.plyrStartPosList.map((posArray) => {
-                return (
-                  <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
-                    <Row>
-                      <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
-                        <Form.Label className="formLabel">
-                          P{posArray.plyrNo} Start Position
-                        </Form.Label>
-                        <FontAwesomeIcon
-                          onClick={props.updateSettingsCanvasData.bind(this, {
-                            type: "human_start",
-                            plyrNo: posArray.plyrNo,
-                          })}
-                          icon={faTh}
-                          size="sm"
-                          className="icon"
-                        />
-                        <FontAwesomeIcon
-                          onClick={(e) =>
-                            handlePlyrStartPosStateChange(posArray.plyrNo, "random")
-                          }
-                          icon={faDice}
-                          size="sm"
-                          className="icon"
-                        />
-                        <Form.Control
-                          as="select"
-                          value={posArray.selected}
-                          onChange={(e) =>
-                            handlePlyrStartPosStateChange(posArray.plyrNo, e.target.value)
-                          }>
-                          <option>
-                            {posArray.selected.x},{posArray.selected.y}
-                          </option>
-                          {posArray.posArray.map((pos) => {
-                            if (pos === "random") {
-                              return <option>{pos}</option>;
-                            } else {
-                              return (
-                                <option>
-                                  {pos.x},{pos.y}
-                                </option>
-                              );
+            {props.plyrStartPosList.length > 0 && (
+              <Row className="multiAiFormBox">
+                {props.plyrStartPosList.map((posArray) => {
+                  return (
+                    <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+                      <Row>
+                        <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
+                          <Form.Label className="formLabel">
+                            P{posArray.plyrNo} Start Position
+                          </Form.Label>
+                          <FontAwesomeIcon
+                            onClick={props.updateSettingsCanvasData.bind(this, {
+                              type: "human_start",
+                              plyrNo: posArray.plyrNo,
+                            })}
+                            icon={faTh}
+                            size="sm"
+                            className="icon"
+                          />
+                          <FontAwesomeIcon
+                            onClick={(e) =>
+                              handlePlyrStartPosStateChange(posArray.plyrNo, "random")
                             }
-                          })}
-                        </Form.Control>
-                      </Form.Group>
-                    </Row>
-                  </Col>
-                );
-              })}
-            </Row>
+                            icon={faDice}
+                            size="sm"
+                            className="icon"
+                          />
+                          <Form.Control
+                            as="select"
+                            value={posArray.selected}
+                            onChange={(e) =>
+                              handlePlyrStartPosStateChange(posArray.plyrNo, e.target.value)
+                            }>
+                            <option>
+                              {posArray.selected.x},{posArray.selected.y}
+                            </option>
+                            {posArray.posArray.map((pos) => {
+                              if (pos === "random") {
+                                return <option>{pos}</option>;
+                              } else {
+                                return (
+                                  <option>
+                                    {pos.x},{pos.y}
+                                  </option>
+                                );
+                              }
+                            })}
+                          </Form.Control>
+                        </Form.Group>
+                      </Row>
+                    </Col>
+                  );
+                })}
+              </Row>
+            )}
+            </>
           )}
 
-          <Row>
-            <Form.Group as={Col} controlId="aiCount" className="formGroup">
-              <Form.Label className="formLabel">Ai</Form.Label>
-              <Form.Control
-                as="select"
-                value={aiCount.count}
-                onChange={(e) => handleAiCountStateChange(e.target.value)}>
-                <option></option>
-                {aiCountOptions.map((option) => (
-                  <option>{option}</option>
-                ))}
-              </Form.Control>
-            </Form.Group>
-          </Row>
+          {/* ═══════════════ GEAR ═══════════════ */}
+          {activeTab === "gear" && (
+            <>
+              {playerWeapons.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {playerWeapons.map((plyr) => (
+                    <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+                      <Row>
+                        <Form.Group as={Col} controlId="playerWeapons" className="formGroup">
+                          <Form.Label className="formLabel">
+                            Player {plyr.plyrNo} Weapons (Inventory size: 4!)
+                          </Form.Label>
+                          {weaponSet.map((weapon) => (
+                            <Form.Check
+                              type="checkbox"
+                              checked={plyr.weapons.includes(weapon)}
+                              onChange={(e) =>
+                                handlePlayerWeaponsStateChange(
+                                  plyr.plyrNo,
+                                  e.target.checked,
+                                  weapon,
+                                )
+                              }
+                              label={weapon}
+                            />
+                          ))}
+                          <FontAwesomeIcon
+                            onClick={(e) =>
+                              handlePlayerWeaponsStateChange(plyr.plyrNo, null, "random")
+                            }
+                            icon={faDice}
+                            size="sm"
+                            className="icon"
+                          />
+                        </Form.Group>
+                      </Row>
+                    </Col>
+                  ))}
+                </Row>
+              )}
+
+              {playerArmor.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {playerArmor.map((plyr) => (
+                    <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+                      <Row>
+                        <Form.Group as={Col} controlId="playerArmor" className="formGroup">
+                          <Form.Label className="formLabel">
+                            Player {plyr.plyrNo} Armor (Inventory size: 4!)
+                          </Form.Label>
+                          {armorSet.map((armor) => (
+                            <Form.Check
+                              type="checkbox"
+                              checked={plyr.armor.includes(armor)}
+                              onChange={(e) =>
+                                handlePlayerArmorStateChange(
+                                  plyr.plyrNo,
+                                  e.target.checked,
+                                  armor,
+                                )
+                              }
+                              label={armor}
+                            />
+                          ))}
+                          <FontAwesomeIcon
+                            onClick={(e) =>
+                              handlePlayerArmorStateChange(plyr.plyrNo, null, "random")
+                            }
+                            icon={faDice}
+                            size="sm"
+                            className="icon"
+                          />
+                        </Form.Group>
+                      </Row>
+                    </Col>
+                  ))}
+                </Row>
+              )}
+            </>
+          )}
+
+          {/* ═══════════════ AI ═══════════════ */}
+          {activeTab === "ai" && (
+            <>
+              <Row>
+                <Form.Group as={Col} controlId="aiCount" className="formGroup">
+                  <Form.Label className="formLabel">Ai</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={aiCount.count}
+                    onChange={(e) => handleAiCountStateChange(e.target.value)}>
+                    <option></option>
+                    {aiCountOptions.map((option) => (
+                      <option>{option}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Row>
 
           {aiRandom.length > 0 && (
             <Row className="multiAiFormBox">
@@ -1481,24 +1536,6 @@ const Settings = (props) => {
               ))}
             </Row>
           )}
-
-          {props.showCanvasData.state === true &&
-            props.showCanvasData.field.split("_")[0] === "ai" && (
-              <div className="settingsCanvasContainer">
-                <h3 className="settingsHeading">
-                  Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type}{" "}
-                  Position:
-                </h3>
-
-                <canvas
-                  width={props.canvasWidth}
-                  height={props.canvasHeight}
-                  ref={props.canvasRef2}
-                  className="settingsCanvas"
-                  id="settingsCanvas2"
-                />
-              </div>
-            )}
 
           {props.aiStartPosList.length > 0 && (
             <Row className="multiAiFormBox">
@@ -1996,6 +2033,206 @@ const Settings = (props) => {
             </Row>
           )}
 
+            </>
+          )}
+
+          {/* ═══════════════ GAMEPLAY ═══════════════ */}
+          {activeTab === "gameplay" && (
+            <>
+              <h3 className="settingsSubHeading">Gameplay Options</h3>
+              <Row>
+                <Form.Group as={Col} controlId="moveCancel" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="moveCancelSwitch"
+                    label="Move Cancel"
+                    checked={props.settingsFormGameplayData?.moveCancelEnabled !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormGameplayData({
+                        ...props.settingsFormGameplayData,
+                        moveCancelEnabled: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} controlId="actionAutoCamera" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="actionAutoCameraSwitch"
+                    label="Action Auto Camera"
+                    checked={props.settingsFormGameplayData?.actionAutoCamera !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormGameplayData({
+                        ...props.settingsFormGameplayData,
+                        actionAutoCamera: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+              </Row>
+              <Row>
+                <Form.Group as={Col} controlId="pushbackChaining" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="pushbackChainingSwitch"
+                    label="Pushback Chaining"
+                    checked={props.settingsFormGameplayData?.pushbackChaining !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormGameplayData({
+                        ...props.settingsFormGameplayData,
+                        pushbackChaining: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} controlId="showTrapData" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="showTrapDataSwitch"
+                    label="Show Trap Details in Cell Info"
+                    checked={props.settingsFormGameplayData?.showTrapData === true}
+                    onChange={(e) => {
+                      props.updateSettingsFormGameplayData({
+                        ...props.settingsFormGameplayData,
+                        showTrapData: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+              </Row>
+            </>
+          )}
+
+          {/* ═══════════════ UI ═══════════════ */}
+          {activeTab === "ui" && (
+            <>
+              <h3 className="settingsSubHeading">UI Options</h3>
+              <Row>
+                <Form.Group as={Col} controlId="showPlayerOutlines" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="showPlayerOutlinesSwitch"
+                    label="Player Outlines"
+                    checked={props.settingsFormUiData?.showPlayerOutlines !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormUiData({
+                        ...props.settingsFormUiData,
+                        showPlayerOutlines: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} controlId="showOnPlayerUI" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="showOnPlayerUISwitch"
+                    label="On-Player UI"
+                    checked={props.settingsFormUiData?.showOnPlayerUI !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormUiData({
+                        ...props.settingsFormUiData,
+                        showOnPlayerUI: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+              </Row>
+              <Row>
+                <Form.Group as={Col} controlId="enableCellInfo" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="enableCellInfoSwitch"
+                    label="Cell Info on Mouse-Over"
+                    checked={props.settingsFormUiData?.enableCellInfo !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormUiData({
+                        ...props.settingsFormUiData,
+                        enableCellInfo: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} controlId="showActionDirectionAnim" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="showActionDirectionAnimSwitch"
+                    label="Action Direction Animation"
+                    checked={props.settingsFormUiData?.showActionDirectionAnim !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormUiData({
+                        ...props.settingsFormUiData,
+                        showActionDirectionAnim: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+              </Row>
+              <Row>
+                <Form.Group as={Col} controlId="backgroundTheme" className="formGroup">
+                  <Form.Label className="formLabel">Background Theme</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={props.settingsFormUiData?.backgroundTheme || "sea_clouds_night_1"}
+                    onChange={(e) => {
+                      props.updateSettingsFormUiData({
+                        ...props.settingsFormUiData,
+                        backgroundTheme: e.target.value,
+                      });
+                    }}>
+                    {backgroundThemeOptions.map((theme) => (
+                      <option key={theme} value={theme}>{theme.replace(/_/g, " ")}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Row>
+            </>
+          )}
+
+          {/* ═══════════════ CONTROLS DIAGRAMS ═══════════════ */}
+          {activeTab === "controls" && (
+            <>
+              <h3 className="settingsSubHeading">Keyboard Layout</h3>
+              <img src={plyr1KeyboardDefaultDiagram} className="controlsImg keyboard1" alt="Player 1 keyboard controls" />
+              <img src={plyr2KeyboardDefaultDiagram} className="controlsImg keyboard2" alt="Player 2 keyboard controls" />
+              <h3 className="settingsSubHeading">Gamepad Layout</h3>
+              <img src={gamepadDefaultDiagram} className="controlsImg gamepad" alt="Gamepad controls" />
+            </>
+          )}
+
+          {/* ── SETTINGS CANVASES (always in DOM, hidden via CSS) ── */}
+          {props.showCanvasData.state === true && (
+            <>
+              {/* Human start position canvas */}
+              <div className={`settingsCanvasContainer ${activeTab !== "basic" ? "settingsCanvasHidden" : ""}`}>
+                <h3 className="settingsHeading">
+                  Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
+                </h3>
+                <canvas
+                  width={props.canvasWidth}
+                  height={props.canvasHeight}
+                  ref={props.canvasRef}
+                  className="settingsCanvas"
+                />
+              </div>
+              {/* AI start position canvas */}
+              {props.showCanvasData.field?.split("_")[0] === "ai" && (
+                <div className={`settingsCanvasContainer ${activeTab !== "ai" ? "settingsCanvasHidden" : ""}`}>
+                  <h3 className="settingsHeading">
+                    Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
+                  </h3>
+                  <canvas
+                    width={props.canvasWidth}
+                    height={props.canvasHeight}
+                    ref={props.canvasRef2}
+                    className="settingsCanvas"
+                    id="settingsCanvas2"
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ── MASTER SUBMIT & CANCEL — always visible ── */}
           <Row className="formBtnRow">
             <div className="btnSubCont">
               <Button variant="success" type="submit" className="formBtn">
@@ -2007,11 +2244,6 @@ const Settings = (props) => {
             </div>
           </Row>
         </Form>
-
-        <h2 className="settingsHeading">Controls :</h2>
-        <img src={plyr1KeyboardDefaultDiagram} className="controlsImg gamepad"></img>
-        <img src={plyr2KeyboardDefaultDiagram} className="controlsImg keyboard1"></img>
-        <img src={gamepadDefaultDiagram} className="controlsImg keyboard2"></img>
       </div>
     </div>
   );

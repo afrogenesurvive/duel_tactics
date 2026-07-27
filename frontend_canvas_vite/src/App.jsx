@@ -72,6 +72,8 @@ import { loadSettings } from "./utils/functions/settings/loadSettings";
 import { loadAiSettings } from "./utils/functions/settings/loadAiSettings";
 
 import { updateSettingsFormPlayerData } from "./utils/functions/settings/updateSettingsFormPlayerData";
+import { updateSettingsFormGameplayData } from "./utils/functions/settings/updateSettingsFormGameplayData";
+import { updateSettingsFormUiData } from "./utils/functions/settings/updateSettingsFormUiData";
 import { updateSettingsFormAiData } from "./utils/functions/settings/updateSettingsFormAiData";
 import { updateSettingsCanvasData } from "./utils/functions/settings/updateSettingsCanvasData";
 import { settingsFormGridWidthUpdate } from "./utils/functions/settings/settingsFormGridWidthUpdate";
@@ -259,6 +261,8 @@ class App extends Component {
     this.loadSettings = (...args) => loadSettings(this, ...args);
     this.loadAiSettings = (...args) => loadAiSettings(this, ...args);
     this.updateSettingsFormPlayerData = (...args) => updateSettingsFormPlayerData(this, ...args);
+    this.updateSettingsFormGameplayData = (...args) => updateSettingsFormGameplayData(this, ...args);
+    this.updateSettingsFormUiData = (...args) => updateSettingsFormUiData(this, ...args);
     this.updateSettingsFormAiData = (...args) => updateSettingsFormAiData(this, ...args);
     this.updateSettingsCanvasData = (...args) => updateSettingsCanvasData(this, ...args);
     this.settingsFormGridWidthUpdate = (...args) => settingsFormGridWidthUpdate(this, ...args);
@@ -669,6 +673,7 @@ class App extends Component {
                 cellInfoMouseOver={this.cellInfoMouseOver}
                 setCellInfoMouseOver={this.setCellInfoMouseOver}
                 cursorCoords={this.cursorCoords}
+                settingsFormGameplayData={this.settingsFormGameplayData}
               />
             )}
             {/* // AI STATUS BOX */}
@@ -715,6 +720,10 @@ class App extends Component {
               disableInitItems={this.disableInitItems}
               settingsFormPlayerData={this.settingsFormPlayerData}
               updateSettingsFormPlayerData={this.updateSettingsFormPlayerData}
+              settingsFormGameplayData={this.settingsFormGameplayData}
+              updateSettingsFormGameplayData={this.updateSettingsFormGameplayData}
+              settingsFormUiData={this.settingsFormUiData}
+              updateSettingsFormUiData={this.updateSettingsFormUiData}
             />
           )}
 

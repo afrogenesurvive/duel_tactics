@@ -72,14 +72,22 @@ export function checkMoveCancel(app, player, nextPosition) {
         inTime = true;
       }
 
+      // ── GATE: Move Cancel toggle ──────────────────────────
+      // If moveCancelEnabled is false, disable both move cancel and dashing initiation.
+      const moveCancelEnabled = app.settingsFormGameplayData?.moveCancelEnabled !== false;
+      if (!moveCancelEnabled) {
+        canCancelMove = false;
+      }
+
       // ── DASH INITIATION CONDITIONS ────────────────────────
-      // A dash can only start when the player is still in the
+      // A dash can only start when move cancel is enabled, the player is still in the
       // cancel window (inTime), is NOT already dashing or in
       // post-dash cooldown, is NOT strafing or jumping, AND
       // the key pressed matches the player's facing direction
       // AND matches the tap recorded by handleKeyPress_ (the
       // double-tap detection: press same direction twice fast).
       const canStartDash =
+        moveCancelEnabled === true &&
         inTime === true &&
         player.dashing.state !== true &&
         player.dashing.postDash.state !== true &&

@@ -695,6 +695,20 @@ export function applyConstructorDefaults(app) {
   app.settingsFormPlyrGridInfo = [];
   app.settingsFormPlyrStartPosList = [];
   app.settingsFormPlayerData = {};
+  app.settingsFormGameplayData = {
+    moveCancelEnabled: true,
+    actionAutoCamera: true,
+    pushbackChaining: true,
+    startItems: true,
+    showTrapData: false,
+  };
+  app.settingsFormUiData = {
+    showPlayerOutlines: true,
+    showOnPlayerUI: true,
+    enableCellInfo: true,
+    showActionDirectionAnim: true,
+    backgroundTheme: "sea_clouds_night_1",
+  };
   app.showSettingsKeyPress = {
     state: false,
     count: 0,
@@ -1201,9 +1215,9 @@ export function applyConstructorDefaults(app) {
   app.halfPushBackChaining = true;
   app.halfPushBackChainingMoveAll = true;
 
-  app.showPlayerOutlines = false;
+  app.showPlayerOutlines = app.settingsFormUiData.showPlayerOutlines;
   app.showGridIsoGuide = false;
-  app.showDirectionalActionAnimation = true;
+  app.showDirectionalActionAnimation = app.settingsFormUiData.showActionDirectionAnim;
   app.hideAllPopups = false;
   app.hideDirectionalActionPopus = true;
   app.directionalAnimShape = "ringSection";
