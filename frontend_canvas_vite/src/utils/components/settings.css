@@ -160,7 +160,9 @@ label {
   font-weight: 600;
   padding: 6px 14px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .settingsTab:hover {

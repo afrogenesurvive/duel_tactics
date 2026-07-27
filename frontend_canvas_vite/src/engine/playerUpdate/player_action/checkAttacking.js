@@ -354,7 +354,6 @@ export function checkAttacking(app, player) {
 
           // CREATE NEW PROJECTILE
           if (player.currentWeapon.type === "crossbow" && player.attacking.blunt !== true && player.items.ammo > 0) {
-            
             logAttack("crossbowFired", {
               plyr_no: player.number,
               atk_count: player.attacking.count,

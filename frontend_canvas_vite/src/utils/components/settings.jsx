@@ -266,10 +266,7 @@ const Settings = (props) => {
         ],
       });
 
-      setPlayerWeapons([
-        playerWeapons[0],
-        { plyrNo: 2, weapons: ["sword", "spear", "crossbow"] },
-      ]);
+      setPlayerWeapons([playerWeapons[0], { plyrNo: 2, weapons: ["sword", "spear", "crossbow"] }]);
       setPlayerArmor([playerArmor[0], { plyrNo: 2, armor: [] }]);
       setPlayerTeam([playerTeam[0], { plyrNo: 2, team: "Blue" }]);
       setPlayerInput([playerInput[0], { plyrNo: 2, input: "keyboard" }]);
@@ -400,11 +397,7 @@ const Settings = (props) => {
     let plyr2 = array.find((elem) => elem.plyrNo === plyrNo);
     let plyr3 = playerArmor.find((elem) => elem.plyrNo === plyrNo);
 
-    if (
-      value !== "random" &&
-      action === true &&
-      plyr3.armor.length + plyr2.weapons.length === 4
-    ) {
+    if (value !== "random" && action === true && plyr3.armor.length + plyr2.weapons.length === 4) {
       console.log("inventory full ");
     } else {
       if (value === "random") {
@@ -432,11 +425,7 @@ const Settings = (props) => {
     let plyr2 = array.find((elem) => elem.plyrNo === plyrNo);
     let plyr3 = playerWeapons.find((elem) => elem.plyrNo === plyrNo);
 
-    if (
-      value !== "random" &&
-      action === true &&
-      plyr2.armor.length + plyr3.weapons.length === 4
-    ) {
+    if (value !== "random" && action === true && plyr2.armor.length + plyr3.weapons.length === 4) {
       console.log("inventory full ");
     } else {
       if (value === "random") {
@@ -825,11 +814,7 @@ const Settings = (props) => {
     let plyr2 = array.find((elem) => elem.plyrNo === plyrNo);
     let plyr3 = aiArmor.find((elem) => elem.plyrNo === plyrNo);
 
-    if (
-      value !== "random" &&
-      action === true &&
-      plyr3.armor.length + plyr2.weapons.length === 4
-    ) {
+    if (value !== "random" && action === true && plyr3.armor.length + plyr2.weapons.length === 4) {
       console.log("inventory full ");
     } else {
       if (plyr2) {
@@ -865,11 +850,7 @@ const Settings = (props) => {
     let plyr2 = array.find((elem) => elem.plyrNo === plyrNo);
     let plyr3 = aiWeapons.find((elem) => elem.plyrNo === plyrNo);
 
-    if (
-      value !== "random" &&
-      action === true &&
-      plyr2.armor.length + plyr3.weapons.length === 4
-    ) {
+    if (value !== "random" && action === true && plyr2.armor.length + plyr3.weapons.length === 4) {
       console.log("inventory full ");
     } else {
       if (value === "random") {
@@ -1076,17 +1057,12 @@ const Settings = (props) => {
         <h2 className="settingsHeading">Settings :</h2>
 
         {/* ── Pre-game notice banner ── */}
-        <div className="settingsNotice">
-          All settings apply at game start. Please review all tabs before pressing Submit.
-        </div>
+        <div className="settingsNotice">All settings apply at game start. Please review all tabs before pressing Submit.</div>
 
         {/* ── Tab navigation ── */}
         <div className="settingsTabs">
           {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`settingsTab ${activeTab === tab.id ? "settingsTabActive" : ""}`}
-              onClick={() => setActiveTab(tab.id)}>
+            <button key={tab.id} className={`settingsTab ${activeTab === tab.id ? "settingsTabActive" : ""}`} onClick={() => setActiveTab(tab.id)}>
               {tab.label}
             </button>
           ))}
@@ -1099,10 +1075,7 @@ const Settings = (props) => {
               <Row>
                 <Form.Group as={Col} controlId="gridSize" className="formGroup">
                   <Form.Label className="formLabel">Grid Size:</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={gridWidth}
-                    onChange={(e) => handleGridWidthChange(e.target.value)}>
+                  <Form.Control as="select" value={gridWidth} onChange={(e) => handleGridWidthChange(e.target.value)}>
                     <option value={9}>10 x 10</option>
                     <option value={6}>7 x 7</option>
                     <option value={3}>4 x 4</option>
@@ -1112,10 +1085,7 @@ const Settings = (props) => {
 
                 <Form.Group as={Col} className="formGroup" controlId="startItems">
                   <Form.Label className="formLabel">Start Items</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={startItems}
-                    onChange={(e) => handleStartItemsChange(e.target.value)}>
+                  <Form.Control as="select" value={startItems} onChange={(e) => handleStartItemsChange(e.target.value)}>
                     <option value={true}>Yes</option>
                     <option value={false}>No</option>
                   </Form.Control>
@@ -1138,9 +1108,7 @@ const Settings = (props) => {
           )}
 
           {/* ═══════════════ GEAR ═══════════════ */}
-          {activeTab === "gear" && (
-            <>{/* player weapons and armor rendered below */}</>
-          )}
+          {activeTab === "gear" && <>{/* player weapons and armor rendered below */}</>}
 
           {/* ═══════════════ CONTROLS ═══════════════ */}
           {activeTab === "controls" && (
@@ -1151,15 +1119,8 @@ const Settings = (props) => {
                     <Col key={plyr.plyrNo} className="multiAiFormAi" sm={plyrStartPosWidth}>
                       <Row>
                         <Form.Group as={Col} controlId="playerInput" className="formGroup">
-                          <Form.Label className="formLabel">
-                            Player {plyr.plyrNo} Input
-                          </Form.Label>
-                          <Form.Control
-                            as="select"
-                            value={plyr.input}
-                            onChange={(e) =>
-                              handlePlayerInputStateChange(plyr.plyrNo, e.target.value)
-                            }>
+                          <Form.Label className="formLabel">Player {plyr.plyrNo} Input</Form.Label>
+                          <Form.Control as="select" value={plyr.input} onChange={(e) => handlePlayerInputStateChange(plyr.plyrNo, e.target.value)}>
                             <option>Keyboard</option>
                             <option>Gamepad</option>
                           </Form.Control>
@@ -1170,10 +1131,14 @@ const Settings = (props) => {
                 </Row>
               )}
               <div className="settingsGamepadNotes">
-                <p><strong>Gamepad Notes:</strong></p>
+                <p>
+                  <strong>Gamepad Notes:</strong>
+                </p>
                 <ul>
                   <li>Standard layout assumes Pro Controller / Xbox / PlayStation controller.</li>
-                  <li>Single Joy-Con is <strong>not</strong> supported.</li>
+                  <li>
+                    Single Joy-Con is <strong>not</strong> supported.
+                  </li>
                   <li>Connect all gamepads before starting the game.</li>
                   <li>If a gamepad disconnects during play, re-open Settings to reconfigure.</li>
                 </ul>
@@ -1190,80 +1155,67 @@ const Settings = (props) => {
                     <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
                       <Row>
                         <Form.Group as={Col} controlId="playerTeam" className="formGroup">
-                          <Form.Label className="formLabel">
-                            Player {plyr.plyrNo} Team
-                          </Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={plyr.team}
-                        onChange={(e) =>
-                          handlePlayerTeamStateChange(plyr.plyrNo, e.target.value)
-                        }>
-                        <option>Red</option>
-                        <option>Blue</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-            )}
-
-            {props.plyrStartPosList.length > 0 && (
-              <Row className="multiAiFormBox">
-                {props.plyrStartPosList.map((posArray) => {
-                  return (
-                    <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
-                      <Row>
-                        <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
-                          <Form.Label className="formLabel">
-                            P{posArray.plyrNo} Start Position
-                          </Form.Label>
-                          <FontAwesomeIcon
-                            onClick={props.updateSettingsCanvasData.bind(this, {
-                              type: "human_start",
-                              plyrNo: posArray.plyrNo,
-                            })}
-                            icon={faTh}
-                            size="sm"
-                            className="icon"
-                          />
-                          <FontAwesomeIcon
-                            onClick={(e) =>
-                              handlePlyrStartPosStateChange(posArray.plyrNo, "random")
-                            }
-                            icon={faDice}
-                            size="sm"
-                            className="icon"
-                          />
-                          <Form.Control
-                            as="select"
-                            value={posArray.selected}
-                            onChange={(e) =>
-                              handlePlyrStartPosStateChange(posArray.plyrNo, e.target.value)
-                            }>
-                            <option>
-                              {posArray.selected.x},{posArray.selected.y}
-                            </option>
-                            {posArray.posArray.map((pos) => {
-                              if (pos === "random") {
-                                return <option>{pos}</option>;
-                              } else {
-                                return (
-                                  <option>
-                                    {pos.x},{pos.y}
-                                  </option>
-                                );
-                              }
-                            })}
+                          <Form.Label className="formLabel">Player {plyr.plyrNo} Team</Form.Label>
+                          <Form.Control as="select" value={plyr.team} onChange={(e) => handlePlayerTeamStateChange(plyr.plyrNo, e.target.value)}>
+                            <option>Red</option>
+                            <option>Blue</option>
                           </Form.Control>
                         </Form.Group>
                       </Row>
                     </Col>
-                  );
-                })}
-              </Row>
-            )}
+                  ))}
+                </Row>
+              )}
+
+              {props.plyrStartPosList.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {props.plyrStartPosList.map((posArray) => {
+                    return (
+                      <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+                        <Row>
+                          <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
+                            <Form.Label className="formLabel">P{posArray.plyrNo} Start Position</Form.Label>
+                            <FontAwesomeIcon
+                              onClick={props.updateSettingsCanvasData.bind(this, {
+                                type: "human_start",
+                                plyrNo: posArray.plyrNo,
+                              })}
+                              icon={faTh}
+                              size="sm"
+                              className="icon"
+                            />
+                            <FontAwesomeIcon
+                              onClick={(e) => handlePlyrStartPosStateChange(posArray.plyrNo, "random")}
+                              icon={faDice}
+                              size="sm"
+                              className="icon"
+                            />
+                            <Form.Control
+                              as="select"
+                              value={posArray.selected}
+                              onChange={(e) => handlePlyrStartPosStateChange(posArray.plyrNo, e.target.value)}>
+                              <option>
+                                {posArray.selected.x},{posArray.selected.y}
+                              </option>
+                              {posArray.posArray.map((pos) => {
+                                if (pos === "random") {
+                                  return <option>{pos}</option>;
+                                } else {
+                                  return (
+                                    <option>
+                                      {pos.x},{pos.y}
+                                    </option>
+                                  );
+                                }
+                              })}
+                            </Form.Control>
+                          </Form.Group>
+                        </Row>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              )}
             </>
           )}
 
@@ -1276,27 +1228,17 @@ const Settings = (props) => {
                     <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
                       <Row>
                         <Form.Group as={Col} controlId="playerWeapons" className="formGroup">
-                          <Form.Label className="formLabel">
-                            Player {plyr.plyrNo} Weapons (Inventory size: 4!)
-                          </Form.Label>
+                          <Form.Label className="formLabel">Player {plyr.plyrNo} Weapons (Inventory size: 4!)</Form.Label>
                           {weaponSet.map((weapon) => (
                             <Form.Check
                               type="checkbox"
                               checked={plyr.weapons.includes(weapon)}
-                              onChange={(e) =>
-                                handlePlayerWeaponsStateChange(
-                                  plyr.plyrNo,
-                                  e.target.checked,
-                                  weapon,
-                                )
-                              }
+                              onChange={(e) => handlePlayerWeaponsStateChange(plyr.plyrNo, e.target.checked, weapon)}
                               label={weapon}
                             />
                           ))}
                           <FontAwesomeIcon
-                            onClick={(e) =>
-                              handlePlayerWeaponsStateChange(plyr.plyrNo, null, "random")
-                            }
+                            onClick={(e) => handlePlayerWeaponsStateChange(plyr.plyrNo, null, "random")}
                             icon={faDice}
                             size="sm"
                             className="icon"
@@ -1314,27 +1256,17 @@ const Settings = (props) => {
                     <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
                       <Row>
                         <Form.Group as={Col} controlId="playerArmor" className="formGroup">
-                          <Form.Label className="formLabel">
-                            Player {plyr.plyrNo} Armor (Inventory size: 4!)
-                          </Form.Label>
+                          <Form.Label className="formLabel">Player {plyr.plyrNo} Armor (Inventory size: 4!)</Form.Label>
                           {armorSet.map((armor) => (
                             <Form.Check
                               type="checkbox"
                               checked={plyr.armor.includes(armor)}
-                              onChange={(e) =>
-                                handlePlayerArmorStateChange(
-                                  plyr.plyrNo,
-                                  e.target.checked,
-                                  armor,
-                                )
-                              }
+                              onChange={(e) => handlePlayerArmorStateChange(plyr.plyrNo, e.target.checked, armor)}
                               label={armor}
                             />
                           ))}
                           <FontAwesomeIcon
-                            onClick={(e) =>
-                              handlePlayerArmorStateChange(plyr.plyrNo, null, "random")
-                            }
+                            onClick={(e) => handlePlayerArmorStateChange(plyr.plyrNo, null, "random")}
                             icon={faDice}
                             size="sm"
                             className="icon"
@@ -1354,10 +1286,7 @@ const Settings = (props) => {
               <Row>
                 <Form.Group as={Col} controlId="aiCount" className="formGroup">
                   <Form.Label className="formLabel">Ai</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={aiCount.count}
-                    onChange={(e) => handleAiCountStateChange(e.target.value)}>
+                  <Form.Control as="select" value={aiCount.count} onChange={(e) => handleAiCountStateChange(e.target.value)}>
                     <option></option>
                     {aiCountOptions.map((option) => (
                       <option>{option}</option>
@@ -1366,673 +1295,523 @@ const Settings = (props) => {
                 </Form.Group>
               </Row>
 
-          {aiRandom.length > 0 && (
-            <Row className="multiAiFormBox">
-              {aiRandom.map((plyr) => (
-                <Col className="multiAiFormAi" sm={multiAiFormAiColWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="aiRandom" className="formGroup">
-                      <Form.Label className="formLabel">
-                        Ai {plyr.plyrNo} Random?
-                      </Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={plyr.random}
-                        onChange={(e) =>
-                          handleAiRandomStateChange(plyr.plyrNo, e.target.value)
-                        }>
-                        <option>random</option>
-                        <option>custom</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-          )}
+              {aiRandom.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {aiRandom.map((plyr) => (
+                    <Col className="multiAiFormAi" sm={multiAiFormAiColWidth}>
+                      <Row>
+                        <Form.Group as={Col} controlId="aiRandom" className="formGroup">
+                          <Form.Label className="formLabel">Ai {plyr.plyrNo} Random?</Form.Label>
+                          <Form.Control as="select" value={plyr.random} onChange={(e) => handleAiRandomStateChange(plyr.plyrNo, e.target.value)}>
+                            <option>random</option>
+                            <option>custom</option>
+                          </Form.Control>
+                        </Form.Group>
+                      </Row>
+                    </Col>
+                  ))}
+                </Row>
+              )}
 
-          {aiMode.length > 0 && (
-            <Row className="multiAiFormBox">
-              {aiMode.map((plyr) => (
-                <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
-                      <Form.Label className="formLabel">Ai {plyr.plyrNo} Mode</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={plyr.mode}
-                        onChange={(e) =>
-                          handleAiModeStateChange(plyr.plyrNo, e.target.value)
-                        }>
-                        <option>careful</option>
-                        <option>aggressive</option>
-                        <option>random</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          {aiWeapons.length > 0 && (
-            <Row className="multiAiFormBox">
-              {aiWeapons.map((plyr) => (
-                <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
-                      <Form.Label className="formLabel">
-                        Ai {plyr.plyrNo} Weapons (Inventory size: 4!)
-                      </Form.Label>
-                      {weaponSet.map((weapon) => (
-                        <Form.Check
-                          type="checkbox"
-                          checked={plyr.weapons.includes(weapon)}
-                          onChange={(e) =>
-                            handleAiWeaponsStateChange(
-                              plyr.plyrNo,
-                              e.target.checked,
-                              weapon,
-                            )
-                          }
-                          label={weapon}
-                        />
-                      ))}
-                      <FontAwesomeIcon
-                        onClick={(e) =>
-                          handleAiWeaponsStateChange(plyr.plyrNo, null, "random")
-                        }
-                        icon={faDice}
-                        size="sm"
-                        className="icon"
-                      />
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          {aiArmor.length > 0 && (
-            <Row className="multiAiFormBox">
-              {aiArmor.map((plyr) => (
-                <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
-                      <Form.Label className="formLabel">
-                        Ai {plyr.plyrNo} Armor (Inventory size: 4!)
-                      </Form.Label>
-                      {armorSet.map((armor) => (
-                        <Form.Check
-                          type="checkbox"
-                          checked={plyr.armor.includes(armor)}
-                          onChange={(e) =>
-                            handleAiArmorStateChange(plyr.plyrNo, e.target.checked, armor)
-                          }
-                          label={armor}
-                        />
-                      ))}
-                      <FontAwesomeIcon
-                        onClick={(e) =>
-                          handleAiArmorStateChange(plyr.plyrNo, null, "random")
-                        }
-                        icon={faDice}
-                        size="sm"
-                        className="icon"
-                      />
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          {aiMission.length > 0 && (
-            <Row className="multiAiFormBox">
-              {aiMission.map((plyr) => (
-                <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
-                      <Form.Label className="formLabel">
-                        Ai {plyr.plyrNo} Mission
-                      </Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={plyr.mission}
-                        onChange={(e) =>
-                          handleAiMissionStateChange(plyr.plyrNo, e.target.value)
-                        }>
-                        <option>pursue</option>
-                        <option>patrol</option>
-                        <option>defend</option>
-                        <option>random</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          {aiTeam.length > 0 && (
-            <Row className="multiAiFormBox">
-              {aiTeam.map((plyr) => (
-                <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
-                  <Row>
-                    <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
-                      <Form.Label className="formLabel">Ai {plyr.plyrNo} Team</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={plyr.team}
-                        onChange={(e) =>
-                          handleAiTeamStateChange(plyr.plyrNo, e.target.value)
-                        }>
-                        <option>Red</option>
-                        <option>Blue</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Row>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          {props.aiStartPosList.length > 0 && (
-            <Row className="multiAiFormBox">
-              {props.aiStartPosList.map((posArray) => {
-                if (posArray.mission === "pursue") {
-                  return (
+              {aiMode.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {aiMode.map((plyr) => (
                     <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
                       <Row>
                         <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
-                          {posArray.selected.map((selected) => {
-                            if (selected.type === "start") {
-                              return (
-                                <Form.Label className="formLabel">
-                                  Ai {posArray.plyrNo} Start Position
-                                  <FontAwesomeIcon
-                                    onClick={props.updateSettingsCanvasData.bind(this, {
-                                      type: "ai_start",
-                                      plyrNo: posArray.plyrNo,
-                                    })}
-                                    icon={faTh}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                  <FontAwesomeIcon
-                                    onClick={(e) =>
-                                      handleAiStartPosStateChange(
-                                        posArray.mission,
-                                        posArray.plyrNo,
-                                        "start",
-                                        "random",
-                                      )
-                                    }
-                                    icon={faDice}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                </Form.Label>
-                              );
-                            } else {
-                              return (
-                                <Form.Label className="formLabel">
-                                  Ai {posArray.plyrNo} Start Position
-                                  <FontAwesomeIcon
-                                    onClick={props.updateSettingsCanvasData.bind(this, {
-                                      type: "ai_start",
-                                      plyrNo: posArray.plyrNo,
-                                    })}
-                                    icon={faTh}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                  <FontAwesomeIcon
-                                    onClick={(e) =>
-                                      handleAiStartPosStateChange(
-                                        posArray.mission,
-                                        posArray.plyrNo,
-                                        "start",
-                                        "random",
-                                      )
-                                    }
-                                    icon={faDice}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                </Form.Label>
-                              );
-                            }
-                          })}
-                          <Form.Control
-                            as="select"
-                            value={posArray.selected.filter((x) => x.type === "start")[0]}
-                            onChange={(e) =>
-                              handleAiStartPosStateChange(
-                                posArray.mission,
-                                posArray.plyrNo,
-                                "start",
-                                e.target.value,
-                              )
-                            }>
-                            {posArray.selected.map((selected) => {
-                              if (selected.type === "start") {
-                                return (
-                                  <option>
-                                    {selected.cell.x},{selected.cell.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                            {posArray.posArray.map((pos) => {
-                              if (pos === "random") {
-                                return <option>{pos}</option>;
-                              } else {
-                                return (
-                                  <option>
-                                    {pos.x},{pos.y}
-                                  </option>
-                                );
-                              }
-                            })}
+                          <Form.Label className="formLabel">Ai {plyr.plyrNo} Mode</Form.Label>
+                          <Form.Control as="select" value={plyr.mode} onChange={(e) => handleAiModeStateChange(plyr.plyrNo, e.target.value)}>
+                            <option>careful</option>
+                            <option>aggressive</option>
+                            <option>random</option>
                           </Form.Control>
                         </Form.Group>
                       </Row>
                     </Col>
-                  );
-                }
+                  ))}
+                </Row>
+              )}
 
-                if (posArray.mission === "defend") {
-                  return (
+              {aiWeapons.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {aiWeapons.map((plyr) => (
                     <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
                       <Row>
                         <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
-                          {posArray.selected.map((selected) => {
-                            if (selected.type === "start") {
-                              return (
-                                <Form.Label className="formLabel">
-                                  Ai {posArray.plyrNo} Start Position
-                                  <FontAwesomeIcon
-                                    onClick={props.updateSettingsCanvasData.bind(this, {
-                                      type: "ai_start",
-                                      plyrNo: posArray.plyrNo,
-                                    })}
-                                    icon={faTh}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                  <FontAwesomeIcon
-                                    onClick={(e) =>
-                                      handleAiStartPosStateChange(
-                                        posArray.mission,
-                                        posArray.plyrNo,
-                                        "start",
-                                        "random",
-                                      )
-                                    }
-                                    icon={faDice}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                </Form.Label>
-                              );
-                            } else {
-                              // <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
-                              // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                              // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
-                              // </Form.Label>
-                            }
-                          })}
-                          <Form.Control
-                            as="select"
-                            value={posArray.selected.filter((x) => x.type === "start")[0]}
-                            onChange={(e) =>
-                              handleAiStartPosStateChange(
-                                posArray.mission,
-                                posArray.plyrNo,
-                                "start",
-                                e.target.value,
-                              )
-                            }>
-                            {posArray.selected.map((selected) => {
-                              if (selected.type === "start") {
-                                return (
-                                  <option>
-                                    {selected.cell.x},{selected.cell.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                            {posArray.posArray.map((pos) => {
-                              if (pos === "random") {
-                                return <option>{pos}</option>;
-                              } else {
-                                return (
-                                  <option>
-                                    {pos.x},{pos.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                          </Form.Control>
-                        </Form.Group>
-                      </Row>
-                      <Row>
-                        <Form.Group
-                          as={Col}
-                          controlId="aiDefendPos"
-                          className="formGroup">
-                          {posArray.selected.map((selected) => {
-                            if (selected.type === "defend") {
-                              return (
-                                <Form.Label className="formLabel">
-                                  Ai {posArray.plyrNo} {posArray.mission} Position
-                                  <FontAwesomeIcon
-                                    onClick={props.updateSettingsCanvasData.bind(this, {
-                                      type: "ai_defend",
-                                      plyrNo: posArray.plyrNo,
-                                    })}
-                                    icon={faTh}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                  <FontAwesomeIcon
-                                    onClick={(e) =>
-                                      handleAiStartPosStateChange(
-                                        posArray.mission,
-                                        posArray.plyrNo,
-                                        "defend",
-                                        "random",
-                                      )
-                                    }
-                                    icon={faDice}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                </Form.Label>
-                              );
-                            } else {
-                              // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position
-                              // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_defend',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                              // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend','random')} icon={faDice} size="sm" className="icon"/>
-                              // </Form.Label>
-                            }
-                          })}
-                          <Form.Control
-                            as="select"
-                            value={
-                              posArray.selected.filter((x) => x.type === "defend")[0]
-                            }
-                            onChange={(e) =>
-                              handleAiStartPosStateChange(
-                                posArray.mission,
-                                posArray.plyrNo,
-                                "defend",
-                                e.target.value,
-                              )
-                            }>
-                            {posArray.selected.map((selected) => {
-                              if (selected.type === "defend") {
-                                return (
-                                  <option>
-                                    {selected.cell.x},{selected.cell.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                            {posArray.posArray.map((pos) => {
-                              if (pos === "random") {
-                                return <option>{pos}</option>;
-                              } else {
-                                return (
-                                  <option>
-                                    {pos.x},{pos.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                          </Form.Control>
+                          <Form.Label className="formLabel">Ai {plyr.plyrNo} Weapons (Inventory size: 4!)</Form.Label>
+                          {weaponSet.map((weapon) => (
+                            <Form.Check
+                              type="checkbox"
+                              checked={plyr.weapons.includes(weapon)}
+                              onChange={(e) => handleAiWeaponsStateChange(plyr.plyrNo, e.target.checked, weapon)}
+                              label={weapon}
+                            />
+                          ))}
+                          <FontAwesomeIcon
+                            onClick={(e) => handleAiWeaponsStateChange(plyr.plyrNo, null, "random")}
+                            icon={faDice}
+                            size="sm"
+                            className="icon"
+                          />
                         </Form.Group>
                       </Row>
                     </Col>
-                  );
-                }
+                  ))}
+                </Row>
+              )}
 
-                if (posArray.mission === "patrol") {
-                  return (
+              {aiArmor.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {aiArmor.map((plyr) => (
                     <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
                       <Row>
-                        <Form.Group
-                          as={Col}
-                          controlId="aiStartPos1"
-                          className="formGroup">
-                          {posArray.selected.map((selected) => {
-                            if (selected.type === "start") {
-                              return (
-                                <Form.Label className="formLabel">
-                                  Ai {posArray.plyrNo} Start Position
-                                  <FontAwesomeIcon
-                                    onClick={props.updateSettingsCanvasData.bind(this, {
-                                      type: "ai_start",
-                                      plyrNo: posArray.plyrNo,
-                                    })}
-                                    icon={faTh}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                  <FontAwesomeIcon
-                                    onClick={(e) =>
-                                      handleAiStartPosStateChange(
-                                        posArray.mission,
-                                        posArray.plyrNo,
-                                        "start",
-                                        "random",
-                                      )
-                                    }
-                                    icon={faDice}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                </Form.Label>
-                              );
-                            } else {
-                              // <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
-                              // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                              // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
-                              // </Form.Label>
-                            }
-                          })}
-                          <Form.Control
-                            as="select"
-                            value={posArray.selected.filter((x) => x.type === "start")[0]}
-                            onChange={(e) =>
-                              handleAiStartPosStateChange(
-                                posArray.mission,
-                                posArray.plyrNo,
-                                "start",
-                                e.target.value,
-                              )
-                            }>
-                            {posArray.selected.map((selected) => {
-                              if (selected.type === "start") {
-                                return (
-                                  <option>
-                                    {selected.cell.x},{selected.cell.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                            {posArray.posArray.map((pos) => {
-                              if (pos === "random") {
-                                return <option>{pos}</option>;
-                              } else {
-                                return (
-                                  <option>
-                                    {pos.x},{pos.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                          </Form.Control>
+                        <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                          <Form.Label className="formLabel">Ai {plyr.plyrNo} Armor (Inventory size: 4!)</Form.Label>
+                          {armorSet.map((armor) => (
+                            <Form.Check
+                              type="checkbox"
+                              checked={plyr.armor.includes(armor)}
+                              onChange={(e) => handleAiArmorStateChange(plyr.plyrNo, e.target.checked, armor)}
+                              label={armor}
+                            />
+                          ))}
+                          <FontAwesomeIcon
+                            onClick={(e) => handleAiArmorStateChange(plyr.plyrNo, null, "random")}
+                            icon={faDice}
+                            size="sm"
+                            className="icon"
+                          />
                         </Form.Group>
-                        <Form.Group
-                          as={Col}
-                          controlId="aiPatrolPos1"
-                          className="formGroup">
-                          {posArray.selected.map((selected) => {
-                            if (selected.type === "patrol1") {
-                              return (
-                                <Form.Label className="formLabel">
-                                  Ai {posArray.plyrNo} {posArray.mission} Position 1
-                                  <FontAwesomeIcon
-                                    onClick={props.updateSettingsCanvasData.bind(this, {
-                                      type: "ai_patrol1",
-                                      plyrNo: posArray.plyrNo,
-                                    })}
-                                    icon={faTh}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                  <FontAwesomeIcon
-                                    onClick={(e) =>
-                                      handleAiStartPosStateChange(
-                                        posArray.mission,
-                                        posArray.plyrNo,
-                                        "patrol1",
-                                        "random",
-                                      )
-                                    }
-                                    icon={faDice}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                </Form.Label>
-                              );
-                            } else {
-                              // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1
-                              //   <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                              //   <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faDice} size="sm" className="icon"/>
-                              // </Form.Label>
-                            }
-                          })}
-                          <Form.Control
-                            as="select"
-                            value={
-                              posArray.selected.filter((x) => x.type === "patrol1")[0]
-                            }
-                            onChange={(e) =>
-                              handleAiStartPosStateChange(
-                                posArray.mission,
-                                posArray.plyrNo,
-                                "patrol1",
-                                e.target.value,
-                              )
-                            }>
-                            {posArray.selected.map((selected) => {
-                              if (selected.type === "patrol1") {
-                                return (
-                                  <option>
-                                    {selected.cell.x},{selected.cell.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                            {posArray.posArray.map((pos) => {
-                              if (pos === "random") {
-                                return <option>{pos}</option>;
-                              } else {
-                                return (
-                                  <option>
-                                    {pos.x},{pos.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                          </Form.Control>
-                        </Form.Group>
-                        <Form.Group
-                          as={Col}
-                          controlId="aiPatrolPos2"
-                          className="formGroup">
-                          {posArray.selected.map((selected) => {
-                            if (selected.type === "patrol2") {
-                              return (
-                                <Form.Label className="formLabel">
-                                  Ai {posArray.plyrNo} {posArray.mission} Position 2
-                                  <FontAwesomeIcon
-                                    onClick={props.updateSettingsCanvasData.bind(this, {
-                                      type: "ai_patrol2",
-                                      plyrNo: posArray.plyrNo,
-                                    })}
-                                    icon={faTh}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                  <FontAwesomeIcon
-                                    onClick={(e) =>
-                                      handleAiStartPosStateChange(
-                                        posArray.mission,
-                                        posArray.plyrNo,
-                                        "patrol2",
-                                        "random",
-                                      )
-                                    }
-                                    icon={faDice}
-                                    size="sm"
-                                    className="icon"
-                                  />
-                                </Form.Label>
-                              );
-                            } else {
-                              // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2
-                              // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                              // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faDice} size="sm" className="icon"/>
-                              // </Form.Label>
-                            }
-                          })}
-                          <Form.Control
-                            as="select"
-                            value={
-                              posArray.selected.filter((x) => x.type === "patrol2")[0]
-                            }
-                            onChange={(e) =>
-                              handleAiStartPosStateChange(
-                                posArray.mission,
-                                posArray.plyrNo,
-                                "patrol2",
-                                e.target.value,
-                              )
-                            }>
-                            {posArray.selected.map((selected) => {
-                              if (selected.type === "patrol2") {
-                                return (
-                                  <option>
-                                    {selected.cell.x},{selected.cell.y}
-                                  </option>
-                                );
-                              }
-                            })}
-                            {posArray.posArray.map((pos) => {
-                              if (pos === "random") {
-                                return <option>{pos}</option>;
-                              } else {
-                                return (
-                                  <option>
-                                    {pos.x},{pos.y}
-                                  </option>
-                                );
-                              }
-                            })}
+                      </Row>
+                    </Col>
+                  ))}
+                </Row>
+              )}
+
+              {aiMission.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {aiMission.map((plyr) => (
+                    <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                      <Row>
+                        <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                          <Form.Label className="formLabel">Ai {plyr.plyrNo} Mission</Form.Label>
+                          <Form.Control as="select" value={plyr.mission} onChange={(e) => handleAiMissionStateChange(plyr.plyrNo, e.target.value)}>
+                            <option>pursue</option>
+                            <option>patrol</option>
+                            <option>defend</option>
+                            <option>random</option>
                           </Form.Control>
                         </Form.Group>
                       </Row>
                     </Col>
-                  );
-                }
-              })}
-            </Row>
-          )}
+                  ))}
+                </Row>
+              )}
 
+              {aiTeam.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {aiTeam.map((plyr) => (
+                    <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                      <Row>
+                        <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                          <Form.Label className="formLabel">Ai {plyr.plyrNo} Team</Form.Label>
+                          <Form.Control as="select" value={plyr.team} onChange={(e) => handleAiTeamStateChange(plyr.plyrNo, e.target.value)}>
+                            <option>Red</option>
+                            <option>Blue</option>
+                          </Form.Control>
+                        </Form.Group>
+                      </Row>
+                    </Col>
+                  ))}
+                </Row>
+              )}
+
+              {props.aiStartPosList.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {props.aiStartPosList.map((posArray) => {
+                    if (posArray.mission === "pursue") {
+                      return (
+                        <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                          <Row>
+                            <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                              {posArray.selected.map((selected) => {
+                                if (selected.type === "start") {
+                                  return (
+                                    <Form.Label className="formLabel">
+                                      Ai {posArray.plyrNo} Start Position
+                                      <FontAwesomeIcon
+                                        onClick={props.updateSettingsCanvasData.bind(this, {
+                                          type: "ai_start",
+                                          plyrNo: posArray.plyrNo,
+                                        })}
+                                        icon={faTh}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                      <FontAwesomeIcon
+                                        onClick={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "start", "random")}
+                                        icon={faDice}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                    </Form.Label>
+                                  );
+                                } else {
+                                  return (
+                                    <Form.Label className="formLabel">
+                                      Ai {posArray.plyrNo} Start Position
+                                      <FontAwesomeIcon
+                                        onClick={props.updateSettingsCanvasData.bind(this, {
+                                          type: "ai_start",
+                                          plyrNo: posArray.plyrNo,
+                                        })}
+                                        icon={faTh}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                      <FontAwesomeIcon
+                                        onClick={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "start", "random")}
+                                        icon={faDice}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                    </Form.Label>
+                                  );
+                                }
+                              })}
+                              <Form.Control
+                                as="select"
+                                value={posArray.selected.filter((x) => x.type === "start")[0]}
+                                onChange={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "start", e.target.value)}>
+                                {posArray.selected.map((selected) => {
+                                  if (selected.type === "start") {
+                                    return (
+                                      <option>
+                                        {selected.cell.x},{selected.cell.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                                {posArray.posArray.map((pos) => {
+                                  if (pos === "random") {
+                                    return <option>{pos}</option>;
+                                  } else {
+                                    return (
+                                      <option>
+                                        {pos.x},{pos.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                              </Form.Control>
+                            </Form.Group>
+                          </Row>
+                        </Col>
+                      );
+                    }
+
+                    if (posArray.mission === "defend") {
+                      return (
+                        <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                          <Row>
+                            <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                              {posArray.selected.map((selected) => {
+                                if (selected.type === "start") {
+                                  return (
+                                    <Form.Label className="formLabel">
+                                      Ai {posArray.plyrNo} Start Position
+                                      <FontAwesomeIcon
+                                        onClick={props.updateSettingsCanvasData.bind(this, {
+                                          type: "ai_start",
+                                          plyrNo: posArray.plyrNo,
+                                        })}
+                                        icon={faTh}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                      <FontAwesomeIcon
+                                        onClick={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "start", "random")}
+                                        icon={faDice}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                    </Form.Label>
+                                  );
+                                } else {
+                                  // <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                                  // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                                  // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
+                                  // </Form.Label>
+                                }
+                              })}
+                              <Form.Control
+                                as="select"
+                                value={posArray.selected.filter((x) => x.type === "start")[0]}
+                                onChange={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "start", e.target.value)}>
+                                {posArray.selected.map((selected) => {
+                                  if (selected.type === "start") {
+                                    return (
+                                      <option>
+                                        {selected.cell.x},{selected.cell.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                                {posArray.posArray.map((pos) => {
+                                  if (pos === "random") {
+                                    return <option>{pos}</option>;
+                                  } else {
+                                    return (
+                                      <option>
+                                        {pos.x},{pos.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                              </Form.Control>
+                            </Form.Group>
+                          </Row>
+                          <Row>
+                            <Form.Group as={Col} controlId="aiDefendPos" className="formGroup">
+                              {posArray.selected.map((selected) => {
+                                if (selected.type === "defend") {
+                                  return (
+                                    <Form.Label className="formLabel">
+                                      Ai {posArray.plyrNo} {posArray.mission} Position
+                                      <FontAwesomeIcon
+                                        onClick={props.updateSettingsCanvasData.bind(this, {
+                                          type: "ai_defend",
+                                          plyrNo: posArray.plyrNo,
+                                        })}
+                                        icon={faTh}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                      <FontAwesomeIcon
+                                        onClick={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "defend", "random")}
+                                        icon={faDice}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                    </Form.Label>
+                                  );
+                                } else {
+                                  // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position
+                                  // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_defend',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                                  // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend','random')} icon={faDice} size="sm" className="icon"/>
+                                  // </Form.Label>
+                                }
+                              })}
+                              <Form.Control
+                                as="select"
+                                value={posArray.selected.filter((x) => x.type === "defend")[0]}
+                                onChange={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "defend", e.target.value)}>
+                                {posArray.selected.map((selected) => {
+                                  if (selected.type === "defend") {
+                                    return (
+                                      <option>
+                                        {selected.cell.x},{selected.cell.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                                {posArray.posArray.map((pos) => {
+                                  if (pos === "random") {
+                                    return <option>{pos}</option>;
+                                  } else {
+                                    return (
+                                      <option>
+                                        {pos.x},{pos.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                              </Form.Control>
+                            </Form.Group>
+                          </Row>
+                        </Col>
+                      );
+                    }
+
+                    if (posArray.mission === "patrol") {
+                      return (
+                        <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                          <Row>
+                            <Form.Group as={Col} controlId="aiStartPos1" className="formGroup">
+                              {posArray.selected.map((selected) => {
+                                if (selected.type === "start") {
+                                  return (
+                                    <Form.Label className="formLabel">
+                                      Ai {posArray.plyrNo} Start Position
+                                      <FontAwesomeIcon
+                                        onClick={props.updateSettingsCanvasData.bind(this, {
+                                          type: "ai_start",
+                                          plyrNo: posArray.plyrNo,
+                                        })}
+                                        icon={faTh}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                      <FontAwesomeIcon
+                                        onClick={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "start", "random")}
+                                        icon={faDice}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                    </Form.Label>
+                                  );
+                                } else {
+                                  // <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                                  // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                                  // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
+                                  // </Form.Label>
+                                }
+                              })}
+                              <Form.Control
+                                as="select"
+                                value={posArray.selected.filter((x) => x.type === "start")[0]}
+                                onChange={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "start", e.target.value)}>
+                                {posArray.selected.map((selected) => {
+                                  if (selected.type === "start") {
+                                    return (
+                                      <option>
+                                        {selected.cell.x},{selected.cell.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                                {posArray.posArray.map((pos) => {
+                                  if (pos === "random") {
+                                    return <option>{pos}</option>;
+                                  } else {
+                                    return (
+                                      <option>
+                                        {pos.x},{pos.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                              </Form.Control>
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="aiPatrolPos1" className="formGroup">
+                              {posArray.selected.map((selected) => {
+                                if (selected.type === "patrol1") {
+                                  return (
+                                    <Form.Label className="formLabel">
+                                      Ai {posArray.plyrNo} {posArray.mission} Position 1
+                                      <FontAwesomeIcon
+                                        onClick={props.updateSettingsCanvasData.bind(this, {
+                                          type: "ai_patrol1",
+                                          plyrNo: posArray.plyrNo,
+                                        })}
+                                        icon={faTh}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                      <FontAwesomeIcon
+                                        onClick={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "patrol1", "random")}
+                                        icon={faDice}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                    </Form.Label>
+                                  );
+                                } else {
+                                  // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1
+                                  //   <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                                  //   <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faDice} size="sm" className="icon"/>
+                                  // </Form.Label>
+                                }
+                              })}
+                              <Form.Control
+                                as="select"
+                                value={posArray.selected.filter((x) => x.type === "patrol1")[0]}
+                                onChange={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "patrol1", e.target.value)}>
+                                {posArray.selected.map((selected) => {
+                                  if (selected.type === "patrol1") {
+                                    return (
+                                      <option>
+                                        {selected.cell.x},{selected.cell.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                                {posArray.posArray.map((pos) => {
+                                  if (pos === "random") {
+                                    return <option>{pos}</option>;
+                                  } else {
+                                    return (
+                                      <option>
+                                        {pos.x},{pos.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                              </Form.Control>
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="aiPatrolPos2" className="formGroup">
+                              {posArray.selected.map((selected) => {
+                                if (selected.type === "patrol2") {
+                                  return (
+                                    <Form.Label className="formLabel">
+                                      Ai {posArray.plyrNo} {posArray.mission} Position 2
+                                      <FontAwesomeIcon
+                                        onClick={props.updateSettingsCanvasData.bind(this, {
+                                          type: "ai_patrol2",
+                                          plyrNo: posArray.plyrNo,
+                                        })}
+                                        icon={faTh}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                      <FontAwesomeIcon
+                                        onClick={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "patrol2", "random")}
+                                        icon={faDice}
+                                        size="sm"
+                                        className="icon"
+                                      />
+                                    </Form.Label>
+                                  );
+                                } else {
+                                  // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2
+                                  // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                                  // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faDice} size="sm" className="icon"/>
+                                  // </Form.Label>
+                                }
+                              })}
+                              <Form.Control
+                                as="select"
+                                value={posArray.selected.filter((x) => x.type === "patrol2")[0]}
+                                onChange={(e) => handleAiStartPosStateChange(posArray.mission, posArray.plyrNo, "patrol2", e.target.value)}>
+                                {posArray.selected.map((selected) => {
+                                  if (selected.type === "patrol2") {
+                                    return (
+                                      <option>
+                                        {selected.cell.x},{selected.cell.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                                {posArray.posArray.map((pos) => {
+                                  if (pos === "random") {
+                                    return <option>{pos}</option>;
+                                  } else {
+                                    return (
+                                      <option>
+                                        {pos.x},{pos.y}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                              </Form.Control>
+                            </Form.Group>
+                          </Row>
+                        </Col>
+                      );
+                    }
+                  })}
+                </Row>
+              )}
             </>
           )}
 
@@ -2180,7 +1959,9 @@ const Settings = (props) => {
                       });
                     }}>
                     {backgroundThemeOptions.map((theme) => (
-                      <option key={theme} value={theme}>{theme.replace(/_/g, " ")}</option>
+                      <option key={theme} value={theme}>
+                        {theme.replace(/_/g, " ")}
+                      </option>
                     ))}
                   </Form.Control>
                 </Form.Group>
@@ -2207,12 +1988,7 @@ const Settings = (props) => {
                 <h3 className="settingsHeading">
                   Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
                 </h3>
-                <canvas
-                  width={props.canvasWidth}
-                  height={props.canvasHeight}
-                  ref={props.canvasRef}
-                  className="settingsCanvas"
-                />
+                <canvas width={props.canvasWidth} height={props.canvasHeight} ref={props.canvasRef} className="settingsCanvas" />
               </div>
               {/* AI start position canvas */}
               {props.showCanvasData.field?.split("_")[0] === "ai" && (
