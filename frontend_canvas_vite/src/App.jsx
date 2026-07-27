@@ -17,6 +17,7 @@ import {
   faChessBoard,
   faExclamationTriangle,
   faCheckSquare,
+  faTerminal,
 } from "@fortawesome/free-solid-svg-icons";
 
 import bgCompass from "./assets/bgCompass.png";
@@ -31,6 +32,7 @@ import CellInfo from "./utils/components/cellInfo";
 import Loading from "./utils/components/loading";
 import AiStatus from "./utils/components/aiStatus";
 import CameraControl from "./utils/components/cameraControl";
+import LiveLogWindow from "./utils/components/liveLogWindow";
 
 // IMAGES_GRAPHICS
 import { initialState, applyConstructorDefaults } from "./data/appState";
@@ -243,6 +245,15 @@ class App extends Component {
     this.openSettings = (...args) => openSettings(this, ...args);
     this.cancelSettings = (...args) => cancelSettings(this, ...args);
     this.toggleDebugMenu = (...args) => toggleDebugMenu(this, ...args);
+    this.toggleLiveLog = () => this.setState({ showLiveLog: !this.state.showLiveLog });
+    this.clearLogBuffer = () => {
+      this.logBuffer = [];
+      this.setState({});
+    };
+    this.toggleLogFilterMode = () => {
+      this.logFilterMode = this.logFilterMode === "all" ? "filtered" : "all";
+      this.setState({});
+    };
 
     // SETTINGS
     this.loadSettings = (...args) => loadSettings(this, ...args);
@@ -608,6 +619,19 @@ class App extends Component {
                   <FontAwesomeIcon icon={faUndo} size="sm" className="setSwitchIcon" />
                 </OverlayTrigger>
               </a>
+              <a className={`setSwitchLink ${this.state.showLiveLog === true ? "cameraModeHighlighted" : ""}`} onClick={this.toggleLiveLog}>
+                <OverlayTrigger
+                  placement={"top"}
+                  overlay={
+                    <Popover id={`popover-positioned-${"top"}`}>
+                      <Popover.Body>
+                        <strong>Live Log Window</strong>
+                      </Popover.Body>
+                    </Popover>
+                  }>
+                  <FontAwesomeIcon icon={faTerminal} size="sm" className="setSwitchIcon" />
+                </OverlayTrigger>
+              </a>
             </div>
             {/* // CAMERA BOX */}
             {this.camera.state === true && (
@@ -653,6 +677,16 @@ class App extends Component {
             {/* // DEBUG/LOG BOX */}
             {this.state.showDebugMenu === true && (
               <DebugMenu loggingSettings={this.loggingSettings} updateLoggingSettings={this.toggleDebugMenu} onClose={this.toggleDebugMenu} />
+            )}
+            {/* // LIVE LOG WINDOW */}
+            {this.state.showLiveLog === true && (
+              <LiveLogWindow
+                logBuffer={this.logBuffer}
+                logFilterMode={this.logFilterMode}
+                onClose={this.toggleLiveLog}
+                onClear={this.clearLogBuffer}
+                onToggleFilter={this.toggleLogFilterMode}
+              />
             )}
           </div>
           {this.state.showSettings === true && (

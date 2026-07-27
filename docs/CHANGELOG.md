@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.1-3] — 2026-07-26
+
+### Added
+
+- **Live Log Window** — New in-game debug overlay positioned at bottom-left for viewing real-time `globalLogger` output:
+  - `App.jsx` — Added `faTerminal` icon toggle in settings bar; wired `toggleLiveLog`, `clearLogBuffer`, and `toggleLogFilterMode` handlers
+  - `appState.js` — Added `showLiveLog: false` to initial state; `app.logBuffer = []` and `app.logFilterMode = "filtered"` to constructor defaults
+  - `globalLogger.js` — Refactored to always push structured entries (`id`, `type`, `message`, `data`, `origin`, `time`, `passed`) to `app.logBuffer` (max 500 entries, FIFO eviction), enabling the Live Log window to display entries regardless of filter state
+  - `liveLogWindow.jsx` — New React component with category-colored badges, expandable detail rows (origin, data), auto-scroll, and Filtered/All mode toggle
+  - `liveLogWindow.css` — Styled to match the game UI theme (dark panel with leather trim, monospace font)
+
 ## [0.0.1-2] — 2026-07-19
 
 ### Added

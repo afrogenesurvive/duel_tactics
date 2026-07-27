@@ -1,11 +1,5 @@
-// app.globalLogger(
-//   "player.movement",
-//   "outOfStamina",
-//   {
-//     plyr_no: player.number,
-//   },
-//   { fn: "checkMoveInput", line: 74 },
-// );
+const LOG_BUFFER_MAX = 500;
+let nextLogId = 0;
 
 export function globalLogger(app, type, message, data, origin) {
   // type is a loggingSettings path, e.g. "player.movement"
@@ -22,7 +16,26 @@ export function globalLogger(app, type, message, data, origin) {
     setting = setting[part];
   }
 
-  if (setting !== true) {
+  const passed = setting === true;
+
+  // Always push to buffer for Live Log window (regardless of filter)
+  const entry = {
+    id: nextLogId++,
+    type,
+    message: message || type,
+    data: data ? { ...data } : undefined,
+    origin: origin ? { ...origin } : undefined,
+    time: app.time,
+    passed,
+  };
+  if (Array.isArray(app.logBuffer)) {
+    app.logBuffer.push(entry);
+    if (app.logBuffer.length > LOG_BUFFER_MAX) {
+      app.logBuffer.shift();
+    }
+  }
+
+  if (!passed) {
     return;
   }
 

@@ -10,6 +10,7 @@ export const initialState = {
   showSettings: true,
   showAiStatus: false,
   showDebugMenu: false,
+  showLiveLog: false,
   canvas: undefined,
   context: undefined,
   canvas2: undefined,
@@ -885,6 +886,10 @@ export function applyConstructorDefaults(app) {
   } else {
     app.loggingSettings = getDefaultLoggingSettings();
   }
+
+  // LIVE LOG BUFFER
+  app.logBuffer = [];
+  app.logFilterMode = "filtered";
 
   // CELL INFO
   app.showCellInfoBox = false;
