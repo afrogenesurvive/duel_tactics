@@ -115,7 +115,11 @@ export function checkAttacking(app, player) {
         player.action = "attacking";
 
         // APPLY BLUNT ATTACK
-        if (player.dodging.countState === true || player.dodging.state === true || app.keyPressed[player.number - 1].dodge === true) {
+        // (gated during camera/assess mode — held dodge can't convert attack to blunt)
+        if (
+          app.camera.state !== true &&
+          (player.dodging.countState === true || player.dodging.state === true || app.keyPressed[player.number - 1].dodge === true)
+        ) {
           // console.log("was attacking then pressed dodging. blunt attack");
 
           if (player.attacking.blunt !== true) {

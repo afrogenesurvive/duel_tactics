@@ -108,7 +108,11 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
   app.mouseMoving = false;
 
   // DEFLECTED PLAYER CAN'T DO ANYTHING!!
-  if (player.success.deflected.state === false && player.dead.state !== true && app.camera.state !== true) {
+  // NOTE (assess mode): camera/assess mode no longer blocks this block — action
+  // progression must keep running so in-flight actions COMPLETE. New player/AI
+  // action STARTS are gated below at checkMoveCancel / checkFeintsCancels /
+  // checkMoveInput / checkNonMoveInput / aiEvaluate.
+  if (player.success.deflected.state === false && player.dead.state !== true) {
     // AI STRAFE SWITCH ON!!
     if (player.ai.state === true && app.keyPressed[player.number - 1]) {
       if (app.keyPressed[player.number - 1].strafe === true) {
@@ -116,10 +120,12 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
       }
     }
 
-    // ── MOVE CANCEL ─────────────────────────────────────────
+    // ── MOVE CANCEL / DASH INIT ─────────────────────────────
     // Skip move-cancel logic while dashing — the dash has its
     // own feint/cancel handling inside checkDashing.
-    if (player.dashing.state !== true && player.dashing.postDash.state !== true) {
+    // During camera/assess mode this is gated too: no move cancels and no new
+    // dash initiations (in-flight moves still complete via checkMoveProgress).
+    if (player.dashing.state !== true && player.dashing.postDash.state !== true && app.camera.state !== true) {
       checkMoveCancel(app, player, nextPosition);
     }
 
@@ -322,7 +328,10 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
       }
 
       // KEY PRESS RELEASE CHECKS!!
-      checkFeintsCancels("", app, player);
+      // (gated during camera/assess mode so in-flight actions complete uncancelled)
+      if (app.camera.state !== true) {
+        checkFeintsCancels("", app, player);
+      }
 
       // CELL BY CELL MOVEMENT DELAY COUNTER!
       if (player.newMoveDelay.state === true) {
@@ -358,7 +367,10 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
         }
       }
       // PUSH KEY RELEASE
-      checkFeintsCancels("push", app, player);
+      // (gated during camera/assess mode so push/pull resolves uncancelled)
+      if (app.camera.state !== true) {
+        checkFeintsCancels("push", app, player);
+      }
 
       // PULL CHECK
       if (player.postPull.state === true) {
@@ -421,6 +433,7 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
       // trajectory is fixed once started. Only post-dash
       // cooldown or full completion allows new move commands.
       if (
+        app.camera.state !== true &&
         player.attacking.state === false &&
         player.defending.state === false &&
         player.action !== "attacking" &&
@@ -450,6 +463,7 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
       // Non-move inputs (attack, defend, dodge, etc.) are also
       // blocked during dash and post-dash cooldown.
       if (
+        app.camera.state !== true &&
         player.moving.state !== true &&
         player.dashing.state !== true &&
         player.dashing.postDash.state !== true &&
@@ -699,7 +713,10 @@ export function playerUpdate(app, player, canvas, context, canvas2, context2, ca
   app.players[player.number - 1] = player;
 
   // AI EVALUATE
-  if (player.ai.state === true) {
+  // (gated during camera/assess mode — AI finishes in-flight actions but cannot
+  //  start new ones; aiAct only sets keyPressed flags which the gated input
+  //  checks consume, so no new AI moves/attacks/defends can begin)
+  if (player.ai.state === true && app.camera.state !== true) {
     app.aiEvaluate(player);
   }
 

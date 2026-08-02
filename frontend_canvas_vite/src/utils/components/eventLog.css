@@ -13,7 +13,7 @@
   background: rgba(20, 20, 28, 0.95);
   border: 2px solid #582f0e;
   border-radius: 6px 6px 0 0;
-  z-index: 3;
+  z-index: 6; /* above assess-mode overlay (5), below main menu (1000) */
   font-family: "Courier New", Courier, monospace;
   font-size: 11px;
   color: #e0e0e0;

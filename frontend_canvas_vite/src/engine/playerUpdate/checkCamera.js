@@ -80,16 +80,17 @@ export function checkCamera(app, player, canvas, context) {
     // console.log('welcome to input camera mode');
 
     let canStart = true;
-    if (
+    const autoCamBusy =
       app.camera.instructions.length > 0 ||
       app.camera.preInstructions.length > 0 ||
       app.settingAutoCamera === true ||
-      app.autoCamPanWaitingForPath === true
-      // app.toggleCameraMode === false
-    ) {
-      canStart = false;
-    }
-    if (app.camera.customView.state === false) {
+      app.autoCamPanWaitingForPath === true;
+
+    if (autoCamBusy === true) {
+      // Auto camera is running — cancel it and engage assess mode at the
+      // current view (skipping the view-at-default requirement).
+      app.resetAutoCamera();
+    } else if (app.camera.customView.state === false) {
       if (app.camera.zoom.x - 1 > app.zoomThresh || app.camera.zoom.x - 1 < app.zoomThresh) {
         canStart = false;
       }
@@ -112,14 +113,14 @@ export function checkCamera(app, player, canvas, context) {
     }
     if (canStart === false) {
       app.camera.startCount = 0;
-      console.log("auto cam is probably engaged. Can't start input cam");
+      console.log("camera is not at the default view. Can't start input cam");
       if (app.camInputNotifyShown !== true) {
         app.camInputNotifyShown = true;
         if (app?.addNotification) {
-          app.addNotification("Can't start input camera — auto camera is engaged", "warn");
+          app.addNotification("Can't start input camera — camera is not at the default view", "warn");
         }
         if (app?.addEventLog) {
-          app.addEventLog("Can't start input camera (auto camera engaged)", "system");
+          app.addEventLog("Can't start input camera (camera not at default view)", "system");
         }
       }
     }

@@ -99,6 +99,7 @@ import { addNotification } from "./utils/functions/misc/addNotification";
 import { closeCamera } from "./utils/functions/camera/closeCamera";
 import { menuToggleCamera } from "./utils/functions/camera/menuToggleCamera";
 import { preResetCamera } from "./utils/functions/camera/preResetCamera";
+import { resetAutoCamera } from "./utils/functions/camera/resetAutoCamera";
 import { setAutoCamera } from "./utils/functions/camera/setAutoCamera";
 import { setCameraFocus } from "./utils/functions/camera/setCameraFocus";
 import { setZoomPan } from "./utils/functions/camera/setZoomPan";
@@ -295,6 +296,7 @@ class App extends Component {
     this.closeCamera = (...args) => closeCamera(this, ...args);
     this.menuToggleCamera = (...args) => menuToggleCamera(this, ...args);
     this.preResetCamera = (...args) => preResetCamera(this, ...args);
+    this.resetAutoCamera = (...args) => resetAutoCamera(this, ...args);
     this.setAutoCamera = (...args) => setAutoCamera(this, ...args);
     this.setCameraFocus = (...args) => setCameraFocus(this, ...args);
     this.setZoomPan = (...args) => setZoomPan(this, ...args);
@@ -540,6 +542,12 @@ class App extends Component {
           <div className={this.state.containerInnerClass}>
             <canvas width={this.canvasWidth} height={this.canvasHeight} ref={this.canvasRef} className="canvas" />
             <canvas width={this.canvasWidth} height={this.canvasHeight} ref={this.canvasRef2} className="canvas2" />
+            {/* // ASSESS MODE OVERLAY */}
+            {this.camera.state === true && (
+              <div className="assessModeOverlay">
+                <div className="assessModeLabel">ASSESS MODE — Assess the Battlefield</div>
+              </div>
+            )}
             {/* // PLAYER STATUS UI */}
             {this.settingsFormUiData?.showPlayerStatusUI !== false && (
               <>

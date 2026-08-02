@@ -251,7 +251,8 @@ export function checkFlanking(app, player, keyPressedDirection, nextPosition) {
     }
   }
   // START
-  if (app.keyPressed[player.number - 1].dodge === true && player.flanking.state !== true && player.attacking.state !== true) {
+  // (gated during camera/assess mode — no new flanks can start)
+  if (app.camera.state !== true && app.keyPressed[player.number - 1].dodge === true && player.flanking.state !== true && player.attacking.state !== true) {
     if (
       app.keyPressed[player.number - 1].north === true ||
       app.keyPressed[player.number - 1].south === true ||

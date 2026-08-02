@@ -1,0 +1,113 @@
+CAMERA SYSTEMS REVIEW (Duel Tactics frontend_canvas_vite)
+Reviewed: 2026-08-02
+
+=====================================================================
+1. OVERVIEW
+=====================================================================
+Two mutually exclusive camera modes share one state object (app.camera):
+  A) INPUT CAMERA / ASSESS MODE  -> app.camera.state === true, fixed=true
+     Player browses the battlefield with zoom (N/S) and pan (E/W/N/S).
+     Entered via the main-menu camera toggle (menuToggleCamera) or key "6"
+     (app.toggleCameraMode, with a 4-frame startCount delay). mode switches
+     zoom/pan via attack/defend keys or the CameraControl UI; dodge toggles
+     the customView. While engaged:
+        - in-flight player + AI actions COMPLETE (progression keeps running)
+        - NO new player input or AI action can START (starters are gated)
+        - already-moving projectiles keep flying and resolving damage
+        - a flashing "ASSESS MODE" overlay + label is shown
+  B) AUTO CAMERA                  -> app.settingAutoCamera === true
+     Scripted zoom/pan (preInstructions + instructions) that follows combat
+     (attackFocus/defendFocus), bolts (followBolt), spawns (playerSpawnFocus)
+     or resets (zoomReset). Runs only when camera.state !== true && !fixed.
+     Engaging assess mode while auto-cam runs CANCELS the auto-cam
+     (resetAutoCamera) and enters assess mode at the current view.
+Projectiles are tracked OUTSIDE the camera gate (playerUpdate ->
+projectileTracker), so they always continue moving regardless of camera mode.
+
+=====================================================================
+2. STATE (data/appState.js ~1250-1357)
+=====================================================================
+app.camera: state, startCount/startLimit(4), mode(pan|zoom), fixed,
+  target, focus, focusCell, cellToPanOrigin, zoom{x,y}, zoomDirection,
+  pan{x,y}, panDirection, adjustedPan, zoomFocusPan,
+  limits{zoom{.3..2.5}, pan{x:+/-400,y:+/-200}, state{count,limit,zoom,pan}},
+  instructionType(default|story), currentPreInstruction, preInstructions[],
+  currentInstruction, instructions[], customView{state,zoom,pan,keyPressCount}
+app.toggleCameraMode            (key "6")
+app.zoomThresh = -0.05          (zoom "default" point)
+app.settingAutoCamera / settingAutoCameraFollowBolt / autoCamPanWaitingForPath
+app.highlightZoomPanFocusCell   (focus-cell highlight via cellsToHighlight2)
+app.engagedZoomThreshold        {melee:.5, ranged:.1}
+app.setInitZoom / app.resetCameraSwitch
+
+=====================================================================
+3. FILE MAP
+=====================================================================
+engine/playerUpdate/checkCamera.js   MAIN per-frame logic (5 sections)
+  - setInitZoom (fit large grids)
+  - input-mode switch (toggle + startCount delay; auto-cam busy -> reset)
+  - limits.state flash counter
+  - input-mode controls (zoom/pan/customView + setZoomPan + findFocusCell)
+  - auto-camera (preInstruction parse -> instruction stepping -> completion)
+engine/drawPlayerStep.js             uses camera; playerSpawnFocus trigger
+engine/gameReset.js                  camera reset (keeps focusCell)
+utils/functions/camera/menuToggleCamera.js  menu engage (resets busy auto-cam)
+utils/functions/camera/resetAutoCamera.js   NEW: cancels auto-cam, keeps view
+utils/functions/camera/setAutoCamera.js     builds auto-cam instruction queue
+utils/functions/camera/closeCamera.js       exit -> zoomReset
+utils/functions/camera/preResetCamera.js    resetCameraSwitch = true
+utils/functions/camera/setCameraFocus.js    legacy focus setter
+utils/functions/camera/setZoomPan.js        centering + pan limits + focus calc
+utils/functions/camera/toggleCameraModeUI.js camera.mode setter
+utils/functions/stage/findFocusCell.js      cellToPan (path) + panToCell (focus)
+utils/functions/input/handleKeyPress_.js    key "6" -> app.toggleCameraMode
+utils/components/cameraControl.jsx          input-mode UI
+App.jsx                                     bindings + CameraControl + overlay
+
+Auto-cam triggers:
+  checkAttacking.js   -> attackFocus / attackFocusBreak
+  checkDefending.js   -> defendFocus / defendFocusBreak
+  drawPlayerStep.js   -> playerSpawnFocus
+  projectileCreatorTester.js + projectileTracker.js -> followBolt_<id>
+  addAiPlayer.js      -> (spawn focus)
+  closeCamera.js / checkCamera.js exit -> zoomReset
+
+=====================================================================
+4. GATING / ACTION INTERACTION  (changed 2026-08-02)
+=====================================================================
+playerUpdate.js outer gate (line 111) was:
+  if (!deflected && !dead && app.camera.state !== true) { progression + input }
+-> This froze in-flight actions and left AI ungated during camera mode.
+
+Now the outer gate only checks deflected/dead; progression always runs.
+Gated during camera/assess mode (app.camera.state === true) so NO new
+player/AI action can START:
+  - checkMoveCancel      (dash initiation + move cancel)
+  - checkFeintsCancels   (attack/defend/push feints & key-release cancels)
+  - checkMoveInput       (new moves)
+  - checkNonMoveInput    (attack/defend/dodge/item starts)
+  - app.aiEvaluate       (AI decision generation)
+  - checkAttacking       (held-dodge -> blunt conversion)
+  - checkFlanking        (dodge+direction -> flank START)
+AI starts actions ONLY by setting keyPressed flags (aiAct.js) consumed by the
+same gated input checks, so gating those two checks blocks new AI actions too.
+
+=====================================================================
+5. RESET SEMANTICS
+=====================================================================
+setAutoCamera has reset logic for attackFocusBreak/defendFocusBreak/zoomreset
+(clears preInstructions/instructions, settingAutoCamera=false).
+findFocusCell sets autoCamPanWaitingForPath=false.
+NEW shared helper resetAutoCamera() (utils/functions/camera/resetAutoCamera.js)
+clears all auto-cam flags and queues the event-log entry
+"Auto camera cancelled — assess mode engaged". Used by menuToggleCamera and
+the checkCamera input-mode start branch when auto-cam is busy, engaging assess
+mode at the CURRENT view (view-at-default requirement skipped for that path).
+
+=====================================================================
+6. UI / LAYERING
+=====================================================================
+canvas 1, canvas2 2, playerStatusUI/cameraBox/liveLog 3, timer 4,
+assessModeOverlay 5 (pointer-events:none; flashing border + centered label),
+eventLog 6 (above overlay), mainMenu 1000, notifications 1001.
+The assess overlay hides automatically when camera.state becomes false.

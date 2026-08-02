@@ -260,6 +260,43 @@
   background-color: rgba(255, 255, 255, 0.7);
 }
 
+/* Assess mode overlay — flashing border + label shown while camera/assess mode is active */
+.assessModeOverlay {
+  position: absolute;
+  inset: 0;
+  border: 4px solid #ffd700;
+  border-radius: 10px;
+  pointer-events: none; /* let zoom/pan clicks pass through to the canvas */
+  animation: assessFlash 1s steps(2, end) infinite;
+  z-index: 5; /* above canvas(1)/UI(3), below event log(6) and main menu(1000) */
+}
+.assessModeLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.5rem 1.5rem;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #ffd700;
+  border: 2px solid #ffd700;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+}
+@keyframes assessFlash {
+  0%,
+  100% {
+    border-color: #ffd700;
+  }
+  50% {
+    border-color: #ff3b30;
+  }
+}
+
 @keyframes rotation {
   from {
     transform: rotate(0deg);
