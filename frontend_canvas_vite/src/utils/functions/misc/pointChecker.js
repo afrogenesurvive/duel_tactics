@@ -1,4 +1,9 @@
 export function pointChecker(app, player) {
+  const logBlood = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("stage.blood_sacrifice", message, data, { fn: "pointChecker" });
+    }
+  };
   // console.log('point checker player',player);
 
   let points = player.points;
@@ -7,6 +12,9 @@ export function pointChecker(app, player) {
     app.bloodSacrificeEvent.limit = 2000;
     app.bloodSacrificeEvent.restore = true;
     app.openVoid = true;
-    console.log("the gods have accepted a blood sacrifice. Standby for void tiles");
+    logBlood("triggered", {
+      playerId: player.number,
+      points,
+    });
   }
 }

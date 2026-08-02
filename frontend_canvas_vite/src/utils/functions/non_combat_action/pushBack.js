@@ -141,6 +141,9 @@ export function pushBack(app, player, hitByPlayerDirection) {
         msg: "pushedBack",
         img: "",
       });
+      if (app?.addEventLog) {
+        app.addEventLog("P" + player.number + " pushed back", "combat");
+      }
     }
   }
 

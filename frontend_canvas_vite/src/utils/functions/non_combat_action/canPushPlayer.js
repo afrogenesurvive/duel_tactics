@@ -1,4 +1,9 @@
 export function canPushPlayer(app, pusher, targetCell, targetPlayer) {
+  const logPush = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("player.pushing.execution", message, data, { fn: "canPushPlayer" });
+    }
+  };
   let resetPush = false;
   let thresholdMultiplier = app.rnJesus(1, 3);
   let canPushStrength = false;
@@ -61,7 +66,13 @@ export function canPushPlayer(app, pusher, targetCell, targetPlayer) {
         let barrier = app.checkForwardBarrier(impactDirection, targetCell);
 
         if (barrier === true) {
-          console.log("barrier in obstacle cell in front of target player");
+          logPush("blocked", {
+            pusherId: pusher.number,
+            targetId: targetPlayer.number,
+            blocker: "barrier",
+            reason: "barrier in cell in front of target player",
+            cell: targetCell.number,
+          });
           canPushTargetFree = false;
           destCellOccupant = "barrier";
           resetPush = true;
@@ -69,7 +80,13 @@ export function canPushPlayer(app, pusher, targetCell, targetPlayer) {
         // --------------
 
         if (targetCell.barrier.position === impactDirection) {
-          console.log("barrier in obstacle cell behind target player");
+          logPush("blocked", {
+            pusherId: pusher.number,
+            targetId: targetPlayer.number,
+            blocker: "barrier",
+            reason: "barrier in cell behind target player",
+            cell: targetCell.number,
+          });
           canPushTargetFree = false;
           destCellOccupant = "barrier";
           resetPush = true;
@@ -96,7 +113,13 @@ export function canPushPlayer(app, pusher, targetCell, targetPlayer) {
         let barrier = app.checkForwardBarrier(impactDirection, targetCell);
 
         if (barrier === true) {
-          console.log("barrier in obstacle cell in front of target player");
+          logPush("blocked", {
+            pusherId: pusher.number,
+            targetId: targetPlayer.number,
+            blocker: "barrier",
+            reason: "barrier in cell in front of target player (edge, no dest cell)",
+            cell: targetCell.number,
+          });
           canPushTargetFree = false;
           destCellOccupant = "barrier";
           resetPush = true;
@@ -104,7 +127,13 @@ export function canPushPlayer(app, pusher, targetCell, targetPlayer) {
         // --------------
 
         if (targetCell.barrier.position === impactDirection) {
-          console.log("barrier in obstacle cell behind target player");
+          logPush("blocked", {
+            pusherId: pusher.number,
+            targetId: targetPlayer.number,
+            blocker: "barrier",
+            reason: "barrier in cell behind target player (edge, no dest cell)",
+            cell: targetCell.number,
+          });
           canPushTargetFree = false;
           destCellOccupant = "barrier";
           resetPush = true;
@@ -126,21 +155,32 @@ export function canPushPlayer(app, pusher, targetCell, targetPlayer) {
       //   extraPush
       // );
     } else {
-      console.log(
-        "you are NOT strong enough to push app player",
-        pushStrengthPlayer,
-        pushStrengthThreshold,
-        pusher.crits.guardBreak - 2,
-        pusher.crits.pushBack - 2,
-      );
+      logPush("notStrongEnough", {
+        pusherId: pusher.number,
+        targetId: targetPlayer.number,
+        strength: pushStrengthPlayer,
+        threshold: pushStrengthThreshold,
+      });
       resetPush = true;
     }
     if (extraPush > 3) {
-      console.log("extra push force. Push player w/o plyr move");
+      logPush("extraPushForce", {
+        pusherId: pusher.number,
+        targetId: targetPlayer.number,
+        extra: extraPush,
+        result: "move target player without pusher moving",
+      });
       movePlayer = false;
     }
 
     if (canPushStrength === true && canPushTargetFree === true && !destCellRef) {
+      logPush("success", {
+        pusherId: pusher.number,
+        targetId: targetPlayer.number,
+        destCell: destCell,
+        edgeCase: "no dest cell ref",
+        movePlayer,
+      });
       if (!app.players[pusher.number - 1].popups.find((x) => x.msg === "canPush")) {
         app.players[pusher.number - 1].popups.push({
           state: false,
@@ -254,11 +294,23 @@ export function canPushPlayer(app, pusher, targetCell, targetPlayer) {
     // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
 
     if (canPushTargetFree !== true) {
-      console.log("something is in the way of the player to be pushed");
+      logPush("blocked", {
+        pusherId: pusher.number,
+        targetId: targetPlayer.number,
+        blocker: destCellOccupant || "unknown",
+        reason: "something is in the way of the target player",
+      });
       resetPush = true;
     }
 
     if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
+      logPush("success", {
+        pusherId: pusher.number,
+        targetId: targetPlayer.number,
+        destCell: destCell,
+        destCellOccupant,
+        movePlayer,
+      });
       // console.log('ready to push');
       if (!app.players[pusher.number - 1].popups.find((x) => x.msg === "canPush")) {
         app.players[pusher.number - 1].popups.push({
@@ -374,6 +426,11 @@ export function canPushPlayer(app, pusher, targetCell, targetPlayer) {
   } else {
     pusher.stamina.current = 0;
     resetPush = true;
+    logPush("outOfStamina", {
+      pusherId: pusher.number,
+      stamina: pusher.stamina.current,
+      cost: app.staminaCostRef.push,
+    });
     pusher.statusDisplay = {
       state: true,
       status: "Out of Stamina",

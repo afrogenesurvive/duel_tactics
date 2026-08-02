@@ -29,7 +29,31 @@ function formatTime(tick) {
 export default function LiveLogWindow({ logBuffer, logFilterMode, onClose, onClear, onToggleFilter }) {
   const [autoScroll, setAutoScroll] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
+  const [size, setSize] = useState({});
   const listRef = useRef(null);
+  const windowRef = useRef(null);
+
+  const startResize = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = windowRef.current;
+    if (!el) return;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startW = el.getBoundingClientRect().width;
+    const startH = el.getBoundingClientRect().height;
+    const onMove = (ev) => {
+      const w = startW + (ev.clientX - startX);
+      const h = startH + (ev.clientY - startY);
+      setSize({ w: Math.max(280, w), h: Math.max(200, h) });
+    };
+    const onUp = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  };
 
   const filtered = logFilterMode === "filtered"
     ? logBuffer.filter((e) => e.passed)
@@ -65,7 +89,7 @@ export default function LiveLogWindow({ logBuffer, logFilterMode, onClose, onCle
   };
 
   return (
-    <div className="liveLogWindow">
+    <div className="liveLogWindow" ref={windowRef} style={{ width: size.w, height: size.h }}>
       <div className="liveLogHeader">
         <span className="liveLogTitle">Live Log</span>
         <div className="liveLogHeaderControls">
@@ -126,6 +150,7 @@ export default function LiveLogWindow({ logBuffer, logFilterMode, onClose, onCle
           ↓ Scroll to bottom
         </button>
       )}
+      <div className="liveLogResizeHandle" onMouseDown={startResize} title="Resize" />
     </div>
   );
 }

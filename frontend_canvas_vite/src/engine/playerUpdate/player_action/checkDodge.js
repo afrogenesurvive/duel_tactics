@@ -77,6 +77,9 @@ export function checkDodge(app, player) {
             msg: "dodgeStart",
             img: "",
           });
+          if (app?.addEventLog) {
+            app.addEventLog("P" + player.number + " dodging", "combat");
+          }
         }
 
         player = app.setElasticCounter("dodging", "", true, player);

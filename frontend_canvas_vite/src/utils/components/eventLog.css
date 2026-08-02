@@ -1,0 +1,139 @@
+/* Event Log Window — gameplay-facing log, bottom-left, distinct from Live Log */
+.eventLogWindow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 42%;
+  max-width: 32rem;
+  height: 40%;
+  min-height: 180px;
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(20, 20, 28, 0.95);
+  border: 2px solid #582f0e;
+  border-radius: 6px 6px 0 0;
+  z-index: 3;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  color: #e0e0e0;
+  box-shadow: 2px -2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.eventLogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: linear-gradient(180deg, #3d2b1a 0%, #2a1a0e 100%);
+  border-bottom: 1px solid #582f0e;
+  border-radius: 4px 4px 0 0;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.eventLogTitle {
+  font-weight: bold;
+  font-size: 12px;
+  color: #ebd5b3;
+  letter-spacing: 0.5px;
+}
+
+.eventLogHeaderControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.eventLogCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 5px;
+  background: rgba(235, 213, 179, 0.15);
+  border-radius: 9px;
+  font-size: 10px;
+  color: #ebd5b3;
+}
+
+.eventLogCloseBtn {
+  background: rgba(235, 213, 179, 0.1);
+  border: 1px solid #7f5539;
+  border-radius: 3px;
+  color: #ebd5b3;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  padding: 2px 5px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.eventLogCloseBtn:hover {
+  background: rgba(235, 213, 179, 0.25);
+}
+
+.eventLogList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px 0;
+  scroll-behavior: smooth;
+}
+
+.eventLogList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.eventLogList::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.eventLogList::-webkit-scrollbar-thumb {
+  background: #7f5539;
+  border-radius: 3px;
+}
+
+.eventLogEmpty {
+  padding: 16px 8px;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  font-size: 11px;
+}
+
+.eventLogEntry {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+}
+
+.eventLogEntry:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.eventLogTime {
+  color: #888;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.eventLogBadge {
+  color: #111;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 1px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.eventLogMsg {
+  color: #e0e0e0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

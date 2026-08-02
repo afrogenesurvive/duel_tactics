@@ -12,7 +12,7 @@ export function checkFeintsCancels(mode, app, player) {
     app.globalLogger("player.defending.count", message, data, { fn: "checkFeintsCancels" });
   };
   const logDodge = (message, data = {}) => {
-    app.globalLogger("player.dodging", message, data, { fn: "checkFeintsCancels" });
+    app.globalLogger("player.dodging.execution", message, data, { fn: "checkFeintsCancels" });
   };
   const logMove = (message, data = {}) => {
     app.globalLogger("player.movement", message, data, { fn: "checkFeintsCancels" });

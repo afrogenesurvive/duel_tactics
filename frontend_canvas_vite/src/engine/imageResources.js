@@ -57,6 +57,7 @@ import barrierAWest from "../assets/obstacles/barrierA_west.png";
 import attack1Indicate from "../assets/indicators/attack1.png";
 import attack2Indicate from "../assets/indicators/attack2.png";
 import attack3Indicate from "../assets/indicators/attacky.png";
+import attackxIndicate from "../assets/indicators/attackx.png";
 import attackUnarmedIndicate from "../assets/items/unarmed.png";
 import attackBluntIndicate from "../assets/indicators/blunt.png";
 import attackSuccessIndicate from "../assets/indicators/attackSuccess.png";
@@ -272,6 +273,7 @@ const refKeys = [
   "attack1Indicate",
   "attack2Indicate",
   "attack3Indicate",
+  "attackxIndicate",
   "attackUnarmedIndicate",
   "attackBluntIndicate",
   "attackSuccessIndicate",
@@ -486,6 +488,7 @@ export const images = {
   attack1IndicateRef: attack1Indicate,
   attack2IndicateRef: attack2Indicate,
   attack3IndicateRef: attack3Indicate,
+  attackxIndicateRef: attackxIndicate,
   attackUnarmedIndicateRef: attackUnarmedIndicate,
   attackBluntIndicateRef: attackBluntIndicate,
   attackSuccessIndicateRef: attackSuccessIndicate,

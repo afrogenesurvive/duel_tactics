@@ -328,6 +328,12 @@ export function obstacleBarrierTrapChecker(app, locationCell, ownerType) {
           target: trap.target,
           triggerType,
         });
+        if (app?.addNotification) {
+          app.addNotification("A trap was triggered", "warn");
+        }
+        if (app?.addEventLog) {
+          app.addEventLog("A trap was triggered at cell (" + locationCell.number.x + "," + locationCell.number.y + ")", "trap");
+        }
       }
     }
     if (trap.persistent === false) {

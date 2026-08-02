@@ -23,7 +23,7 @@ Deeply explore the codebase, trace execution paths, document architectural relat
 - **Combat**: `projectileCreator`, `meleeAttackPeak`/`meleeAttackParse`, `handleMeleeDamage`, `handleProjectileDamage`, `setDeflection`/`unsetDeflection`
 - **Input**: `handleKeyPress_`, `addListeners`, `handleGamepadEvent`, `getCanvasClick`
 - **Camera**: `setCameraFocus`, `setZoomPan`, `toggleCameraModeUI`
-- **UI**: Settings panel, DebugMenu/DebugBox, CellInfo, AiStatus, Loading
+- **UI**: Settings panel, DebugMenu/PlayerStatusUI, CellInfo, AiStatus, Loading
 - **Notes**: `src/notes/` contains design documents (dashing, game theory, infinite attack problem)
 
 ### Backend (`app.js` + `graphql/` + `models/`)

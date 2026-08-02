@@ -5,6 +5,9 @@ export function checkMoveProgress(app, player, nextPosition) {
   const logMoveCount = (message, data = {}, origin) => {
     app.globalLogger("player.movement_count", message, data, origin || { fn: "checkMoveProgress" });
   };
+  const logDashCollision = (message, data = {}) => {
+    app.globalLogger("player.dashing.collision", message, data, { fn: "checkMoveProgress" });
+  };
   const endDash = (startCooldown = true) => {
     player.dashing.state = false;
     player.dashing.cell_1_arrived = false;
@@ -141,6 +144,11 @@ export function checkMoveProgress(app, player, nextPosition) {
                     x.currentPosition.cell.number.y === dashCell1Ref.number.y,
                 );
                 if (dashCell1Player) {
+                  logDashCollision("playerCollisionCell1", {
+                    plyr_no: player.number,
+                    target_no: dashCell1Player.number,
+                    cell: dashCell1Ref.number,
+                  });
                   app.setDeflection(player, "attacked", false);
                   app.setDeflection(dashCell1Player, "attacked", false);
                   app.pushBack(dashCell1Player, player.direction);
@@ -204,6 +212,11 @@ export function checkMoveProgress(app, player, nextPosition) {
                 );
 
                 if (dashTargetPlayer) {
+                  logDashCollision("playerCollisionCell2", {
+                    plyr_no: player.number,
+                    target_no: dashTargetPlayer.number,
+                    cell: dashCell2Ref?.number,
+                  });
                   const deflectBoth = app.rnJesus(1, 5) !== 1;
                   if (deflectBoth) {
                     app.setDeflection(player, "attacked", false);
@@ -215,6 +228,11 @@ export function checkMoveProgress(app, player, nextPosition) {
                 }
 
                 if (dashCell2Ref.obstacle?.state === true) {
+                  logDashCollision("obstacleCollisionCell2", {
+                    plyr_no: player.number,
+                    obstacleId: dashCell2Ref.obstacle?.id,
+                    cell: dashCell2Ref.number,
+                  });
                   app.setDeflection(player, "bluntAttacked", false);
                   app.pushBack(player, app.getOppositeDirection(player.direction));
                 }
@@ -336,7 +354,7 @@ export function checkMoveProgress(app, player, nextPosition) {
           // PUSHBACK MOVEMENT
           if (player.pushBack.state === true) {
             app.globalLogger(
-              "player.pushBack",
+              "player.pushBack.execution",
               "finishedMoving",
               {
                 plyr_no: player.number,

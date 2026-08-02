@@ -14,10 +14,12 @@ import {
   faUndo,
   faQuestionCircle,
   faBorderAll,
-  faChessBoard,
   faExclamationTriangle,
   faCheckSquare,
   faTerminal,
+  faListUl,
+  faChevronUp,
+  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 import bgCompass from "./assets/bgCompass.png";
@@ -25,7 +27,7 @@ import bgCompass from "./assets/bgCompass.png";
 import "./App.css";
 
 // COMPONENTS
-import DebugBox from "./utils/components/debugBox";
+import PlayerStatusUI from "./utils/components/playerStatusUI";
 import DebugMenu from "./utils/components/debugMenu";
 import Settings from "./utils/components/settings";
 import CellInfo from "./utils/components/cellInfo";
@@ -33,6 +35,8 @@ import Loading from "./utils/components/loading";
 import AiStatus from "./utils/components/aiStatus";
 import CameraControl from "./utils/components/cameraControl";
 import LiveLogWindow from "./utils/components/liveLogWindow";
+import EventLog from "./utils/components/eventLog";
+import Notifications from "./utils/components/notifications";
 
 // IMAGES_GRAPHICS
 import { initialState, applyConstructorDefaults } from "./data/appState";
@@ -61,8 +65,8 @@ import { getSettingsCanvasClick } from "./utils/functions/input/getSettingsCanva
 
 // UI
 import { setBackgroundImage } from "./utils/functions/stage/setBackgroundImage";
-import { expandDebugBox } from "./utils/functions/input/expandDebugBox";
-import { minimizeDebugBox } from "./utils/functions/input/minimizeDebugBox";
+import { expandPlayerStatusUI } from "./utils/functions/input/expandPlayerStatusUI";
+import { minimizePlayerStatusUI } from "./utils/functions/input/minimizePlayerStatusUI";
 import { openSettings } from "./utils/functions/settings/openSettings";
 import { cancelSettings } from "./utils/functions/settings/cancelSettings";
 import { toggleDebugMenu } from "./utils/functions/misc/toggleDebugMenu";
@@ -88,6 +92,8 @@ import { findFocusCell } from "./utils/functions/stage/findFocusCell";
 import { getIntermediateCellByArea } from "./utils/functions/stage/getIntermediateCellByArea";
 
 import { globalLogger } from "./utils/functions/misc/globalLogger";
+import { addEventLog } from "./utils/functions/misc/addEventLog";
+import { addNotification } from "./utils/functions/misc/addNotification";
 
 // CAMERA
 import { closeCamera } from "./utils/functions/camera/closeCamera";
@@ -242,12 +248,18 @@ class App extends Component {
 
     // UI
     this.setBackgroundImage = (...args) => setBackgroundImage(this, ...args);
-    this.expandDebugBox = (...args) => expandDebugBox(this, ...args);
-    this.minimizeDebugBox = (...args) => minimizeDebugBox(this, ...args);
+    this.expandPlayerStatusUI = (...args) => expandPlayerStatusUI(this, ...args);
+    this.minimizePlayerStatusUI = (...args) => minimizePlayerStatusUI(this, ...args);
     this.openSettings = (...args) => openSettings(this, ...args);
     this.cancelSettings = (...args) => cancelSettings(this, ...args);
     this.toggleDebugMenu = (...args) => toggleDebugMenu(this, ...args);
     this.toggleLiveLog = () => this.setState({ showLiveLog: !this.state.showLiveLog });
+    this.toggleEventLog = () => this.setState({ showEventLog: !this.state.showEventLog });
+    this.dismissNotification = (id) => {
+      this.notifications = this.notifications.filter((n) => n.id !== id);
+      this.setState({});
+    };
+    this.toggleMainMenu = () => this.setState({ mainMenuMinimized: !this.state.mainMenuMinimized });
     this.clearLogBuffer = () => {
       this.logBuffer = [];
       this.setState({});
@@ -276,6 +288,8 @@ class App extends Component {
     this.findFocusCell = (...args) => findFocusCell(this, ...args);
     this.getIntermediateCellByArea = (...args) => getIntermediateCellByArea(this, ...args);
     this.globalLogger = (...args) => globalLogger(this, ...args);
+    this.addEventLog = (...args) => addEventLog(this, ...args);
+    this.addNotification = (...args) => addNotification(this, ...args);
 
     // CAMERA
     this.closeCamera = (...args) => closeCamera(this, ...args);
@@ -411,6 +425,8 @@ class App extends Component {
           six: 200,
           nine: 120,
           twelve: 50,
+          fifteen: 20,
+          nineteen: 5,
         },
       });
 
@@ -426,6 +442,12 @@ class App extends Component {
           break;
         case 12:
           this.sceneY = 50;
+          break;
+        case 15:
+          this.sceneY = 20;
+          break;
+        case 19:
+          this.sceneY = 5;
           break;
       }
 
@@ -518,124 +540,161 @@ class App extends Component {
           <div className={this.state.containerInnerClass}>
             <canvas width={this.canvasWidth} height={this.canvasHeight} ref={this.canvasRef} className="canvas" />
             <canvas width={this.canvasWidth} height={this.canvasHeight} ref={this.canvasRef2} className="canvas2" />
-            {/* // DEBUB BOX */}
-            <div className={this.debugBoxStyle}>
-              <DebugBox player={this.players[0]} expand={this.expandDebugBox} minimize={this.minimizeDebugBox} />
-            </div>
-            {this.players.length > 1 && (
-              <div className={this.debugBoxStyle2}>
-                <DebugBox player={this.players[1]} expand={this.expandDebugBox} minimize={this.minimizeDebugBox} />
-              </div>
+            {/* // PLAYER STATUS UI */}
+            {this.settingsFormUiData?.showPlayerStatusUI !== false && (
+              <>
+                <div className={this.playerStatusUIStyle}>
+                  <PlayerStatusUI player={this.players[0]} expand={this.expandPlayerStatusUI} minimize={this.minimizePlayerStatusUI} />
+                </div>
+                {this.players.length > 1 && (
+                  <div className={this.playerStatusUIStyle2}>
+                    <PlayerStatusUI player={this.players[1]} expand={this.expandPlayerStatusUI} minimize={this.minimizePlayerStatusUI} />
+                  </div>
+                )}
+              </>
             )}
             {/* //BACKGROUND COMPASS */}
-            <img src={bgCompass} className="bgCompass" ref={this.bgCompassRef} alt="logo" />
-            {/* // SETTINGS BOX */}
-            <div className="settingsSwitch">
-              <a className="setSwitchLink" onClick={this.openSettings}>
+            {this.settingsFormUiData?.showCompass !== false && (
+              <img src={bgCompass} className="bgCompass" ref={this.bgCompassRef} alt="logo" />
+            )}
+            {/* // MAIN MENU */}
+            <div className="mainMenu">
+              <a
+                className={`mainMenuLink mainMenuToggle ${this.state.mainMenuMinimized === true ? "cameraModeHighlighted" : ""}`}
+                onClick={this.toggleMainMenu}
+                title={this.state.mainMenuMinimized === true ? "Expand Main Menu" : "Minimize Main Menu"}>
                 <OverlayTrigger
                   placement={"top"}
                   overlay={
                     <Popover id={`popover-positioned-${"top"}`}>
                       <Popover.Body>
-                        <strong>Show Settings</strong>
+                        <strong>{this.state.mainMenuMinimized === true ? "Expand Main Menu" : "Minimize Main Menu"}</strong>
                       </Popover.Body>
                     </Popover>
                   }>
-                  <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon" />
+                  <FontAwesomeIcon icon={this.state.mainMenuMinimized === true ? faChevronUp : faChevronDown} size="xs" className="mainMenuIcon" />
                 </OverlayTrigger>
               </a>
-              <a className={`setSwitchLink ${this.state.showDebugMenu === true ? "cameraModeHighlighted" : ""}`} onClick={this.toggleDebugMenu}>
-                <OverlayTrigger
-                  placement={"top"}
-                  overlay={
-                    <Popover id={`popover-positioned-${"top"}`}>
-                      <Popover.Body>
-                        <strong>Debug Log Menu</strong>
-                      </Popover.Body>
-                    </Popover>
-                  }>
-                  <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="setSwitchIcon" />
-                </OverlayTrigger>
-              </a>
-              {this.aiPlayers[0] && (
-                // {this.updateSettingsFormAiDataData.random &&(
-                <a className="setSwitchLink cameraModeHighlighted" onClick={this.toggleAiDisplay}>
-                  <OverlayTrigger
-                    placement={"top"}
-                    overlay={
-                      <Popover id={`popover-positioned-${"top"}`}>
-                        <Popover.Body>
-                          <strong>Toggle Ai Sub-menu</strong>
-                        </Popover.Body>
-                      </Popover>
-                    }>
-                    <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon" />
-                  </OverlayTrigger>
-                </a>
+              {this.state.mainMenuMinimized !== true && (
+                <>
+                  <a className="mainMenuLink" onClick={this.openSettings}>
+                    <OverlayTrigger
+                      placement={"top"}
+                      overlay={
+                        <Popover id={`popover-positioned-${"top"}`}>
+                          <Popover.Body>
+                            <strong>Show Settings</strong>
+                          </Popover.Body>
+                        </Popover>
+                      }>
+                      <FontAwesomeIcon icon={faCogs} size="xs" className="mainMenuIcon" />
+                    </OverlayTrigger>
+                  </a>
+                  <a className={`mainMenuLink ${this.state.showDebugMenu === true ? "cameraModeHighlighted" : ""}`} onClick={this.toggleDebugMenu}>
+                    <OverlayTrigger
+                      placement={"top"}
+                      overlay={
+                        <Popover id={`popover-positioned-${"top"}`}>
+                          <Popover.Body>
+                            <strong>Debug Log Menu</strong>
+                          </Popover.Body>
+                        </Popover>
+                      }>
+                      <FontAwesomeIcon icon={faExclamationTriangle} size="xs" className="mainMenuIcon" />
+                    </OverlayTrigger>
+                  </a>
+                  {this.aiPlayers[0] && (
+                    <a className="mainMenuLink cameraModeHighlighted" onClick={this.toggleAiDisplay}>
+                      <OverlayTrigger
+                        placement={"top"}
+                        overlay={
+                          <Popover id={`popover-positioned-${"top"}`}>
+                            <Popover.Body>
+                              <strong>Toggle Ai Sub-menu</strong>
+                            </Popover.Body>
+                          </Popover>
+                        }>
+                        <FontAwesomeIcon icon={faRobot} size="xs" className="mainMenuIcon" />
+                      </OverlayTrigger>
+                    </a>
+                  )}
+                  {!this.aiPlayers[0] && (
+                    <a className="mainMenuLink" onClick={this.toggleAiDisplay}>
+                      <OverlayTrigger
+                        placement={"top"}
+                        overlay={
+                          <Popover id={`popover-positioned-${"top"}`}>
+                            <Popover.Body>
+                              <strong>Toggle Ai Sub-menu</strong>
+                            </Popover.Body>
+                          </Popover>
+                        }>
+                        <FontAwesomeIcon icon={faRobot} size="xs" className="mainMenuIcon" />
+                      </OverlayTrigger>
+                    </a>
+                  )}
+                  {this.camera.state === false && (
+                    <a className="mainMenuLink" onClick={this.menuToggleCamera}>
+                      <OverlayTrigger
+                        placement={"top"}
+                        overlay={
+                          <Popover id={`popover-positioned-${"top"}`}>
+                            <Popover.Body>
+                              {this.camera.customView.state !== true && <strong>Toggle Camera Sub-menu</strong>}
+                              {this.camera.customView.state === true && <strong>Toggle Camera Sub-menu (Custom View is set)</strong>}
+                            </Popover.Body>
+                          </Popover>
+                        }>
+                        <div className="icon-container">
+                          <FontAwesomeIcon icon={faVideo} size="xs" className="mainMenuIcon" />
+                          {this.camera.customView.state === true && (
+                            <FontAwesomeIcon icon={faCheckSquare} size="xs" className="mainMenuIcon top-right-icon" />
+                          )}
+                        </div>
+                      </OverlayTrigger>
+                    </a>
+                  )}
+                  <a className="mainMenuLink" onClick={this.gameReset.bind(this, "soft")}>
+                    <OverlayTrigger
+                      placement={"top"}
+                      overlay={
+                        <Popover id={`popover-positioned-${"top"}`}>
+                          <Popover.Body>
+                            <strong>Reset Game (w/ last settings)</strong>
+                          </Popover.Body>
+                        </Popover>
+                      }>
+                      <FontAwesomeIcon icon={faUndo} size="xs" className="mainMenuIcon" />
+                    </OverlayTrigger>
+                  </a>
+                  <a className={`mainMenuLink ${this.state.showLiveLog === true ? "cameraModeHighlighted" : ""}`} onClick={this.toggleLiveLog}>
+                    <OverlayTrigger
+                      placement={"top"}
+                      overlay={
+                        <Popover id={`popover-positioned-${"top"}`}>
+                          <Popover.Body>
+                            <strong>Live Log Window</strong>
+                          </Popover.Body>
+                        </Popover>
+                      }>
+                      <FontAwesomeIcon icon={faTerminal} size="xs" className="mainMenuIcon" />
+                    </OverlayTrigger>
+                  </a>
+                  <a className={`mainMenuLink ${this.state.showEventLog === true ? "cameraModeHighlighted" : ""}`} onClick={this.toggleEventLog}>
+                    <OverlayTrigger
+                      placement={"top"}
+                      overlay={
+                        <Popover id={`popover-positioned-${"top"}`}>
+                          <Popover.Body>
+                            <strong>Event Log</strong>
+                          </Popover.Body>
+                        </Popover>
+                      }>
+                      <FontAwesomeIcon icon={faListUl} size="xs" className="mainMenuIcon" />
+                    </OverlayTrigger>
+                  </a>
+                </>
               )}
-              {!this.aiPlayers[0] && (
-                // {!this.updateSettingsFormAiDataData.random &&(
-                <a className="setSwitchLink" onClick={this.toggleAiDisplay}>
-                  <OverlayTrigger
-                    placement={"top"}
-                    overlay={
-                      <Popover id={`popover-positioned-${"top"}`}>
-                        <Popover.Body>
-                          <strong>Toggle Ai Sub-menu</strong>
-                        </Popover.Body>
-                      </Popover>
-                    }>
-                    <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon" />
-                  </OverlayTrigger>
-                </a>
-              )}
-              {this.camera.state === false && (
-                <a className="setSwitchLink" onClick={this.menuToggleCamera}>
-                  <OverlayTrigger
-                    placement={"top"}
-                    overlay={
-                      <Popover id={`popover-positioned-${"top"}`}>
-                        <Popover.Body>
-                          {this.camera.customView.state !== true && <strong>Toggle Camera Sub-menu</strong>}
-                          {this.camera.customView.state === true && <strong>Toggle Camera Sub-menu (Custom View is set)</strong>}
-                        </Popover.Body>
-                      </Popover>
-                    }>
-                    <div className="icon-container">
-                      <FontAwesomeIcon icon={faVideo} size="sm" className="setSwitchIcon" />
-                      {this.camera.customView.state === true && (
-                        <FontAwesomeIcon icon={faCheckSquare} size="sm" className="setSwitchIcon top-right-icon" />
-                      )}
-                    </div>
-                  </OverlayTrigger>
-                </a>
-              )}
-              <a className="setSwitchLink" onClick={this.gameReset.bind(this, "soft")}>
-                <OverlayTrigger
-                  placement={"top"}
-                  overlay={
-                    <Popover id={`popover-positioned-${"top"}`}>
-                      <Popover.Body>
-                        <strong>Reset Game (w/ last settings)</strong>
-                      </Popover.Body>
-                    </Popover>
-                  }>
-                  <FontAwesomeIcon icon={faUndo} size="sm" className="setSwitchIcon" />
-                </OverlayTrigger>
-              </a>
-              <a className={`setSwitchLink ${this.state.showLiveLog === true ? "cameraModeHighlighted" : ""}`} onClick={this.toggleLiveLog}>
-                <OverlayTrigger
-                  placement={"top"}
-                  overlay={
-                    <Popover id={`popover-positioned-${"top"}`}>
-                      <Popover.Body>
-                        <strong>Live Log Window</strong>
-                      </Popover.Body>
-                    </Popover>
-                  }>
-                  <FontAwesomeIcon icon={faTerminal} size="sm" className="setSwitchIcon" />
-                </OverlayTrigger>
-              </a>
             </div>
             {/* // CAMERA BOX */}
             {this.camera.state === true && (
@@ -650,21 +709,6 @@ class App extends Component {
               </div>
             )}
             {/* // CELL INFO */}
-            {this.showCellInfoBox !== true && (
-              <div className="cellInfoSwitch">
-                <OverlayTrigger
-                  placement={"top"}
-                  overlay={
-                    <Popover id={`popover-positioned-${"top"}`}>
-                      <Popover.Body>
-                        <strong>Click or mouse over a cell to get more info</strong>
-                      </Popover.Body>
-                    </Popover>
-                  }>
-                  <FontAwesomeIcon icon={faChessBoard} size="sm" className="setSwitchIcon" />
-                </OverlayTrigger>
-              </div>
-            )}
             {this.showCellInfoBox === true && (
               <CellInfo
                 ref={this.cellInfoBoxRef}
@@ -693,6 +737,10 @@ class App extends Component {
                 onToggleFilter={this.toggleLogFilterMode}
               />
             )}
+            {/* // EVENT LOG */}
+            {this.state.showEventLog === true && <EventLog eventLog={this.eventLog} onClose={this.toggleEventLog} />}
+            {/* // NOTIFICATIONS */}
+            <Notifications notifications={this.notifications} currentTime={this.time} onDismiss={this.dismissNotification} />
           </div>
           {this.state.showSettings === true && (
             <Settings

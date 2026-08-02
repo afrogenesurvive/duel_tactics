@@ -31,5 +31,11 @@ export function menuToggleCamera(app) {
   }
   if (canStart === false) {
     console.log("auto cam is probably engaged. Can't start input cam");
+    if (app?.addNotification) {
+      app.addNotification("Can't start input camera — auto camera is engaged", "warn");
+    }
+    if (app?.addEventLog) {
+      app.addEventLog("Can't start input camera (auto camera engaged)", "system");
+    }
   }
 }

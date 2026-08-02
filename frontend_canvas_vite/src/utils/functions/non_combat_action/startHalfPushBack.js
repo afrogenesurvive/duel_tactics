@@ -1,4 +1,10 @@
 export function startHalfPushBack(app, object, blockType, direction, data) {
+  const logHalf = (message, data2 = {}) => {
+    if (app?.globalLogger) {
+      const type = object === "player" ? "player.pushBack.halfPushBack" : "obstacle.halfPushBack";
+      app.globalLogger(type, message, data2, { fn: "startHalfPushBack" });
+    }
+  };
   // console.log('startHalfPushback',object,blockType,direction);
 
   if (object === "player") {
@@ -31,8 +37,18 @@ export function startHalfPushBack(app, object, blockType, direction, data) {
       };
 
       app.players[data.number - 1] = data;
+      logHalf("start", {
+        object,
+        blockType,
+        direction,
+        playerId: data.number,
+      });
     } else {
-      console.log("player already being 1/2 pushed back!!");
+      logHalf("blocked", {
+        object,
+        reason: "player already being 1/2 pushed back",
+        playerId: data.number,
+      });
     }
   }
 
@@ -61,8 +77,18 @@ export function startHalfPushBack(app, object, blockType, direction, data) {
           y: undefined,
         },
       });
+      logHalf("start", {
+        object,
+        blockType,
+        direction,
+        myCellNo: data.number,
+      });
     } else {
-      console.log("obsatcle already being 1/2 pushed back!!");
+      logHalf("blocked", {
+        object,
+        reason: "obstacle already being 1/2 pushed back",
+        myCellNo: data.number,
+      });
     }
     // console.log("app.halfPushBackObstacles", app.halfPushBackObstacles);
   }

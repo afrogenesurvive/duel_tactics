@@ -107,6 +107,10 @@ export function handleMeleeDamage(app, ownerType, owner, targetPlayer) {
   }
 
   targetPlayer.hp -= damage;
+  if (app?.addEventLog) {
+    const attacker = ownerType === "player" ? "P" + owner.number : ownerType;
+    app.addEventLog(attacker + " hit P" + targetPlayer.number + " for " + damage + " dmg", "combat");
+  }
   if (targetPlayer.hp === 1) {
     targetPlayer.attacking.strength = 1;
 

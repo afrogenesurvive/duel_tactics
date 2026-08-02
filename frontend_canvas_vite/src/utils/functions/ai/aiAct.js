@@ -4,7 +4,7 @@ export function aiAct(app, plyr) {
     if (data.instructions) {
       app.globalLogger("ai.instructions", message, { plyr_no: plyr.number, ...data }, { fn: "aiAct" });
     } else {
-      app.globalLogger("ai.act", message, { plyr_no: plyr.number, ...data }, { fn: "aiAct" });
+      app.globalLogger("ai.act.other", message, { plyr_no: plyr.number, ...data }, { fn: "aiAct" });
     }
   };
 

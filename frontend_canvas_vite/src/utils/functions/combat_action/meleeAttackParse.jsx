@@ -49,13 +49,13 @@ export function meleeAttackParse(app, ownerType, owner, cellNo) {
     app.globalLogger(attackLogType, message, data, { fn: "meleeAttackParse" });
   };
   const logDodge = (message, data = {}) => {
-    app.globalLogger("player.dodging", message, data, { fn: "meleeAttackParse" });
+    app.globalLogger("player.dodging.execution", message, data, { fn: "meleeAttackParse" });
   };
   const logDefend = (message, data = {}, variant = "peak") => {
     app.globalLogger(`player.defending.${variant}`, message, data, { fn: "meleeAttackParse" });
   };
   const logPushBack = (message, data = {}) => {
-    app.globalLogger("player.pushBack", message, data, { fn: "meleeAttackParse" });
+    app.globalLogger("player.pushBack.execution", message, data, { fn: "meleeAttackParse" });
   };
   const logTrap = (message, data = {}) => {
     app.globalLogger("trap.action", message, data, { fn: "meleeAttackParse" });

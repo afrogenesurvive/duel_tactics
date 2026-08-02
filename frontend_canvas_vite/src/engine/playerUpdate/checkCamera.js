@@ -108,10 +108,20 @@ export function checkCamera(app, player, canvas, context) {
       app.camera.startCount = 0;
       app.camera.state = true;
       app.camera.fixed = true;
+      app.camInputNotifyShown = false;
     }
     if (canStart === false) {
       app.camera.startCount = 0;
       console.log("auto cam is probably engaged. Can't start input cam");
+      if (app.camInputNotifyShown !== true) {
+        app.camInputNotifyShown = true;
+        if (app?.addNotification) {
+          app.addNotification("Can't start input camera — auto camera is engaged", "warn");
+        }
+        if (app?.addEventLog) {
+          app.addEventLog("Can't start input camera (auto camera engaged)", "system");
+        }
+      }
     }
   }
   if (app.toggleCameraMode === true) {
@@ -410,7 +420,7 @@ export function checkCamera(app, player, canvas, context) {
       },
       limits: {
         zoom: {
-          min: 0.5,
+          min: 0.3,
           max: 2.5,
         },
         pan: {
@@ -452,6 +462,15 @@ export function checkCamera(app, player, canvas, context) {
     app.setZoomPan(canvas);
 
     // app.setCameraFocus('reset', canvas, context, canvas2, context2);
+
+    // RE-ZOOM OUT TO FIT LARGER GRIDS
+    if (app.gridWidth >= 12) {
+      app.setInitZoom = {
+        state: true,
+        windowWidth: window.innerWidth,
+        gridWidth: app.gridWidth,
+      };
+    }
   }
   // AUTO CAMERA
   if (app.camera.state !== true && app.camera.fixed !== true) {

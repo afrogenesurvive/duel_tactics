@@ -78,6 +78,7 @@ export const assetRefs = {
   attack1IndicateRef: React.createRef(),
   attack2IndicateRef: React.createRef(),
   attack3IndicateRef: React.createRef(),
+  attackxIndicateRef: React.createRef(),
 
   attackUnarmedIndicateRef: React.createRef(),
   attackBluntIndicateRef: React.createRef(),

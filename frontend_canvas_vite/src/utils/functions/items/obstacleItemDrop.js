@@ -1,4 +1,9 @@
 export function obstacleItemDrop(app, targetCell, player) {
+  const logDrop = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("items.drop", message, data, { fn: "obstacleItemDrop" });
+    }
+  };
   // console.log("obstacleItemDrop");
 
   let itemCount = targetCell.obstacle.items.length;
@@ -129,6 +134,13 @@ export function obstacleItemDrop(app, targetCell, player) {
       let indx = availibleCells.indexOf(cell);
       let item = targetCell.obstacle.items[indx];
       app.gridInfo.find((x) => x.number.x === cell.x && x.number.y === cell.y).item = item;
+
+      logDrop("placed", {
+        origin: targetCell.number,
+        cell,
+        itemName: item.name,
+        itemType: item.type,
+      });
 
       app.cellsToHighlight2.push({
         number: {

@@ -8,16 +8,25 @@ export function getCustomPlyrStartPosList(app, args) {
 
   app.settingsFormPlyrStartPosList = [];
 
+  // A chosen cell is only usable if it still exists on the current grid
+  // and passes the standard "is this a valid start cell" check.
+  const isCellValid = (cell) => {
+    if (!cell || cell.x === undefined || cell.y === undefined) return false;
+    if (cell.x < 0 || cell.y < 0 || cell.x > app.gridWidth || cell.y > app.gridWidth) return false;
+    return app.plyrStartPosCheckCell({ x: cell.x, y: cell.y }) === true;
+  };
+
   for (const plyr of args) {
     let array1 = [];
 
-    // AVOID ALREADY SELECTRED POSITIONS
-    if (plyr.selected) {
+    // AVOID ALREADY SELECTED POSITIONS (only when they are still valid)
+    let selectedValid = plyr.selected ? isCellValid(plyr.selected) : false;
+    if (selectedValid) {
       avoidCells.push(plyr.selected);
     }
 
-    // NO POSITION SELECTED, GAME STARTING. USE DEFAULT START POSITIONS
-    if (!plyr.selected) {
+    // NO VALID POSITION SELECTED, GAME STARTING. USE DEFAULT START POSITIONS
+    if (!selectedValid) {
       if (
         !app.gridInfo.find(
           (x) =>
@@ -68,8 +77,8 @@ export function getCustomPlyrStartPosList(app, args) {
       }
     }
 
-    // NO POSITION SELECTED, GAME STARTING. MARK PLAYR POSITION SELECTED
-    if (!plyr.selected) {
+    // NO VALID POSITION SELECTED, GAME STARTING. MARK PLAYER POSITION SELECTED
+    if (!selectedValid) {
       let playerStartPos = app.players[plyr.plyrNo - 1].startPosition.cell.number;
 
       plyr.selected = { x: playerStartPos.x, y: playerStartPos.y };

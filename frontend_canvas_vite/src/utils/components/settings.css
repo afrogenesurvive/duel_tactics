@@ -226,3 +226,25 @@ label {
 .settingsCanvasContainer.settingsCanvasHidden {
   display: none !important;
 }
+
+/* ── Master submit footer (independent of tabs) ── */
+.settingsFooter {
+  position: sticky;
+  bottom: 0;
+  margin: 1.5rem -1rem -1rem;
+  padding: 1rem;
+  text-align: center;
+  background: rgba(88, 47, 14, 0.15);
+  border-top: 3px solid #582f0e;
+  z-index: 8;
+}
+
+.formBtnSubmit {
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 0.5rem 3rem;
+}
+
+.formBtnCancel {
+  margin-left: 1rem;
+}

@@ -4,6 +4,11 @@ export function checkDestination(app, player, pickupOnly) {
       app.globalLogger("items.pickup", message, data, { fn: "checkDestination" });
     }
   };
+  const logMove = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("player.movement", message, data, { fn: "checkDestination" });
+    }
+  };
   // console.log('checking for item or enviro effect');
 
   app.players[player.number - 1].terrainMoveSpeed.state = false;
@@ -388,6 +393,12 @@ export function checkDestination(app, player, pickupOnly) {
       app.players[player.number - 1].action = "falling";
       app.players[player.number - 1].drowning = true;
 
+      logMove("enteredDeep", {
+        playerId: player.number,
+        cell: cell?.number,
+        terrain: cell?.terrain?.type,
+      });
+
       if (!app.players[player.number - 1].popups.find((x) => x.msg === "drowning")) {
         app.players[player.number - 1].popups.push({
           state: false,
@@ -425,6 +436,12 @@ export function checkDestination(app, player, pickupOnly) {
     case "void":
       app.players[player.number - 1].falling.state = true;
       app.players[player.number - 1].action = "falling";
+
+      logMove("enteredVoid", {
+        playerId: player.number,
+        cell: cell?.number,
+        terrain: cell?.terrain?.type,
+      });
 
       if (!app.players[player.number - 1].popups.find((x) => x.msg === "falling")) {
         app.players[player.number - 1].popups.push({
@@ -512,6 +529,16 @@ export function checkDestination(app, player, pickupOnly) {
       } else {
         applyHazard = app.rnJesus(1, 3);
       }
+
+      logMove("enteredHazard", {
+        playerId: player.number,
+        cell: cell?.number,
+        terrain: cell?.terrain?.type,
+        terrainName: cell?.terrain?.name,
+        roll: applyHazard,
+        applied: applyHazard === 1,
+      });
+
       if (applyHazard === 1) {
         // if (!app.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
         //   app.players[player.number-1].popups.push(

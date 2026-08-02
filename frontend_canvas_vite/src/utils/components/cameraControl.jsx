@@ -19,7 +19,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 
 
-import './debugBox.css';
+import './playerStatusUI.css';
 
 const CameraControl = (props) => {
 

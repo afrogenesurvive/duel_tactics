@@ -7,6 +7,17 @@ export function gameReset(app, type) {
     loading: true,
   });
 
+  // EVENT LOG: honor the "Reset Event Log" gameplay setting, then record the reset
+  if (app.settingsFormGameplayData?.resetEventLog === true) {
+    app.eventLog = [];
+  }
+  if (app?.addEventLog) {
+    app.addEventLog("Game reset (" + type + ")", "system");
+  }
+  if (app?.addNotification) {
+    app.addNotification("Game reset", "info");
+  }
+
   app.time = 0;
   app.projectiles = [];
   app.mouseOverCell = {
@@ -99,7 +110,7 @@ export function gameReset(app, type) {
     },
     limits: {
       zoom: {
-        min: 0.5,
+        min: 0.3,
         max: 2.5,
       },
       pan: {

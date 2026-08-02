@@ -729,6 +729,12 @@ export function addAiPlayer(app) {
         rotateLeft: false,
       });
       app.aiPlayers.push(newPlayerNumber);
+      if (app?.addNotification) {
+        app.addNotification("AI player " + newPlayerNumber + " added", "info");
+      }
+      if (app?.addEventLog) {
+        app.addEventLog("AI player " + newPlayerNumber + " added", "ai");
+      }
       app.getTarget(app.players[newPlayerNumber - 1]);
       app.updatePathArray();
       app.players[newPlayerNumber - 1].ai.primaryMission = app.aiInitSettings.primaryMission;

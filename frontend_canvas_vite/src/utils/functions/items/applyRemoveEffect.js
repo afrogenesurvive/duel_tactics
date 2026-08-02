@@ -1,4 +1,9 @@
 export function applyRemoveEffect(app, player, action, subAction, type, item) {
+  const logEffect = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("items.effects", message, data, { fn: "applyRemoveEffect" });
+    }
+  };
   // console.log('applyRemoveEffect',action,subAction,type,item);
   // call from: pickup, discard, deflect drop, use
   //
@@ -7,6 +12,14 @@ export function applyRemoveEffect(app, player, action, subAction, type, item) {
   // actiontype: pickup, discard, deflect drop, use
   //
   // type: armor, weapon, item
+
+  // EVENT LOG: item pickup / drop
+  if (action === "apply" && app?.addEventLog) {
+    app.addEventLog("P" + player.number + " picked up " + (item?.name || type), "items");
+  }
+  if (action === "remove" && (subAction === "discard" || subAction === "drop") && app?.addEventLog) {
+    app.addEventLog("P" + player.number + " dropped " + (item?.name || type), "items");
+  }
 
   let pickUp = false;
 
@@ -131,7 +144,10 @@ export function applyRemoveEffect(app, player, action, subAction, type, item) {
 
             pickUp = true;
           } else {
-            console.log("player " + player.number + " you already have max movement speed");
+            logEffect("alreadyMax", {
+              playerId: player.number,
+              effect: "moveSpeedUp",
+            });
 
             player.statusDisplay = {
               state: true,
@@ -225,7 +241,10 @@ export function applyRemoveEffect(app, player, action, subAction, type, item) {
 
             pickUp = true;
           } else {
-            console.log("player " + player.number + " you already have max hp");
+            logEffect("alreadyMax", {
+              playerId: player.number,
+              effect: "hpUp",
+            });
 
             player.statusDisplay = {
               state: true,
@@ -455,6 +474,22 @@ export function applyRemoveEffect(app, player, action, subAction, type, item) {
       }
     }
   }
+
+  logEffect("result", {
+    playerId: player.number,
+    action,
+    subAction,
+    type,
+    itemName: item?.name,
+    itemEffect: item?.effect,
+    applied: pickUp,
+    hp: player.hp,
+    speed: player.speed.move,
+    pushBack: player.crits.pushBack,
+    guardBreak: player.crits.guardBreak,
+    doubleHit: player.crits.doubleHit,
+    ammo: player.items.ammo,
+  });
 
   app.players[player.number - 1] = player;
   return pickUp;

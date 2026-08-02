@@ -11,6 +11,8 @@ export const initialState = {
   showAiStatus: false,
   showDebugMenu: false,
   showLiveLog: false,
+  showEventLog: false,
+  mainMenuMinimized: false,
   canvas: undefined,
   context: undefined,
   canvas2: undefined,
@@ -25,6 +27,8 @@ export const initialState = {
     six: 300,
     nine: 220,
     twelve: 150,
+    fifteen: 90,
+    nineteen: 50,
   },
   loading: true,
   stateUpdater: "",
@@ -42,8 +46,8 @@ export function applyConstructorDefaults(app) {
 
   app.cellInfoBoxRef = React.createRef();
 
-  app.debugBoxStyle = "debugDisplay closedDebug";
-  app.debugBoxStyle2 = "debugDisplay2 closedDebug";
+  app.playerStatusUIStyle = "playerStatusUI closed";
+  app.playerStatusUIStyle2 = "playerStatusUI2 closed";
 
   // LEVEL DRAW SETUP
   app.tileColumnOffset = 100; // pixels
@@ -701,12 +705,15 @@ export function applyConstructorDefaults(app) {
     pushbackChaining: true,
     startItems: true,
     showTrapData: false,
+    resetEventLog: false,
   };
   app.settingsFormUiData = {
     showPlayerOutlines: true,
     showOnPlayerUI: true,
     enableCellInfo: true,
     showActionDirectionAnim: true,
+    showCompass: true,
+    showPlayerStatusUI: true,
     backgroundTheme: "sea_clouds_night_1",
   };
   app.showSettingsKeyPress = {
@@ -862,11 +869,17 @@ export function applyConstructorDefaults(app) {
       switch: false,
       attacked: false,
       obstacle: false,
+      drop: false,
+      effects: false,
     },
     directional_animations: {
       inputs: false,
       execution: false, // phases etc
       count: false,
+    },
+    stage: {
+      void: false,
+      blood_sacrifice: false,
     },
   });
 
@@ -904,6 +917,15 @@ export function applyConstructorDefaults(app) {
   // LIVE LOG BUFFER
   app.logBuffer = [];
   app.logFilterMode = "filtered";
+
+  // EVENT LOG (gameplay-facing; persists across resets unless resetEventLog is on)
+  app.eventLog = [];
+  app.eventLogMax = 300;
+  app.showEventLog = false;
+
+  // NOTIFICATIONS (top-right toast stack)
+  app.notifications = [];
+  app.notificationMax = 8;
 
   // CELL INFO
   app.showCellInfoBox = false;
@@ -1272,7 +1294,7 @@ export function applyConstructorDefaults(app) {
     },
     limits: {
       zoom: {
-        min: 0.5,
+        min: 0.3,
         max: 2.5,
       },
       pan: {

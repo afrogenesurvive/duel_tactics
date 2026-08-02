@@ -34,7 +34,7 @@ import greaves from "../../assets/items/greaves1.png";
 import helmet from "../../assets/items/helmet1.png";
 import speed from "../../assets/indicators/speed.png";
 
-import "./debugBox.css";
+import "./playerStatusUI.css";
 
 const AiStatus = (props) => {
   let aiPlayers = [];

@@ -7,7 +7,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
-import "./debugBox.css";
+import "./playerStatusUI.css";
 
 const CellInfo = (props) => {
   return (

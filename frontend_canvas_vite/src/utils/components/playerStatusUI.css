@@ -1,5 +1,9 @@
-.debugBoxContainer {
+.playerStatusUIContainer {
   padding: 0.5rem 0.2rem;
+  position: relative;
+  overflow-y: auto;
+  min-height: 60px;
+  max-height: 70vh;
 }
 
 .debugBoxList {
@@ -62,16 +66,6 @@
   margin-top: 0.5rem;
 }
 
-.cellInfoSwitch {
-  border: 3px solid blue;
-  border-radius: 5px;
-  padding: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.8);
-  position: absolute;
-  bottom: 0;
-  right: 0.1rem;
-  z-index: 3;
-}
 .cellInfoBox {
   border: 3px solid blue;
   border-radius: 5px;
@@ -127,6 +121,19 @@
 .popoverList {
   padding: 0;
   list-style-type: none;
+}
+
+.playerStatusUIResizeHandle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.35) 50%);
+  border-top-left-radius: 4px;
+  user-select: none;
+  z-index: 5;
 }
 .popoverList > li > p {
   margin-bottom: 0.2rem;

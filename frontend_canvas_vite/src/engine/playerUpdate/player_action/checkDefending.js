@@ -4,7 +4,7 @@ export function checkDefending(app, player) {
     app.globalLogger(`player.defending.${variant}`, message, data, { fn: "checkDefending" });
   };
   const logStamina = (message, data = {}) => {
-    app.globalLogger("player.stamina", message, data, { fn: "checkDefending" });
+    app.globalLogger("player.stamina.execution", message, data, { fn: "checkDefending" });
   };
   const logCount = (message, data = {}) => {
     app.globalLogger("player.defending.count", message, data, { fn: "checkDefending" });
@@ -76,6 +76,9 @@ export function checkDefending(app, player) {
           msg: "defending",
           img: "",
         });
+        if (app?.addEventLog) {
+          app.addEventLog("P" + player.number + " defending", "combat");
+        }
       }
 
       if (player.defending.count <= 2) {

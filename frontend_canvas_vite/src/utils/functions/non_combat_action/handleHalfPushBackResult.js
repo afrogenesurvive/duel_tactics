@@ -1,4 +1,10 @@
 export function handleHalfPushBackResult(app, type, data) {
+  const logHalf = (message, data2 = {}) => {
+    if (app?.globalLogger) {
+      const logType = type === "player" ? "player.pushBack.halfPushBack" : "obstacle.halfPushBack";
+      app.globalLogger(logType, message, data2, { fn: "handleHalfPushBackResult" });
+    }
+  };
   // console.log("handleHalfPushBackResult", type, data);
 
   let direction = "";
@@ -941,8 +947,26 @@ export function handleHalfPushBackResult(app, type, data) {
           app.players[impacteePlayerRef.number - 1].nextPosition = targetPlyrNextPosition;
         }
       } else {
-        console.log("player is already being pushed back!!");
+        logHalf("result", {
+          type,
+          direction,
+          reason: "player is already being pushed back",
+        });
       }
     }
   }
+
+  logHalf("result", {
+    type,
+    direction,
+    impactor,
+    impactee,
+    shouldDamageImpactor,
+    shouldDamageImpactee,
+    shouldDeflectImpactor,
+    shouldDeflectImpactee,
+    shouldMoveImpactee,
+    impactorDamage,
+    impacteeDamage,
+  });
 }

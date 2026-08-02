@@ -44,6 +44,12 @@ export function calcElasticCountCoords(app, type, subType, data) {
 
   const finish = (base2, unit3) => {
     switch (app.gridWidth) {
+      case 19:
+        unit3 = base2 / 3;
+        break;
+      case 15:
+        unit3 = base2 / 2;
+        break;
       case 12:
         unit3 = base2 / 1.5;
         break;

@@ -2,6 +2,9 @@ import moveConstants from "../../../data/moveConsts";
 
 export function killPlayer(app, player) {
   // console.log("killing player", player);
+  if (app?.addEventLog) {
+    app.addEventLog("P" + player.number + " died", "combat");
+  }
 
   player.ghost.state = true;
   player.ghost.position.cell = {

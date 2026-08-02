@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,9 +38,9 @@ import unarmed from "../../assets/items/unarmed.png";
 
 import speed from "../../assets/indicators/speed.png";
 
-import "./debugBox.css";
+import "./playerStatusUI.css";
 
-const DebugBox = (props) => {
+const PlayerStatusUI = (props) => {
   let singleHitCrit = Math.round((1 / (props.player.crits.singleHit + 0)) * 100);
   let singleHitCritSpecialArmorMin = Math.round(
     (1 / (props.player.crits.singleHit + 5)) * 100,
@@ -72,17 +72,44 @@ const DebugBox = (props) => {
   }
 
   const [state, setState] = useState("player");
+  const [size, setSize] = useState({ w: 500 });
+  const statusRef = useRef(null);
+
   const handleStateChange = (type, plyrNo) => {
     setState(type);
     if (type === "player") {
+      // reset custom height so the minimized (closed) style controls it
+      setSize((s) => ({ ...s, h: undefined }));
       props.minimize(plyrNo);
     } else {
       props.expand(plyrNo);
     }
   };
 
+  const startResize = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = statusRef.current;
+    if (!el) return;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startW = el.getBoundingClientRect().width;
+    const startH = el.getBoundingClientRect().height;
+    const onMove = (ev) => {
+      const w = startW + (ev.clientX - startX);
+      const h = startH + (ev.clientY - startY);
+      setSize({ w: Math.max(200, w), h: Math.max(60, h) });
+    };
+    const onUp = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  };
+
   return (
-    <div className="debugBoxContainer">
+    <div className="playerStatusUIContainer" ref={statusRef} style={{ width: size.w, height: size.h }}>
       {state === "player" && (
         <ul className="debugBoxList">
           <li className="debugBoxListItem">
@@ -789,8 +816,9 @@ const DebugBox = (props) => {
           </ul>
         </div>
       )}
+      <div className="playerStatusUIResizeHandle" onMouseDown={startResize} title="Resize" />
     </div>
   );
 };
 
-export default DebugBox;
+export default PlayerStatusUI;

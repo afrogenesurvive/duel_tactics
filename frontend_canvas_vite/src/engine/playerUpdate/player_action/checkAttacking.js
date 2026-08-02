@@ -17,7 +17,7 @@ export function checkAttacking(app, player) {
     app.globalLogger("player.attacking.feint", message, data, { fn: "checkAttacking" });
   };
   const logStamina = (message, data = {}) => {
-    app.globalLogger("player.stamina", message, data, { fn: "checkAttacking" });
+    app.globalLogger("player.stamina.execution", message, data, { fn: "checkAttacking" });
   };
   const logCount = (message, data = {}) => {
     app.globalLogger("player.attacking.count", message, data, { fn: "checkAttacking" });
@@ -154,6 +154,9 @@ export function checkAttacking(app, player) {
               msg: "attackStart",
               img: "",
             });
+            if (app?.addEventLog) {
+              app.addEventLog("P" + player.number + " attacks", "combat");
+            }
           }
 
           app.getTarget(player);

@@ -20,6 +20,9 @@ export function checkDeflection(app, player) {
             msg: "guardBroken",
             img: "",
           });
+          if (app?.addEventLog) {
+            app.addEventLog("P" + player.number + " guard broken", "combat");
+          }
         }
       }
 
@@ -34,6 +37,9 @@ export function checkDeflection(app, player) {
             msg: "attackParried",
             img: "",
           });
+          if (app?.addEventLog) {
+            app.addEventLog("P" + player.number + " parried an attack", "combat");
+          }
         }
       }
       if (player.success.deflected.type === "attacked") {
@@ -47,6 +53,9 @@ export function checkDeflection(app, player) {
             msg: "injured",
             img: "",
           });
+          if (app?.addEventLog) {
+            app.addEventLog("P" + player.number + " injured", "combat");
+          }
         }
       }
       if (player.success.deflected.type === "outOfStamina") {

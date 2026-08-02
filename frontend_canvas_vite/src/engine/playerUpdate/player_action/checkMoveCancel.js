@@ -56,6 +56,17 @@ export function checkMoveCancel(app, player, nextPosition) {
       ) {
         canCancelMove = false;
         console.log("cannot cancel move when being pushed back, falling, drowning, pulling, pushing, and being pushed or pulled");
+        if (app.cancelNotifyShown !== true) {
+          app.cancelNotifyShown = true;
+          if (app?.addNotification) {
+            app.addNotification("Can't cancel move while pushed/pulled/falling/drowning", "warn");
+          }
+          if (app?.addEventLog) {
+            app.addEventLog("P" + player.number + " can't cancel move (pushed/pulled/falling/drowning)", "system");
+          }
+        }
+      } else {
+        app.cancelNotifyShown = false;
       }
 
       let inTime = false;
@@ -163,6 +174,9 @@ export function checkMoveCancel(app, player, nextPosition) {
             // Set action and state flags
             player.action = "dashing";
             player.dashing.state = true;
+            if (app?.addEventLog) {
+              app.addEventLog("P" + player.number + " dashed " + player.direction, "movement");
+            }
             player.dashing.originalDirection = player.direction;
             player.dashing.dashDirection = player.direction;
 

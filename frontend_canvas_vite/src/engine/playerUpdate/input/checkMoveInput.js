@@ -53,6 +53,9 @@ export function checkMoveInput(app, player, plyrPullPushed, plyrPullPushedPlyr, 
                 destination: target.cell1.center,
               };
               player.dashing.lastMoveStartTime = app.time;
+              if (app?.addEventLog) {
+                app.addEventLog("P" + player.number + " moved", "movement");
+              }
               nextPosition = app.lineCrementer(player);
               player.nextPosition = nextPosition;
 

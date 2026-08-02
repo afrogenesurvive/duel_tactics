@@ -11,6 +11,14 @@ export function settingsFormGridWidthUpdate(app, args) {
   if (app.gridWidth <= 9) {
     app.camera.zoom.x = 1;
     app.camera.zoom.y = 1;
+  } else {
+    app.camera.zoom.x = 1;
+    app.camera.zoom.y = 1;
+    app.setInitZoom = {
+      state: true,
+      windowWidth: window.innerWidth,
+      gridWidth: app.gridWidth,
+    };
   }
 
   let prevGridWidth = app.gridWidth;
@@ -38,6 +46,18 @@ export function settingsFormGridWidthUpdate(app, args) {
     app.settingsCanvasHeight = 400;
     app.settingsSceneX = 350;
     app.settingsSceneY = 50;
+  }
+  if (app.settingsGridWidth === 15) {
+    app.settingsCanvasWidth = 900;
+    app.settingsCanvasHeight = 520;
+    app.settingsSceneX = 450;
+    app.settingsSceneY = 30;
+  }
+  if (app.settingsGridWidth === 19) {
+    app.settingsCanvasWidth = 1100;
+    app.settingsCanvasHeight = 620;
+    app.settingsSceneX = 550;
+    app.settingsSceneY = 20;
   }
   if (app.settingsGridWidth === 9) {
     app.settingsCanvasWidth = 500;

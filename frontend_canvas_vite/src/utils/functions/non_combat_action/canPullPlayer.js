@@ -1,4 +1,9 @@
 export function canPullPlayer(app, puller, targetCell, targetPlayer) {
+  const logPull = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("player.pulling.execution", message, data, { fn: "canPullPlayer" });
+    }
+  };
   let resetPull = false;
   let thresholdMultiplier = app.rnJesus(1, 3);
   let canPullStrength = false;
@@ -64,7 +69,13 @@ export function canPullPlayer(app, puller, targetCell, targetPlayer) {
         let barrier = app.checkForwardBarrier(impactDirection, targetCell);
 
         if (barrier === true) {
-          console.log("barrier in obstacle cell in front of target player");
+          logPull("blocked", {
+            pullerId: puller.number,
+            targetId: targetPlayer.number,
+            blocker: "barrier",
+            reason: "barrier in cell in front of target player",
+            cell: targetCell.number,
+          });
           canPullTargetFree = false;
           destCellOccupant = "barrier";
           resetPull = true;
@@ -72,7 +83,13 @@ export function canPullPlayer(app, puller, targetCell, targetPlayer) {
         // --------------
 
         if (targetCell.barrier.position === impactDirection) {
-          console.log("barrier in target player cell behind target player");
+          logPull("blocked", {
+            pullerId: puller.number,
+            targetId: targetPlayer.number,
+            blocker: "barrier",
+            reason: "barrier in target player cell behind target player",
+            cell: targetCell.number,
+          });
           canPullTargetFree = false;
           destCellOccupant = "barrier";
           resetPull = true;
@@ -99,19 +116,25 @@ export function canPullPlayer(app, puller, targetCell, targetPlayer) {
       //   puller.crits.pushBack - 2
       // );
     } else {
-      console.log(
-        "you are NOT strong enough to pull app player",
-        pullStrengthPlayer,
-        pullStrengthThreshold,
-        puller.crits.guardBreak - 2,
-        puller.crits.pushBack - 2,
-      );
+      logPull("notStrongEnough", {
+        pullerId: puller.number,
+        targetId: targetPlayer.number,
+        strength: pullStrengthPlayer,
+        threshold: pullStrengthThreshold,
+      });
       resetPull = true;
     }
 
     // movePlayer = true;
 
     if (!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
+      logPull("success", {
+        pullerId: puller.number,
+        targetId: targetPlayer.number,
+        destCell: destCell,
+        edgeCase: "no dest cell ref",
+        movePlayer,
+      });
       // console.log('ready to pull',moveSpeed);
       if (!app.players[puller.number - 1].popups.find((x) => x.msg === "canPull")) {
         app.players[puller.number - 1].popups.push({
@@ -240,11 +263,23 @@ export function canPullPlayer(app, puller, targetCell, targetPlayer) {
     // console.log('pullStrengthThreshold/Player',pullStrengthThreshold,pullStrengthPlayer);
 
     if (canPullTargetFree !== true) {
-      console.log("something is in the way of the player to be pulled");
+      logPull("blocked", {
+        pullerId: puller.number,
+        targetId: targetPlayer.number,
+        blocker: destCellOccupant || "unknown",
+        reason: "something is in the way of the target player",
+      });
       resetPull = true;
     }
 
     if (canPullStrength === true && canPullTargetFree === true && destCellRef) {
+      logPull("success", {
+        pullerId: puller.number,
+        targetId: targetPlayer.number,
+        destCell: destCell,
+        destCellOccupant,
+        movePlayer,
+      });
       // console.log('ready to pull',moveSpeed);
       if (!app.players[puller.number - 1].popups.find((x) => x.msg === "canPull")) {
         app.players[puller.number - 1].popups.push({
@@ -389,6 +424,11 @@ export function canPullPlayer(app, puller, targetCell, targetPlayer) {
   } else {
     puller.stamina.current = 0;
     resetPull = true;
+    logPull("outOfStamina", {
+      pullerId: puller.number,
+      stamina: puller.stamina.current,
+      cost: app.staminaCostRef.pull,
+    });
     puller.statusDisplay = {
       state: true,
       status: "Out of Stamina",

@@ -250,3 +250,15 @@
 .liveLogScrollBtn:hover {
   background: rgba(88, 47, 14, 1);
 }
+
+.liveLogResizeHandle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 50%, rgba(235, 213, 179, 0.7) 50%);
+  user-select: none;
+  z-index: 5;
+}

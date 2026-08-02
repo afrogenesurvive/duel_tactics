@@ -463,12 +463,13 @@ const Settings = (props) => {
       }
 
       let array = [];
+      const existingPos = (plyrNo) => props.plyrStartPosList.find((p) => p.plyrNo === plyrNo)?.selected;
       switch (parseInt(plyrCount)) {
         case 1:
           array = [
             {
               plyrNo: 1,
-              selected: undefined,
+              selected: existingPos(1),
               posArray: [],
             },
           ];
@@ -477,12 +478,12 @@ const Settings = (props) => {
           array = [
             {
               plyrNo: 1,
-              selected: undefined,
+              selected: existingPos(1),
               posArray: [],
             },
             {
               plyrNo: 2,
-              selected: undefined,
+              selected: existingPos(2),
               posArray: [],
             },
           ];
@@ -623,7 +624,15 @@ const Settings = (props) => {
     setAiTeam([]);
     setAiMission([]);
 
-    props.getCustomAiStartPosList([]);
+    // Preserve existing custom AI start positions for AI players that remain
+    const preservedAiStartPos = props.aiStartPosList
+      .filter((p) => plyrNumbers.includes(p.plyrNo))
+      .map((p) => ({
+        plyrNo: p.plyrNo,
+        mission: p.mission,
+        selected: p.selected.map((s) => ({ type: s.type, cell: { x: s.cell.x, y: s.cell.y } })),
+      }));
+    props.getCustomAiStartPosList(preservedAiStartPos);
 
     setAiCount({
       count: args,
@@ -727,14 +736,18 @@ const Settings = (props) => {
     }
     setAiMission(array6);
 
-    let newArray = array6.map(
-      (y) =>
-        (y = {
-          plyrNo: y.plyrNo,
-          mission: y.mission,
-          selected: [],
-        }),
-    );
+    let newArray = array6.map((y) => {
+      let existing = props.aiStartPosList.find((p) => p.plyrNo === y.plyrNo && p.mission === y.mission);
+      let selected =
+        existing && existing.selected.length > 0
+          ? existing.selected.map((s) => ({ type: s.type, cell: { x: s.cell.x, y: s.cell.y } }))
+          : [];
+      return {
+        plyrNo: y.plyrNo,
+        mission: y.mission,
+        selected,
+      };
+    });
 
     props.getCustomAiStartPosList(newArray);
 
@@ -1030,6 +1043,7 @@ const Settings = (props) => {
 
   const tabs = [
     { id: "basic", label: "Basic" },
+    { id: "stage", label: "Stage" },
     { id: "gear", label: "Gear" },
     { id: "ai", label: "AI" },
     { id: "controls", label: "Controls" },
@@ -1080,6 +1094,8 @@ const Settings = (props) => {
                     <option value={6}>7 x 7</option>
                     <option value={3}>4 x 4</option>
                     <option value={12}>13 x 13</option>
+                    <option value={15}>16 x 16</option>
+                    <option value={19}>20 x 20</option>
                   </Form.Control>
                 </Form.Group>
 
@@ -1164,56 +1180,6 @@ const Settings = (props) => {
                       </Row>
                     </Col>
                   ))}
-                </Row>
-              )}
-
-              {props.plyrStartPosList.length > 0 && (
-                <Row className="multiAiFormBox">
-                  {props.plyrStartPosList.map((posArray) => {
-                    return (
-                      <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
-                        <Row>
-                          <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
-                            <Form.Label className="formLabel">P{posArray.plyrNo} Start Position</Form.Label>
-                            <FontAwesomeIcon
-                              onClick={props.updateSettingsCanvasData.bind(this, {
-                                type: "human_start",
-                                plyrNo: posArray.plyrNo,
-                              })}
-                              icon={faTh}
-                              size="sm"
-                              className="icon"
-                            />
-                            <FontAwesomeIcon
-                              onClick={(e) => handlePlyrStartPosStateChange(posArray.plyrNo, "random")}
-                              icon={faDice}
-                              size="sm"
-                              className="icon"
-                            />
-                            <Form.Control
-                              as="select"
-                              value={posArray.selected}
-                              onChange={(e) => handlePlyrStartPosStateChange(posArray.plyrNo, e.target.value)}>
-                              <option>
-                                {posArray.selected.x},{posArray.selected.y}
-                              </option>
-                              {posArray.posArray.map((pos) => {
-                                if (pos === "random") {
-                                  return <option>{pos}</option>;
-                                } else {
-                                  return (
-                                    <option>
-                                      {pos.x},{pos.y}
-                                    </option>
-                                  );
-                                }
-                              })}
-                            </Form.Control>
-                          </Form.Group>
-                        </Row>
-                      </Col>
-                    );
-                  })}
                 </Row>
               )}
             </>
@@ -1423,6 +1389,63 @@ const Settings = (props) => {
                       </Row>
                     </Col>
                   ))}
+                </Row>
+              )}
+            </>
+          )}
+
+          {/* ═══════════════ STAGE ═══════════════ */}
+          {activeTab === "stage" && (
+            <>
+              <h3 className="settingsSubHeading">Start Positions</h3>
+
+              {props.plyrStartPosList.length > 0 && (
+                <Row className="multiAiFormBox">
+                  {props.plyrStartPosList.map((posArray) => {
+                    return (
+                      <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+                        <Row>
+                          <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
+                            <Form.Label className="formLabel">P{posArray.plyrNo} Start Position</Form.Label>
+                            <FontAwesomeIcon
+                              onClick={props.updateSettingsCanvasData.bind(this, {
+                                type: "human_start",
+                                plyrNo: posArray.plyrNo,
+                              })}
+                              icon={faTh}
+                              size="sm"
+                              className="icon"
+                            />
+                            <FontAwesomeIcon
+                              onClick={(e) => handlePlyrStartPosStateChange(posArray.plyrNo, "random")}
+                              icon={faDice}
+                              size="sm"
+                              className="icon"
+                            />
+                            <Form.Control
+                              as="select"
+                              value={posArray.selected}
+                              onChange={(e) => handlePlyrStartPosStateChange(posArray.plyrNo, e.target.value)}>
+                              <option>
+                                {posArray.selected.x},{posArray.selected.y}
+                              </option>
+                              {posArray.posArray.map((pos) => {
+                                if (pos === "random") {
+                                  return <option>{pos}</option>;
+                                } else {
+                                  return (
+                                    <option>
+                                      {pos.x},{pos.y}
+                                    </option>
+                                  );
+                                }
+                              })}
+                            </Form.Control>
+                          </Form.Group>
+                        </Row>
+                      </Col>
+                    );
+                  })}
                 </Row>
               )}
 
@@ -1879,6 +1902,22 @@ const Settings = (props) => {
                   />
                 </Form.Group>
               </Row>
+              <Row>
+                <Form.Group as={Col} controlId="resetEventLog" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="resetEventLogSwitch"
+                    label="Reset Event Log on Game Reset"
+                    checked={props.settingsFormGameplayData?.resetEventLog === true}
+                    onChange={(e) => {
+                      props.updateSettingsFormGameplayData({
+                        ...props.settingsFormGameplayData,
+                        resetEventLog: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+              </Row>
             </>
           )}
 
@@ -1947,6 +1986,36 @@ const Settings = (props) => {
                 </Form.Group>
               </Row>
               <Row>
+                <Form.Group as={Col} controlId="showCompass" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="showCompassSwitch"
+                    label="Compass"
+                    checked={props.settingsFormUiData?.showCompass !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormUiData({
+                        ...props.settingsFormUiData,
+                        showCompass: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} controlId="showPlayerStatusUI" className="formGroup">
+                  <Form.Check
+                    type="switch"
+                    id="showPlayerStatusUISwitch"
+                    label="Player Status UI"
+                    checked={props.settingsFormUiData?.showPlayerStatusUI !== false}
+                    onChange={(e) => {
+                      props.updateSettingsFormUiData({
+                        ...props.settingsFormUiData,
+                        showPlayerStatusUI: e.target.checked,
+                      });
+                    }}
+                  />
+                </Form.Group>
+              </Row>
+              <Row>
                 <Form.Group as={Col} controlId="backgroundTheme" className="formGroup">
                   <Form.Label className="formLabel">Background Theme</Form.Label>
                   <Form.Control
@@ -1984,7 +2053,7 @@ const Settings = (props) => {
           {props.showCanvasData.state === true && (
             <>
               {/* Human start position canvas */}
-              <div className={`settingsCanvasContainer ${activeTab !== "basic" ? "settingsCanvasHidden" : ""}`}>
+              <div className={`settingsCanvasContainer ${activeTab !== "stage" ? "settingsCanvasHidden" : ""}`}>
                 <h3 className="settingsHeading">
                   Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
                 </h3>
@@ -1992,7 +2061,7 @@ const Settings = (props) => {
               </div>
               {/* AI start position canvas */}
               {props.showCanvasData.field?.split("_")[0] === "ai" && (
-                <div className={`settingsCanvasContainer ${activeTab !== "ai" ? "settingsCanvasHidden" : ""}`}>
+                <div className={`settingsCanvasContainer ${activeTab !== "stage" ? "settingsCanvasHidden" : ""}`}>
                   <h3 className="settingsHeading">
                     Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
                   </h3>
@@ -2008,17 +2077,15 @@ const Settings = (props) => {
             </>
           )}
 
-          {/* ── MASTER SUBMIT & CANCEL — always visible ── */}
-          <Row className="formBtnRow">
-            <div className="btnSubCont">
-              <Button variant="success" type="submit" className="formBtn">
-                Submit
-              </Button>
-              <Button variant="danger" className="formBtn" onClick={props.onCancel}>
-                Cancel
-              </Button>
-            </div>
-          </Row>
+          {/* ── MASTER SUBMIT & CANCEL — always visible, distinct footer ── */}
+          <div className="settingsFooter">
+            <Button variant="success" type="submit" className="formBtn formBtnSubmit">
+              Submit
+            </Button>
+            <Button variant="outline-danger" className="formBtn formBtnCancel" onClick={props.onCancel}>
+              Cancel
+            </Button>
+          </div>
         </Form>
       </div>
     </div>

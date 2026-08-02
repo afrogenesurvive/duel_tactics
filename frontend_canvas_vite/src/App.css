@@ -159,24 +159,16 @@
   /* animation: rotation 2s infinite linear; */
 }
 
-.debugDisplay {
-  /* height: 80px; */
-  width: 500px;
+.playerStatusUI {
   position: absolute;
   top: 0;
-  /* bottom: 15px; */
   right: 5px;
   border: 3px solid green;
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.6);
   z-index: 3;
-  overflow-y: scroll;
-
-  /* display: none; */
 }
-.debugDisplay2 {
-  /* height: 80px; */
-  width: 500px;
+.playerStatusUI2 {
   position: absolute;
   top: 0;
   left: 5px;
@@ -184,32 +176,31 @@
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.6);
   z-index: 3;
-  overflow-y: scroll;
-
-  /* display: none; */
 }
-.openDebug {
-  height: 150px;
+.open {
+  /* player status ui expanded (gear/crits) — sizing handled by component */
 }
-.closedDebug {
-  height: 80px;
+.closed {
+  /* player status ui collapsed — sizing handled by component */
 }
-.settingsSwitch {
+.mainMenu {
   border: 2px solid green;
   border-radius: 5px;
-  padding: 0.5rem;
+  padding: 0.25rem;
   background-color: rgba(255, 255, 255, 0.6);
   position: absolute;
   bottom: 0;
   left: 0.1rem;
-  z-index: 3;
+  z-index: 1000;
   display: flex;
+  align-items: center;
 }
-.setSwitchIcon {
+.mainMenuIcon {
   color: #000000;
-  margin: 0 0.3rem;
+  margin: 0 0.15rem;
+  font-size: 0.8rem;
 }
-/* .setSwitchLink {
+/* .mainMenuLink {
 
 } */
 

@@ -10,25 +10,45 @@ export function loadSettings(app, event) {
   let aiPlayerNumber = app.updateSettingsFormAiDataData.count?.count || 0;
 
   switch (gridSize) {
-    case "3":
+    case 3:
       app.gridWidth = 3;
       app.sceneY = app.state.sceneY.three;
       break;
-    case "6":
+    case 6:
       app.gridWidth = 6;
       app.sceneY = app.state.sceneY.six;
       break;
-    case "9":
+    case 9:
       app.gridWidth = 9;
       app.sceneY = app.state.sceneY.nine;
       break;
-    case "12":
+    case 12:
       app.gridWidth = 12;
       app.sceneY = app.state.sceneY.twelve;
       break;
+    case 15:
+      app.gridWidth = 15;
+      app.sceneY = app.state.sceneY.fifteen;
+      break;
+    case 19:
+      app.gridWidth = 19;
+      app.sceneY = app.state.sceneY.nineteen;
+      break;
   }
 
-  if (app.gridWidth >= 12) {
+  if (app.gridWidth >= 19) {
+    if (window.innerWidth < 1100) {
+      app.zoomThresh = -0.55;
+    } else {
+      app.zoomThresh = -0.25;
+    }
+  } else if (app.gridWidth >= 15) {
+    if (window.innerWidth < 1100) {
+      app.zoomThresh = -0.4;
+    } else {
+      app.zoomThresh = -0.15;
+    }
+  } else if (app.gridWidth >= 12) {
     if (window.innerWidth < 1100) {
       app.zoomThresh = -0.25;
     } else {

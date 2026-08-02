@@ -57,6 +57,9 @@ export function checkStamina(app, player) {
           msg: "outOfStamina",
           img: "",
         });
+        if (app?.addEventLog) {
+          app.addEventLog("P" + player.number + " out of stamina", "system");
+        }
       }
     }
 

@@ -1,4 +1,14 @@
 export function checkVoid(app, player) {
+  const logVoid = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("stage.void", message, data, { fn: "checkVoid" });
+    }
+  };
+  const logBlood = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("stage.blood_sacrifice", message, data, { fn: "checkVoid" });
+    }
+  };
   // OPEN VOID!!???
   if (app.openVoid === true) {
     if (app.cellToVoid.state !== true) {
@@ -21,6 +31,9 @@ export function checkVoid(app, player) {
         app.cellToVoid.x = cell.x;
         app.cellToVoid.y = cell.y;
         app.cellToVoid.count = 1;
+        logVoid("cellToVoidSet", {
+          cell,
+        });
       }
     } else if (app.cellToVoid.state === true) {
       // console.log('already voiding a cell');
@@ -36,6 +49,12 @@ export function checkVoid(app, player) {
         };
 
         app.voidSummon(cell);
+        logVoid("voidSummoned", {
+          cell,
+        });
+        if (app?.addEventLog) {
+          app.addEventLog("A void opened at (" + cell.x + "," + cell.y + ")", "system");
+        }
 
         app.cellToVoid = {
           state: false,
@@ -60,18 +79,28 @@ export function checkVoid(app, player) {
   }
   if (app.voidTimer.count >= app.voidTimer.limit) {
     app.openVoid = false;
-    // console.log('void off');
+    logVoid("voidTimerOff", {
+      count: app.voidTimer.count,
+      limit: app.voidTimer.limit,
+    });
   }
 
   // BLOOD SACRIFICE!!
   if (app.bloodSacrificeEvent.state === true) {
     if (app.bloodSacrificeEvent.count < app.bloodSacrificeEvent.limit) {
       app.bloodSacrificeEvent.count++;
+      logBlood("active", {
+        count: app.bloodSacrificeEvent.count,
+        limit: app.bloodSacrificeEvent.limit,
+      });
     } else if (app.bloodSacrificeEvent.count >= app.bloodSacrificeEvent.limit) {
       if (app.cellToVoid.state !== true) {
         app.bloodSacrificeEvent.state = false;
         app.openVoid = false;
-        console.log("Blood Sacrifice event is now over.");
+        logBlood("complete", {
+          restore: app.bloodSacrificeEvent.restore,
+          restoredCells: app.bloodSacrificeVoidedCells.length,
+        });
         if (app.bloodSacrificeEvent.restore === true) {
           for (const cell of app.bloodSacrificeVoidedCells) {
             // console.log('restoring cells after blood Sacrifice',cell);

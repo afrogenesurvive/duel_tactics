@@ -1,4 +1,9 @@
 export function checkHalfCompletePushback(app, player) {
+  const logHalf = (message, data = {}) => {
+    if (app?.globalLogger) {
+      app.globalLogger("player.pushBack.halfPushBack", message, data, { fn: "checkHalfCompletePushback" });
+    }
+  };
   // RESET MOVE SPEED POST PUSHBACK
   if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
     player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
@@ -19,7 +24,11 @@ export function checkHalfCompletePushback(app, player) {
 
       if (player.halfPushBack.countUp.count < player.halfPushBack.countUp.limit) {
         if (player.halfPushBack.countUp.count === 1) {
-          // console.log('player 1/2 pushback start');
+          logHalf("start", {
+            playerId: player.number,
+            direction: player.halfPushBack.direction,
+            type: player.halfPushBack.type,
+          });
         }
 
         player.halfPushBack.countUp.count++;
@@ -32,7 +41,10 @@ export function checkHalfCompletePushback(app, player) {
           count: 0,
           limit: player.halfPushBack.countUp.limit,
         };
-        // console.log('player 1/2 pushback peak');
+        logHalf("peak", {
+          playerId: player.number,
+          countUpLimit: player.halfPushBack.countUp.limit,
+        });
         // app.handleHalfPushBackResult('player',player);
         player.halfPushBack.countDown.state = true;
       }
@@ -51,7 +63,9 @@ export function checkHalfCompletePushback(app, player) {
           limit: player.halfPushBack.countDown.limit,
         };
 
-        // console.log('player 1/2 pushback end');
+        logHalf("end", {
+          playerId: player.number,
+        });
         app.handleHalfPushBackResult("player", player);
         player.halfPushBack.state = false;
         player.action = "idle";
